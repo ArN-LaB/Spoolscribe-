@@ -197,27 +197,38 @@ def make_view_icon(kind: str, color: str, size: int = 18, dpr: float = 1.0) -> Q
     return QIcon(pm)
 
 
-def load_brand_pixmap(abs_path: str, size: int, dpr: float = 1.0) -> QPixmap | None:
-    """Charge un logo de marque (SVG ou bitmap) en rendu net HiDPI."""
+def load_brand_pixmap(
+    abs_path: str,
+    size: int,
+    dpr: float = 1.0,
+    max_w: int | None = None,
+) -> QPixmap | None:
+    """Charge un logo de marque (SVG ou bitmap) en rendu net HiDPI.
+
+    *size* fixe la hauteur maximale (axe court). *max_w* fixe la largeur
+    maximale (axe long) ; les logos en format paysage (wordmarks) peuvent
+    ainsi s'étendre horizontalement sans être écrasés dans un carré.
+    Si *max_w* est omis, il vaut 3 × *size* (couvre les wordmarks courants).
+    """
     if not abs_path or not os.path.exists(abs_path):
         return None
-    px = max(1, int(round(size * dpr)))
+    ph = max(1, int(round(size * dpr)))
+    pw = max(1, int(round((max_w or size * 3) * dpr)))
     ext = os.path.splitext(abs_path)[1].lower()
     try:
         if ext == ".svg" and HAS_SVG:
             renderer = QSvgRenderer(abs_path)
-            pm = QPixmap(px, px)
+            vb = renderer.viewBoxF()
+            src_w = vb.width()  if vb.width()  > 0 else pw
+            src_h = vb.height() if vb.height() > 0 else ph
+            scale = min(pw / src_w, ph / src_h)
+            rw, rh = int(src_w * scale), int(src_h * scale)
+            pm = QPixmap(rw, rh)
             pm.fill(Qt.transparent)
             painter = QPainter(pm)
             painter.setRenderHint(QPainter.Antialiasing, True)
             painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
-            vb = renderer.viewBoxF()
-            if vb.width() > 0 and vb.height() > 0:
-                scale = min(px / vb.width(), px / vb.height())
-                w, h = vb.width() * scale, vb.height() * scale
-                renderer.render(painter, QRectF((px - w) / 2, (px - h) / 2, w, h))
-            else:
-                renderer.render(painter)
+            renderer.render(painter, QRectF(0, 0, rw, rh))
             painter.end()
             pm.setDevicePixelRatio(dpr)
             return pm
@@ -225,7 +236,7 @@ def load_brand_pixmap(abs_path: str, size: int, dpr: float = 1.0) -> QPixmap | N
             src = QPixmap(abs_path)
             if src.isNull():
                 return None
-            pm = src.scaled(px, px, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            pm = src.scaled(pw, ph, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             pm.setDevicePixelRatio(dpr)
             return pm
     except Exception:
@@ -695,8 +706,10 @@ class MainWindow(QMainWindow):
         head = QHBoxLayout()
         head.setSpacing(12)
         self.logo = QLabel()
-        self.logo.setFixedSize(72, 72)
-        self.logo.setAlignment(Qt.AlignCenter)
+        # Largeur généreuse (160 px) pour accueillir les wordmarks larges type
+        # ROSA3D (334×94). La hauteur reste bornée à 52 px de contenu rendu.
+        self.logo.setFixedSize(160, 52)
+        self.logo.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         head.addWidget(self.logo, 0, Qt.AlignTop)
 
         titles = QVBoxLayout()
@@ -1051,11 +1064,14 @@ class MainWindow(QMainWindow):
     def _refresh_logo(self, brand: str = "Polymaker"):
         abs_path = core.logo_abs_path(self.db, brand)
         dark = bool(getattr(self, "_tok", {}).get("dark"))
-        # Le contenu du logo est rendu à *taille constante* (52 px) dans les
-        # deux thèmes : seul le halo doux s'ajoute autour en mode sombre, sans
-        # rétrécir le logo. Le cadre de 72 px laisse la place au halo.
-        content = 52
-        pm = load_brand_pixmap(abs_path, content, self.devicePixelRatioF()) if abs_path else None
+        # Hauteur max = 52 px, largeur max = 160 px (widget du logo).
+        # load_brand_pixmap respecte l'aspect-ratio : les logos carrés (Polymaker,
+        # Prusament) tiennent en 52×52, les wordmarks larges (ROSA3D 334×94)
+        # s'étendent jusqu'à 160 px de large sans être écrasés.
+        pm = (
+            load_brand_pixmap(abs_path, 52, self.devicePixelRatioF(), max_w=160)
+            if abs_path else None
+        )
         if pm and not pm.isNull():
             if dark:
                 pm = add_soft_halo(pm, radius=7.0)
