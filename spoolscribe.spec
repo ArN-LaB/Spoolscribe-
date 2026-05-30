@@ -21,7 +21,7 @@ block_cipher = None
 
 # ─── Métadonnées (gardées synchrones avec core.APP_*) ─────────────────────
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.1.2"
+APP_VERSION = "0.1.3"
 APP_AUTHOR = "ArN-LaB"
 APP_DESC = "Write OpenSpool / NFC spool tags for the Snapmaker U1"
 _v = tuple(int(p) for p in (APP_VERSION.split(".") + ["0", "0", "0", "0"])[:4])
@@ -80,7 +80,8 @@ a = Analysis(
         # PyInstaller n'analyse pas leurs imports, on les déclare donc ici.
         "urllib", "urllib.request", "urllib.error", "urllib.parse",
         "http", "http.client", "ssl", "gzip", "bz2", "lzma", "zlib",
-        "email", "json", "csv", "re",
+        "email", "json", "csv", "re", "difflib", "unicodedata",
+        "argparse", "collections", "datetime", "time",
     ],
     hookspath=[],
     hooksconfig={},

@@ -15,12 +15,12 @@ import sys
 import traceback
 
 from PySide6.QtCore import Qt, QThread, Signal, QSize
-from PySide6.QtGui import QColor, QFont, QPixmap, QPainter, QIcon
+from PySide6.QtGui import QColor, QFont, QPixmap, QPainter, QIcon, QPalette
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
     QLineEdit, QTableWidget, QTableWidgetItem, QLabel, QPushButton, QPlainTextEdit,
     QHeaderView, QAbstractItemView, QFrame, QMessageBox, QProgressBar, QGridLayout,
-    QSizePolicy,
+    QSizePolicy, QStackedWidget,
 )
 
 try:
@@ -68,57 +68,152 @@ def make_swatch_pixmap(hex_code: str | None, size: int = 18) -> QPixmap:
     return pm
 
 
+# ─── Thème clair / sombre ─────────────────────────────────────────────────
+def is_dark_theme(app: QApplication) -> bool:
+    """Vrai si l'OS/Qt utilise un thème sombre."""
+    try:
+        scheme = app.styleHints().colorScheme()
+        if scheme == Qt.ColorScheme.Dark:
+            return True
+        if scheme == Qt.ColorScheme.Light:
+            return False
+    except Exception:
+        pass
+    return app.palette().color(QPalette.Window).lightness() < 128
+
+
+def theme_tokens(app: QApplication) -> dict:
+    """Jeu de couleurs adapté au thème courant."""
+    if is_dark_theme(app):
+        return {
+            "dark": True,
+            "muted": "#9aa3ad", "faint": "#6c737c",
+            "accent": "#27c4d8", "accent_hover": "#34d3e6", "accent_text": "#04282d",
+            "card": "rgba(255,255,255,0.05)", "border": "rgba(255,255,255,0.13)",
+            "field_bg": "rgba(255,255,255,0.04)", "danger": "#ff7676",
+            "sec_bg": "rgba(255,255,255,0.06)", "sec_hover": "rgba(255,255,255,0.12)",
+        }
+    return {
+        "dark": False,
+        "muted": "#5f6368", "faint": "#80868b",
+        "accent": "#1499ab", "accent_hover": "#127f8e", "accent_text": "#ffffff",
+        "card": "rgba(0,0,0,0.025)", "border": "rgba(0,0,0,0.12)",
+        "field_bg": "rgba(0,0,0,0.02)", "danger": "#c5221f",
+        "sec_bg": "rgba(0,0,0,0.04)", "sec_hover": "rgba(0,0,0,0.08)",
+    }
+
+
+def contrast_text(hex_code: str | None) -> str:
+    """Noir ou blanc selon la luminance d'une couleur, pour rester lisible."""
+    h = (hex_code or "").strip().lstrip("#")
+    if len(h) != 6:
+        return "#000000"
+    try:
+        r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    except ValueError:
+        return "#000000"
+    return "#000000" if (0.299 * r + 0.587 * g + 0.114 * b) > 140 else "#ffffff"
+
+
 # ─── Fenêtre principale ───────────────────────────────────────────────────
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.app = QApplication.instance()
         self.setWindowTitle(f"SpoolScribe {core.APP_VERSION} — OpenSpool / NFC")
-        self.resize(1040, 680)
+        self.resize(1060, 700)
+        self.setMinimumSize(860, 560)
+
+        icon_path = core.app_icon_abs_path()
+        if icon_path:
+            self.setWindowIcon(QIcon(icon_path))
 
         self.db = core.load_db()
         self.current_sku: str | None = None
         self.worker: UpdateWorker | None = None
+        self._muted_labels: list[QLabel] = []
 
         self._build_ui()
+        self._apply_theme()
         self._reload_table()
         self._refresh_logo()
         self._update_stats()
+        self._show_empty()
+
+        # Réagit aux changements de thème de l'OS à chaud (Qt 6.5+).
+        try:
+            self.app.styleHints().colorSchemeChanged.connect(lambda *_: self._apply_theme())
+        except Exception:
+            pass
 
     # ── Construction UI ──────────────────────────────────────────────────
     def _build_ui(self):
         central = QWidget()
         self.setCentralWidget(central)
         root = QVBoxLayout(central)
-        root.setContentsMargins(10, 10, 10, 10)
-        root.setSpacing(8)
+        root.setContentsMargins(14, 12, 14, 10)
+        root.setSpacing(10)
 
-        # Barre du haut : stats + recherche + bouton update
+        # ── Barre du haut : logo + nom · recherche · bouton update ──────
         top = QHBoxLayout()
-        self.stats_label = QLabel()
-        self.stats_label.setStyleSheet("color:#444; font-size:12px;")
-        top.addWidget(self.stats_label)
-        top.addStretch(1)
+        top.setSpacing(10)
+
+        brand = QHBoxLayout()
+        brand.setSpacing(9)
+        app_logo_path = core.app_logo_abs_path()
+        if HAS_SVG and app_logo_path:
+            self.app_logo = QSvgWidget(app_logo_path)
+            self.app_logo.setFixedSize(30, 30)
+        else:
+            self.app_logo = QLabel()
+            ic = core.app_icon_abs_path()
+            if ic:
+                self.app_logo.setPixmap(QPixmap(ic).scaled(
+                    30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.app_logo.setFixedSize(30, 30)
+        brand.addWidget(self.app_logo)
+        self.wordmark = QLabel("SpoolScribe")
+        wf = QFont()
+        wf.setPointSize(13)
+        wf.setBold(True)
+        self.wordmark.setFont(wf)
+        brand.addWidget(self.wordmark)
+        top.addLayout(brand)
+
+        top.addSpacing(8)
 
         self.search = QLineEdit()
+        self.search.setObjectName("search")
         self.search.setPlaceholderText("Rechercher : SKU, produit, couleur…")
         self.search.setClearButtonEnabled(True)
-        self.search.setFixedWidth(320)
+        self.search.setMinimumWidth(240)
+        self.search.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.search.textChanged.connect(self._apply_filter)
-        top.addWidget(self.search)
+        top.addWidget(self.search, 1)
 
         self.update_btn = QPushButton("Mettre à jour la DB")
+        self.update_btn.setObjectName("primary")
+        self.update_btn.setCursor(Qt.PointingHandCursor)
         self.update_btn.clicked.connect(self._start_update)
         top.addWidget(self.update_btn)
         root.addLayout(top)
+
+        # Ligne de stats discrète sous la barre.
+        self.stats_label = QLabel()
+        self.stats_label.setObjectName("stats")
+        self._muted_labels.append(self.stats_label)
+        root.addWidget(self.stats_label)
 
         # Barre de progression (cachée par défaut)
         self.progress = QProgressBar()
         self.progress.setVisible(False)
         self.progress.setTextVisible(True)
+        self.progress.setFixedHeight(16)
         root.addWidget(self.progress)
 
-        # Splitter : table à gauche, détail à droite
+        # ── Splitter : table à gauche, panneau à droite ─────────────────
         splitter = QSplitter(Qt.Horizontal)
+        splitter.setChildrenCollapsible(False)
         root.addWidget(splitter, 1)
 
         # Table SKU
@@ -129,80 +224,168 @@ class MainWindow(QMainWindow):
         self.table.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.setAlternatingRowColors(True)
+        self.table.setShowGrid(False)
+        self.table.verticalHeader().setDefaultSectionSize(28)
         hh = self.table.horizontalHeader()
+        hh.setHighlightSections(False)
         hh.setSectionResizeMode(0, QHeaderView.Fixed)
-        self.table.setColumnWidth(0, 28)
+        self.table.setColumnWidth(0, 30)
         hh.setSectionResizeMode(1, QHeaderView.ResizeToContents)
         hh.setSectionResizeMode(2, QHeaderView.Stretch)
         hh.setSectionResizeMode(3, QHeaderView.ResizeToContents)
         self.table.itemSelectionChanged.connect(self._on_select)
         splitter.addWidget(self.table)
 
-        # Panneau détail
-        detail = QWidget()
-        dl = QVBoxLayout(detail)
-        dl.setContentsMargins(12, 4, 6, 6)
-        dl.setSpacing(8)
+        # ── Panneau droit : pile (état vide / fiche) ────────────────────
+        self.stack = QStackedWidget()
+        self.stack.addWidget(self._build_empty_page())
+        self.stack.addWidget(self._build_detail_page())
+        splitter.addWidget(self.stack)
 
-        # Logo SVG
-        logo_row = QHBoxLayout()
+        splitter.setStretchFactor(0, 3)
+        splitter.setStretchFactor(1, 2)
+        splitter.setSizes([580, 460])
+
+        self.status = self.statusBar()
+        self.status.showMessage("Prêt.")
+
+    # ── Page « aucun filament sélectionné » ──────────────────────────────
+    def _build_empty_page(self) -> QWidget:
+        page = QWidget()
+        lay = QVBoxLayout(page)
+        lay.setContentsMargins(24, 24, 24, 24)
+        lay.setAlignment(Qt.AlignCenter)
+        lay.setSpacing(14)
+
+        app_logo_path = core.app_logo_abs_path()
+        if HAS_SVG and app_logo_path:
+            big = QSvgWidget(app_logo_path)
+        else:
+            big = QLabel()
+            ic = core.app_icon_abs_path()
+            if ic:
+                big.setPixmap(QPixmap(ic).scaled(
+                    104, 104, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        big.setFixedSize(104, 104)
+        wrap = QHBoxLayout()
+        wrap.addStretch(1)
+        wrap.addWidget(big)
+        wrap.addStretch(1)
+        lay.addLayout(wrap)
+
+        title = QLabel("Aucun filament sélectionné")
+        tf = QFont()
+        tf.setPointSize(14)
+        tf.setBold(True)
+        title.setFont(tf)
+        title.setAlignment(Qt.AlignCenter)
+        lay.addWidget(title)
+
+        hint = QLabel(
+            "Choisissez une référence dans la liste à gauche — ou utilisez la "
+            "recherche — pour voir ses caractéristiques et générer son tag "
+            "NFC OpenSpool."
+        )
+        hint.setWordWrap(True)
+        hint.setAlignment(Qt.AlignCenter)
+        hint.setMaximumWidth(360)
+        self._muted_labels.append(hint)
+        wrap2 = QHBoxLayout()
+        wrap2.addStretch(1)
+        wrap2.addWidget(hint)
+        wrap2.addStretch(1)
+        lay.addLayout(wrap2)
+        return page
+
+    # ── Page fiche détaillée ─────────────────────────────────────────────
+    def _build_detail_page(self) -> QWidget:
+        page = QWidget()
+        dl = QVBoxLayout(page)
+        dl.setContentsMargins(14, 6, 8, 8)
+        dl.setSpacing(12)
+
+        # En-tête : logo de marque + titre/SKU
+        head = QHBoxLayout()
+        head.setSpacing(12)
         if HAS_SVG:
             self.logo = QSvgWidget()
-            self.logo.setFixedSize(120, 120)
         else:
-            self.logo = QLabel("(SVG non supporté)")
-            self.logo.setFixedSize(120, 120)
-        logo_row.addWidget(self.logo)
-        logo_row.addStretch(1)
-        dl.addLayout(logo_row)
+            self.logo = QLabel("")
+        self.logo.setFixedSize(64, 64)
+        head.addWidget(self.logo, 0, Qt.AlignTop)
 
-        # Titre fiche
-        self.title = QLabel("Sélectionnez un filament")
+        titles = QVBoxLayout()
+        titles.setSpacing(2)
+        self.title = QLabel("—")
         f = QFont()
         f.setPointSize(15)
         f.setBold(True)
         self.title.setFont(f)
         self.title.setWordWrap(True)
-        dl.addWidget(self.title)
+        titles.addWidget(self.title)
+        self.subtitle = QLabel("")
+        self._muted_labels.append(self.subtitle)
+        titles.addWidget(self.subtitle)
+        head.addLayout(titles, 1)
+        dl.addLayout(head)
 
-        # Grille des champs
-        self.fields = QGridLayout()
-        self.fields.setVerticalSpacing(4)
-        self.fields.setHorizontalSpacing(10)
-        dl.addLayout(self.fields)
+        # Bande couleur (avec le HEX écrit dessus, donc auto-explicite)
+        self.color_caption = QLabel("Couleur")
+        self.color_caption.setObjectName("caption")
+        self._muted_labels.append(self.color_caption)
+        dl.addWidget(self.color_caption)
+        self.swatch = QLabel("—")
+        self.swatch.setObjectName("swatch")
+        self.swatch.setAlignment(Qt.AlignCenter)
+        self.swatch.setFixedHeight(40)
+        sf = QFont()
+        sf.setBold(True)
+        self.swatch.setFont(sf)
+        dl.addWidget(self.swatch)
+
+        # Carte des caractéristiques
+        self.card = QFrame()
+        self.card.setObjectName("card")
+        self.fields = QGridLayout(self.card)
+        self.fields.setContentsMargins(14, 12, 14, 12)
+        self.fields.setVerticalSpacing(7)
+        self.fields.setHorizontalSpacing(14)
+        self.fields.setColumnStretch(1, 1)
 
         self._field_widgets: dict[str, QLabel] = {}
-        labels = ["Produit", "Couleur", "HEX", "Type", "Nozzle", "Bed", "Densité", "Marque"]
+        labels = ["Produit", "Type", "Nozzle", "Bed", "Densité", "Marque"]
         for i, name in enumerate(labels):
             lab = QLabel(name)
-            lab.setStyleSheet("color:#666;")
+            lab.setObjectName("fieldname")
+            self._muted_labels.append(lab)
             val = QLabel("—")
             val.setTextInteractionFlags(Qt.TextSelectableByMouse)
             self.fields.addWidget(lab, i, 0, Qt.AlignTop)
             self.fields.addWidget(val, i, 1)
             self._field_widgets[name] = val
+        dl.addWidget(self.card)
 
-        # Swatch couleur (gros carré)
-        self.swatch = QLabel()
-        self.swatch.setFixedHeight(28)
-        self.swatch.setStyleSheet("border:1px solid #999; border-radius:4px; background:#eee;")
-        dl.addWidget(self.swatch)
-
-        # Boutons d'action
-        btns = QHBoxLayout()
-        self.btn_generate = QPushButton("Générer NFC JSON")
+        # Action principale + actions secondaires
+        self.btn_generate = QPushButton("Générer le tag NFC")
+        self.btn_generate.setObjectName("primary")
+        self.btn_generate.setCursor(Qt.PointingHandCursor)
+        self.btn_generate.setMinimumHeight(36)
         self.btn_generate.clicked.connect(self._generate)
-        self.btn_generate.setEnabled(False)
-        self.btn_inspect = QPushButton("Inspecter JSON")
+        dl.addWidget(self.btn_generate)
+
+        sec = QHBoxLayout()
+        sec.setSpacing(8)
+        self.btn_inspect = QPushButton("Inspecter le JSON")
+        self.btn_inspect.setObjectName("secondary")
+        self.btn_inspect.setCursor(Qt.PointingHandCursor)
         self.btn_inspect.clicked.connect(self._toggle_inspect)
-        self.btn_inspect.setEnabled(False)
-        self.btn_open_out = QPushButton("Ouvrir dossier export")
+        self.btn_open_out = QPushButton("Dossier d'export")
+        self.btn_open_out.setObjectName("secondary")
+        self.btn_open_out.setCursor(Qt.PointingHandCursor)
         self.btn_open_out.clicked.connect(self._open_output)
-        btns.addWidget(self.btn_generate)
-        btns.addWidget(self.btn_inspect)
-        btns.addWidget(self.btn_open_out)
-        btns.addStretch(1)
-        dl.addLayout(btns)
+        sec.addWidget(self.btn_inspect)
+        sec.addWidget(self.btn_open_out)
+        dl.addLayout(sec)
 
         # Zone d'inspection JSON
         self.inspector = QPlainTextEdit()
@@ -210,14 +393,62 @@ class MainWindow(QMainWindow):
         self.inspector.setVisible(False)
         self.inspector.setFont(QFont("Consolas" if os.name == "nt" else "monospace", 9))
         dl.addWidget(self.inspector, 1)
+        dl.addStretch(0)
+        return page
 
-        splitter.addWidget(detail)
-        splitter.setStretchFactor(0, 3)
-        splitter.setStretchFactor(1, 2)
-        splitter.setSizes([560, 460])
+    # ── Application du thème (clair / sombre) ────────────────────────────
+    def _apply_theme(self):
+        t = theme_tokens(self.app)
+        self._tok = t
+        muted, faint, accent = t["muted"], t["faint"], t["accent"]
 
-        self.status = self.statusBar()
-        self.status.showMessage("Prêt.")
+        for lab in self._muted_labels:
+            name = lab.objectName()
+            if name == "caption":
+                lab.setStyleSheet(
+                    f"color:{faint}; font-size:11px; "
+                    f"text-transform:uppercase; letter-spacing:1px;")
+            elif name == "stats":
+                lab.setStyleSheet(f"color:{faint}; font-size:11px;")
+            else:
+                lab.setStyleSheet(f"color:{muted};")
+
+        primary_qss = (
+            f"QPushButton#primary {{ background:{accent}; color:{t['accent_text']};"
+            f" border:none; border-radius:7px; padding:7px 16px; font-weight:600; }}"
+            f"QPushButton#primary:hover {{ background:{t['accent_hover']}; }}"
+            f"QPushButton#primary:disabled {{ background:{t['sec_bg']}; color:{faint}; }}"
+        )
+        secondary_qss = (
+            f"QPushButton#secondary {{ background:{t['sec_bg']}; border:1px solid {t['border']};"
+            f" border-radius:7px; padding:7px 14px; }}"
+            f"QPushButton#secondary:hover {{ background:{t['sec_hover']}; }}"
+        )
+        search_qss = (
+            f"QLineEdit#search {{ border:1px solid {t['border']}; border-radius:7px;"
+            f" padding:6px 10px; background:{t['field_bg']}; }}"
+            f"QLineEdit#search:focus {{ border:1px solid {accent}; }}"
+        )
+        card_qss = (
+            f"QFrame#card {{ background:{t['card']}; border:1px solid {t['border']};"
+            f" border-radius:10px; }}"
+        )
+        self.setStyleSheet(primary_qss + secondary_qss + search_qss + card_qss)
+
+        # Rafraîchit la bande couleur si une fiche est affichée.
+        if self.current_sku:
+            self._paint_swatch()
+        else:
+            self.swatch.setStyleSheet(
+                f"#swatch {{ background:{t['field_bg']}; color:{faint};"
+                f" border:1px dashed {t['border']}; border-radius:8px; }}")
+
+    def _show_empty(self):
+        self.stack.setCurrentIndex(0)
+
+    def _show_card(self):
+        self.stack.setCurrentIndex(1)
+
 
     # ── Données / table ──────────────────────────────────────────────────
     def _reload_table(self):
@@ -237,6 +468,10 @@ class MainWindow(QMainWindow):
             if not e.get("hex"):
                 color_item.setForeground(QColor("#b00"))
             self.table.setItem(r, 3, color_item)
+        # Plus de sélection valide → revenir à l'état vide.
+        if hasattr(self, "stack") and not self.table.selectedItems():
+            self.current_sku = None
+            self._show_empty()
 
     def _apply_filter(self, text):
         t = text.strip().lower()
@@ -281,30 +516,46 @@ class MainWindow(QMainWindow):
         self.current_sku = sku_item.text()
         self._show_detail(self.current_sku)
 
+    def _paint_swatch(self):
+        """Peint la bande couleur avec le HEX écrit dessus (texte contrasté)."""
+        t = self._tok
+        h = (getattr(self, "_cur_hex", None) or "").strip().lstrip("#")
+        if len(h) == 6:
+            self.swatch.setText(f"#{h.upper()}")
+            self.swatch.setStyleSheet(
+                f"#swatch {{ background:#{h}; color:{contrast_text(h)};"
+                f" border:1px solid {t['border']}; border-radius:8px; letter-spacing:1px; }}")
+        else:
+            self.swatch.setText("HEX inconnu → #000000")
+            self.swatch.setStyleSheet(
+                f"#swatch {{ background:#000000; color:#ffffff;"
+                f" border:1px solid {t['border']}; border-radius:8px; }}")
+
     def _show_detail(self, sku):
         view = core.get_sku_view(self.db, sku)
+        self._show_card()
         if view is None:
             self.title.setText(f"{sku} — produit introuvable")
+            self.subtitle.setText("")
             for v in self._field_widgets.values():
                 v.setText("—")
+            self._cur_hex = None
+            self._paint_swatch()
             self.btn_generate.setEnabled(False)
             self.btn_inspect.setEnabled(False)
             return
 
-        self.title.setText(f"{view.sku} · {view.color_name}")
+        self.title.setText(view.product)
+        self.subtitle.setText(f"{view.sku}  ·  {view.color_name}")
         self._field_widgets["Produit"].setText(view.product)
-        self._field_widgets["Couleur"].setText(view.color_name)
-        self._field_widgets["HEX"].setText(f"#{view.hex}" if view.hex else "(inconnu → 000000)")
         self._field_widgets["Type"].setText(view.type_str)
         self._field_widgets["Nozzle"].setText(view.nozzle_str)
         self._field_widgets["Bed"].setText(view.bed_str)
         self._field_widgets["Densité"].setText(view.density_str)
         self._field_widgets["Marque"].setText(view.product_data.get("brand", "Polymaker"))
 
-        h = view.hex or "000000"
-        self.swatch.setStyleSheet(
-            f"border:1px solid #999; border-radius:4px; background:#{h};"
-        )
+        self._cur_hex = view.hex
+        self._paint_swatch()
 
         self.btn_generate.setEnabled(True)
         self.btn_inspect.setEnabled(True)
@@ -337,11 +588,11 @@ class MainWindow(QMainWindow):
     def _toggle_inspect(self):
         if self.inspector.isVisible():
             self.inspector.setVisible(False)
-            self.btn_inspect.setText("Inspecter JSON")
+            self.btn_inspect.setText("Inspecter le JSON")
         else:
             self._refresh_inspector()
             self.inspector.setVisible(True)
-            self.btn_inspect.setText("Masquer JSON")
+            self.btn_inspect.setText("Masquer le JSON")
 
     def _refresh_inspector(self):
         payload = self._build_payload()
@@ -440,6 +691,9 @@ def main():
         return
     app = QApplication(sys.argv)
     app.setApplicationName("SpoolScribe")
+    icon_path = core.app_icon_abs_path()
+    if icon_path:
+        app.setWindowIcon(QIcon(icon_path))
     win = MainWindow()
     win.show()
     sys.exit(app.exec())

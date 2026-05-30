@@ -22,7 +22,7 @@ from typing import Callable, Optional
 
 # ─── Identité de l'application ────────────────────────────────────────────
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.1.2"
+APP_VERSION = "0.1.3"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
@@ -340,6 +340,26 @@ def load_orca_temps(path: str) -> dict:
 
 
 # ─── Logo SVG ─────────────────────────────────────────────────────────────
+def app_logo_abs_path() -> Optional[str]:
+    """Chemin absolu du logo de l'application SpoolScribe, ou None."""
+    rel = os.path.join("data", "spoolscribe_logo.svg")
+    for base in (DATA_HOME, RESOURCE_DIR):
+        abs_p = os.path.join(base, rel)
+        if os.path.exists(abs_p):
+            return abs_p
+    return None
+
+
+def app_icon_abs_path() -> Optional[str]:
+    """Chemin absolu de l'icône binaire (.png) de l'application, ou None."""
+    for name in ("app.png", "app.ico"):
+        for base in (DATA_HOME, RESOURCE_DIR):
+            abs_p = os.path.join(base, "data", name)
+            if os.path.exists(abs_p):
+                return abs_p
+    return None
+
+
 def logo_abs_path(db: dict) -> Optional[str]:
     """Chemin absolu du logo de marque, ou None."""
     logo_path = db.get("_brands", {}).get("Polymaker", {}).get("logo_path", "")
