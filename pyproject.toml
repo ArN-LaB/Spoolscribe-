@@ -12,7 +12,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-build = ["pyinstaller>=6.0"]
+build = ["pyinstaller>=6.0", "Pillow>=10.0"]
+dev   = ["PyYAML>=6.0", "Pillow>=10.0"]
 
 [project.urls]
 Homepage = "https://github.com/ArN-LaB/Spoolscribe-"
