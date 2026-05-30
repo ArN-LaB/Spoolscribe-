@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-05-30
+
+### Added
+- **Multi-source HEX enrichment for Prusament & ROSA3D.** Color codes are now
+  sourced from [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) and
+  [TheFilamentDB](https://thefilamentdb.issou.best/) instead of offline
+  approximation tables.
+  - *Prusament* — SpoolmanDB is treated as **authoritative** (official Prusa
+    swatches: Jet Black `#24292A`, Prusa Orange `#EA5E1A`, Gravity Grey
+    `#9FA4A8`); TheFilamentDB fills remaining gaps.
+  - *ROSA3D* — SpoolmanDB fills only **missing** entries; curated values for
+    the Silk / Pastel PLA families are preserved (SpoolmanDB uses CSS primaries
+    for those, which are less accurate).
+  - Transparent / translucent variants (`Red Transparent`, `Clear`, …) are
+    intentionally left without a solid HEX; the OpenSpool export falls back to
+    `000000`.
+- New scripts `scripts/scrape_spoolman_multibrand_hex.py` and
+  `scripts/scrape_thefilamentdb_multibrand_hex.py`, both wired into
+  `core.UPDATE_PIPELINE`.
+- `docs/DATA_SOURCES.md` extended with a "Multi-brand color enrichment" section
+  documenting the per-brand override policy and source URLs.
+
 ## [0.1.3] - 2026-05-30
 
 ### Added

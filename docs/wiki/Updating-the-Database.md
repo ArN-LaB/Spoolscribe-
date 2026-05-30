@@ -19,13 +19,13 @@ consent.
 
 ## Sources
 
-| Source | License |
-|---|---|
-| [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) | MIT |
-| [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database) | MIT |
-| [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) (official) | MIT |
-| [TheFilamentDB](https://thefilamentdb.issou.best/) | CC-BY 4.0 (attribution required) |
-| [Polymaker Wiki / Wholesale](https://polymaker.com) | factual data (© Polymaker) |
+| Source | License | Used for |
+|---|---|---|
+| [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) | MIT | Prusament HEX (authoritative) · ROSA3D HEX (fill-missing) |
+| [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database) | MIT | Generic brand enrichment |
+| [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) (official) | MIT | Polymaker temps / density |
+| [TheFilamentDB](https://thefilamentdb.issou.best/) | CC-BY 4.0 | Prusament HEX (gap-fill) |
+| [Polymaker Wiki / Wholesale](https://polymaker.com) | Factual data (© Polymaker) | Polymaker HEX / SKU |
 
 ## Resetting your choice
 

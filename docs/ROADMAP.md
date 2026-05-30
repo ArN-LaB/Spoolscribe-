@@ -17,6 +17,8 @@ ideas in roughly the order they might happen — contributions welcome.
 - [x] Polymaker SKU lookup → OpenSpool / NFC JSON export.
 - [x] Consent-gated, fully disclosed data updates.
 - [x] Multiplatform builds via GitHub Actions + tagged releases.
+- [x] **Prusament** full coverage — HEX from SpoolmanDB (authoritative) + TheFilamentDB.
+- [x] **ROSA3D** full coverage — HEX from SpoolmanDB (fill-missing) with curated Silk/Pastel values.
 
 ## v0.2 — quality of life
 
@@ -30,8 +32,9 @@ ideas in roughly the order they might happen — contributions welcome.
 The long-term idea is to make SpoolScribe **brand-agnostic**, not Polymaker-only.
 Candidate sources (all to be vetted for license compatibility first):
 
-- [ ] **Prusament** (Prusa) — via SpoolmanDB / Open Filament Database entries.
-- [ ] **Bambu Lab**, **Polymaker**, **eSun**, **Sunlu**, and other common brands.
+- [x] **Prusament** (Prusa) — via SpoolmanDB + TheFilamentDB. ✓ done in v0.1.4
+- [x] **ROSA3D** — via SpoolmanDB. ✓ done in v0.1.4
+- [ ] **Bambu Lab**, **eSun**, **Sunlu**, and other common brands.
 - [ ] Generic import from the **Open Filament Database** REST API
       (path-based addressing) rather than per-brand scrapers.
 - [ ] A brand selector in the UI, with per-brand logos and metadata.

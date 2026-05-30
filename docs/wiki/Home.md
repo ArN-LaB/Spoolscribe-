@@ -16,5 +16,5 @@ Welcome! This wiki collects user-facing guides for **SpoolScribe** — writing
 
 ## Disclaimer
 
-SpoolScribe is an unofficial hobby project, not affiliated with Polymaker or
-Snapmaker. See `TRADEMARKS.md` in the repository.
+SpoolScribe is an unofficial hobby project, not affiliated with Polymaker,
+Prusa Research, ROSA3D or Snapmaker. See `TRADEMARKS.md` in the repository.

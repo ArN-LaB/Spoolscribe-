@@ -1,9 +1,10 @@
 # FAQ
 
-## Is this an official Polymaker or Snapmaker app?
+## Is this an official Polymaker, Prusa Research or Snapmaker app?
 
 No. SpoolScribe is an **unofficial hobby project**, not affiliated with, endorsed
-by, or connected to Polymaker or Snapmaker. See `TRADEMARKS.md`.
+by, or connected to Polymaker, Prusa Research, ROSA3D or Snapmaker.
+See `TRADEMARKS.md`.
 
 ## Does it send my data anywhere?
 

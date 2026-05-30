@@ -113,8 +113,10 @@ here.
 - Data sources and their licenses are documented in
   [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
 
-Today SpoolScribe focuses on Polymaker. Making it **brand-agnostic** (Prusament,
-Bambu Lab, eSun, and more, via the Open Filament Database) is on the
+Today SpoolScribe covers **Polymaker**, **Prusament** (PLA, PETG, ASA, PC, TPU —
+spools and refills) and **ROSA3D** (PLA Silk/Pastel/HS, PETG, PCTG, ASA, ABS+,
+recycled R-PLA/R-PET-G) with authoritative color codes pulled from open
+databases. Extending it to more brands is on the
 [roadmap](docs/ROADMAP.md) — if and when free time allows.
 
 ## Project layout
