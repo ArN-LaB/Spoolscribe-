@@ -1,0 +1,53 @@
+# Roadmap
+
+SpoolScribe is a **for-fun, free-time** project. There is no deadline, no
+commercial goal, and no guarantee any of this ships. This roadmap simply records
+ideas in roughly the order they might happen — contributions welcome.
+
+## Guiding principles
+
+- Stay **honest** about data licensing and trademarks.
+- Stay **offline-first** and **consent-gated** for any network access.
+- Keep the **core** logic UI-agnostic (shared by CLI and GUI).
+- Prefer **small, reversible** changes.
+
+## v0.1.x — current
+
+- [x] Cross-platform GUI (PySide6) + CLI sharing a pure `core`.
+- [x] Polymaker SKU lookup → OpenSpool / NFC JSON export.
+- [x] Consent-gated, fully disclosed data updates.
+- [x] Multiplatform builds via GitHub Actions + tagged releases.
+
+## v0.2 — quality of life
+
+- [ ] App icon (`.ico` / `.icns`) and polished window theming.
+- [ ] Editable "missing hex" workflow directly in the GUI table.
+- [ ] Export presets / batch export of multiple SKUs.
+- [ ] Settings panel (consent, auto-update interval) in the GUI.
+
+## v0.3+ — toward a more universal database
+
+The long-term idea is to make SpoolScribe **brand-agnostic**, not Polymaker-only.
+Candidate sources (all to be vetted for license compatibility first):
+
+- [ ] **Prusament** (Prusa) — via SpoolmanDB / Open Filament Database entries.
+- [ ] **Bambu Lab**, **Polymaker**, **eSun**, **Sunlu**, and other common brands.
+- [ ] Generic import from the **Open Filament Database** REST API
+      (path-based addressing) rather than per-brand scrapers.
+- [ ] A brand selector in the UI, with per-brand logos and metadata.
+- [ ] Pluggable "source adapters" so adding a brand is a small, isolated change.
+
+> Any new data source MUST be documented in [DATA_SOURCES.md](DATA_SOURCES.md)
+> and added to `core.NETWORK_SOURCES` so it appears in the consent disclosure.
+
+## Maybe / nice-to-have
+
+- [ ] Direct NFC writing from within the app (hardware-dependent).
+- [ ] Read-back / verify a written tag.
+- [ ] Localization (the UI currently mixes FR/EN).
+
+## Non-goals
+
+- No telemetry, accounts, or cloud sync.
+- No commercial offering.
+- No bundling of trademarked assets beyond what's needed for identification.

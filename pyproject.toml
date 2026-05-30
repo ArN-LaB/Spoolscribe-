@@ -1,0 +1,31 @@
+[project]
+name = "spoolscribe"
+version = "0.1.0"
+description = "Write OpenSpool / NFC spool tags for the open-firmware Snapmaker U1."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "ArN-LaB" }]
+keywords = ["3d-printing", "filament", "nfc", "rfid", "openspool", "snapmaker", "polymaker"]
+dependencies = [
+    "PySide6>=6.6",
+]
+
+[project.optional-dependencies]
+build = ["pyinstaller>=6.0"]
+
+[project.urls]
+Homepage = "https://github.com/ArN-LaB/Spoolscribe-"
+Repository = "https://github.com/ArN-LaB/Spoolscribe-"
+Issues = "https://github.com/ArN-LaB/Spoolscribe-/issues"
+Changelog = "https://github.com/ArN-LaB/Spoolscribe-/blob/main/CHANGELOG.md"
+
+[project.scripts]
+spoolscribe-cli = "convert_profile:main"
+
+[project.gui-scripts]
+spoolscribe = "app_gui:main"
+
+# Petit projet "pour le fun" : pas de système de build packagé (pas de wheel
+# publiée). Ce fichier sert surtout de source unique de vérité pour la version
+# et les métadonnées. Voir CHANGELOG.md pour le suivi des versions.

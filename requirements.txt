@@ -1,0 +1,11 @@
+# Dépendances runtime
+PySide6>=6.6          # GUI multiplateforme (app_gui.py)
+
+# Outillage build (optionnel, pour générer les exécutables)
+pyinstaller>=6.0
+
+# Optionnel : uniquement pour scripts/parse_pdf.py (génération initiale des SKU)
+# pdfplumber>=0.10
+#
+# Note : les scrapers de la pipeline de mise à jour n'utilisent que la
+# bibliothèque standard (urllib, gzip, json, re). Aucune dépendance réseau tierce.

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/ArN-LaB/Spoolscribe-/security/advisories/new
+    about: Please report security vulnerabilities privately (see .github/SECURITY.md).
+  - name: Trademark / data removal request
+    url: https://github.com/ArN-LaB/Spoolscribe-/issues/new
+    about: Rights holders can request removal of marks or data (see docs/TRADEMARKS.md).

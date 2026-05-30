@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest an idea for SpoolScribe
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What are you trying to do? What's missing or awkward today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe what you'd like to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: data-source
+    attributes:
+      label: Does this involve a new data source?
+      options:
+        - label: "Yes — and I confirm it has a compatible license (MIT/CC-BY/public-domain facts)"
+        - label: "No"

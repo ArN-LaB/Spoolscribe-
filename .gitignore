@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# PyInstaller
+build/
+dist/
+*.spec.bak
+
+# Sauvegardes / sorties
+*.bak
+output/
+
+# Caches de données régénérés par les scripts de mise à jour
+data/wholesale_raw.json
+data/wiki_hex.json
+
+# Config utilisateur créée au runtime (vit dans le dossier OS, filet de sécurité)
+config.json
+
+# OS
+.DS_Store
+Thumbs.db
