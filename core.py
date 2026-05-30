@@ -22,7 +22,7 @@ from typing import Callable, Optional
 
 # ─── Identité de l'application ────────────────────────────────────────────
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.1.3"
+APP_VERSION = "0.1.5"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
