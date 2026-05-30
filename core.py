@@ -24,7 +24,7 @@ from typing import Callable, Optional
 # APP_VERSION est l'UNIQUE source de vérité de la version. pyproject.toml et
 # spoolscribe.spec la lisent depuis ici — ne la dupliquez nulle part ailleurs.
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.2.1"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
