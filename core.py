@@ -16,13 +16,15 @@ import os
 import re
 import subprocess
 import sys
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from dataclasses import dataclass
+from datetime import datetime
 from typing import Callable, Optional
 
 # ─── Identité de l'application ────────────────────────────────────────────
+# APP_VERSION est l'UNIQUE source de vérité de la version. pyproject.toml et
+# spoolscribe.spec la lisent depuis ici — ne la dupliquez nulle part ailleurs.
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.1.6"
+APP_VERSION = "0.2.0"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
@@ -371,7 +373,13 @@ def app_icon_abs_path() -> Optional[str]:
 
 def logo_abs_path(db: dict, brand: str = "Polymaker") -> Optional[str]:
     """Chemin absolu du logo de marque, ou None."""
-    logo_path = db.get("_brands", {}).get(brand, {}).get("logo_path", "")
+    meta = db.get("_brands", {}).get(brand, {})
+    logo_path = meta.get("logo_path", "")
+    if not logo_path:
+        # Repli : nom de fichier nu dans `logo` → cherché sous data/.
+        logo = (meta.get("logo") or "").strip()
+        if logo:
+            logo_path = logo if ("/" in logo or os.sep in logo) else f"data/{logo}"
     if not logo_path:
         return None
     rel = logo_path.replace("/", os.sep)
@@ -429,6 +437,11 @@ class SkuView:
     @property
     def density_str(self) -> str:
         return f"{self.product_data.get('density')} g/cm³"
+
+    @property
+    def diameter_str(self) -> str:
+        d = self.product_data.get("diameter")
+        return f"{d} mm" if d is not None else "—"
 
 
 def get_sku_view(db: dict, sku: str) -> Optional[SkuView]:
@@ -588,6 +601,12 @@ def run_update_pipeline(
     python = python or venv_python()
     results: list[StepResult] = []
     total = len(UPDATE_PIPELINE)
+    # Force l'UTF-8 dans les process enfants : sous Windows, stdout utilise
+    # cp1252 par défaut et les scripts (qui impriment —, ─, →…) plantent en
+    # UnicodeEncodeError. PYTHONUTF8/PYTHONIOENCODING corrigent ça à la source.
+    child_env = dict(os.environ)
+    child_env["PYTHONUTF8"] = "1"
+    child_env["PYTHONIOENCODING"] = "utf-8"
     for i, (script, label, timeout) in enumerate(UPDATE_PIPELINE, 1):
         if progress:
             try:
@@ -602,7 +621,7 @@ def run_update_pipeline(
             cmd = _script_command(python, path)
             r = subprocess.run(
                 cmd, capture_output=True, text=True, timeout=timeout,
-                encoding="utf-8", errors="replace",
+                encoding="utf-8", errors="replace", env=child_env,
             )
             results.append(StepResult(label, r.returncode == 0, r.returncode, (r.stderr or "").strip()))
         except Exception as e:

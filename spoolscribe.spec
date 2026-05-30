@@ -19,10 +19,28 @@ import sys
 
 block_cipher = None
 
-# ─── Métadonnées (gardées synchrones avec core.APP_*) ─────────────────────
-APP_NAME = "SpoolScribe"
-APP_VERSION = "0.1.6"
-APP_AUTHOR = "ArN-LaB"
+# ─── Métadonnées : source unique de vérité = core.py ──────────────────────
+# La version n'est définie qu'une seule fois (core.APP_VERSION). Le .spec et
+# pyproject.toml la lisent depuis là pour éviter toute désynchronisation (cf.
+# l'ancienne release "sync version" inutile dans l'historique).
+def _read_core_metadata():
+    meta = {"APP_NAME": "SpoolScribe", "APP_VERSION": "0.0.0", "APP_AUTHOR": "ArN-LaB"}
+    try:
+        with open("core.py", "r", encoding="utf-8") as fh:
+            src = fh.read()
+        import re as _re
+        for key in meta:
+            m = _re.search(rf'^{key}\s*=\s*["\']([^"\']+)["\']', src, _re.M)
+            if m:
+                meta[key] = m.group(1)
+    except OSError:
+        pass
+    return meta
+
+_meta = _read_core_metadata()
+APP_NAME = _meta["APP_NAME"]
+APP_VERSION = _meta["APP_VERSION"]
+APP_AUTHOR = _meta["APP_AUTHOR"]
 APP_DESC = "Write OpenSpool / NFC spool tags for the Snapmaker U1"
 _v = tuple(int(p) for p in (APP_VERSION.split(".") + ["0", "0", "0", "0"])[:4])
 

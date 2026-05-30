@@ -9,8 +9,28 @@ permissions:
   contents: write           # nécessaire pour publier une Release sur tag
 
 jobs:
+  # Garde-fou : sur un tag vX.Y.Z, on vérifie que le tag correspond bien à
+  # core.APP_VERSION (source unique de vérité). Évite les releases accidentelles
+  # ou désynchronisées — la cause de l'ancienne release "sync version" inutile.
+  verify:
+    name: Verify tag matches version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check tag == core.APP_VERSION
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          CORE=$(python -c "import re,io; s=open('core.py',encoding='utf-8').read(); print(re.search(r'APP_VERSION\s*=\s*[\"\x27]([^\"\x27]+)', s).group(1))")
+          echo "tag=$TAG  core.APP_VERSION=$CORE"
+          if [ "$TAG" != "$CORE" ]; then
+            echo "::error::Tag v$TAG does not match core.APP_VERSION ($CORE). Bump core.py and re-tag."
+            exit 1
+          fi
+
   build:
     name: Build ${{ matrix.os }}
+    needs: verify
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

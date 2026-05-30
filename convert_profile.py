@@ -13,8 +13,8 @@ import sys
 
 import core
 from core import (
-    DB_PATH, OUTPUT_DIR, SCRIPT_DIR,
-    load_db, save_db, validate_hex,
+    DB_PATH, OUTPUT_DIR,
+    load_db, validate_hex,
     build_openspool, write_openspool as core_write_openspool,
     get_sku_view, list_skus, add_sku, set_sku_hex,
     logo_abs_path, logo_signature, db_stats, db_needs_update,
@@ -223,6 +223,13 @@ def _hex_swatch(hex_code, use_ansi=True):
 def main():
     if core.maybe_run_as_script_worker(sys.argv):
         return
+    # Console Windows : forcer l'UTF-8 pour les cadres Unicode et les accents,
+    # sinon `cp1252` lève UnicodeEncodeError au premier affichage.
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--verbose", action="store_true", help="Affichage détaillé")
     parser.add_argument("--compact", action="store_true", help="Mode compact")

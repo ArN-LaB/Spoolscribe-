@@ -23,10 +23,13 @@ DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
 
 _OFD = "https://raw.githubusercontent.com/OpenFilamentCollective/open-filament-database/main/data"
 
-# (db_brand_key, ofd_slug, local_filename)
+# (db_brand_key, ofd_slug, local_filename, curated)
+# curated=True : on garde un asset vectoriel soigné, fourni avec le dépôt
+# (l'entrée OFD est de mauvaise qualité — ici un simple « R » rouge), et on
+# ne le télécharge pas.
 BRANDS = [
-    ("Prusament", "prusament",       "prusament_logo.png"),
-    ("ROSA3D",    "rosa3d_filaments", "rosa3d_logo.png"),
+    ("Prusament", "prusament",       "prusament_logo.png", False),
+    ("ROSA3D",    "rosa3d_filaments", "rosa3d_logo.png",     True),
 ]
 
 
@@ -51,7 +54,7 @@ def main() -> None:
 
     db.setdefault("_brands", {})
 
-    for db_key, ofd_slug, logo_filename in BRANDS:
+    for db_key, ofd_slug, logo_filename, curated in BRANDS:
         brand_url = f"{_OFD}/{ofd_slug}/brand.json"
         logo_url  = f"{_OFD}/{ofd_slug}/logo.png"
         logo_file = os.path.join(DATA_DIR, logo_filename)
@@ -64,7 +67,14 @@ def main() -> None:
             brand = {}
 
         logo_ok = os.path.exists(logo_file)
-        if force or not logo_ok:
+        if curated:
+            # Asset soigné fourni avec le dépôt : pas de téléchargement.
+            if not logo_ok:
+                print(f"[WARN] {db_key}: asset soigné absent ({logo_file})")
+                logo_path = ""
+            else:
+                print(f"  {db_key}: asset vectoriel soigné conservé ({logo_filename})")
+        elif force or not logo_ok:
             try:
                 logo_bytes = _fetch_bytes(logo_url)
                 if not dry_run:
@@ -82,10 +92,11 @@ def main() -> None:
             "website":     brand.get("website",  ""),
             "origin":      brand.get("origin",   ""),
             "source":      brand.get("source",   "openprinttag"),
-            "logo":        brand.get("logo",     "logo.png"),
+            "logo":        logo_filename,
             "logo_path":   logo_path if logo_ok else "",
-            "logo_source": "OpenFilamentCollective/open-filament-database",
-            "logo_url":    logo_url,
+            "logo_source": ("soigné (fourni avec SpoolScribe)" if curated
+                            else "OpenFilamentCollective/open-filament-database"),
+            "logo_url":    "" if curated else logo_url,
             "updated_at":  datetime.now().isoformat(),
         }
         status = "OK" if logo_ok else "absent"

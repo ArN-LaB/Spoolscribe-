@@ -11,29 +11,31 @@ ideas in roughly the order they might happen — contributions welcome.
 - Keep the **core** logic UI-agnostic (shared by CLI and GUI).
 - Prefer **small, reversible** changes.
 
-## v0.1.x — current
+## v0.2.0 — current (first curated release)
 
 - [x] Cross-platform GUI (PySide6) + CLI sharing a pure `core`.
 - [x] Polymaker SKU lookup → OpenSpool / NFC JSON export.
 - [x] Consent-gated, fully disclosed data updates.
-- [x] Multiplatform builds via GitHub Actions + tagged releases.
+- [x] Multiplatform single-file builds via GitHub Actions + tagged releases.
 - [x] **Prusament** full coverage — HEX from SpoolmanDB (authoritative) + TheFilamentDB.
 - [x] **ROSA3D** full coverage — HEX from SpoolmanDB (fill-missing) with curated Silk/Pastel values.
+- [x] Brand logos in the detail panel; OS light/dark theming; friendly empty state.
+- [x] Single source of truth for the version (`core.APP_VERSION`).
 
-## v0.2 — quality of life
+## v0.3 — quality of life
 
-- [ ] App icon (`.ico` / `.icns`) and polished window theming.
 - [ ] Editable "missing hex" workflow directly in the GUI table.
 - [ ] Export presets / batch export of multiple SKUs.
 - [ ] Settings panel (consent, auto-update interval) in the GUI.
+- [ ] Localisation (the UI currently mixes FR/EN).
 
-## v0.3+ — toward a more universal database
+## v0.4+ — toward a more universal database
 
 The long-term idea is to make SpoolScribe **brand-agnostic**, not Polymaker-only.
 Candidate sources (all to be vetted for license compatibility first):
 
-- [x] **Prusament** (Prusa) — via SpoolmanDB + TheFilamentDB. ✓ done in v0.1.4
-- [x] **ROSA3D** — via SpoolmanDB. ✓ done in v0.1.4
+- [x] **Prusament** (Prusa) — via SpoolmanDB + TheFilamentDB. ✓
+- [x] **ROSA3D** — via SpoolmanDB. ✓
 - [ ] **Bambu Lab**, **eSun**, **Sunlu**, and other common brands.
 - [ ] Generic import from the **Open Filament Database** REST API
       (path-based addressing) rather than per-brand scrapers.
@@ -47,7 +49,6 @@ Candidate sources (all to be vetted for license compatibility first):
 
 - [ ] Direct NFC writing from within the app (hardware-dependent).
 - [ ] Read-back / verify a written tag.
-- [ ] Localization (the UI currently mixes FR/EN).
 
 ## Non-goals
 

@@ -126,8 +126,8 @@ databases. Extending it to more brands is on the
 | `core.py` | Pure business logic (no terminal I/O). Shared by CLI & GUI. |
 | `app_gui.py` | PySide6 (Qt) desktop app. |
 | `convert_profile.py` | Command-line interface. |
-| `scripts/` | Data-update scrapers (standard library only). |
-| `data/` | Bundled database + brand logo. |
+| `scripts/` | Data-update scrapers + `make_icons.py` (standard library only). |
+| `data/` | Bundled database, brand logos and app icons. |
 | `orca_profiles/` | Official [OrcaSlicer](https://github.com/SoftFever/OrcaSlicer) presets (temperature overrides). |
 
 ## Documentation

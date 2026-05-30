@@ -23,3 +23,9 @@ config.json
 # OS
 .DS_Store
 Thumbs.db
+*.swp
+*~
+
+# IDE
+.vscode/settings.json
+.idea/

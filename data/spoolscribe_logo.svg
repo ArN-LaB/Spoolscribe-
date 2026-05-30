@@ -1,75 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SpoolScribe">
   <!--
-    SpoolScribe mark — a filament spool feeding a strand that writes an S.
-    Bauhaus-leaning geometry: concentric circles, a single colour family,
-    crisp white separators. The group #disc is the spinning face; it is
-    rendered on its own (rotated about its centre) by the in-app animated
-    logo. #strand and the drop shadow stay still so the spool reads as
-    "feeding" the line it writes.  Centre of the disc = (216, 252).
+    SpoolScribe mark, v2 — Apple-"creator-studio"-leaning: a single rounded
+    squircle tile, a soft top-light, and one clean centred glyph. The spool
+    sits in the middle (#disc, the spinning face); a short filament tail
+    (#strand) peels off and stays still, so the spool reads as feeding the
+    line it writes. Centre of the disc = (256, 252).
   -->
   <defs>
-    <linearGradient id="ss-bg" x1="64" y1="48" x2="448" y2="464" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#22C6DA"/>
-      <stop offset="0.55" stop-color="#3E8EF0"/>
-      <stop offset="1" stop-color="#5B4BE6"/>
+    <linearGradient id="ss-bg" x1="64" y1="40" x2="452" y2="472" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#27C9DE"/>
+      <stop offset="0.52" stop-color="#3E8EF0"/>
+      <stop offset="1" stop-color="#6A4BEA"/>
     </linearGradient>
-    <radialGradient id="ss-shine" cx="0.30" cy="0.24" r="0.95">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.26"/>
-      <stop offset="0.62" stop-color="#FFFFFF" stop-opacity="0"/>
+    <radialGradient id="ss-top" cx="0.32" cy="0.18" r="0.9">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.30"/>
+      <stop offset="0.6" stop-color="#FFFFFF" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="ss-flange" cx="0.40" cy="0.36" r="0.78">
+    <radialGradient id="ss-flange" cx="0.40" cy="0.34" r="0.80">
       <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#E4F2FA"/>
+      <stop offset="1" stop-color="#E8F3FB"/>
     </radialGradient>
-    <linearGradient id="ss-wound" x1="130" y1="160" x2="304" y2="346" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#48E3F2"/>
-      <stop offset="1" stop-color="#2C7AD8"/>
+    <linearGradient id="ss-core" x1="150" y1="150" x2="362" y2="354" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4EE6F4"/>
+      <stop offset="1" stop-color="#2F7CDB"/>
     </linearGradient>
-    <linearGradient id="ss-strand" x1="330" y1="226" x2="398" y2="404" gradientUnits="userSpaceOnUse">
+    <linearGradient id="ss-strand" x1="300" y1="300" x2="392" y2="426" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#E1F4FF"/>
+      <stop offset="1" stop-color="#DCF1FF"/>
     </linearGradient>
   </defs>
 
   <!-- App tile -->
-  <rect x="24" y="24" width="464" height="464" rx="116" fill="url(#ss-bg)"/>
-  <rect x="24" y="24" width="464" height="464" rx="116" fill="url(#ss-shine)"/>
+  <rect x="24" y="24" width="464" height="464" rx="118" fill="url(#ss-bg)"/>
+  <rect x="24" y="24" width="464" height="464" rx="118" fill="url(#ss-top)"/>
 
   <!-- Grounding shadow under the spool (stays put while the disc spins) -->
-  <circle cx="216" cy="260" r="150" fill="#0A2440" opacity="0.18"/>
+  <ellipse cx="256" cy="266" rx="172" ry="170" fill="#0A2440" opacity="0.16"/>
 
   <!-- Spinning spool face -->
   <g id="disc">
     <!-- Flange -->
-    <circle cx="216" cy="252" r="150" fill="url(#ss-flange)"/>
-    <circle cx="216" cy="252" r="148.5" fill="none" stroke="#9FC7DA" stroke-opacity="0.55" stroke-width="2"/>
+    <circle cx="256" cy="252" r="170" fill="url(#ss-flange)"/>
+    <circle cx="256" cy="252" r="168" fill="none" stroke="#A9CEDF" stroke-opacity="0.5" stroke-width="2"/>
     <!-- Wound filament band -->
-    <circle cx="216" cy="252" r="104" fill="url(#ss-wound)"/>
-    <circle cx="216" cy="252" r="64"  fill="url(#ss-flange)"/>
-    <circle cx="216" cy="252" r="104" fill="none" stroke="#FFFFFF" stroke-opacity="0.9" stroke-width="3.5"/>
-    <circle cx="216" cy="252" r="64"  fill="none" stroke="#FFFFFF" stroke-opacity="0.9" stroke-width="3.5"/>
+    <circle cx="256" cy="252" r="118" fill="url(#ss-core)"/>
+    <circle cx="256" cy="252" r="118" fill="none" stroke="#FFFFFF" stroke-opacity="0.92" stroke-width="4"/>
+    <!-- Three spokes (make the rotation read clearly) -->
+    <g fill="url(#ss-flange)">
+      <rect x="247" y="150" width="18" height="204" rx="9"/>
+      <rect x="247" y="150" width="18" height="204" rx="9" transform="rotate(60 256 252)"/>
+      <rect x="247" y="150" width="18" height="204" rx="9" transform="rotate(120 256 252)"/>
+    </g>
     <!-- Hub -->
-    <circle cx="216" cy="252" r="46" fill="url(#ss-flange)"/>
-    <circle cx="216" cy="252" r="46" fill="none" stroke="#9FC7DA" stroke-opacity="0.5" stroke-width="2"/>
-    <!-- Axle hole + keyway (breaks symmetry so the spin reads clearly) -->
-    <circle cx="216" cy="252" r="15" fill="#2C77D6"/>
-    <rect x="210" y="222" width="12" height="20" rx="3" fill="#2C77D6"/>
-    <!-- Vent holes -->
-    <circle cx="338" cy="252" r="12" fill="#2C77D6"/>
-    <circle cx="94"  cy="252" r="12" fill="#2C77D6"/>
-    <circle cx="216" cy="130" r="12" fill="#2C77D6"/>
-    <circle cx="216" cy="374" r="12" fill="#2C77D6"/>
+    <circle cx="256" cy="252" r="56" fill="url(#ss-flange)"/>
+    <circle cx="256" cy="252" r="56" fill="none" stroke="#A9CEDF" stroke-opacity="0.5" stroke-width="2"/>
+    <!-- Axle hole + keyway (breaks symmetry so the spin is obvious) -->
+    <circle cx="256" cy="252" r="20" fill="#2C77D6"/>
+    <rect x="249" y="214" width="14" height="26" rx="4" fill="#2C77D6"/>
   </g>
 
-  <!-- Filament strand peeling off the rim and writing an S-curve (the "Scribe") -->
+  <!-- Short filament tail peeling off the rim (the "Scribe"), static -->
   <g id="strand">
-    <path d="M356 236 C 410 226 438 266 410 302 C 386 332 332 326 330 362 C 328 398 360 414 398 404"
-          fill="none" stroke="#0A2440" stroke-opacity="0.16" stroke-width="26"
-          stroke-linecap="round" stroke-linejoin="round" transform="translate(0,7)"/>
-    <path d="M356 236 C 410 226 438 266 410 302 C 386 332 332 326 330 362 C 328 398 360 414 398 404"
-          fill="none" stroke="url(#ss-strand)" stroke-width="26"
-          stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="398" cy="404" r="16" fill="url(#ss-strand)"/>
+    <path d="M300 320 C 352 352 372 392 360 430"
+          fill="none" stroke="#0A2440" stroke-opacity="0.16" stroke-width="24"
+          stroke-linecap="round" transform="translate(0,7)"/>
+    <path d="M300 320 C 352 352 372 392 360 430"
+          fill="none" stroke="url(#ss-strand)" stroke-width="24" stroke-linecap="round"/>
+    <circle cx="360" cy="430" r="15" fill="url(#ss-strand)"/>
   </g>
 </svg>

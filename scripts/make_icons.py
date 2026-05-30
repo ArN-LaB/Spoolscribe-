@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-tools/make_icons.py — Génère les icônes binaires de l'app à partir du SVG.
+scripts/make_icons.py — Génère les icônes binaires de l'app à partir du SVG.
 
 Source unique : data/spoolscribe_logo.svg
-Produit       : data/app.ico (Windows) et data/app.png (macОS/Linux/usage divers).
+Produit       : data/app.ico (Windows) et data/app.png (macOS/Linux/usage divers).
 
-Lancement :  python tools/make_icons.py
+Lancement :  python scripts/make_icons.py
 """
 from __future__ import annotations
 

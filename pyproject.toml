@@ -1,6 +1,6 @@
 [project]
 name = "spoolscribe"
-version = "0.1.6"
+version = "0.2.0"
 description = "Write OpenSpool / NFC spool tags for the open-firmware Snapmaker U1."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -28,5 +28,6 @@ spoolscribe-cli = "convert_profile:main"
 spoolscribe = "app_gui:main"
 
 # Petit projet "pour le fun" : pas de système de build packagé (pas de wheel
-# publiée). Ce fichier sert surtout de source unique de vérité pour la version
-# et les métadonnées. Voir CHANGELOG.md pour le suivi des versions.
+# publiée). La version ci-dessus DOIT rester alignée sur core.APP_VERSION, qui
+# est la source unique de vérité (le .spec la lit directement depuis core.py).
+# Voir CHANGELOG.md pour le suivi des versions.

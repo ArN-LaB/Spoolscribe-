@@ -5,6 +5,174 @@ All notable changes to SpoolScribe are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+> **Note on history.** The `0.1.x` line was a rapid same-day development series
+> (`0.1.0` → `0.1.6`) used to iterate on packaging and UI in public. Those
+> point releases have been consolidated into **`0.2.0`**, the first curated
+> public release. Their highlights are preserved below under *Development
+> history* for reference.
+
+## [Unreleased]
+
+## [0.2.0] - 2026-05-30
+
+First curated public release. Consolidates the `0.1.x` development series and
+adds a round of UI polish, a single source of truth for the version, and a
+tidied repository.
+
+### Added
+- **Three brands, authoritative colours.** Polymaker (hundreds of SKUs) plus
+  curated **Prusament** (PLA, PETG, ASA, PC Blend — spools *and* refills) and
+  **ROSA3D** (PLA Starter/Silk/Pastel/HS, PETG, PCTG, ASA, ABS+, recycled
+  R-PLA/R-PET-G). HEX codes come from [SpoolmanDB](https://github.com/Donkie/SpoolmanDB)
+  (authoritative for Prusament, fill-missing for ROSA3D) and
+  [TheFilamentDB](https://thefilamentdb.issou.best/), with curated overrides for
+  the Silk/Pastel families.
+- **Brand logos in the detail panel** for Polymaker (SVG), Prusament and ROSA3D
+  (PNG), fetched from the
+  [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database)
+  (MIT) and stored locally.
+- **Dedicated app logo & icon** (`data/spoolscribe_logo.svg`, `data/app.ico`,
+  `data/app.icns`) used for the window, taskbar and Windows executable.
+- **OS light/dark theme support** that follows the system colour scheme and
+  updates live when it changes.
+- **Friendly empty state** with an animated spool logo when no filament is
+  selected.
+
+### Changed
+- **Single source of truth for the version.** `core.APP_VERSION` is now the only
+  place the version is declared; `spoolscribe.spec` reads it from `core.py` and
+  `pyproject.toml` is kept aligned — no more "sync the version number" releases.
+- **Reworked detail panel.** The colour preview is a labelled band showing the
+  HEX directly on the swatch; characteristics live in a card; the primary
+  "Générer le tag NFC" action is emphasised with secondary actions grouped below.
+- **Header cleanup.** A single animated logo (no duplicate wordmark); the window
+  title carries the product name.
+- **JSON inspector resizes the window** instead of overflowing, so no stray
+  scrollbars appear when toggling it.
+- **Tidied repository.** Build artifacts removed, `tools/` folded into
+  `scripts/`, dead imports pruned, `.gitignore` extended.
+
+### Packaging
+- **Single-file builds** on Windows / macOS / Linux (PyInstaller onefile) with
+  embedded version metadata and a macOS `.app` bundle.
+- Writable data (database, downloaded Orca profiles, output) is stored in a
+  per-user directory and seeded from the bundle on first run.
+- **SHA256 checksums** published with every release artifact.
+- Consent-gated, fully disclosed data updates that work inside the frozen app.
+
+---
+
+## Development history (`0.1.x`, superseded by `0.2.0`)
+
+These were same-day iterations, kept here for traceability:
+
+- **0.1.6** — Header cleanup; single animated logo.
+- **0.1.5** — Brand logos for Prusament & ROSA3D in the detail panel; logo widget
+  supports SVG and PNG.
+- **0.1.4** — Multi-source HEX enrichment for Prusament & ROSA3D (SpoolmanDB +
+  TheFilamentDB); `docs/DATA_SOURCES.md` extended.
+- **0.1.3** — App logo & icon; OS light/dark theme; friendly empty state;
+  reworked detail panel; bundled `difflib` fix for packaged updates.
+- **0.1.2** — Database updates work in the packaged app; per-user writable data;
+  UTF-8 worker output; URL-encoded Orca downloads.
+- **0.1.1** — Single-file executables; Windows version metadata; macOS `.app`;
+  SHA256 checksums.
+- **0.1.0** — Initial cross-platform GUI + CLI sharing a pure `core`;
+  consent-gated updates; PyInstaller packaging; CI matrix build.
+
+[Unreleased]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.2.0
+# Changelog
+
+All notable changes to SpoolScribe are documented here.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+> **Note on history.** The `0.1.x` line was a rapid same-day development series
+> (`0.1.0` → `0.1.6`) used to iterate on packaging and UI in public. Those
+> point releases have been consolidated into **`0.2.0`**, the first curated
+> public release. Their highlights are preserved below under *Development
+> history* for reference.
+
+## [Unreleased]
+
+## [0.2.0] - 2026-05-30
+
+First curated public release. Consolidates the `0.1.x` development series and
+adds a round of UI polish, a single source of truth for the version, and a
+tidied repository.
+
+### Added
+- **Three brands, authoritative colours.** Polymaker (hundreds of SKUs) plus
+  curated **Prusament** (PLA, PETG, ASA, PC Blend — spools *and* refills) and
+  **ROSA3D** (PLA Starter/Silk/Pastel/HS, PETG, PCTG, ASA, ABS+, recycled
+  R-PLA/R-PET-G). HEX codes come from [SpoolmanDB](https://github.com/Donkie/SpoolmanDB)
+  (authoritative for Prusament, fill-missing for ROSA3D) and
+  [TheFilamentDB](https://thefilamentdb.issou.best/), with curated overrides for
+  the Silk/Pastel families.
+- **Brand logos in the detail panel** for Polymaker (SVG), Prusament and ROSA3D
+  (PNG), fetched from the
+  [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database)
+  (MIT) and stored locally.
+- **Dedicated app logo & icon** (`data/spoolscribe_logo.svg`, `data/app.ico`,
+  `data/app.icns`) used for the window, taskbar and Windows executable.
+- **OS light/dark theme support** that follows the system colour scheme and
+  updates live when it changes.
+- **Friendly empty state** with an animated spool logo when no filament is
+  selected.
+
+### Changed
+- **Single source of truth for the version.** `core.APP_VERSION` is now the only
+  place the version is declared; `spoolscribe.spec` reads it from `core.py` and
+  `pyproject.toml` is kept aligned — no more "sync the version number" releases.
+- **Reworked detail panel.** The colour preview is a labelled band showing the
+  HEX directly on the swatch; characteristics live in a card; the primary
+  "Générer le tag NFC" action is emphasised with secondary actions grouped below.
+- **Header cleanup.** A single animated logo (no duplicate wordmark); the window
+  title carries the product name.
+- **JSON inspector resizes the window** instead of overflowing, so no stray
+  scrollbars appear when toggling it.
+- **Tidied repository.** Build artifacts removed, `tools/` folded into
+  `scripts/`, dead imports pruned, `.gitignore` extended.
+
+### Packaging
+- **Single-file builds** on Windows / macOS / Linux (PyInstaller onefile) with
+  embedded version metadata and a macOS `.app` bundle.
+- Writable data (database, downloaded Orca profiles, output) is stored in a
+  per-user directory and seeded from the bundle on first run.
+- **SHA256 checksums** published with every release artifact.
+- Consent-gated, fully disclosed data updates that work inside the frozen app.
+
+---
+
+## Development history (`0.1.x`, superseded by `0.2.0`)
+
+These were same-day iterations, kept here for traceability:
+
+- **0.1.6** — Header cleanup; single animated logo.
+- **0.1.5** — Brand logos for Prusament & ROSA3D in the detail panel; logo widget
+  supports SVG and PNG.
+- **0.1.4** — Multi-source HEX enrichment for Prusament & ROSA3D (SpoolmanDB +
+  TheFilamentDB); `docs/DATA_SOURCES.md` extended.
+- **0.1.3** — App logo & icon; OS light/dark theme; friendly empty state;
+  reworked detail panel; bundled `difflib` fix for packaged updates.
+- **0.1.2** — Database updates work in the packaged app; per-user writable data;
+  UTF-8 worker output; URL-encoded Orca downloads.
+- **0.1.1** — Single-file executables; Windows version metadata; macOS `.app`;
+  SHA256 checksums.
+- **0.1.0** — Initial cross-platform GUI + CLI sharing a pure `core`;
+  consent-gated updates; PyInstaller packaging; CI matrix build.
+
+[Unreleased]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.2.0
+# Changelog
+
+All notable changes to SpoolScribe are documented here.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ## [Unreleased]
 
 ## [0.1.6] - 2026-05-30
