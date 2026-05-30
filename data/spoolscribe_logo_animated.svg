@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SpoolScribe">
+  <!--
+    SpoolScribe mark, v2 — animated edition (CSS @keyframes).
+    The #disc group spins continuously around its centre (256, 252).
+    The #strand filament tail stays still, so the spool reads as feeding
+    the line it writes.
+  -->
+  <defs>
+    <linearGradient id="ss-bg" x1="64" y1="40" x2="452" y2="472" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#27C9DE"/>
+      <stop offset="0.52" stop-color="#3E8EF0"/>
+      <stop offset="1" stop-color="#6A4BEA"/>
+    </linearGradient>
+    <radialGradient id="ss-top" cx="0.32" cy="0.18" r="0.9">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.30"/>
+      <stop offset="0.6" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ss-flange" cx="0.40" cy="0.34" r="0.80">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E8F3FB"/>
+    </radialGradient>
+    <linearGradient id="ss-core" x1="150" y1="150" x2="362" y2="354" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4EE6F4"/>
+      <stop offset="1" stop-color="#2F7CDB"/>
+    </linearGradient>
+    <linearGradient id="ss-strand" x1="300" y1="300" x2="392" y2="426" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DCF1FF"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    @keyframes ss-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    #disc {
+      transform-origin: 256px 252px;
+      animation: ss-spin 3s linear infinite;
+    }
+  </style>
+
+  <!-- App tile -->
+  <rect x="24" y="24" width="464" height="464" rx="118" fill="url(#ss-bg)"/>
+  <rect x="24" y="24" width="464" height="464" rx="118" fill="url(#ss-top)"/>
+
+  <!-- Grounding shadow under the spool (stays put while the disc spins) -->
+  <ellipse cx="256" cy="266" rx="172" ry="170" fill="#0A2440" opacity="0.16"/>
+
+  <!-- Spinning spool face -->
+  <g id="disc">
+    <!-- Flange -->
+    <circle cx="256" cy="252" r="170" fill="url(#ss-flange)"/>
+    <circle cx="256" cy="252" r="168" fill="none" stroke="#A9CEDF" stroke-opacity="0.5" stroke-width="2"/>
+    <!-- Wound filament band -->
+    <circle cx="256" cy="252" r="118" fill="url(#ss-core)"/>
+    <circle cx="256" cy="252" r="118" fill="none" stroke="#FFFFFF" stroke-opacity="0.92" stroke-width="4"/>
+    <!-- Three spokes (make the rotation read clearly) -->
+    <g fill="url(#ss-flange)">
+      <rect x="247" y="150" width="18" height="204" rx="9"/>
+      <rect x="247" y="150" width="18" height="204" rx="9" transform="rotate(60 256 252)"/>
+      <rect x="247" y="150" width="18" height="204" rx="9" transform="rotate(120 256 252)"/>
+    </g>
+    <!-- Hub -->
+    <circle cx="256" cy="252" r="56" fill="url(#ss-flange)"/>
+    <circle cx="256" cy="252" r="56" fill="none" stroke="#A9CEDF" stroke-opacity="0.5" stroke-width="2"/>
+    <!-- Axle hole + keyway (breaks symmetry so the spin is obvious) -->
+    <circle cx="256" cy="252" r="20" fill="#2C77D6"/>
+    <rect x="249" y="214" width="14" height="26" rx="4" fill="#2C77D6"/>
+  </g>
+
+  <!-- Short filament tail peeling off the rim (the "Scribe"), static -->
+  <g id="strand">
+    <path d="M300 320 C 352 352 372 392 360 430"
+          fill="none" stroke="#0A2440" stroke-opacity="0.16" stroke-width="24"
+          stroke-linecap="round" transform="translate(0,7)"/>
+    <path d="M300 320 C 352 352 372 392 360 430"
+          fill="none" stroke="url(#ss-strand)" stroke-width="24" stroke-linecap="round"/>
+    <circle cx="360" cy="430" r="15" fill="url(#ss-strand)"/>
+  </g>
+</svg>

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="data/app.png" alt="SpoolScribe" width="128" height="128">
+  <img src="data/spoolscribe_logo_animated.svg" alt="SpoolScribe" width="128" height="128">
 </p>
 
 <h1 align="center">SpoolScribe</h1>
