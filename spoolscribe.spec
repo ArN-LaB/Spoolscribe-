@@ -26,9 +26,16 @@ APP_AUTHOR = "ArN-LaB"
 APP_DESC = "Write OpenSpool / NFC spool tags for the Snapmaker U1"
 _v = tuple(int(p) for p in (APP_VERSION.split(".") + ["0", "0", "0", "0"])[:4])
 
-# ─── Icône optionnelle ────────────────────────────────────────────────────
+# ─── Icône optionnelle (par plateforme) ───────────────────────────────────
+# Windows veut un .ico, macOS un .icns ; Linux n'utilise pas d'icône d'exe.
 _icon = None
-for _candidate in ("data/app.ico", "data/app.icns"):
+if sys.platform == "win32":
+    _cands = ("data/app.ico",)
+elif sys.platform == "darwin":
+    _cands = ("data/app.icns",)
+else:
+    _cands = ()
+for _candidate in _cands:
     if os.path.isfile(_candidate):
         _icon = _candidate
         break

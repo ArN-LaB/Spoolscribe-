@@ -20,6 +20,7 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SVG = os.path.join(ROOT, "data", "spoolscribe_logo.svg")
 ICO = os.path.join(ROOT, "data", "app.ico")
+ICNS = os.path.join(ROOT, "data", "app.icns")
 PNG = os.path.join(ROOT, "data", "app.png")
 
 
@@ -47,7 +48,10 @@ def main() -> int:
     imgs = {s: render(s) for s in sizes}
     imgs[256].save(PNG)
     imgs[256].save(ICO, format="ICO", sizes=[(s, s) for s in sizes])
+    # macOS .icns : Pillow attend une grande image carrée.
+    render(1024).save(ICNS, format="ICNS")
     print(f"écrit : {ICO}")
+    print(f"écrit : {ICNS}")
     print(f"écrit : {PNG}")
     return 0
 
