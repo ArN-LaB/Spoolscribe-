@@ -118,6 +118,7 @@ UPDATE_PIPELINE: list[tuple[str, str, int]] = [
     ("scrape_internal_exact_hex.py",   "Scrape hex internal exact",  30),
     ("sync_polymaker_brand_assets.py", "Sync Polymaker brand assets",60),
     ("seed_prusament.py",               "Seed Prusament (table interne)",30),
+    ("seed_rosa3d.py",                   "Seed ROSA3D (table interne)",   30),
     ("download_orca_profiles.py",      "Download profils Orca",     120),
     ("import_orca_profiles.py",        "Import profils Orca",        60),
 ]
@@ -139,6 +140,8 @@ NETWORK_SOURCES: list[dict] = [
     {"name": "Polymaker US Wholesale", "license": "Catalogue factuel — © Polymaker",
      "host": "us-wholesale.polymaker.com"},
     {"name": "Prusament (spécifications matériaux)", "license": "Données factuelles — © Prusa Research",
+     "host": "table interne hors-ligne (aucun accès réseau)"},
+    {"name": "ROSA3D (spécifications matériaux)", "license": "Données factuelles — © ROSA PLAST",
      "host": "table interne hors-ligne (aucun accès réseau)"},
 ]
 

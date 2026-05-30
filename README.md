@@ -26,12 +26,13 @@ project, developed when time allows. No roadmap pressure, no commercial intent.
 
 > [!IMPORTANT]
 > SpoolScribe is an **unofficial hobby project**. It is **not affiliated with
-> Polymaker, Prusa Research or Snapmaker**. See [docs/TRADEMARKS.md](docs/TRADEMARKS.md).
+> Polymaker, Prusa Research, ROSA3D or Snapmaker**. See [docs/TRADEMARKS.md](docs/TRADEMARKS.md).
 
 ## Features
 
-- Instant search across hundreds of **Polymaker** SKUs, plus a curated
-  **Prusament** set (PLA, PETG, ASA, PC Blend — spools *and* refills).
+- Instant search across hundreds of **Polymaker** SKUs, plus curated
+  **Prusament** (PLA, PETG, ASA, PC Blend — spools *and* refills) and
+  **ROSA3D** (PLA Starter/Silk/Pastel/HS, PETG, PCTG, ASA, ABS+, recycled R-PLA/R-PET-G) sets.
 - Real color swatches + the brand logo rendered from SVG.
 - Filament details: type/subtype, nozzle & bed temps, density (with live
   override from official OrcaSlicer presets when available).

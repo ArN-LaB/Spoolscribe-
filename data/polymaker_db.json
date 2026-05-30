@@ -890,6 +890,116 @@
       "bed_max_temp": 115,
       "diameter": 1.75,
       "density": 1.22
+    },
+    "ROSA3D PLA Starter": {
+      "type": "PLA",
+      "subtype": "Starter",
+      "brand": "ROSA3D",
+      "min_temp": 200,
+      "max_temp": 220,
+      "bed_min_temp": 0,
+      "bed_max_temp": 60,
+      "diameter": 1.75,
+      "density": 1.24
+    },
+    "ROSA3D PLA High Speed": {
+      "type": "PLA",
+      "subtype": "HighSpeed",
+      "brand": "ROSA3D",
+      "min_temp": 190,
+      "max_temp": 230,
+      "bed_min_temp": 45,
+      "bed_max_temp": 60,
+      "diameter": 1.75,
+      "density": 1.24
+    },
+    "ROSA3D PLA Silk": {
+      "type": "PLA",
+      "subtype": "Silk",
+      "brand": "ROSA3D",
+      "min_temp": 210,
+      "max_temp": 230,
+      "bed_min_temp": 50,
+      "bed_max_temp": 60,
+      "diameter": 1.75,
+      "density": 1.24
+    },
+    "ROSA3D PLA Pastel": {
+      "type": "PLA",
+      "subtype": "Pastel",
+      "brand": "ROSA3D",
+      "min_temp": 200,
+      "max_temp": 220,
+      "bed_min_temp": 0,
+      "bed_max_temp": 60,
+      "diameter": 1.75,
+      "density": 1.24
+    },
+    "ROSA3D R-PLA": {
+      "type": "PLA",
+      "subtype": "Recycled",
+      "brand": "ROSA3D",
+      "min_temp": 200,
+      "max_temp": 220,
+      "bed_min_temp": 0,
+      "bed_max_temp": 60,
+      "diameter": 1.75,
+      "density": 1.24
+    },
+    "ROSA3D PETG Standard HS": {
+      "type": "PETG",
+      "subtype": "HighSpeed",
+      "brand": "ROSA3D",
+      "min_temp": 220,
+      "max_temp": 250,
+      "bed_min_temp": 70,
+      "bed_max_temp": 90,
+      "diameter": 1.75,
+      "density": 1.27
+    },
+    "ROSA3D R-PET-G": {
+      "type": "PETG",
+      "subtype": "Recycled",
+      "brand": "ROSA3D",
+      "min_temp": 220,
+      "max_temp": 250,
+      "bed_min_temp": 70,
+      "bed_max_temp": 90,
+      "diameter": 1.75,
+      "density": 1.27
+    },
+    "ROSA3D PCTG": {
+      "type": "PCTG",
+      "subtype": null,
+      "brand": "ROSA3D",
+      "min_temp": 250,
+      "max_temp": 270,
+      "bed_min_temp": 70,
+      "bed_max_temp": 90,
+      "diameter": 1.75,
+      "density": 1.23
+    },
+    "ROSA3D ASA": {
+      "type": "ASA",
+      "subtype": null,
+      "brand": "ROSA3D",
+      "min_temp": 240,
+      "max_temp": 260,
+      "bed_min_temp": 90,
+      "bed_max_temp": 100,
+      "diameter": 1.75,
+      "density": 1.07
+    },
+    "ROSA3D ABS+": {
+      "type": "ABS",
+      "subtype": "Plus",
+      "brand": "ROSA3D",
+      "min_temp": 230,
+      "max_temp": 260,
+      "bed_min_temp": 90,
+      "bed_max_temp": 110,
+      "diameter": 1.75,
+      "density": 1.04
     }
   },
   "_skus": {
@@ -6002,6 +6112,306 @@
       "product": "Prusament PC Blend",
       "color_name": "Urban Grey",
       "hex": "6B6F74"
+    },
+    "R3-PLAST-BLACK": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "Black",
+      "hex": "1A1A1A"
+    },
+    "R3-PLAST-WHITE": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "White",
+      "hex": "F5F5F0"
+    },
+    "R3-PLAST-RED": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "Red",
+      "hex": "C8102E"
+    },
+    "R3-PLAST-ORANGE": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "Orange",
+      "hex": "F26522"
+    },
+    "R3-PLAST-YELLOW": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "Yellow",
+      "hex": "F5C518"
+    },
+    "R3-PLAST-JUICYGREEN": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "Juicy Green",
+      "hex": "5CB531"
+    },
+    "R3-PLAST-HUNTERGREEN": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "Hunter Green",
+      "hex": "2E5E32"
+    },
+    "R3-PLAST-BLUESKY": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "Blue Sky",
+      "hex": "3FA9F5"
+    },
+    "R3-PLAST-PINK": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "Pink",
+      "hex": "E0218A"
+    },
+    "R3-PLAST-VIOLETDYNAMIC": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "Violet Dynamic",
+      "hex": "6A2C91"
+    },
+    "R3-PLAST-MOCHAMOUSSE": {
+      "product": "ROSA3D PLA Starter",
+      "color_name": "Mocha Mousse",
+      "hex": "8C6A4A"
+    },
+    "R3-PLAHS-BLACK": {
+      "product": "ROSA3D PLA High Speed",
+      "color_name": "Black",
+      "hex": "1A1A1A"
+    },
+    "R3-PLAHS-WHITE": {
+      "product": "ROSA3D PLA High Speed",
+      "color_name": "White",
+      "hex": "F5F5F0"
+    },
+    "R3-PLAHS-GREY": {
+      "product": "ROSA3D PLA High Speed",
+      "color_name": "Grey",
+      "hex": "808588"
+    },
+    "R3-PLASILK-SILKGOLD": {
+      "product": "ROSA3D PLA Silk",
+      "color_name": "Silk Gold",
+      "hex": "D4AF37"
+    },
+    "R3-PLASILK-SILKSILVER": {
+      "product": "ROSA3D PLA Silk",
+      "color_name": "Silk Silver",
+      "hex": "C7C9CB"
+    },
+    "R3-PLASILK-SILKWHITE": {
+      "product": "ROSA3D PLA Silk",
+      "color_name": "Silk White",
+      "hex": "F0F0EC"
+    },
+    "R3-PLASILK-SILKEMERALDGREEN": {
+      "product": "ROSA3D PLA Silk",
+      "color_name": "Silk Emerald Green",
+      "hex": "1FA974"
+    },
+    "R3-PLASILK-SILKFUCHSIA": {
+      "product": "ROSA3D PLA Silk",
+      "color_name": "Silk Fuchsia",
+      "hex": "C2185B"
+    },
+    "R3-PLAPAST-PASTELBLUE": {
+      "product": "ROSA3D PLA Pastel",
+      "color_name": "Pastel Blue",
+      "hex": "AEC6E4"
+    },
+    "R3-PLAPAST-PASTELGREEN": {
+      "product": "ROSA3D PLA Pastel",
+      "color_name": "Pastel Green",
+      "hex": "B7DBA7"
+    },
+    "R3-PLAPAST-PASTELLAVENDER": {
+      "product": "ROSA3D PLA Pastel",
+      "color_name": "Pastel Lavender",
+      "hex": "C9B8E0"
+    },
+    "R3-PLAPAST-PASTELMINT": {
+      "product": "ROSA3D PLA Pastel",
+      "color_name": "Pastel Mint",
+      "hex": "AEE3D0"
+    },
+    "R3-PLAPAST-PASTELPEACH": {
+      "product": "ROSA3D PLA Pastel",
+      "color_name": "Pastel Peach",
+      "hex": "F4C9A8"
+    },
+    "R3-PLAPAST-PASTELPINK": {
+      "product": "ROSA3D PLA Pastel",
+      "color_name": "Pastel Pink",
+      "hex": "F4C2D0"
+    },
+    "R3-PLAPAST-PASTELYELLOW": {
+      "product": "ROSA3D PLA Pastel",
+      "color_name": "Pastel Yellow",
+      "hex": "F5E6A8"
+    },
+    "R3-RPLA-BLACK": {
+      "product": "ROSA3D R-PLA",
+      "color_name": "Black",
+      "hex": "1A1A1A"
+    },
+    "R3-RPLA-WHITE": {
+      "product": "ROSA3D R-PLA",
+      "color_name": "White",
+      "hex": "F5F5F0"
+    },
+    "R3-RPLA-GREY": {
+      "product": "ROSA3D R-PLA",
+      "color_name": "Grey",
+      "hex": "808588"
+    },
+    "R3-PETG-BLACK": {
+      "product": "ROSA3D PETG Standard HS",
+      "color_name": "Black",
+      "hex": "1A1A1A"
+    },
+    "R3-PETG-WHITE": {
+      "product": "ROSA3D PETG Standard HS",
+      "color_name": "White",
+      "hex": "F5F5F0"
+    },
+    "R3-PETG-ALUMINIUM": {
+      "product": "ROSA3D PETG Standard HS",
+      "color_name": "Aluminium",
+      "hex": "9AA0A6"
+    },
+    "R3-PETG-REDTRANSPARENT": {
+      "product": "ROSA3D PETG Standard HS",
+      "color_name": "Red Transparent",
+      "hex": null
+    },
+    "R3-PETG-BLUEICETRANSPARENT": {
+      "product": "ROSA3D PETG Standard HS",
+      "color_name": "Blue Ice Transparent",
+      "hex": null
+    },
+    "R3-PETG-ULTRAMARINEBLUETRANSPARENT": {
+      "product": "ROSA3D PETG Standard HS",
+      "color_name": "Ultramarine Blue Transparent",
+      "hex": null
+    },
+    "R3-PETG-TRANSPARENTYELLOW": {
+      "product": "ROSA3D PETG Standard HS",
+      "color_name": "Transparent Yellow",
+      "hex": null
+    },
+    "R3-PETG-TRANSPARENT": {
+      "product": "ROSA3D PETG Standard HS",
+      "color_name": "Transparent",
+      "hex": null
+    },
+    "R3-RPETG-BLACK": {
+      "product": "ROSA3D R-PET-G",
+      "color_name": "Black",
+      "hex": "1A1A1A"
+    },
+    "R3-RPETG-WHITE": {
+      "product": "ROSA3D R-PET-G",
+      "color_name": "White",
+      "hex": "F5F5F0"
+    },
+    "R3-RPETG-ALUMINIUM": {
+      "product": "ROSA3D R-PET-G",
+      "color_name": "Aluminium",
+      "hex": "9AA0A6"
+    },
+    "R3-RPETG-REDTRANSPARENT": {
+      "product": "ROSA3D R-PET-G",
+      "color_name": "Red Transparent",
+      "hex": null
+    },
+    "R3-RPETG-BLUEICETRANSPARENT": {
+      "product": "ROSA3D R-PET-G",
+      "color_name": "Blue Ice Transparent",
+      "hex": null
+    },
+    "R3-RPETG-ULTRAMARINEBLUETRANSPARENT": {
+      "product": "ROSA3D R-PET-G",
+      "color_name": "Ultramarine Blue Transparent",
+      "hex": null
+    },
+    "R3-RPETG-TRANSPARENTYELLOW": {
+      "product": "ROSA3D R-PET-G",
+      "color_name": "Transparent Yellow",
+      "hex": null
+    },
+    "R3-RPETG-TRANSPARENT": {
+      "product": "ROSA3D R-PET-G",
+      "color_name": "Transparent",
+      "hex": null
+    },
+    "R3-PCTG-BLACK": {
+      "product": "ROSA3D PCTG",
+      "color_name": "Black",
+      "hex": "1A1A1A"
+    },
+    "R3-PCTG-WHITE": {
+      "product": "ROSA3D PCTG",
+      "color_name": "White",
+      "hex": "F5F5F0"
+    },
+    "R3-PCTG-ALUMINIUM": {
+      "product": "ROSA3D PCTG",
+      "color_name": "Aluminium",
+      "hex": "9AA0A6"
+    },
+    "R3-PCTG-REDTRANSPARENT": {
+      "product": "ROSA3D PCTG",
+      "color_name": "Red Transparent",
+      "hex": null
+    },
+    "R3-PCTG-BLUEICETRANSPARENT": {
+      "product": "ROSA3D PCTG",
+      "color_name": "Blue Ice Transparent",
+      "hex": null
+    },
+    "R3-PCTG-ULTRAMARINEBLUETRANSPARENT": {
+      "product": "ROSA3D PCTG",
+      "color_name": "Ultramarine Blue Transparent",
+      "hex": null
+    },
+    "R3-PCTG-TRANSPARENTYELLOW": {
+      "product": "ROSA3D PCTG",
+      "color_name": "Transparent Yellow",
+      "hex": null
+    },
+    "R3-PCTG-TRANSPARENT": {
+      "product": "ROSA3D PCTG",
+      "color_name": "Transparent",
+      "hex": null
+    },
+    "R3-ASA-BLACK": {
+      "product": "ROSA3D ASA",
+      "color_name": "Black",
+      "hex": "1A1A1A"
+    },
+    "R3-ASA-WHITE": {
+      "product": "ROSA3D ASA",
+      "color_name": "White",
+      "hex": "F5F5F0"
+    },
+    "R3-ASA-GREY": {
+      "product": "ROSA3D ASA",
+      "color_name": "Grey",
+      "hex": "808588"
+    },
+    "R3-ASA-NATURAL": {
+      "product": "ROSA3D ASA",
+      "color_name": "Natural",
+      "hex": null
+    },
+    "R3-ABSP-BLACK": {
+      "product": "ROSA3D ABS+",
+      "color_name": "Black",
+      "hex": "1A1A1A"
+    },
+    "R3-ABSP-WHITE": {
+      "product": "ROSA3D ABS+",
+      "color_name": "White",
+      "hex": "F5F5F0"
+    },
+    "R3-ABSP-GREY": {
+      "product": "ROSA3D ABS+",
+      "color_name": "Grey",
+      "hex": "808588"
     }
   },
   "_last_updated": "2026-05-30T11:09:40.114739",
@@ -6026,6 +6436,15 @@
       "source": "curated-offline",
       "logo_path": "",
       "updated_at": "2026-05-30T14:00:03.902448"
+    },
+    "ROSA3D": {
+      "id": "rosa3d",
+      "name": "ROSA3D",
+      "website": "https://www.rosa3d.pl/en/",
+      "origin": "PL",
+      "source": "curated-offline",
+      "logo_path": "",
+      "updated_at": "2026-05-30T14:07:44.517962"
     }
   }
 }
