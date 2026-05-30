@@ -21,11 +21,11 @@ consent.
 
 | Source | License |
 |---|---|
-| SpoolmanDB | MIT |
-| Open Filament Database | MIT |
-| Polymaker-Preset (official) | MIT |
-| TheFilamentDB | CC-BY 4.0 (attribution required) |
-| Polymaker Wiki / Wholesale | factual data (© Polymaker) |
+| [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) | MIT |
+| [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database) | MIT |
+| [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) (official) | MIT |
+| [TheFilamentDB](https://thefilamentdb.issou.best/) | CC-BY 4.0 (attribution required) |
+| [Polymaker Wiki / Wholesale](https://polymaker.com) | factual data (© Polymaker) |
 
 ## Resetting your choice
 

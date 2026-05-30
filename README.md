@@ -4,8 +4,8 @@
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![Status: for fun](https://img.shields.io/badge/status-for%20fun%20%C2%B7%20free%20time-blueviolet)
 
-> Write OpenSpool / NFC spool tags for the **open-firmware Snapmaker U1**, so
-> your printer auto-recognizes the filament loaded in your PolyDryer + PolyBox
+> Write OpenSpool / NFC spool tags for the **[open-firmware Snapmaker U1](https://snapmaker.com/snapmaker-u1)**, so
+> your printer auto-recognizes the filament loaded in your [PolyDryer](https://polymaker.com/product/polydryer/) + [PolyBox](https://polymaker.com/product/polybox/)
 > or AMS-style feeders.
 
 **SpoolScribe** is a small, cross-platform desktop app (Windows / macOS / Linux)
@@ -34,8 +34,8 @@ project, developed when time allows. No roadmap pressure, no commercial intent.
 
 ## Why this exists
 
-The Snapmaker U1's firmware was opened up (via the paxx12 fork), exposing the
-onboard **RFID reader**. That means spools sitting in **PolyDryer + PolyBox**
+The [Snapmaker U1](https://snapmaker.com/snapmaker-u1)'s firmware was opened up (via the [paxx12 fork](https://github.com/paxx12)), exposing the
+onboard **RFID reader**. That means spools sitting in **[PolyDryer](https://polymaker.com/product/polydryer/) + [PolyBox](https://polymaker.com/product/polybox/)**
 dryers or **AMS-style** multi-material feeders can be identified automatically —
 *if* each spool carries a tag describing it. SpoolScribe produces those tags in
 the open [OpenSpool](https://github.com/spuder/OpenSpool) format. Just for fun.
@@ -93,7 +93,7 @@ Bambu Lab, eSun, and more, via the Open Filament Database) is on the
 | `convert_profile.py` | Command-line interface. |
 | `scripts/` | Data-update scrapers (standard library only). |
 | `data/` | Bundled database + brand logo. |
-| `orca_profiles/` | Official OrcaSlicer presets (temperature overrides). |
+| `orca_profiles/` | Official [OrcaSlicer](https://github.com/SoftFever/OrcaSlicer) presets (temperature overrides). |
 
 ## Documentation
 
@@ -114,7 +114,7 @@ Bambu Lab, eSun, and more, via the Open Filament Database) is on the
 - [TheFilamentDB](https://thefilamentdb.issou.best/) (CC-BY 4.0)
 - [OpenSpool](https://github.com/spuder/OpenSpool) format
 - [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us) — web tool I use to write 216 NFC tags
-- The **paxx12** Snapmaker U1 firmware fork that makes the RFID reader usable
+- The [**paxx12**](https://github.com/paxx12) Snapmaker U1 firmware fork that makes the RFID reader usable
 
 ## License
 

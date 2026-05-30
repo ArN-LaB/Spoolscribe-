@@ -12,13 +12,13 @@ is the optional, consent-gated database update. See `PRIVACY.md`.
 
 ## Is the data free to use?
 
-The code is MIT. Most data sources are MIT; TheFilamentDB is CC-BY 4.0
+The code is MIT. Most data sources are MIT; [TheFilamentDB](https://thefilamentdb.issou.best/) is CC-BY 4.0
 (attribution provided). Some factual values come from Polymaker's public pages.
 Full details: `DATA_SOURCES.md`.
 
 ## Do I need the paxx12 firmware?
 
-To have the **Snapmaker U1 read tags automatically**, yes — that fork exposes the
+To have the **[Snapmaker U1](https://snapmaker.com/snapmaker-u1) read tags automatically**, yes — the [paxx12 fork](https://github.com/paxx12) exposes the
 RFID reader. SpoolScribe itself just generates the tag payloads and works on any
 machine.
 

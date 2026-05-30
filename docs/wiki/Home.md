@@ -1,7 +1,7 @@
 # SpoolScribe Wiki
 
 Welcome! This wiki collects user-facing guides for **SpoolScribe** — writing
-OpenSpool / NFC spool tags for the open-firmware **Snapmaker U1**.
+[OpenSpool](https://github.com/spuder/OpenSpool) / NFC spool tags for the open-firmware **[Snapmaker U1](https://snapmaker.com/snapmaker-u1)**.
 
 > These pages live in the repo under `docs/wiki/` as a starter. Copy them into
 > the GitHub Wiki (the **Wiki** tab) to publish and edit them online.

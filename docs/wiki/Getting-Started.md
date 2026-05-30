@@ -4,7 +4,7 @@
 
 ### Option A — standalone app (no Python)
 
-Download the build for your OS from the **Releases** page (produced by CI), unzip,
+Download the build for your OS from the **[Releases](https://github.com/ArN-LaB/Spoolscribe-/releases)** page (produced by CI), unzip,
 and run `SpoolScribe` (`.exe` on Windows, `.app` on macOS, binary on Linux).
 
 ### Option B — from source
@@ -26,7 +26,7 @@ python app_gui.py
 ## 3. Generate a tag payload
 
 1. Select a SKU.
-2. (Optional) Click **Inspect JSON** to review the OpenSpool payload.
+2. (Optional) Click **Inspect JSON** to review the [OpenSpool](https://github.com/spuder/OpenSpool) payload.
 3. Click **Generate NFC JSON**. The file is written to the `output/` folder.
 
 Next: [[Writing RFID Tags|Writing-RFID-Tags]].

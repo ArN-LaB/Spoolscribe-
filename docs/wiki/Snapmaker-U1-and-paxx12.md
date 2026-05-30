@@ -1,14 +1,14 @@
 # Snapmaker U1 & the paxx12 firmware fork
 
-SpoolScribe exists because the **Snapmaker U1** firmware was opened up by the
-**paxx12** community fork, which exposes the printer's onboard **RFID reader**.
+SpoolScribe exists because the **[Snapmaker U1](https://snapmaker.com/snapmaker-u1)** firmware was opened up by the
+[**paxx12**](https://github.com/paxx12) community fork, which exposes the printer's onboard **RFID reader**.
 
 ## Why this matters
 
 With the RFID reader accessible, the U1 can **read a tag on each spool** and know
 exactly what filament is loaded — including spools sitting in:
 
-- **PolyDryer + PolyBox** drying/storage boxes, and
+- **[PolyDryer](https://polymaker.com/product/polydryer/) + [PolyBox](https://polymaker.com/product/polybox/)** drying/storage boxes, and
 - **AMS-style** multi-material feeders.
 
 No more manually selecting the filament for each slot.
@@ -19,7 +19,7 @@ No more manually selecting the filament for each slot.
 2. You **write** that payload onto an NFC/RFID tag (see
    [[Writing RFID Tags|Writing-RFID-Tags]]).
 3. You stick the tag on the spool / spool holder.
-4. The **U1 (paxx12 firmware)** reads it and auto-configures the filament.
+4. The **U1 ([paxx12 firmware](https://github.com/paxx12))** reads it and auto-configures the filament.
 
 ## Important
 
