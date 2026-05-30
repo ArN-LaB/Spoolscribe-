@@ -1,6 +1,6 @@
 [project]
 name = "spoolscribe"
-version = "0.1.5"
+version = "0.1.6"
 description = "Write OpenSpool / NFC spool tags for the open-firmware Snapmaker U1."
 readme = "README.md"
 requires-python = ">=3.10"

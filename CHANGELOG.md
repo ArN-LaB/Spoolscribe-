@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-05-30
+
+### Changed
+- **Header cleanup.** The "SpoolScribe" wordmark text is removed from the
+  top bar — the window title already carries it. The app logo in the header
+  is now a plain static icon (36 px) instead of a second spinning widget.
+- **Single animated logo.** Only the empty-state panel shows the spinning
+  spool (96 px); the header no longer duplicates it. The animation is now
+  clearly visible at that size.
+
 ## [0.1.5] - 2026-05-30
 
 ### Added

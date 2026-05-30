@@ -237,30 +237,30 @@ class MainWindow(QMainWindow):
         root.setContentsMargins(14, 12, 14, 10)
         root.setSpacing(10)
 
-        # ── Barre du haut : logo + nom · recherche · bouton update ──────
+        # ── Barre du haut : logo · recherche · bouton update ──────
         top = QHBoxLayout()
         top.setSpacing(10)
 
-        brand = QHBoxLayout()
-        brand.setSpacing(9)
         app_logo_path = core.app_logo_abs_path()
-        if HAS_SVG and app_logo_path:
-            self.app_logo = SpinningLogo(app_logo_path, size=30)
+        app_logo_lbl = QLabel()
+        app_logo_lbl.setFixedSize(36, 36)
+        if app_logo_path:
+            pm = QPixmap(app_logo_path) if app_logo_path.endswith(".png") else None
+            if pm is None and HAS_SVG:
+                from PySide6.QtSvg import QSvgRenderer
+                renderer = QSvgRenderer(app_logo_path)
+                pm = QPixmap(36, 36)
+                pm.fill(Qt.transparent)
+                _p = QPainter(pm)
+                renderer.render(_p)
+                _p.end()
+            if pm and not pm.isNull():
+                app_logo_lbl.setPixmap(pm.scaled(36, 36, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         else:
-            self.app_logo = QLabel()
             ic = core.app_icon_abs_path()
             if ic:
-                self.app_logo.setPixmap(QPixmap(ic).scaled(
-                    30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-            self.app_logo.setFixedSize(30, 30)
-        brand.addWidget(self.app_logo)
-        self.wordmark = QLabel("SpoolScribe")
-        wf = QFont()
-        wf.setPointSize(13)
-        wf.setBold(True)
-        self.wordmark.setFont(wf)
-        brand.addWidget(self.wordmark)
-        top.addLayout(brand)
+                app_logo_lbl.setPixmap(QPixmap(ic).scaled(36, 36, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        top.addWidget(app_logo_lbl)
 
         top.addSpacing(8)
 
@@ -341,14 +341,14 @@ class MainWindow(QMainWindow):
 
         app_logo_path = core.app_logo_abs_path()
         if HAS_SVG and app_logo_path:
-            big = SpinningLogo(app_logo_path, size=104)
+            big = SpinningLogo(app_logo_path, size=96)
         else:
             big = QLabel()
             ic = core.app_icon_abs_path()
             if ic:
                 big.setPixmap(QPixmap(ic).scaled(
-                    104, 104, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-            big.setFixedSize(104, 104)
+                    96, 96, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            big.setFixedSize(96, 96)
         wrap = QHBoxLayout()
         wrap.addStretch(1)
         wrap.addWidget(big)
