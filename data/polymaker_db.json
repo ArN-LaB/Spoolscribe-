@@ -6414,7 +6414,7 @@
       "hex": "808588"
     }
   },
-  "_last_updated": "2026-05-30T14:18:36.514277",
+  "_last_updated": "2026-05-30T14:42:42.462736",
   "_brands": {
     "Polymaker": {
       "id": "polymaker",
@@ -6433,18 +6433,24 @@
       "name": "Prusament",
       "website": "https://prusament.com/",
       "origin": "CZ",
-      "source": "curated-offline",
-      "logo_path": "",
-      "updated_at": "2026-05-30T14:00:03.902448"
+      "source": "openprinttag",
+      "logo": "logo.png",
+      "logo_path": "data/prusament_logo.png",
+      "logo_source": "OpenFilamentCollective/open-filament-database",
+      "logo_url": "https://raw.githubusercontent.com/OpenFilamentCollective/open-filament-database/main/data/prusament/logo.png",
+      "updated_at": "2026-05-30T14:42:40.748698"
     },
     "ROSA3D": {
-      "id": "rosa3d",
-      "name": "ROSA3D",
-      "website": "https://www.rosa3d.pl/en/",
+      "id": "rosa3d_filaments",
+      "name": "ROSA3D Filaments",
+      "website": "https://rosa3dfilaments.com",
       "origin": "PL",
-      "source": "curated-offline",
-      "logo_path": "",
-      "updated_at": "2026-05-30T14:07:44.517962"
+      "source": "openprinttag",
+      "logo": "logo.png",
+      "logo_path": "data/rosa3d_logo.png",
+      "logo_source": "OpenFilamentCollective/open-filament-database",
+      "logo_url": "https://raw.githubusercontent.com/OpenFilamentCollective/open-filament-database/main/data/rosa3d_filaments/logo.png",
+      "updated_at": "2026-05-30T14:42:42.462671"
     }
   }
 }

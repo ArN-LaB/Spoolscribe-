@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-05-30
+
+### Added
+- **Brand logos for Prusament and ROSA3D.** The detail panel now shows the
+  brand logo when a Prusament or ROSA3D filament is selected, just like
+  Polymaker. Logos are fetched from
+  [OpenFilamentCollective/open-filament-database](https://github.com/OpenFilamentCollective/open-filament-database)
+  (MIT) and stored locally as `data/prusament_logo.png` and
+  `data/rosa3d_logo.png`.
+- New script `scripts/sync_multibrand_assets.py` wired into `UPDATE_PIPELINE`.
+
+### Changed
+- **Logo widget in the detail panel** now supports both SVG (Polymaker) and
+  PNG (Prusament, ROSA3D) formats — no longer limited to `QSvgWidget`.
+
 ## [0.1.4] - 2026-05-30
 
 ### Added

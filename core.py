@@ -117,6 +117,7 @@ UPDATE_PIPELINE: list[tuple[str, str, int]] = [
     ("scrape_thefilamentdb_hex.py",    "Scrape hex TheFilamentDB",   60),
     ("scrape_internal_exact_hex.py",   "Scrape hex internal exact",  30),
     ("sync_polymaker_brand_assets.py", "Sync Polymaker brand assets",60),
+    ("sync_multibrand_assets.py",      "Sync Prusament/ROSA3D assets",60),
     ("seed_prusament.py",               "Seed Prusament (table interne)",30),
     ("seed_rosa3d.py",                   "Seed ROSA3D (table interne)",   30),
     ("scrape_spoolman_multibrand_hex.py",    "Scrape hex SpoolmanDB (Prusament/ROSA3D)",   60),
@@ -142,9 +143,9 @@ NETWORK_SOURCES: list[dict] = [
     {"name": "Polymaker US Wholesale", "license": "Catalogue factuel — © Polymaker",
      "host": "us-wholesale.polymaker.com"},
     {"name": "Prusament (spécifications matériaux)", "license": "Données factuelles — © Prusa Research",
-     "host": "table interne hors-ligne + SpoolmanDB + TheFilamentDB (HEX couleurs)"},
+     "host": "table interne hors-ligne + SpoolmanDB + TheFilamentDB (HEX couleurs) + Open Filament Database (logo)"},
     {"name": "ROSA3D (spécifications matériaux)", "license": "Données factuelles — © ROSA PLAST",
-     "host": "table interne hors-ligne + SpoolmanDB (HEX couleurs)"},
+     "host": "table interne hors-ligne + SpoolmanDB (HEX couleurs) + Open Filament Database (logo)"},
 ]
 
 

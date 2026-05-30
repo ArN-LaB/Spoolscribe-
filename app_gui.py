@@ -389,11 +389,9 @@ class MainWindow(QMainWindow):
         # En-tête : logo de marque + titre/SKU
         head = QHBoxLayout()
         head.setSpacing(12)
-        if HAS_SVG:
-            self.logo = QSvgWidget()
-        else:
-            self.logo = QLabel("")
+        self.logo = QLabel()
         self.logo.setFixedSize(64, 64)
+        self.logo.setAlignment(Qt.AlignCenter)
         head.addWidget(self.logo, 0, Qt.AlignTop)
 
         titles = QVBoxLayout()
@@ -577,18 +575,30 @@ class MainWindow(QMainWindow):
 
     def _refresh_logo(self, brand: str = "Polymaker"):
         abs_path = core.logo_abs_path(self.db, brand)
-        if HAS_SVG and abs_path and os.path.exists(abs_path):
+        if abs_path and os.path.exists(abs_path):
+            ext = os.path.splitext(abs_path)[1].lower()
+            pm = None
             try:
-                self.logo.load(abs_path)
+                if ext == ".svg" and HAS_SVG:
+                    from PySide6.QtSvg import QSvgRenderer
+                    renderer = QSvgRenderer(abs_path)
+                    pm = QPixmap(64, 64)
+                    pm.fill(Qt.transparent)
+                    painter = QPainter(pm)
+                    renderer.render(painter)
+                    painter.end()
+                elif ext in (".png", ".jpg", ".jpeg", ".webp"):
+                    pm = QPixmap(abs_path).scaled(
+                        64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            except Exception:
+                pm = None
+            if pm and not pm.isNull():
+                self.logo.setPixmap(pm)
                 self.logo.setVisible(True)
                 return
-            except Exception:
-                pass
-        # Marque sans logo embarqué (ex. Prusament) : on masque proprement.
-        if HAS_SVG:
-            self.logo.setVisible(bool(abs_path))
-        else:
-            self.logo.setText("" if abs_path else "(SVG non dispo)")
+        # Marque sans logo : on masque le widget.
+        self.logo.setPixmap(QPixmap())
+        self.logo.setVisible(False)
 
     # ── Sélection ────────────────────────────────────────────────────────
     def _on_select(self):
