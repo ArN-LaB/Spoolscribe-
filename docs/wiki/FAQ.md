@@ -18,7 +18,7 @@ Full details: `DATA_SOURCES.md`.
 
 ## Do I need the paxx12 firmware?
 
-To have the **[Snapmaker U1](https://snapmaker.com/snapmaker-u1) read tags automatically**, yes — the [paxx12 fork](https://github.com/paxx12) exposes the
+To have the **[Snapmaker U1](https://snapmaker.com/snapmaker-u1) read tags automatically**, yes — the [paxx12 fork](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) exposes the
 RFID reader. SpoolScribe itself just generates the tag payloads and works on any
 machine.
 

@@ -12,7 +12,7 @@
 that lets you look up a filament by its **SKU**, see its color, temperatures and
 density, and generate the **OpenSpool JSON payload** used to program an
 **RFID/NFC tag**. Pair it with the [paxx12 Snapmaker U1 firmware
-fork](https://github.com/paxx12) that exposes the machine's RFID reader, and the
+fork](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) that exposes the machine's RFID reader, and the
 U1 can identify each spool automatically.
 
 Made by [@ArN-LaB](https://github.com/ArN-LaB) — a **for-fun, free-time** hobby
@@ -34,7 +34,7 @@ project, developed when time allows. No roadmap pressure, no commercial intent.
 
 ## Why this exists
 
-The [Snapmaker U1](https://snapmaker.com/snapmaker-u1)'s firmware was opened up (via the [paxx12 fork](https://github.com/paxx12)), exposing the
+The [Snapmaker U1](https://snapmaker.com/snapmaker-u1)'s firmware was opened up (via the [paxx12 fork](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware)), exposing the
 onboard **RFID reader**. That means spools sitting in **[PolyDryer](https://polymaker.com/product/polydryer/) + [PolyBox](https://polymaker.com/product/polybox/)**
 dryers or **AMS-style** multi-material feeders can be identified automatically —
 *if* each spool carries a tag describing it. SpoolScribe produces those tags in
@@ -114,7 +114,7 @@ Bambu Lab, eSun, and more, via the Open Filament Database) is on the
 - [TheFilamentDB](https://thefilamentdb.issou.best/) (CC-BY 4.0)
 - [OpenSpool](https://github.com/spuder/OpenSpool) format
 - [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us) — web tool I use to write 216 NFC tags
-- The [**paxx12**](https://github.com/paxx12) Snapmaker U1 firmware fork that makes the RFID reader usable
+- The [**paxx12**](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) Snapmaker U1 firmware fork that makes the RFID reader usable
 
 ## License
 
