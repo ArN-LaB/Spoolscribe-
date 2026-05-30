@@ -1,0 +1,41 @@
+# Dependabot — mises à jour automatiques des dépendances.
+# Docs : https://docs.github.com/code-security/dependabot/dependabot-version-updates
+version: 2
+updates:
+  # Dépendances Python (PySide6, PyInstaller…) déclarées dans requirements.txt.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "deps"
+    groups:
+      python-deps:
+        patterns:
+          - "*"
+
+  # Actions GitHub utilisées par le workflow de build (.github/workflows/*).
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions-deps:
+        patterns:
+          - "*"
