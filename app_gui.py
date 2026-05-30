@@ -575,16 +575,20 @@ class MainWindow(QMainWindow):
             f"HEX manquants: {st['missing_hex']}    DB: {age_str}"
         )
 
-    def _refresh_logo(self):
-        abs_path = core.logo_abs_path(self.db)
+    def _refresh_logo(self, brand: str = "Polymaker"):
+        abs_path = core.logo_abs_path(self.db, brand)
         if HAS_SVG and abs_path and os.path.exists(abs_path):
             try:
                 self.logo.load(abs_path)
+                self.logo.setVisible(True)
                 return
             except Exception:
                 pass
-        if not HAS_SVG:
-            self.logo.setText("(SVG non dispo)")
+        # Marque sans logo embarqué (ex. Prusament) : on masque proprement.
+        if HAS_SVG:
+            self.logo.setVisible(bool(abs_path))
+        else:
+            self.logo.setText("" if abs_path else "(SVG non dispo)")
 
     # ── Sélection ────────────────────────────────────────────────────────
     def _on_select(self):
@@ -635,6 +639,8 @@ class MainWindow(QMainWindow):
         self._field_widgets["Bed"].setText(view.bed_str)
         self._field_widgets["Densité"].setText(view.density_str)
         self._field_widgets["Marque"].setText(view.product_data.get("brand", "Polymaker"))
+
+        self._refresh_logo(view.product_data.get("brand", "Polymaker"))
 
         self._cur_hex = view.hex
         self._paint_swatch()

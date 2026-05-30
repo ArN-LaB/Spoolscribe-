@@ -824,6 +824,72 @@
       "bed_max_temp": 55,
       "diameter": 1.75,
       "density": 1.22
+    },
+    "Prusament PLA": {
+      "type": "PLA",
+      "subtype": null,
+      "brand": "Prusament",
+      "min_temp": 215,
+      "max_temp": 225,
+      "bed_min_temp": 60,
+      "bed_max_temp": 60,
+      "diameter": 1.75,
+      "density": 1.24
+    },
+    "Prusament PLA Refill": {
+      "type": "PLA",
+      "subtype": "Refill",
+      "brand": "Prusament",
+      "min_temp": 215,
+      "max_temp": 225,
+      "bed_min_temp": 60,
+      "bed_max_temp": 60,
+      "diameter": 1.75,
+      "density": 1.24
+    },
+    "Prusament PETG": {
+      "type": "PETG",
+      "subtype": null,
+      "brand": "Prusament",
+      "min_temp": 240,
+      "max_temp": 260,
+      "bed_min_temp": 85,
+      "bed_max_temp": 90,
+      "diameter": 1.75,
+      "density": 1.27
+    },
+    "Prusament PETG Refill": {
+      "type": "PETG",
+      "subtype": "Refill",
+      "brand": "Prusament",
+      "min_temp": 240,
+      "max_temp": 260,
+      "bed_min_temp": 85,
+      "bed_max_temp": 90,
+      "diameter": 1.75,
+      "density": 1.27
+    },
+    "Prusament ASA": {
+      "type": "ASA",
+      "subtype": null,
+      "brand": "Prusament",
+      "min_temp": 260,
+      "max_temp": 280,
+      "bed_min_temp": 100,
+      "bed_max_temp": 110,
+      "diameter": 1.75,
+      "density": 1.07
+    },
+    "Prusament PC Blend": {
+      "type": "PC",
+      "subtype": "Blend",
+      "brand": "Prusament",
+      "min_temp": 270,
+      "max_temp": 285,
+      "bed_min_temp": 110,
+      "bed_max_temp": 115,
+      "diameter": 1.75,
+      "density": 1.22
     }
   },
   "_skus": {
@@ -5691,6 +5757,251 @@
       "product": "PolySmooth",
       "color_name": "Beige",
       "hex": "EBD591"
+    },
+    "PM-PLA-JETBLACK": {
+      "product": "Prusament PLA",
+      "color_name": "Jet Black",
+      "hex": "1A1A1A"
+    },
+    "PM-PLA-GALAXYBLACK": {
+      "product": "Prusament PLA",
+      "color_name": "Galaxy Black",
+      "hex": "2B2C30"
+    },
+    "PM-PLA-VANILLAWHITE": {
+      "product": "Prusament PLA",
+      "color_name": "Vanilla White",
+      "hex": "F3F0E6"
+    },
+    "PM-PLA-PRUSAORANGE": {
+      "product": "Prusament PLA",
+      "color_name": "Prusa Orange",
+      "hex": "FA6831"
+    },
+    "PM-PLA-LIPSTICKRED": {
+      "product": "Prusament PLA",
+      "color_name": "Lipstick Red",
+      "hex": "B3122A"
+    },
+    "PM-PLA-AZUREBLUE": {
+      "product": "Prusament PLA",
+      "color_name": "Azure Blue",
+      "hex": "1F6FB2"
+    },
+    "PM-PLA-PINEAPPLEYELLOW": {
+      "product": "Prusament PLA",
+      "color_name": "Pineapple Yellow",
+      "hex": "F5C518"
+    },
+    "PM-PLA-ARMYGREEN": {
+      "product": "Prusament PLA",
+      "color_name": "Army Green",
+      "hex": "4B5320"
+    },
+    "PM-PLA-GRAVITYGREY": {
+      "product": "Prusament PLA",
+      "color_name": "Gravity Grey",
+      "hex": "5A5E63"
+    },
+    "PM-PLA-MSPINK": {
+      "product": "Prusament PLA",
+      "color_name": "Ms. Pink",
+      "hex": "E0218A"
+    },
+    "PM-PLA-GALAXYSILVER": {
+      "product": "Prusament PLA",
+      "color_name": "Galaxy Silver",
+      "hex": null
+    },
+    "PM-PLA-OPALGREEN": {
+      "product": "Prusament PLA",
+      "color_name": "Opal Green",
+      "hex": null
+    },
+    "PM-PLA-MYSTICBROWN": {
+      "product": "Prusament PLA",
+      "color_name": "Mystic Brown",
+      "hex": null
+    },
+    "PM-PLAR-JETBLACK": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Jet Black",
+      "hex": "1A1A1A"
+    },
+    "PM-PLAR-GALAXYBLACK": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Galaxy Black",
+      "hex": "2B2C30"
+    },
+    "PM-PLAR-VANILLAWHITE": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Vanilla White",
+      "hex": "F3F0E6"
+    },
+    "PM-PLAR-PRUSAORANGE": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Prusa Orange",
+      "hex": "FA6831"
+    },
+    "PM-PLAR-LIPSTICKRED": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Lipstick Red",
+      "hex": "B3122A"
+    },
+    "PM-PLAR-AZUREBLUE": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Azure Blue",
+      "hex": "1F6FB2"
+    },
+    "PM-PLAR-PINEAPPLEYELLOW": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Pineapple Yellow",
+      "hex": "F5C518"
+    },
+    "PM-PLAR-ARMYGREEN": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Army Green",
+      "hex": "4B5320"
+    },
+    "PM-PLAR-GRAVITYGREY": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Gravity Grey",
+      "hex": "5A5E63"
+    },
+    "PM-PLAR-MSPINK": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Ms. Pink",
+      "hex": "E0218A"
+    },
+    "PM-PLAR-GALAXYSILVER": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Galaxy Silver",
+      "hex": null
+    },
+    "PM-PLAR-OPALGREEN": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Opal Green",
+      "hex": null
+    },
+    "PM-PLAR-MYSTICBROWN": {
+      "product": "Prusament PLA Refill",
+      "color_name": "Mystic Brown",
+      "hex": null
+    },
+    "PM-PETG-JETBLACK": {
+      "product": "Prusament PETG",
+      "color_name": "Jet Black",
+      "hex": "1A1A1A"
+    },
+    "PM-PETG-ANTHRACITEGREY": {
+      "product": "Prusament PETG",
+      "color_name": "Anthracite Grey",
+      "hex": "3A3D40"
+    },
+    "PM-PETG-SIGNALWHITE": {
+      "product": "Prusament PETG",
+      "color_name": "Signal White",
+      "hex": "F5F5F0"
+    },
+    "PM-PETG-PRUSAORANGE": {
+      "product": "Prusament PETG",
+      "color_name": "Prusa Orange",
+      "hex": "FA6831"
+    },
+    "PM-PETG-CARMINERED": {
+      "product": "Prusament PETG",
+      "color_name": "Carmine Red",
+      "hex": "9B1B2E"
+    },
+    "PM-PETG-OCEANBLUE": {
+      "product": "Prusament PETG",
+      "color_name": "Ocean Blue",
+      "hex": "1A5C8A"
+    },
+    "PM-PETG-NEONGREEN": {
+      "product": "Prusament PETG",
+      "color_name": "Neon Green",
+      "hex": "39FF14"
+    },
+    "PM-PETG-CLEAR": {
+      "product": "Prusament PETG",
+      "color_name": "Clear",
+      "hex": null
+    },
+    "PM-PETGR-JETBLACK": {
+      "product": "Prusament PETG Refill",
+      "color_name": "Jet Black",
+      "hex": "1A1A1A"
+    },
+    "PM-PETGR-ANTHRACITEGREY": {
+      "product": "Prusament PETG Refill",
+      "color_name": "Anthracite Grey",
+      "hex": "3A3D40"
+    },
+    "PM-PETGR-SIGNALWHITE": {
+      "product": "Prusament PETG Refill",
+      "color_name": "Signal White",
+      "hex": "F5F5F0"
+    },
+    "PM-PETGR-PRUSAORANGE": {
+      "product": "Prusament PETG Refill",
+      "color_name": "Prusa Orange",
+      "hex": "FA6831"
+    },
+    "PM-PETGR-CARMINERED": {
+      "product": "Prusament PETG Refill",
+      "color_name": "Carmine Red",
+      "hex": "9B1B2E"
+    },
+    "PM-PETGR-OCEANBLUE": {
+      "product": "Prusament PETG Refill",
+      "color_name": "Ocean Blue",
+      "hex": "1A5C8A"
+    },
+    "PM-PETGR-NEONGREEN": {
+      "product": "Prusament PETG Refill",
+      "color_name": "Neon Green",
+      "hex": "39FF14"
+    },
+    "PM-PETGR-CLEAR": {
+      "product": "Prusament PETG Refill",
+      "color_name": "Clear",
+      "hex": null
+    },
+    "PM-ASA-JETBLACK": {
+      "product": "Prusament ASA",
+      "color_name": "Jet Black",
+      "hex": "1A1A1A"
+    },
+    "PM-ASA-SAPPHIREBLUE": {
+      "product": "Prusament ASA",
+      "color_name": "Sapphire Blue",
+      "hex": "1C3F94"
+    },
+    "PM-ASA-SIGNALWHITE": {
+      "product": "Prusament ASA",
+      "color_name": "Signal White",
+      "hex": "F5F5F0"
+    },
+    "PM-ASA-PRUSAORANGE": {
+      "product": "Prusament ASA",
+      "color_name": "Prusa Orange",
+      "hex": "FA6831"
+    },
+    "PM-PCB-JETBLACK": {
+      "product": "Prusament PC Blend",
+      "color_name": "Jet Black",
+      "hex": "1A1A1A"
+    },
+    "PM-PCB-TRANSPARENT": {
+      "product": "Prusament PC Blend",
+      "color_name": "Transparent",
+      "hex": null
+    },
+    "PM-PCB-URBANGREY": {
+      "product": "Prusament PC Blend",
+      "color_name": "Urban Grey",
+      "hex": "6B6F74"
     }
   },
   "_last_updated": "2026-05-30T11:09:40.114739",
@@ -5706,6 +6017,15 @@
       "logo_source": "OpenFilamentCollective/open-filament-database",
       "logo_url": "https://raw.githubusercontent.com/OpenFilamentCollective/open-filament-database/main/data/polymaker/logo.svg",
       "updated_at": "2026-05-30T11:09:30.377278"
+    },
+    "Prusament": {
+      "id": "prusament",
+      "name": "Prusament",
+      "website": "https://prusament.com/",
+      "origin": "CZ",
+      "source": "curated-offline",
+      "logo_path": "",
+      "updated_at": "2026-05-30T14:00:03.902448"
     }
   }
 }

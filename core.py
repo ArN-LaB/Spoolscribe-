@@ -117,6 +117,7 @@ UPDATE_PIPELINE: list[tuple[str, str, int]] = [
     ("scrape_thefilamentdb_hex.py",    "Scrape hex TheFilamentDB",   60),
     ("scrape_internal_exact_hex.py",   "Scrape hex internal exact",  30),
     ("sync_polymaker_brand_assets.py", "Sync Polymaker brand assets",60),
+    ("seed_prusament.py",               "Seed Prusament (table interne)",30),
     ("download_orca_profiles.py",      "Download profils Orca",     120),
     ("import_orca_profiles.py",        "Import profils Orca",        60),
 ]
@@ -137,6 +138,8 @@ NETWORK_SOURCES: list[dict] = [
      "host": "wiki.polymaker.com"},
     {"name": "Polymaker US Wholesale", "license": "Catalogue factuel — © Polymaker",
      "host": "us-wholesale.polymaker.com"},
+    {"name": "Prusament (spécifications matériaux)", "license": "Données factuelles — © Prusa Research",
+     "host": "table interne hors-ligne (aucun accès réseau)"},
 ]
 
 
@@ -360,9 +363,9 @@ def app_icon_abs_path() -> Optional[str]:
     return None
 
 
-def logo_abs_path(db: dict) -> Optional[str]:
+def logo_abs_path(db: dict, brand: str = "Polymaker") -> Optional[str]:
     """Chemin absolu du logo de marque, ou None."""
-    logo_path = db.get("_brands", {}).get("Polymaker", {}).get("logo_path", "")
+    logo_path = db.get("_brands", {}).get(brand, {}).get("logo_path", "")
     if not logo_path:
         return None
     rel = logo_path.replace("/", os.sep)
@@ -431,8 +434,10 @@ def get_sku_view(db: dict, sku: str) -> Optional[SkuView]:
     product_data = db.get("_products", {}).get(product_name)
     if not product_data:
         return None
-    brand_meta = (db.get("_brands", {}).get("Polymaker", {})
-                  if product_data.get("brand") == "Polymaker" else None)
+    # Métadonnées de marque résolues dynamiquement (multi-marques :
+    # Polymaker, Prusament, …) à partir du champ `brand` du produit.
+    brand = product_data.get("brand")
+    brand_meta = db.get("_brands", {}).get(brand) if brand else None
     return SkuView(
         sku=sku,
         product=product_name,
