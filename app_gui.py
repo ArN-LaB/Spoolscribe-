@@ -12,10 +12,13 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 import traceback
 
-from PySide6.QtCore import Qt, QThread, Signal, QSize
-from PySide6.QtGui import QColor, QFont, QPixmap, QPainter, QIcon, QPalette
+from PySide6.QtCore import Qt, QThread, Signal, QSize, QTimer, QRectF
+from PySide6.QtGui import (
+    QColor, QFont, QPixmap, QPainter, QIcon, QPalette, QPainterPath,
+)
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
     QLineEdit, QTableWidget, QTableWidgetItem, QLabel, QPushButton, QPlainTextEdit,
@@ -24,12 +27,92 @@ from PySide6.QtWidgets import (
 )
 
 try:
-    from PySide6.QtSvgWidgets import QSvgWidget
+    from PySide6.QtSvgWidgets import QSvgWidget  # noqa: F401  (capability probe)
+    from PySide6.QtSvg import QSvgRenderer
     HAS_SVG = True
 except Exception:
     HAS_SVG = False
 
 import core
+
+
+# ─── Logo animé : la bobine tourne, le fil reste posé ─────────────────────
+class SpinningLogo(QWidget):
+    """Affiche le logo SVG et fait tourner la seule face de bobine (#disc).
+
+    Le fil (#strand) et l'ombre portée restent immobiles : la bobine semble
+    *dévider* le trait qu'elle écrit. Rotation lente et continue au repos,
+    accélération nette et assumée au survol, retour en douceur — une logique
+    affirmée mais sans esbroufe.
+    """
+
+    _VIEWBOX = 512.0          # le SVG est carré 512×512
+    _DISC_CENTER = (216.0, 252.0)
+    _DISC_RADIUS = 150.0
+    _IDLE_SPEED = 22.0        # deg/s au repos (un tour ≈ 16 s)
+    _HOVER_SPEED = 165.0      # deg/s au survol — franc, assumé
+    _EASE = 6.0               # vitesse de convergence (plus grand = plus vif)
+
+    def __init__(self, svg_path: str, size: int = 30, parent: QWidget | None = None):
+        super().__init__(parent)
+        self._renderer = QSvgRenderer(svg_path)
+        self._angle = 0.0
+        self._speed = self._IDLE_SPEED
+        self._target = self._IDLE_SPEED
+        self.setFixedSize(size, size)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self.setCursor(Qt.PointingHandCursor)
+        self._last = time.perf_counter()
+        self._timer = QTimer(self)
+        self._timer.timeout.connect(self._tick)
+        self._timer.start(16)  # ~60 fps
+
+    # Survol : on assume une accélération nette.
+    def enterEvent(self, event):
+        self._target = self._HOVER_SPEED
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self._target = self._IDLE_SPEED
+        super().leaveEvent(event)
+
+    def _tick(self):
+        now = time.perf_counter()
+        dt = min(now - self._last, 0.05)  # borne anti-saccade
+        self._last = now
+        # Lissage exponentiel de la vitesse vers la cible.
+        k = 1.0 - pow(2.718281828, -self._EASE * dt)
+        self._speed += (self._target - self._speed) * k
+        self._angle = (self._angle + self._speed * dt) % 360.0
+        self.update()
+
+    def paintEvent(self, event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing, True)
+        p.setRenderHint(QPainter.SmoothPixmapTransform, True)
+
+        sc = self.width() / self._VIEWBOX
+        full = QRectF(0, 0, self.width(), self.height())
+        # 1) Logo complet, immobile (tuile + fil + ombre + bobine au repos).
+        self._renderer.render(p, full)
+
+        # 2) Re-rendu de la seule bobine, pivotée autour de son centre.
+        if self._renderer.elementExists("disc"):
+            cx = self._DISC_CENTER[0] * sc
+            cy = self._DISC_CENTER[1] * sc
+            r = self._DISC_RADIUS * sc
+            p.save()
+            clip = QPainterPath()
+            clip.addEllipse(QRectF(cx - r, cy - r, 2 * r, 2 * r))
+            p.setClipPath(clip)            # ne réécrit que le disque, pas le fil
+            p.translate(cx, cy)
+            p.rotate(self._angle)
+            p.translate(-cx, -cy)
+            b = self._renderer.boundsOnElement("disc")
+            target = QRectF(b.x() * sc, b.y() * sc, b.width() * sc, b.height() * sc)
+            self._renderer.render(p, "disc", target)
+            p.restore()
+        p.end()
 
 
 # ─── Thread de mise à jour DB ─────────────────────────────────────────────
@@ -162,8 +245,7 @@ class MainWindow(QMainWindow):
         brand.setSpacing(9)
         app_logo_path = core.app_logo_abs_path()
         if HAS_SVG and app_logo_path:
-            self.app_logo = QSvgWidget(app_logo_path)
-            self.app_logo.setFixedSize(30, 30)
+            self.app_logo = SpinningLogo(app_logo_path, size=30)
         else:
             self.app_logo = QLabel()
             ic = core.app_icon_abs_path()
@@ -259,14 +341,14 @@ class MainWindow(QMainWindow):
 
         app_logo_path = core.app_logo_abs_path()
         if HAS_SVG and app_logo_path:
-            big = QSvgWidget(app_logo_path)
+            big = SpinningLogo(app_logo_path, size=104)
         else:
             big = QLabel()
             ic = core.app_icon_abs_path()
             if ic:
                 big.setPixmap(QPixmap(ic).scaled(
                     104, 104, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        big.setFixedSize(104, 104)
+            big.setFixedSize(104, 104)
         wrap = QHBoxLayout()
         wrap.addStretch(1)
         wrap.addWidget(big)

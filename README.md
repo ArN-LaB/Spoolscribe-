@@ -1,8 +1,14 @@
-# SpoolScribe
+<p align="center">
+  <img src="data/app.png" alt="SpoolScribe" width="128" height="128">
+</p>
 
-[![Build multiplatform](https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml/badge.svg)](https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml)
-![License: MIT](https://img.shields.io/badge/license-MIT-green)
-![Status: for fun](https://img.shields.io/badge/status-for%20fun%20%C2%B7%20free%20time-blueviolet)
+<h1 align="center">SpoolScribe</h1>
+
+<p align="center">
+  <a href="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml"><img src="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml/badge.svg" alt="Build multiplatform"></a>
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT">
+  <img src="https://img.shields.io/badge/status-for%20fun%20%C2%B7%20free%20time-blueviolet" alt="Status: for fun">
+</p>
 
 > Write OpenSpool / NFC spool tags for the **[open-firmware Snapmaker U1](https://snapmaker.com/snapmaker-u1)**, so
 > your printer auto-recognizes the filament loaded in your [PolyDryer](https://polymaker.com/product/polydryer/) + [PolyBox](https://polymaker.com/product/polybox/)
