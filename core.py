@@ -43,7 +43,7 @@ SCRIPTS_DIR = os.path.join(SCRIPT_DIR, "scripts")
 EMPTY_DB = {"_products": {}, "_skus": {}, "_brands": {}}
 
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.1.1"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 

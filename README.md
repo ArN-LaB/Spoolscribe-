@@ -68,9 +68,34 @@ The same PyInstaller spec works on all three OSes (run it on the target OS):
 pyinstaller spoolscribe.spec --noconfirm
 ```
 
-Output lands in `dist/`. CI in [`.github/workflows/build.yml`](.github/workflows/build.yml)
-builds Windows, macOS and Linux artifacts automatically, and attaches them to a
-GitHub Release when you push a `v*` tag.
+Output lands in `dist/` as a **single self-contained file** (`SpoolScribe.exe`
+on Windows, `SpoolScribe.app` on macOS, a `SpoolScribe` binary on Linux) — no
+`_internal` folder, nothing to install. CI in
+[`.github/workflows/build.yml`](.github/workflows/build.yml) builds all three
+OSes automatically and attaches them (with **SHA256 checksums**) to a GitHub
+Release when you push a `v*` tag.
+
+## Windows: "Unknown publisher" / SmartScreen
+
+SpoolScribe is **free, open-source software** and the binaries are **not
+code-signed** (a signing certificate costs money this hobby project doesn't
+spend). So Windows SmartScreen may show a blue *"Windows protected your PC"*
+prompt the first time you run it.
+
+This is expected for any unsigned app — it is **not** a virus warning. To run it:
+
+1. Click **More info** → **Run anyway**.
+2. Or verify the download first: compare the SHA256 of the `.zip` against the
+   `.sha256` file published with the release:
+
+   ```powershell
+   Get-FileHash .\SpoolScribe-windows.zip -Algorithm SHA256
+   ```
+
+The executable embeds version metadata, so its **Properties → Details** and the
+prompt itself show *SpoolScribe* by *ArN-LaB* rather than a blank publisher.
+Prefer not to trust a binary? **Run from source** (see above) — the code is all
+here.
 
 ## Privacy & data
 

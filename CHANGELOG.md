@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-05-30
+
+### Changed
+- **Windows / macOS / Linux builds are now single-file** (PyInstaller onefile):
+  one `SpoolScribe.exe` / binary / `.app` — no more `_internal` folder next to
+  the executable.
+
+### Added
+- Embedded **version metadata** in the Windows executable (ProductName,
+  CompanyName, FileDescription…) so the OS shows “SpoolScribe — ArN-LaB” in file
+  properties and the SmartScreen/UAC prompt instead of a blank “Unknown
+  publisher”.
+- macOS `.app` bundle with proper `Info.plist` metadata.
+- **SHA256 checksums** published alongside every release artifact so users can
+  verify download integrity.
+
 ## [0.1.0] - 2026-05-30
 
 ### Added
@@ -29,5 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cleaned repository: removed one-off bootstrap scripts, raw scrape caches,
   bundled PDF, and generated output; minimized root directory.
 
-[Unreleased]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.1.1
 [0.1.0]: https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.1.0
