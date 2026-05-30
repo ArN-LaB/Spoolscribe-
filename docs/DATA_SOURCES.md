@@ -27,6 +27,26 @@ Hex color data derived from TheFilamentDB is licensed under
 
 This attribution is retained here and in the application's "Sources" disclosure.
 
+## Multi-brand color enrichment (Prusament & ROSA3D)
+
+Beyond Polymaker, SpoolScribe enriches the **color HEX** of other brands from
+the same public databases, cross-referenced by material + color name:
+
+- **Prusament** — colors are taken from
+  [SpoolmanDB `prusament.json`](https://raw.githubusercontent.com/Donkie/SpoolmanDB/master/filaments/prusament.json)
+  (treated as **authoritative**, as these match Prusa's published swatches),
+  with [TheFilamentDB](https://thefilamentdb.issou.best/) filling any remaining
+  gaps (CC-BY 4.0, attribution above).
+- **ROSA3D** — colors are taken from
+  [SpoolmanDB `rosa3d.json`](https://raw.githubusercontent.com/Donkie/SpoolmanDB/master/filaments/rosa3d.json)
+  in **fill-missing** mode only (the project's curated values for the Silk /
+  Pastel PLA families are more representative than SpoolmanDB's CSS-approximated
+  entries, so they are preserved).
+
+Transparent / translucent variants (e.g. "Red Transparent", "Clear") are left
+without a solid HEX on purpose — no authoritative solid color exists — and the
+OpenSpool export falls back to `000000` for those.
+
 ## Factual data (Polymaker Wiki & Wholesale catalogue)
 
 SpoolScribe also reads **factual values** — HEX color codes, nozzle/bed
