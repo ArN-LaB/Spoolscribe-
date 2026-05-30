@@ -14,9 +14,10 @@ import json
 import os
 import sys
 
-SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_FILE    = os.path.join(SCRIPT_DIR, "data", "polymaker_db.json")
-ORCA_DIR   = os.path.join(SCRIPT_DIR, "orca_profiles")
+_RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
+DB_FILE    = os.path.join(_DATA_HOME, "data", "polymaker_db.json")
+ORCA_DIR   = os.path.join(_DATA_HOME, "orca_profiles")
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────

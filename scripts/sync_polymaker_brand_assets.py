@@ -17,8 +17,9 @@ import sys
 import urllib.request
 from datetime import datetime
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR   = os.path.join(SCRIPT_DIR, "..", "data")
+_RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
+DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
 BRAND_URL  = "https://raw.githubusercontent.com/OpenFilamentCollective/open-filament-database/main/data/polymaker/brand.json"
 LOGO_URL   = "https://raw.githubusercontent.com/OpenFilamentCollective/open-filament-database/main/data/polymaker/logo.svg"

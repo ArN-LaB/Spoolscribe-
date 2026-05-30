@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-05-30
+
+### Fixed
+- **Database updates now work in the packaged app.** The bundled scrapers run
+  as worker processes inside the frozen executable; their standard-library
+  imports (`urllib.request`, `urllib.error`, `gzip`, `ssl`…) are now included in
+  the build, fixing `ModuleNotFoundError` during updates.
+- **No more lost data in single-file builds.** Writable data (the working
+  database, downloaded Orca profiles, generated output) is stored in a per-user
+  directory (`%APPDATA%/SpoolScribe`, `~/Library/Application Support/SpoolScribe`,
+  `~/.config/SpoolScribe`) and seeded from the bundle on first run — instead of a
+  temporary folder that disappeared. Read-only resources stay in the bundle.
+- **Unicode output no longer crashes updates on Windows** (`UnicodeEncodeError`):
+  worker stdout/stderr are forced to UTF-8.
+- **Orca profile download** now URL-encodes paths containing spaces, fixing
+  “URL can't contain control characters” errors.
+
 ## [0.1.1] - 2026-05-30
 
 ### Changed
@@ -45,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cleaned repository: removed one-off bootstrap scripts, raw scrape caches,
   bundled PDF, and generated output; minimized root directory.
 
-[Unreleased]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.1.2
 [0.1.1]: https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.1.1
 [0.1.0]: https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.1.0

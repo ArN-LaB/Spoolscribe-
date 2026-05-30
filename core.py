@@ -20,32 +20,94 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Callable, Optional
 
-# ─── Chemins ──────────────────────────────────────────────────────────────
-def _base_dir() -> str:
-    """
-    Dossier racine des ressources.
+# ─── Identité de l'application ────────────────────────────────────────────
+APP_NAME = "SpoolScribe"
+APP_VERSION = "0.1.2"
+APP_AUTHOR = "ArN-LaB"
+APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
-    - En mode normal : dossier de ce fichier.
-    - En mode gelé (PyInstaller) : dossier où sont extraites les données
-      embarquées (sys._MEIPASS en onefile, dossier de l'exe en onedir).
+EMPTY_DB = {"_products": {}, "_skus": {}, "_brands": {}}
+
+_FROZEN = bool(getattr(sys, "frozen", False))
+
+
+# ─── Chemins ──────────────────────────────────────────────────────────────
+def _resource_dir() -> str:
     """
-    if getattr(sys, "frozen", False):
+    Ressources **en lecture seule** (embarquées dans le bundle / le repo).
+
+    - Mode normal : dossier de ce fichier.
+    - Mode gelé (PyInstaller) : sys._MEIPASS (onefile : dossier temporaire
+      d'extraction ; onedir : dossier _internal).
+    """
+    if _FROZEN:
         return getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(sys.executable)))
     return os.path.dirname(os.path.abspath(__file__))
 
 
-SCRIPT_DIR  = _base_dir()
-DB_PATH     = os.path.join(SCRIPT_DIR, "data", "polymaker_db.json")
-ORCA_DIR    = os.path.join(SCRIPT_DIR, "orca_profiles")
-OUTPUT_DIR  = os.path.join(SCRIPT_DIR, "output")
-SCRIPTS_DIR = os.path.join(SCRIPT_DIR, "scripts")
+def user_data_dir() -> str:
+    """Dossier inscriptible propre à l'utilisateur, par OS."""
+    if sys.platform.startswith("win"):
+        base = os.environ.get("APPDATA") or os.path.expanduser("~")
+    elif sys.platform == "darwin":
+        base = os.path.expanduser("~/Library/Application Support")
+    else:
+        base = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+    d = os.path.join(base, APP_NAME)
+    try:
+        os.makedirs(d, exist_ok=True)
+    except Exception:
+        d = os.path.abspath(".")
+    return d
 
-EMPTY_DB = {"_products": {}, "_skus": {}, "_brands": {}}
 
-APP_NAME = "SpoolScribe"
-APP_VERSION = "0.1.1"
-APP_AUTHOR = "ArN-LaB"
-APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
+RESOURCE_DIR = _resource_dir()                     # lecture seule (bundle)
+SCRIPTS_DIR  = os.path.join(RESOURCE_DIR, "scripts")
+SCRIPT_DIR   = RESOURCE_DIR                         # alias rétro-compatible
+
+# Données inscriptibles : repo en dev, dossier utilisateur en .exe (onefile :
+# sinon tout irait dans le dossier temporaire _MEIPASS et serait perdu).
+DATA_HOME   = user_data_dir() if _FROZEN else RESOURCE_DIR
+DATA_DIR    = os.path.join(DATA_HOME, "data")
+DB_PATH     = os.path.join(DATA_DIR, "polymaker_db.json")
+ORCA_DIR    = os.path.join(DATA_HOME, "orca_profiles")
+OUTPUT_DIR  = os.path.join(DATA_HOME, "output")
+CONFIG_PATH = os.path.join(user_data_dir(), "config.json")
+
+# Les scrapers (process séparés, lancés via runpy) ne peuvent pas importer
+# core ; on leur transmet le dossier inscriptible via l'environnement.
+os.environ.setdefault("SPOOLSCRIBE_DATA_HOME", DATA_HOME)
+os.environ.setdefault("SPOOLSCRIBE_RESOURCE_DIR", RESOURCE_DIR)
+
+
+def _seed_writable_data() -> None:
+    """
+    Au premier lancement en .exe, recopie les ressources embarquées (DB,
+    profils Orca, logo) vers le dossier inscriptible pour que l'app
+    fonctionne hors-ligne et que les mises à jour persistent.
+    """
+    if not _FROZEN:
+        return
+    import shutil
+    for sub, dst in (("data", DATA_DIR), ("orca_profiles", ORCA_DIR)):
+        src = os.path.join(RESOURCE_DIR, sub)
+        try:
+            os.makedirs(dst, exist_ok=True)
+            if os.path.isdir(src):
+                for name in os.listdir(src):
+                    s = os.path.join(src, name)
+                    d = os.path.join(dst, name)
+                    if os.path.isfile(s) and not os.path.exists(d):
+                        shutil.copy2(s, d)
+        except Exception:
+            pass
+    try:
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+    except Exception:
+        pass
+
+
+_seed_writable_data()
 
 # Pipeline de mise à jour : (fichier_script, libellé, timeout_s)
 UPDATE_PIPELINE: list[tuple[str, str, int]] = [
@@ -77,25 +139,6 @@ NETWORK_SOURCES: list[dict] = [
      "host": "us-wholesale.polymaker.com"},
 ]
 
-
-# ─── Dossier de configuration utilisateur (écriture sûre, même en .exe) ───
-def user_data_dir() -> str:
-    """Dossier inscriptible propre à l'utilisateur, par OS."""
-    if sys.platform.startswith("win"):
-        base = os.environ.get("APPDATA") or os.path.expanduser("~")
-    elif sys.platform == "darwin":
-        base = os.path.expanduser("~/Library/Application Support")
-    else:
-        base = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
-    d = os.path.join(base, APP_NAME)
-    try:
-        os.makedirs(d, exist_ok=True)
-    except Exception:
-        d = os.path.abspath(".")
-    return d
-
-
-CONFIG_PATH = os.path.join(user_data_dir(), "config.json")
 
 DEFAULT_CONFIG = {
     "network_consent": None,    # None = jamais demandé ; True/False = choix explicite
@@ -190,6 +233,14 @@ def maybe_run_as_script_worker(argv: list[str]) -> bool:
         idx = argv.index(RUN_SCRIPT_FLAG)
         if idx + 1 < len(argv):
             script_path = argv[idx + 1]
+            # Les scripts impriment des caractères Unicode (—, ─…). Dans un exe
+            # gelé sous Windows, stdout/stderr utilisent cp1252 par défaut, ce
+            # qui provoque un UnicodeEncodeError. On force l'UTF-8.
+            for _stream in (sys.stdout, sys.stderr):
+                try:
+                    _stream.reconfigure(encoding="utf-8", errors="replace")
+                except Exception:
+                    pass
             import runpy
             sys.argv = [script_path]
             runpy.run_path(script_path, run_name="__main__")
@@ -294,8 +345,13 @@ def logo_abs_path(db: dict) -> Optional[str]:
     logo_path = db.get("_brands", {}).get("Polymaker", {}).get("logo_path", "")
     if not logo_path:
         return None
-    abs_p = os.path.join(SCRIPT_DIR, logo_path.replace("/", os.sep))
-    return abs_p if os.path.exists(abs_p) else None
+    rel = logo_path.replace("/", os.sep)
+    # Données inscriptibles (mises à jour) d'abord, puis bundle en repli.
+    for base in (DATA_HOME, RESOURCE_DIR):
+        abs_p = os.path.join(base, rel)
+        if os.path.exists(abs_p):
+            return abs_p
+    return None
 
 
 def logo_signature(abs_path: Optional[str]) -> str:
@@ -513,7 +569,10 @@ def run_update_pipeline(
             continue
         try:
             cmd = _script_command(python, path)
-            r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+            r = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=timeout,
+                encoding="utf-8", errors="replace",
+            )
             results.append(StepResult(label, r.returncode == 0, r.returncode, (r.stderr or "").strip()))
         except Exception as e:
             results.append(StepResult(label, False, -1, str(e)))

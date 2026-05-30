@@ -9,9 +9,11 @@ import os
 import sys
 import argparse
 import urllib.request
+import urllib.parse
 
-SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ORCA_DIR   = os.path.join(SCRIPT_DIR, "orca_profiles")
+_RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
+ORCA_DIR   = os.path.join(_DATA_HOME, "orca_profiles")
 
 INDEX_URL  = "https://raw.githubusercontent.com/polymaker3d/Polymaker-Preset/main/index.json"
 RAW_BASE   = "https://raw.githubusercontent.com/polymaker3d/Polymaker-Preset/main/"
@@ -82,7 +84,7 @@ def main():
             skipped += 1
             continue
 
-        url = RAW_BASE + path
+        url = RAW_BASE + urllib.parse.quote(path)
         action = "Mise à jour" if exists else "Nouveau"
         print(f"  [{action}] {material}  ({updated})")
 
