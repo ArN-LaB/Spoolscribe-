@@ -145,6 +145,23 @@ class GuiTests(unittest.TestCase):
         w._reset_filters()
         self.assertEqual((w.brand_filter.currentData(), w.material_filter.currentData(), w.quality_filter.currentData()), ("Polymaker", "", "all"))
 
+    def test_importing_a_settings_file_restores_the_whole_workspace(self):
+        w = self.window
+        w.tag_choice.setCurrentIndex(w.tag_choice.findData("NTAG215"))
+        w.nfc_default_btn.click()
+        w._choose_brand("Bambu Lab")
+        w._save_ui_preferences()  # the menu action does this before exporting
+        exported = Path(self.tmp.name) / "settings.json"
+        core.export_settings(str(exported))
+        w._choose_brand("Polymaker")
+        w.tag_choice.setCurrentIndex(w.tag_choice.findData("NTAG216"))
+        with patch("ui_catalogue.QFileDialog.getOpenFileName", return_value=(str(exported), "JSON (*.json)")):
+            w._import_settings()
+        self.assertEqual(w.brand_filter.currentData(), "Bambu Lab")
+        self.assertEqual(w.tag_choice.currentData(), "NTAG215")
+        self.assertEqual(w.nfc_default_btn.text(), "Par défaut ✓")
+        self.assertTrue(any(w.brand_list.item(i).text().startswith("★ Bambu Lab") for i in range(w.brand_list.count())))
+
     def test_tag_choice_is_per_session_until_saved_as_default(self):
         w = self.window
         self.assertEqual(w.nfc_default_btn.text(), "Par défaut ✓")

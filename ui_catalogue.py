@@ -371,7 +371,7 @@ class CatalogueUx:
                 self._refresh_nfc_default_btn()
                 self.extra_fields.setChecked(bool(cfg.get('show_extra_fields')))
                 self._printer_changed()
-                self._fill_quick_brands()
+                self._fill_sidebar()
                 self._refresh_nfc_capacity()
             except (OSError,ValueError) as exc: QMessageBox.warning(self,'Réglages',str(exc))
 
