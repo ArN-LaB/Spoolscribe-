@@ -1,0 +1,137 @@
+"""Conservative source reconciliation with field provenance and explicit ambiguity."""
+import copy
+import re
+import unicodedata
+from scripts import db_io
+from scripts.catalogue_sources import brand_key
+
+
+def normalized(value):
+    return ''.join(c for c in unicodedata.normalize('NFKD', str(value or '').replace('™','').replace('®','').replace('©','')).casefold() if c.isalnum())
+
+
+def identity(entry, product, sku=''):
+    brand=brand_key(product.get('brand',''))
+    article=entry.get('manufacturer_sku') or (sku if sku and not sku.startswith(('OFD-','SMDB-')) else '')
+    package=(product.get('diameter'),entry.get('weight'),entry.get('spool_refill'))
+    if article:return ('article',brand,normalized(article),*package)
+    return ('description',brand,normalized(product.get('display_name') or entry.get('product')),
+            normalized(entry.get('color_name')),*package)
+
+
+def merge_fields(target, incoming, source, rank, conflicts, prefix):
+    provenance=target.get('_field_sources',{})
+    for key,value in incoming.items():
+        if key.startswith('_') or key in ('source','source_id','source_path','product'):continue
+        old=provenance.get(key)
+        if key=='hex' and target.get('hex') is None and value is not None and (
+                db_io.requires_manual_color(target) or target.get('source_colors') or
+                any(target.get('source_traits',{}).get(k) for k in ('transparent','translucent','multicolor','multi_color'))):
+            conflicts.append(f'{prefix}.{key}')
+            continue
+        if key not in target:
+            target[key]=copy.deepcopy(value);provenance[key]=dict(source=source,rank=rank,value=copy.deepcopy(value))
+        elif old and target[key]==old.get('value') and (value is not None and (target[key] is None or rank>old.get('rank',0)) or old.get('source')==source):
+            target[key]=copy.deepcopy(value);provenance[key]=dict(source=source,rank=rank,value=copy.deepcopy(value))
+        elif target[key]!=value and value is not None:
+            conflicts.append(f'{prefix}.{key}')
+    if provenance: target['_field_sources']=provenance
+
+
+def family_keys(entry, product):
+    brand=brand_key(product.get('brand',''))
+    labels=[product.get('display_name') or entry.get('product')] + entry.get('_product_aliases',[])
+    keys=[]
+    for label in labels:
+        family=normalized(label)
+        if family.startswith(brand):family=family[len(brand):]
+        keys.append((brand,family,normalized(entry.get('color_name'))))
+    return keys
+
+
+def merge_catalogue(local, incoming, source, rank=10):
+    result=copy.deepcopy(local);conflicts=[];pending=[]
+    by_identity={}
+    for sku,e in result['_skus'].items():
+        p=result['_products'].get(e.get('product'),{})
+        by_identity.setdefault(identity(e,p,sku),[]).append(sku)
+    article_index={}
+    for ident,skus in by_identity.items():
+        if ident[0]=='article':article_index.setdefault(ident[:3],[]).extend(skus)
+    family_index={}
+    for sku,e in result['_skus'].items():
+        for key in family_keys(e,result['_products'].get(e.get('product'),{})):
+            family_index.setdefault(key,[]).append(sku)
+    existing_brands={brand_key(p.get('brand','')) for p in result['_products'].values()}
+    for sku,e in incoming['_skus'].items():
+        p=incoming['_products'][e['product']]
+        ident=identity(e,p,sku)
+        matches=[sku] if sku in result['_skus'] else by_identity.get(ident,[])
+        if not matches and ident[0]=='article':
+            candidates=article_index.get(ident[:3],[])
+            for candidate in candidates:
+                old=result['_skus'][candidate];old_p=result['_products'].get(old.get('product'),{})
+                old_id=identity(old,old_p,candidate)
+                if all(a is None or b is None or a==b for a,b in zip(ident[3:],old_id[3:])):matches.append(candidate)
+
+        if not matches:
+            candidates=set(c for key in family_keys(e,p) for c in family_index.get(key,[]))
+            for candidate in sorted(candidates):
+                old=result['_skus'][candidate];old_p=result['_products'].get(old.get('product'),{})
+                old_id=identity(old,old_p,candidate)
+                old_article=old.get('manufacturer_sku')
+                if old_article and e.get('manufacturer_sku') and normalized(old_article)!=normalized(e['manufacturer_sku']):continue
+                old_package=(old_p.get('diameter'),old.get('weight'),old.get('spool_refill'))
+                package=(p.get('diameter'),e.get('weight'),e.get('spool_refill'))
+                if all(a is None or b is None or a==b for a,b in zip(package,old_package)):matches.append(candidate)
+        if len(matches)>1:
+            pending.append(dict(source_id=sku,reason='Identité ambiguë',candidates=matches));continue
+        # Unproven cross-source identities stay outside the selectable table.
+        # Exact manufacturer references/names above can still complement data.
+        if not matches and brand_key(p.get('brand','')) in existing_brands:
+            brand_sources=[x.get('source','') for x in result['_brands'].values() if brand_key(x.get('name',''))==brand_key(p.get('brand',''))]
+            cross_community=source in ('SpoolmanDB','Polymaker officiel') and source not in brand_sources
+            manufacturer_first=source=='Open Filament Database' and (not brand_sources or any(s not in ('Open Filament Database','SpoolmanDB','https://github.com/OpenFilamentCollective/open-filament-database') for s in brand_sources))
+            if cross_community or manufacturer_first:
+                pending.append(dict(source_id=sku,reason='Rapprochement fabricant/produit non démontré'));continue
+        if matches:
+            canonical=matches[0];target=result['_skus'][canonical];pkey=target['product']
+            merge_fields(result['_products'][pkey],p,source,rank,conflicts,'_products.'+pkey)
+            merge_fields(target,e,source,rank,conflicts,'_skus.'+canonical)
+            if canonical != sku: target.setdefault('_source_aliases',{})[source]=sku
+        else:
+            pkey=e['product'];result['_products'].setdefault(pkey,{})
+            merge_fields(result['_products'][pkey],p,source,rank,conflicts,'_products.'+pkey)
+            result['_skus'][sku]=copy.deepcopy(e)
+            result['_skus'][sku]['_field_sources']={k:dict(source=source,rank=rank,value=copy.deepcopy(v)) for k,v in e.items() if not k.startswith('_')}
+            by_identity.setdefault(ident,[]).append(sku)
+            if ident[0]=="article":article_index.setdefault(ident[:3],[]).append(sku)
+            for key in family_keys(e,p):family_index.setdefault(key,[]).append(sku)
+    used_brands={p.get('brand') for p in result['_products'].values()}
+    for brand,meta in incoming.get('_brands',{}).items():
+        if brand not in used_brands:continue
+        target=result['_brands'].setdefault(brand,{})
+        for key,value in meta.items():target.setdefault(key,copy.deepcopy(value))
+    result.setdefault('_pending_source_matches',{})[source]=pending
+    db_io.validate_db(result)
+    return result,conflicts
+
+
+def apply_official_facts(db, facts, source):
+    """Exact product names only; contextual temperatures must not become universal."""
+    matched=0;conflicts=[]
+    for fact in facts:
+        candidates=[(key,p) for key,p in db['_products'].items()
+                    if brand_key(p.get('brand',''))==brand_key(fact['brand'])
+                    and normalized(p.get('display_name',key)) in {normalized(n) for n in fact['names']}]
+        for key,p in candidates:
+            matched+=1
+            merge_fields(p,fact.get('physical',{}),source,100,conflicts,'_products.'+key)
+            p.setdefault('_official_references',{})[source]=fact['url']
+            for sku,e in db['_skus'].items():
+                if e.get('product')!=key:continue
+                color=fact.get('colors',{}).get(normalized(e.get('color_name')))
+                if color:merge_fields(e,{'hex':color},source,100,conflicts,'_skus.'+sku)
+    db.setdefault('_source_conflicts_by_source',{})[source]=conflicts
+    db_io.validate_db(db)
+    return matched,conflicts

@@ -25,7 +25,7 @@ from PySide6.QtWidgets import (
     QLineEdit, QTableWidget, QTableWidgetItem, QLabel, QPushButton, QPlainTextEdit,
     QHeaderView, QAbstractItemView, QFrame, QMessageBox, QProgressBar, QGridLayout,
     QSizePolicy, QStackedWidget, QToolButton, QMenu, QListWidget, QListWidgetItem,
-    QDialog, QDialogButtonBox, QCheckBox, QSpinBox, QButtonGroup,
+    QDialog, QDialogButtonBox, QCheckBox, QSpinBox, QButtonGroup, QComboBox,
     QGraphicsScene, QGraphicsPixmapItem, QGraphicsBlurEffect, QScrollArea,
 )
 
@@ -37,6 +37,7 @@ except Exception:
     HAS_SVG = False
 
 import core
+from ui_catalogue import CatalogueUx, ClearableTable
 
 # Hauteur fixe de l'inspecteur JSON + espacement du layout (12 px) = delta
 # appliqué à la fenêtre lors du toggle pour éviter tout scroll parasite.
@@ -218,11 +219,13 @@ def load_brand_pixmap(
     try:
         if ext == ".svg" and HAS_SVG:
             renderer = QSvgRenderer(abs_path)
+            if not renderer.isValid():
+                return None
             vb = renderer.viewBoxF()
             src_w = vb.width()  if vb.width()  > 0 else pw
             src_h = vb.height() if vb.height() > 0 else ph
             scale = min(pw / src_w, ph / src_h)
-            rw, rh = int(src_w * scale), int(src_h * scale)
+            rw, rh = max(1, int(src_w * scale)), max(1, int(src_h * scale))
             pm = QPixmap(rw, rh)
             pm.fill(Qt.transparent)
             painter = QPainter(pm)
@@ -236,11 +239,38 @@ def load_brand_pixmap(
             src = QPixmap(abs_path)
             if src.isNull():
                 return None
-            pm = src.scaled(pw, ph, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            # Do not upscale a small bitmap: keep its real pixels crisp at HiDPI.
+            pm = src.scaled(min(pw, src.width()), min(ph, src.height()),
+                            Qt.KeepAspectRatio, Qt.SmoothTransformation)
             pm.setDevicePixelRatio(dpr)
             return pm
     except Exception:
         return None
+
+
+def logo_with_contrast_plate(pm: QPixmap) -> QPixmap:
+    """Keep original colors readable on both OS themes, including white logos."""
+    image = pm.toImage()
+    values = []
+    step = max(1, min(image.width(), image.height()) // 30)
+    for y in range(0, image.height(), step):
+        for x in range(0, image.width(), step):
+            color = image.pixelColor(x, y)
+            if color.alpha() >= 128:
+                values.append(.2126 * color.red() + .7152 * color.green() + .0722 * color.blue())
+    background = "#30343b" if values and sum(values) / len(values) > 160 else "#ffffff"
+    dpr = pm.devicePixelRatioF()
+    plate = QPixmap(round(160*dpr), round(60*dpr))
+    plate.setDevicePixelRatio(dpr)
+    plate.fill(Qt.transparent)
+    painter = QPainter(plate)
+    painter.setRenderHint(QPainter.Antialiasing)
+    painter.setPen(Qt.NoPen)
+    painter.setBrush(QColor(background))
+    painter.drawRoundedRect(QRectF(0, 0, 160, 60), 6, 6)
+    painter.drawPixmap(round((160-pm.width()/dpr)/2), round((60-pm.height()/dpr)/2), pm)
+    painter.end()
+    return plate
 
 
 def add_soft_halo(pm: QPixmap, radius: float = 6.0, color: str = "#ffffff",
@@ -429,12 +459,12 @@ def contrast_text(hex_code: str | None) -> str:
 
 
 # ─── Fenêtre principale ───────────────────────────────────────────────────
-class MainWindow(QMainWindow):
+class MainWindow(CatalogueUx, QMainWindow):
     def __init__(self):
         super().__init__()
         self.app = QApplication.instance()
         self.setWindowTitle(f"SpoolScribe {core.APP_VERSION} — OpenSpool / NFC")
-        self.resize(1060, 700)
+        self.resize(1280, 800)
         self.setMinimumSize(860, 560)
 
         icon_path = core.app_icon_abs_path()
@@ -442,17 +472,20 @@ class MainWindow(QMainWindow):
             self.setWindowIcon(QIcon(icon_path))
 
         self.db = core.load_db()
+        self._default_brand_pending = not self.db.get("_skus")
         self.current_sku: str | None = None
         self.worker: UpdateWorker | None = None
         self._muted_labels: list[QLabel] = []
         self.view_mode = "list"
 
         self._build_ui()
+        self._install_ux()
         self._apply_theme()
         self._reload_table()
         self._refresh_logo()
         self._update_stats()
         self._show_empty()
+        self._restore_ui_preferences()
 
         # Réagit aux changements de thème de l'OS à chaud (Qt 6.5+).
         try:
@@ -483,7 +516,7 @@ class MainWindow(QMainWindow):
 
         self.search = QLineEdit()
         self.search.setObjectName("search")
-        self.search.setPlaceholderText("Rechercher : SKU, produit, couleur…")
+        self.search.setPlaceholderText("Rechercher : fabricant, matière, référence, couleur…")
         self.search.setClearButtonEnabled(True)
         self.search.setMinimumWidth(240)
         self.search.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -525,7 +558,7 @@ class MainWindow(QMainWindow):
         self.update_btn = QPushButton("Mettre à jour")
         self.update_btn.setObjectName("primary")
         self.update_btn.setCursor(Qt.PointingHandCursor)
-        self.update_btn.clicked.connect(self._start_update)
+        self.update_btn.clicked.connect(self._choose_sources)
         top.addWidget(self.update_btn)
 
         # Menu ⋯ : Paramètres, À propos
@@ -550,11 +583,65 @@ class MainWindow(QMainWindow):
         top.addWidget(self.menu_btn)
         root.addLayout(top)
 
+        filters = QHBoxLayout()
+        self.brand_filter = QComboBox()
+        self.brand_filter.setAccessibleName("Filtrer par fabricant")
+        self.material_filter = QComboBox()
+        self.material_filter.setAccessibleName("Filtrer par matière")
+        self.quality_filter = QComboBox()
+        self.quality_filter.setToolTip("Complétude des champs OpenSpool de la fiche ; ce filtre ne note pas la qualité du filament ni sa compatibilité avec chaque imprimante.")
+        for label, key in (("Toutes les fiches", "all"), ("Export possible", "ready"),
+                           ("À compléter", "incomplete")):
+            self.quality_filter.addItem(label, key)
+        for label, combo in (("Fabricant", self.brand_filter), ("Matière", self.material_filter),
+                             ("État des données", self.quality_filter)):
+            filters.addWidget(QLabel(label))
+            filters.addWidget(combo, 1)
+            combo.currentIndexChanged.connect(self._apply_filter)
+        self.reset_filters = QPushButton("Réinitialiser")
+        self.reset_filters.clicked.connect(self._reset_filters)
+        filters.addWidget(self.reset_filters)
+        root.addLayout(filters)
+
+        sorting = QHBoxLayout()
+        self.sort1, self.sort2 = QComboBox(), QComboBox()
+        self.sort2.addItem("Aucun", "")
+        for key, label in core.CATALOGUE_SORT_FIELDS.items():
+            self.sort1.addItem(label, key)
+            self.sort2.addItem(label, key)
+        self.sort1.setCurrentIndex(self.sort1.findData("brand"))
+        self.sort2.setCurrentIndex(self.sort2.findData("product"))
+        self.sort1_direction, self.sort2_direction = QComboBox(), QComboBox()
+        for direction in (self.sort1_direction, self.sort2_direction):
+            direction.addItem("Croissant ↑", False)
+            direction.addItem("Décroissant ↓", True)
+        # Sorting is controlled only by column headers. These hidden state
+        # controls retain the shared sorting model used by list and grid views.
+        for combo in (self.sort1, self.sort2, self.sort1_direction, self.sort2_direction):
+            combo.setParent(self)
+            combo.hide()
+            combo.currentIndexChanged.connect(self._apply_filter)
+
+        pager = QHBoxLayout()
+        self.page_label = QLabel()
+        self.page_label.setWordWrap(True)
+        pager.addWidget(self.page_label, 1)
+        self.previous_page = QPushButton("← Précédent")
+        self.next_page = QPushButton("Suivant →")
+        self.previous_page.clicked.connect(lambda: self._change_page(-1))
+        self.next_page.clicked.connect(lambda: self._change_page(1))
+        pager.addWidget(self.previous_page)
+        pager.addWidget(self.next_page)
+        self._pager_layout = pager
+        self._page = 0
+        self._page_size = 250
+
         # Ligne de stats discrète sous la barre.
         self.stats_label = QLabel()
+        self.stats_label.setWordWrap(True)
         self.stats_label.setObjectName("stats")
         self._muted_labels.append(self.stats_label)
-        root.addWidget(self.stats_label)
+        self.stats_label.hide()
 
         # Barre de progression (cachée par défaut)
         self.progress = QProgressBar()
@@ -564,7 +651,7 @@ class MainWindow(QMainWindow):
         root.addWidget(self.progress)
 
         # ── Splitter : liste/grille à gauche, panneau à droite ──────────
-        splitter = QSplitter(Qt.Horizontal)
+        splitter = self.splitter = QSplitter(Qt.Horizontal)
         splitter.setChildrenCollapsible(False)
         root.addWidget(splitter, 1)
 
@@ -572,8 +659,9 @@ class MainWindow(QMainWindow):
         self.list_stack = QStackedWidget()
 
         # Vue liste (table)
-        self.table = QTableWidget(0, 4)
-        self.table.setHorizontalHeaderLabels(["", "SKU", "Produit", "Couleur"])
+        self.table = ClearableTable(0, 9)
+        self._column_keys = ("", "sku", "product", "color_name", "brand", "material", "diameter", "weight", "quality")
+        self.table.setHorizontalHeaderLabels(["", "Référence", "Produit", "Couleur", "Fabricant", "Matière", "Ø mm", "Masse g", "État des données"])
         self.table.verticalHeader().setVisible(False)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -589,13 +677,20 @@ class MainWindow(QMainWindow):
         hh.setSectionResizeMode(0, QHeaderView.Fixed)
         self.table.setColumnWidth(0, 34)
         hh.setSectionResizeMode(1, QHeaderView.Interactive)   # SKU
-        hh.setSectionResizeMode(2, QHeaderView.Stretch)       # Produit (remplit)
+        hh.setSectionResizeMode(2, QHeaderView.Interactive)   # Keep names readable in a wide catalogue.
         hh.setSectionResizeMode(3, QHeaderView.Interactive)   # Couleur
         hh.setStretchLastSection(False)
         hh.setMinimumSectionSize(46)
         hh.setCascadingSectionResizes(True)
+        hh.setSectionsClickable(True)
+        hh.sectionClicked.connect(self._sort_column)
+        hh.setToolTip("Clic : Tri 1 ; Maj + clic : Tri 2. Second clic : inverser l'ordre.")
         self.table.setColumnWidth(1, 104)
+        self.table.setColumnWidth(2, 240)
         self.table.setColumnWidth(3, 150)
+        for column in range(4, 9):
+            hh.setSectionResizeMode(column, QHeaderView.Interactive)
+            self.table.setColumnWidth(column, 110 if column not in (6, 7) else 70)
         self.table.itemSelectionChanged.connect(self._on_select)
         self.list_stack.addWidget(self.table)
 
@@ -614,7 +709,20 @@ class MainWindow(QMainWindow):
         self.grid.itemSelectionChanged.connect(self._on_select_grid)
         self.list_stack.addWidget(self.grid)
 
-        splitter.addWidget(self.list_stack)
+        table_panel = QWidget()
+        table_layout = QVBoxLayout(table_panel)
+        table_layout.setContentsMargins(0, 0, 0, 0)
+        tools = QHBoxLayout()
+        self.results_label = QLabel("Catalogue")
+        tools.addWidget(self.results_label, 1)
+        self.columns_btn = QToolButton()
+        self.columns_btn.setText("▥")
+        self.columns_btn.setToolTip("Choisir les colonnes affichées")
+        tools.addWidget(self.columns_btn)
+        table_layout.addLayout(tools)
+        table_layout.addWidget(self.list_stack, 1)
+        table_layout.addLayout(pager)
+        splitter.addWidget(table_panel)
 
         # ── Panneau droit : pile (état vide / fiche) ────────────────────
         self.stack = QStackedWidget()
@@ -635,7 +743,10 @@ class MainWindow(QMainWindow):
         splitter.setSizes([580, 460])
 
         self.status = self.statusBar()
-        self.status.showMessage("Prêt.")
+        self.database_btn = QPushButton("Base de données…")
+        self.status.addPermanentWidget(self.database_btn)
+        self.database_btn.clicked.connect(self._database_details)
+        self.status.showMessage("Choisissez un filament.")
 
     # ── Page « aucun filament sélectionné » ──────────────────────────────
     def _build_empty_page(self) -> QWidget:
@@ -711,13 +822,14 @@ class MainWindow(QMainWindow):
         self.logo = QLabel()
         # Largeur généreuse (160 px) pour accueillir les wordmarks larges type
         # ROSA3D (334×94). La hauteur reste bornée à 52 px de contenu rendu.
-        self.logo.setFixedSize(160, 52)
+        self.logo.setFixedSize(160, 60)
         self.logo.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         head.addWidget(self.logo, 0, Qt.AlignTop)
 
         titles = QVBoxLayout()
         titles.setSpacing(3)
         self.title = QLabel("—")
+        self.title.setTextFormat(Qt.PlainText)
         f = QFont()
         f.setPointSize(18)
         f.setWeight(QFont.Bold)
@@ -727,10 +839,12 @@ class MainWindow(QMainWindow):
         # SKU sur la première ligne, nom de couleur sur la deuxième — évite
         # que les SKU très longs écrasent le logo vers la gauche.
         self.subtitle_sku = QLabel("")
+        self.subtitle_sku.setTextFormat(Qt.PlainText)
         self.subtitle_sku.setObjectName("subtitle_sku")
         self._muted_labels.append(self.subtitle_sku)
         titles.addWidget(self.subtitle_sku)
         self.subtitle_color = QLabel("")
+        self.subtitle_color.setTextFormat(Qt.PlainText)
         self.subtitle_color.setObjectName("subtitle_color")
         self._muted_labels.append(self.subtitle_color)
         titles.addWidget(self.subtitle_color)
@@ -769,12 +883,13 @@ class MainWindow(QMainWindow):
 
         self._field_widgets: dict[str, QLabel] = {}
         labels = ["Produit", "Type", "Couleur", "SKU", "Nozzle",
-                  "Bed", "Densité", "Diamètre", "Marque"]
+                  "Bed", "Densité", "Diamètre", "Marque", "Source", "SKU fabricant", "Masse"]
         for i, name in enumerate(labels):
             lab = QLabel(name)
             lab.setObjectName("fieldname")
             self._muted_labels.append(lab)
             val = QLabel("—")
+            val.setTextFormat(Qt.PlainText)
             val.setObjectName("fieldvalue")
             val.setWordWrap(True)
             val.setTextInteractionFlags(Qt.TextSelectableByMouse)
@@ -782,6 +897,49 @@ class MainWindow(QMainWindow):
             self.fields.addWidget(val, i, 1)
             self._field_widgets[name] = val
         dl.addWidget(self.card)
+        self.btn_edit_physical = QPushButton("Compléter / corriger les caractéristiques…")
+        self.btn_edit_physical.clicked.connect(self._edit_physical)
+        dl.addWidget(self.btn_edit_physical)
+
+        cfg = core.load_config()
+        self._build_export_assistant(dl)
+        self.nfc_advanced = QWidget()
+        advanced_layout = QVBoxLayout(self.nfc_advanced)
+        nfc_row = QHBoxLayout()
+        self.tag_type = QComboBox()
+        for tag, capacity in core.NFC_CAPACITIES.items():
+            self.tag_type.addItem(f"{tag} · {capacity} octets", tag)
+        self.tag_type.setCurrentIndex(max(0, self.tag_type.findData(cfg.get("nfc_tag_type", "NTAG216"))))
+        self.nfc_profile = QComboBox()
+        self.nfc_profile.addItem("Automatique — conserver le maximum", "auto")
+        self.nfc_profile.addItem("Complet", "full")
+        self.nfc_profile.addItem("Essentiel (sans descriptif/logo)", "essential")
+        self.nfc_profile.setCurrentIndex(max(0, self.nfc_profile.findData(cfg.get("nfc_profile", "auto"))))
+        nfc_row.addWidget(self.tag_type)
+        nfc_row.addWidget(self.nfc_profile, 1)
+        advanced_layout.addLayout(nfc_row)
+        reserve_row = QHBoxLayout()
+        reserve_row.addWidget(QLabel("Réserve pour l'application d'écriture"))
+        self.nfc_reserve = QSpinBox()
+        self.nfc_reserve.setRange(0, core.NFC_CAPACITIES[self.tag_type.currentData()])
+        self.nfc_reserve.setSuffix(" octets")
+        self.nfc_reserve.setValue(int(cfg.get("nfc_reserved_bytes", 0)))
+        self.nfc_reserve.setToolTip("Espace réservé à d'autres enregistrements NDEF ou données du logiciel d'écriture. "
+                                   "À vérifier dans ce logiciel ; zéro ne prédit pas ses ajouts.")
+        reserve_row.addWidget(self.nfc_reserve)
+        advanced_layout.addLayout(reserve_row)
+        dl.addWidget(self.nfc_advanced)
+        self.nfc_advanced.hide()
+        self.nfc_note = QLabel()
+        self.nfc_note.setWordWrap(True)
+        dl.addWidget(self.nfc_note)
+        self.nfc_capacity = QLabel("Sélectionnez une fiche pour calculer sa taille NFC.")
+        self.nfc_capacity.setWordWrap(True)
+        dl.addWidget(self.nfc_capacity)
+        self.tag_type.currentIndexChanged.connect(self._nfc_changed)
+        self.nfc_profile.currentIndexChanged.connect(self._nfc_changed)
+        self.nfc_reserve.valueChanged.connect(self._nfc_changed)
+        self._wire_export_assistant()
 
         # Respiration au-dessus de l'action principale (la centre verticalement).
         dl.addStretch(1)
@@ -974,11 +1132,25 @@ class MainWindow(QMainWindow):
     # ── Données / table ──────────────────────────────────────────────────
     def _reload_table(self):
         self._all_rows = core.list_skus(self.db)
-        self._populate(self._all_rows)
+        for combo, key, label in ((self.brand_filter, "brand", "Tous les fabricants"),
+                                  (self.material_filter, "material", "Toutes les matières")):
+            selected = combo.currentData()
+            combo.blockSignals(True)
+            combo.clear()
+            combo.addItem(label, "")
+            for value in sorted({r[key] for r in self._all_rows if r[key]}, key=str.casefold):
+                combo.addItem(value, value)
+            combo.setCurrentIndex(max(0, combo.findData(selected)))
+            combo.blockSignals(False)
+        self._apply_filter()
 
     def _populate(self, rows):
         dpr = self.devicePixelRatioF()
         self._rows = rows
+        selected = self.current_sku
+        self.table.blockSignals(True)
+        self.grid.blockSignals(True)
+        self.table.setUpdatesEnabled(False)
         # Vue liste
         self.table.setRowCount(0)
         self.table.setRowCount(len(rows))
@@ -986,8 +1158,11 @@ class MainWindow(QMainWindow):
             sw = QTableWidgetItem()
             sw.setIcon(QIcon(make_swatch_pixmap(e.get("hex"), 18, dpr)))
             self.table.setItem(r, 0, sw)
-            self.table.setItem(r, 1, QTableWidgetItem(e["sku"]))
-            self.table.setItem(r, 2, QTableWidgetItem(e["product"]))
+            for col, key in enumerate(self._column_keys[1:], 1):
+                value = e.get(key)
+                item = QTableWidgetItem(str(value) if value is not None else "—")
+                item.setToolTip(str(value) if value is not None else "Inconnu")
+                self.table.setItem(r, col, item)
             color_item = QTableWidgetItem(e["color_name"])
             if not e.get("hex"):
                 color_item.setForeground(QColor("#b00"))
@@ -997,13 +1172,19 @@ class MainWindow(QMainWindow):
         for e in rows:
             it = QListWidgetItem()
             it.setIcon(QIcon(make_swatch_pixmap(e.get("hex"), 72, dpr, radius=12)))
-            it.setText(f"{e['sku']}\n{e['color_name']}")
+            it.setText(f"{e['brand']} · {e['material']}\n{e['color_name']}")
             it.setTextAlignment(Qt.AlignHCenter | Qt.AlignTop)
             it.setData(Qt.UserRole, e["sku"])
-            it.setToolTip(f"{e['product']} · {e['color_name']}")
+            it.setToolTip(f"{e['sku']}\n{e['product']} · {e['color_name']}\n{e['quality']}")
             self.grid.addItem(it)
-        # Plus de sélection valide → revenir à l'état vide.
-        if hasattr(self, "stack") and not self.table.selectedItems():
+        self.table.setUpdatesEnabled(True)
+        self.table.blockSignals(False)
+        self.grid.blockSignals(False)
+        selected_row = next((i for i, e in enumerate(rows) if e["sku"] == selected), None)
+        if selected_row is not None:
+            self.table.selectRow(selected_row)
+            self.grid.setCurrentRow(selected_row)
+        elif hasattr(self, "stack"):
             self.current_sku = None
             self._show_empty()
 
@@ -1028,6 +1209,7 @@ class MainWindow(QMainWindow):
     def _on_select_grid(self):
         items = self.grid.selectedItems()
         if not items:
+            self._clear_filament()
             return
         sku = items[0].data(Qt.UserRole)
         if sku:
@@ -1044,33 +1226,63 @@ class MainWindow(QMainWindow):
         self.btn_view_grid.setIcon(make_view_icon(
             "grid", active if self.view_mode == "grid" else idle, 18, dpr))
 
-    def _apply_filter(self, text):
-        t = text.strip().lower()
-        if not t:
-            self._populate(self._all_rows)
+    def _apply_filter(self, *_):
+        if not hasattr(self, "_all_rows"):
             return
-        filtered = [
-            e for e in self._all_rows
-            if t in e["sku"].lower() or t in e["product"].lower() or t in e["color_name"].lower()
-        ]
-        self._populate(filtered)
+        self._filtered_rows = core.query_catalogue(
+            self._all_rows, text=self.search.text(), brand=self.brand_filter.currentData() or "",
+            material=self.material_filter.currentData() or "", quality=self.quality_filter.currentData(),
+            sort1=self.sort1.currentData(), sort2=self.sort2.currentData(),
+            descending1=self.sort1_direction.currentData(), descending2=self.sort2_direction.currentData())
+        self._page = 0
+        self._show_page()
+        self._header_indicators()
+        self._save_ui_preferences()
+
+    def _show_page(self):
+        total = len(self._filtered_rows)
+        start = self._page * self._page_size
+        end = min(total, start + self._page_size)
+        self._populate(self._filtered_rows[start:end])
+        self.page_label.setText(f"{start + 1 if total else 0}–{end} sur {total:,}")
+        self.results_label.setText(f"{total:,} filaments trouvés")
+        self.previous_page.setEnabled(self._page > 0)
+        self.next_page.setEnabled(end < total)
+
+    def _change_page(self, delta):
+        last = max(0, (len(self._filtered_rows) - 1) // self._page_size)
+        self._page = max(0, min(last, self._page + delta))
+        self._show_page()
+
+    def _reset_filters(self):
+        self.search.clear()
+        self.brand_filter.setCurrentIndex(max(0, self.brand_filter.findData("Polymaker")))
+        self.material_filter.setCurrentIndex(0)
+        self.quality_filter.setCurrentIndex(0)
+        self._apply_filter()
 
     def _update_stats(self):
         st = core.db_stats(self.db)
         age = core.db_age_days(self.db)
         age_str = f"{age:.0f} j" if age is not None else "?"
+        conflicts = list(self.db.get("_bundle_conflicts", [])) + list(self.db.get("_source_conflicts", []))
+        for values in self.db.get("_source_conflicts_by_source", {}).values():
+            conflicts.extend(values)
+        conflicts = list(dict.fromkeys(conflicts))
         self.stats_label.setText(
-            f"SKUs: {st['skus']}    Produits: {st['products']}    "
-            f"HEX manquants: {st['missing_hex']}    DB: {age_str}"
+            f"Références : {st['skus']}    Fabricants : {len(self.db.get('_brands', {}))}    Produits : {st['products']}    "
+            f"HEX à préciser : {st['missing_hex']}    Mise à jour complète : {age_str}"
             + (f"    Mise à jour : {core.UPDATE_STATUS_LABELS.get(self.db['_update_status'], self.db['_update_status'])}"
                if self.db.get('_update_status') else "")
-            + (f"    Conflits locaux : {len(self.db['_bundle_conflicts'])}" if self.db.get('_bundle_conflicts') else "")
+            + (f"    Valeurs locales conservées : {len(conflicts)}" if conflicts else "")
         )
-        conflicts = self.db.get("_bundle_conflicts", [])
-        self.stats_label.setToolTip("Valeurs locales conservées lors de la fusion :\n" + "\n".join(conflicts)
+        self._refresh_database_summary()
+        self.stats_label.setToolTip("Valeurs locales conservées lors de la fusion :\n" + "\n".join(conflicts[:100])
+                                   + (f"\n… et {len(conflicts)-100} autres." if len(conflicts) > 100 else "")
                                    if conflicts else "")
 
     def _refresh_logo(self, brand: str = "Polymaker"):
+        self.logo.setTextFormat(Qt.PlainText)
         abs_path = core.logo_abs_path(self.db, brand)
         dark = bool(getattr(self, "_tok", {}).get("dark"))
         # Hauteur max = 52 px, largeur max = 160 px (widget du logo).
@@ -1078,23 +1290,24 @@ class MainWindow(QMainWindow):
         # Prusament) tiennent en 52×52, les wordmarks larges (ROSA3D 334×94)
         # s'étendent jusqu'à 160 px de large sans être écrasés.
         pm = (
-            load_brand_pixmap(abs_path, 52, self.devicePixelRatioF(), max_w=160)
+            load_brand_pixmap(abs_path, 48, self.devicePixelRatioF(), max_w=152)
             if abs_path else None
         )
         if pm and not pm.isNull():
-            if dark:
-                pm = add_soft_halo(pm, radius=7.0)
-            self.logo.setPixmap(pm)
+            self.logo.setPixmap(self._transparent_logo(pm))
             self.logo.setVisible(True)
             return
-        # Marque sans logo : on masque le widget.
+        # A readable brand name is preferable to a missing, tiny or incorrect logo.
         self.logo.setPixmap(QPixmap())
-        self.logo.setVisible(False)
+        self.logo.setText(brand)
+        self.logo.setWordWrap(True)
+        self.logo.setVisible(True)
 
     # ── Sélection ────────────────────────────────────────────────────────
     def _on_select(self):
         items = self.table.selectedItems()
         if not items:
+            self._clear_filament()
             return
         row = items[0].row()
         sku_item = self.table.item(row, 1)
@@ -1122,6 +1335,7 @@ class MainWindow(QMainWindow):
     def _show_detail(self, sku):
         view = core.get_sku_view(self.db, sku)
         self._show_card()
+        self.status.showMessage("Sélection active — cliquez à nouveau sur la ligne ou appuyez sur Échap pour la retirer.")
         if view is None:
             self.title.setText(f"{sku} — produit introuvable")
             self.subtitle_sku.setText("")
@@ -1132,12 +1346,14 @@ class MainWindow(QMainWindow):
             self._paint_swatch()
             self.btn_generate.setEnabled(False)
             self.btn_inspect.setEnabled(False)
+            self._refresh_logo("")
+            self.nfc_capacity.setText("Produit absent : export impossible.")
             return
 
-        self.title.setText(view.product)
+        self.title.setText(view.display_product)
         self.subtitle_sku.setText(view.sku)
         self.subtitle_color.setText(view.color_name or "")
-        self._field_widgets["Produit"].setText(view.product)
+        self._field_widgets["Produit"].setText(view.display_product)
         self._field_widgets["Type"].setText(view.type_str)
         self._field_widgets["Couleur"].setText(view.color_name or "—")
         self._field_widgets["SKU"].setText(view.sku)
@@ -1146,6 +1362,13 @@ class MainWindow(QMainWindow):
         self._field_widgets["Densité"].setText(view.density_str)
         self._field_widgets["Diamètre"].setText(view.diameter_str)
         self._field_widgets["Marque"].setText(view.product_data.get("brand", "Polymaker"))
+        entry = self.db["_skus"][sku]
+        source_names = {entry.get("source", "Catalogue historique")}
+        source_names.update(info["source"] for info in view.product_data.get("_field_sources", {}).values() if info.get("source") and info.get("value") is not None)
+        source_names.update(view.product_data.get("_official_references", {}))
+        self._field_widgets["Source"].setText(" + ".join(sorted(source_names)))
+        self._field_widgets["SKU fabricant"].setText(entry.get("manufacturer_sku") or "Non fourni")
+        self._field_widgets["Masse"].setText(f"{entry['weight']} g" if entry.get("weight") else "Non fournie")
 
         self._refresh_logo(view.product_data.get("brand", "Polymaker"))
 
@@ -1154,6 +1377,8 @@ class MainWindow(QMainWindow):
 
         self.btn_generate.setEnabled(not (self.worker and self.worker.isRunning()))
         self.btn_inspect.setEnabled(True)
+        self._refresh_nfc_capacity()
+        self._printer_field_help()
         if self.inspector.isVisible():
             self._refresh_inspector()
 
@@ -1167,6 +1392,67 @@ class MainWindow(QMainWindow):
                                     use_orca_overrides=core.load_config().get("orca_overrides") is True)
 
     # ── Actions ──────────────────────────────────────────────────────────
+    def _edit_physical(self):
+        if not self.current_sku or self.worker and self.worker.isRunning():
+            return
+        view = core.get_sku_view(self.db, self.current_sku)
+        if view is None:
+            return
+        count = sum(e.get("product") == view.product for e in self.db["_skus"].values())
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Caractéristiques locales du produit")
+        layout = QVBoxLayout(dialog)
+        note = QLabel(f"Ces valeurs s'appliquent aux {count} référence(s) de ce produit.\n"
+                      "Laissez vide une valeur inconnue. Les mises à jour conserveront vos choix.")
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        fields = {}
+        for key, label in (("min_temp", "Buse min. °C"), ("max_temp", "Buse max. °C"),
+                           ("bed_min_temp", "Plateau min. °C"), ("bed_max_temp", "Plateau max. °C"),
+                           ("diameter", "Diamètre mm"), ("density", "Densité g/cm³")):
+            row = QHBoxLayout(); row.addWidget(QLabel(label))
+            value = view.product_data.get(key)
+            field = QLineEdit("" if value is None else str(value))
+            field.setObjectName(key)
+            row.addWidget(field); layout.addLayout(row); fields[key] = field
+        error = QLabel(); error.setWordWrap(True); layout.addWidget(error)
+        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+        layout.addWidget(buttons)
+        def save():
+            try:
+                values = {}
+                for key, field in fields.items():
+                    raw = field.text().strip().replace(",", ".")
+                    value = float(raw) if raw else None
+                    values[key] = int(value) if value is not None and key.endswith("temp") and value.is_integer() else value
+                core.set_product_physical(self.db, self.current_sku, values)
+                dialog.accept()
+            except (ValueError, OSError) as exc:
+                error.setText(str(exc))
+        buttons.accepted.connect(save)
+        buttons.rejected.connect(dialog.reject)
+        if dialog.exec() == QDialog.Accepted:
+            selected = self.current_sku
+            self._reload_table()
+            if self.current_sku == selected:
+                self._show_detail(selected)
+            self._update_stats()
+
+    def _nfc_changed(self, *_):
+        self.nfc_reserve.blockSignals(True)
+        self.nfc_reserve.setMaximum(core.NFC_CAPACITIES[self.tag_type.currentData()])
+        self.nfc_reserve.blockSignals(False)
+        cfg = core.load_config()
+        cfg.update(nfc_tag_type=self.tag_type.currentData(), nfc_profile=self.nfc_profile.currentData(),
+                   nfc_reserved_bytes=self.nfc_reserve.value())
+        try:
+            core.save_config(cfg)
+        except OSError as exc:
+            self.status.showMessage(f"Préférence NFC non enregistrée : {exc}", 8000)
+        self._refresh_nfc_capacity()
+        if self.inspector.isVisible():
+            self._refresh_inspector()
+
     def _complete_color(self) -> bool:
         entry = self.db["_skus"][self.current_sku]
         if core.validate_hex(entry.get("hex")):
@@ -1176,6 +1462,9 @@ class MainWindow(QMainWindow):
         lay = QVBoxLayout(dlg)
         note = QLabel("La couleur est inconnue. Choisissez explicitement un HEX représentatif.\n"
                       "Une couleur transparente ou multicolore ne sera pas remplacée automatiquement par du noir.")
+        note.setTextFormat(Qt.PlainText)
+        if entry.get("source_colors"):
+            note.setText(note.text() + "\nCouleurs fournies par la source : " + ", ".join(entry["source_colors"]))
         note.setWordWrap(True)
         lay.addWidget(note)
         lay.addWidget(QLabel("HEX représentatif (6 caractères)"))
@@ -1208,6 +1497,8 @@ class MainWindow(QMainWindow):
             self.status.showMessage("Attendez la fin de la mise à jour avant de modifier ou exporter la fiche.", 6000)
             return
         try:
+            if mode == "nfc" and not self._can_export_for_printer():
+                return
             if core.get_sku_view(self.db, self.current_sku) is None:
                 raise core.ExportValidationError("Produit introuvable pour cette référence.")
             if not self._complete_color():
@@ -1216,8 +1507,10 @@ class MainWindow(QMainWindow):
             if view is None:
                 raise core.ExportValidationError("Produit introuvable pour cette référence.")
             entry = self.db["_skus"][self.current_sku]
+            export_options = self._nfc_options() if mode == "nfc" else dict(tag_type=self.tag_type.currentData(), profile="full", reserved_bytes=0)
             out = core.write_openspool(self.current_sku, entry, view.product_data,
                                        brand_meta=view.brand_meta, mode=mode,
+                                       **export_options,
                                        use_orca_overrides=core.load_config().get("orca_overrides") is True)
             self.status.showMessage(f"Généré : {out}", 8000)
             QMessageBox.information(self, "Export OpenSpool",
@@ -1243,8 +1536,8 @@ class MainWindow(QMainWindow):
         try:
             payload = self._build_payload()
             if payload is not None:
-                text = core.serialize_openspool(payload)
-                size = core.nfc_size(text)
+                text = core.serialize_openspool(payload, **self._nfc_options())
+                size = core.nfc_size(text, tag_type=self._nfc_options()["tag_type"], reserved_bytes=self._nfc_options()["reserved_bytes"])
                 self.inspector.setPlainText(text)
                 self.status.showMessage(f"JSON : {size.utf8_bytes} octets UTF-8 ; "
                                         f"occupation NFC : {size.type2_bytes}/{size.capacity_bytes} octets "
@@ -1307,7 +1600,7 @@ class MainWindow(QMainWindow):
         self.menu_btn.setEnabled(False)
         self.btn_generate.setEnabled(False)
         self.progress.setVisible(True)
-        self.progress.setRange(0, len(core.UPDATE_PIPELINE))
+        self.progress.setRange(0, len(core.selected_pipeline(core.load_config()["selected_sources"])))
         self.progress.setValue(0)
         self.status.showMessage("Mise à jour en cours…")
 
@@ -1331,6 +1624,9 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Base illisible", str(exc))
             return
         self._reload_table()
+        if self._default_brand_pending and self.brand_filter.findData("Polymaker") >= 0:
+            self._choose_brand("Polymaker")
+            self._default_brand_pending = False
         self._refresh_logo()
         self._update_stats()
         if self.current_sku:
@@ -1370,21 +1666,6 @@ class MainWindow(QMainWindow):
         QMessageBox.critical(self, "Erreur de mise à jour", tb)
 
     # ── Mise à jour automatique ──────────────────────────────────────────
-    def _maybe_auto_update(self):
-        """Lance une mise à jour au démarrage si l'option est activée et due."""
-        if core.db_restored_this_session():
-            return
-        try:
-            cfg = core.load_config()
-        except Exception:
-            return
-        if not cfg.get("auto_update") or not core.has_network_consent():
-            return
-        interval = int(cfg.get("update_interval_days", 7) or 7)
-        if core.db_needs_update(self.db, interval):
-            self.status.showMessage("Mise à jour automatique en cours…", 4000)
-            self._start_update()
-
     # ── Paramètres ───────────────────────────────────────────────────────
     def _open_settings(self):
         cfg = core.load_config()
@@ -1395,9 +1676,12 @@ class MainWindow(QMainWindow):
         lay.setSpacing(12)
         lay.setContentsMargins(18, 18, 18, 14)
 
-        chk_auto = QCheckBox("Mettre à jour automatiquement la base au démarrage")
-        chk_auto.setChecked(bool(cfg.get("auto_update")))
-        lay.addWidget(chk_auto)
+        launch_note = QLabel("La base est actualisée à chaque démarrage depuis les sources choisies. En cas d’échec, la dernière base locale est conservée.")
+        launch_note.setWordWrap(True)
+        lay.addWidget(launch_note)
+        sources = QPushButton("Choisir les sources…")
+        sources.clicked.connect(self._choose_sources)
+        lay.addWidget(sources)
         chk_orca = QCheckBox("À l'export, préférer les valeurs du profil Orca aux valeurs locales")
         chk_orca.setChecked(cfg.get("orca_overrides") is True)
         chk_orca.setToolTip("Option désactivée : les corrections locales sont conservées. "
@@ -1415,16 +1699,6 @@ class MainWindow(QMainWindow):
         revoke.clicked.connect(revoke_consent)
         lay.addWidget(revoke)
 
-        row = QHBoxLayout()
-        row.addWidget(QLabel("Intervalle de mise à jour :"))
-        spin = QSpinBox()
-        spin.setRange(1, 90)
-        spin.setSuffix(" jours")
-        spin.setValue(int(cfg.get("update_interval_days", 7) or 7))
-        row.addWidget(spin)
-        row.addStretch(1)
-        lay.addLayout(row)
-
         note = QLabel(
             "La mise à jour reste soumise à votre consentement réseau, demandé "
             "une seule fois. Aucune donnée personnelle n'est envoyée."
@@ -1440,9 +1714,8 @@ class MainWindow(QMainWindow):
         lay.addWidget(bb)
 
         if dlg.exec() == QDialog.Accepted:
-            cfg["auto_update"] = chk_auto.isChecked()
+            cfg = core.load_config()  # Source choices may have changed in the nested dialog.
             cfg["orca_overrides"] = chk_orca.isChecked()
-            cfg["update_interval_days"] = spin.value()
             try:
                 core.save_config(cfg)
                 if self.inspector.isVisible():

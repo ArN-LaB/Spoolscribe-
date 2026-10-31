@@ -11,6 +11,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > public release. Their highlights are preserved below under *Development
 > history* for reference.
 
+## [0.3.0] — Unreleased
+
+### UX revision after user feedback
+
+- Header-only two-level sorting, contextual column selection, searchable manufacturers
+  with Polymaker default/recent shortcuts, bottom pagination and database status.
+- Row deselection, transparent logo presentation, explicit data-completeness wording.
+- Empty installer catalogue, initial download and selected-source refresh at launch;
+  cached records survive failures and restores inhibit same-session automatic work.
+- Manufacturer-first field provenance and exact identity reconciliation, with uncertain
+  cross-source matches held out of the table. Official Polymaker/Bambu/SUNLU adapters.
+- Printer-specific field guidance, automatic NFC profile choice and advanced options.
+  No Bambu proprietary tag or OpenPrintTag encoder is claimed.
+- Persistent workspace/settings import/export and explicit newer-release discovery.
+
+
+### Added
+- Offline universal catalogue: 22,838 OFD references / 157 new brands plus 599
+  SpoolmanDB references / 14 complementary manufacturers. Snapshots, provenance,
+  strict JSON checks and upstream MIT notices are bundled separately.
+- Manufacturer, material and completeness filters; accent-insensitive multi-word
+  search; primary/secondary column sorting with numeric values and 250-row pages.
+- Explicit editing of local product temperatures, diameter and density.
+- NTAG215 (496-byte NDEF area) and NTAG216 (872-byte area), explicit essential
+  export profile, writer reserve, remaining space and distinct export filenames.
+- Generic conservative source workers and renewed consent for the new hosts.
+- Offline native packaged catalogue/NFC smoke check in CI.
+
+### Fixed
+- Manufacturer-specific CLI metadata instead of a hard-coded Polymaker lookup.
+- Logos retain aspect ratio, avoid bitmap upscaling, and use a contrast background
+  in both themes. 137 new logos reviewed; unsuitable images use a name fallback.
+- Material names containing slashes (e.g. PA6/66) no longer trigger an invalid
+  legacy Orca profile lookup. Existing Orca presets remain unchanged.
+
+### Compatibility
+- Original catalogue bytes and all 1,008 compatible default exports are unchanged.
+- Unknown physical values remain null, source multicolors remain intact, and an
+  essential export never silently drops alpha, additional colors or printing values.
+- Existing local fields, including intentional nulls, win during upgrades/updates.
+- No direct NFC writing, UID association, Spoolman server, firmware or NAS change.
+
 ## [0.2.2] - 2026-10-31
 
 ### Fixed

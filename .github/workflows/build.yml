@@ -118,17 +118,21 @@ jobs:
       - name: Check frozen TLS trust offline
         run: python .github/scripts/check_frozen_tls.py
 
+      - name: Check frozen catalogue and NFC profiles offline
+        run: python .github/scripts/check_frozen_catalogue.py
+
       - name: Verify bundled resources against Git
         shell: python
         run: |
           import os, pathlib, subprocess
           from PyInstaller.archive.readers import CArchiveReader
+          from packaging_rules import include_resource
           binary = pathlib.Path('dist') / ('SpoolScribe.exe' if os.name == 'nt' else 'SpoolScribe')
           reader = CArchiveReader(str(binary))
           names = {name.replace('\\', '/'): name for name in reader.toc}
           tracked = subprocess.check_output(['git', 'ls-files', '-z', '--', 'data', 'scripts', 'orca_profiles'])
           expected = {name: subprocess.check_output(['git', 'show', 'HEAD:' + name])
-                      for name in tracked.decode('utf-8').split(chr(0)) if name}
+                      for name in tracked.decode('utf-8').split(chr(0)) if name and include_resource(name)}
           actual = {name for name in names if name.startswith(('data/', 'scripts/', 'orca_profiles/'))}
           assert actual == set(expected), 'Unexpected or missing bundled resources'
           for name, raw in expected.items():

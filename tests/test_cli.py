@@ -54,6 +54,23 @@ class CliTests(unittest.TestCase):
         self.assertEqual(len(files), 1)
         self.assertIn("\n", files[0].read_text())
 
+    def test_ntag215_essential_preview_matches_file(self):
+        _, output = self.run_cli(["PB05001", "i", "o", "q"],
+                                 ["--tag-type", "NTAG215", "--nfc-profile", "essential", "--reserve-bytes", "32"])
+        target, = (self.root / "output").glob("*ntag215_essential.json")
+        self.assertIn(target.read_text(), output)
+        self.assertNotIn("brand_meta", json.loads(target.read_text()))
+        self.assertTrue(core.nfc_size(target.read_text(), tag_type="NTAG215", reserved_bytes=32).fits)
+
+    def test_filtered_list_exits_without_network_or_writes(self):
+        before = self.db.read_bytes()
+        with patch("convert_profile.check_and_update_db", side_effect=AssertionError("List must stay offline")):
+            code, output = self.run_cli([], ["--list", "--brand", "Polymaker", "--search", "PETG Black", "--limit", "3"])
+        self.assertEqual(code, 0)
+        self.assertIn("résultats", output)
+        self.assertEqual(self.db.read_bytes(), before)
+        self.assertFalse((self.root / "output").exists())
+
     def test_corruption_is_reported_and_restore_requires_explicit_answer(self):
         backup = db_io.backup_db(self.db)
         self.db.write_text("corrupt")

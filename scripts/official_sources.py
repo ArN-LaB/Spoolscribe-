@@ -1,0 +1,73 @@
+"""Bounded manufacturer downloads and parsers, separate from personal services."""
+import re
+from html.parser import HTMLParser
+import urllib.request
+import urllib.parse
+from scripts import db_io
+from scripts.catalogue_merge import normalized
+
+class SameHost(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self,req,fp,code,msg,headers,newurl):
+        old,new=urllib.parse.urlsplit(req.full_url),urllib.parse.urlsplit(newurl)
+        if new.scheme!='https' or new.hostname!=old.hostname or new.username or new.port not in (None,443):
+            raise db_io.SourceUnavailable('Redirection fabricant hors de l’hôte déclaré')
+        return super().redirect_request(req,fp,code,msg,headers,newurl)
+
+def fetch(url,limit=8*1024*1024):
+    req=urllib.request.Request(url,headers={'User-Agent':'SpoolScribe/0.3 (public filament data)'})
+    with urllib.request.build_opener(SameHost()).open(req,timeout=30) as response:raw=response.read(limit+1)
+    if len(raw)>limit:raise db_io.SourceUnavailable('Réponse fabricant trop volumineuse')
+    return raw
+
+
+def bambu_fact(row,url):
+    name=row.get('name','')
+    if not name.startswith('Bambu ') or not name.endswith(' @base'):raise ValueError('Profil générique fabricant attendu')
+    physical={}
+    for src,dst in (('filament_density','density'),('filament_diameter','diameter'),
+                    ('nozzle_temperature_range_low','min_temp'),('nozzle_temperature_range_high','max_temp')):
+        value=row.get(src)
+        if value is not None:
+            if not isinstance(value,list) or len(value)!=1:raise ValueError('Valeur fabricant ambiguë')
+            number=float(value[0])
+            if dst.endswith('temp'):
+                if int(number)!=number:raise ValueError('Température non entière')
+                number=int(number)
+            physical[dst]=number
+    # Do not generalize a plate-specific or printer-specific setting.
+    product=dict(type='PLA',brand='Bambu Lab',min_temp=None,max_temp=None,bed_min_temp=None,bed_max_temp=None,diameter=None,density=None)
+    product.update(physical);db_io.validate_db({'_products':{'check':product},'_skus':{}})
+    base=name.removesuffix(' @base')
+    return dict(brand='Bambu Lab',names=[base,base.replace('Bambu ','Bambu Lab ',1)],physical=physical,url=url)
+
+class TableReader(HTMLParser):
+    def __init__(self):super().__init__();self.rows=[];self.row=None;self.cell=None
+    def handle_starttag(self,tag,attrs):
+        if tag=='tr':self.row=[]
+        if tag in ('td','th') and self.row is not None:self.cell=[]
+    def handle_data(self,data):
+        if self.cell is not None:self.cell.append(data)
+    def handle_endtag(self,tag):
+        if tag in ('td','th') and self.cell is not None:
+            self.row.append(' '.join(self.cell).strip());self.cell=None
+        if tag=='tr' and self.row is not None:self.rows.append(self.row);self.row=None
+
+SUNLU_URL='https://www.sunlu.com/products/pla-3d-printing-filament'
+
+def sunlu_facts(html):
+    parser=TableReader();parser.feed(html)
+    physical={};colors={}
+    for row in parser.rows:
+        for i,cell in enumerate(row[:-1]):
+            value=row[i+1]
+            if normalized(cell).startswith('density'):
+                match=re.fullmatch(r'\s*(\d+(?:\.\d+)?)\s*',value)
+                if match:physical['density']=float(match[1])
+            if normalized(cell)=='bedtemperature':
+                match=re.fullmatch(r'\s*(\d+)\s*[-–]\s*(\d+)\s*[°℃C\s]*',value)
+                if match:physical.update(bed_min_temp=int(match[1]),bed_max_temp=int(match[2]))
+        if len(row)>=2 and re.fullmatch(r'#[0-9a-fA-F]{6}',row[1]):colors[normalized(row[0])]=row[1][1:].upper()
+    # Nozzle temperatures depend on print speed on this page: keep the context
+    # in the source reference, not an invented universal range.
+    if not physical or not colors:raise db_io.SourceUnavailable('SUNLU : tableau technique/couleurs non reconnu ; aucune donnée supposée')
+    return [dict(brand='SUNLU',names=['SUNLU PLA','PLA'],physical=physical,colors=colors,url=SUNLU_URL)]

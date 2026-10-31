@@ -1,0 +1,121 @@
+{
+  "source": "https://github.com/OpenFilamentCollective/open-filament-database",
+  "sha256": "6830802bd85f00c8979ea086414c2e1f3a76ec5d931c295bd779b72d3087bd6e",
+  "license": "MIT",
+  "brands_seen": 180,
+  "curated_brands_preserved": [
+    "polymaker",
+    "prusament",
+    "rosa3d_filaments"
+  ],
+  "rejected": [],
+  "empty_brands": [
+    "3d_basics",
+    "3dea",
+    "altana",
+    "buildvolume",
+    "c_tech",
+    "clas_ohlson",
+    "filamatrix",
+    "filaxix",
+    "floreon3d",
+    "forward_am",
+    "henkel",
+    "iboss_3d",
+    "igus",
+    "liqcreate",
+    "lostboyslab",
+    "mika3d",
+    "nextshapes",
+    "owl_filament",
+    "vanyo",
+    "w_rth"
+  ],
+  "incomplete": 2010,
+  "references": 22838,
+  "brands_imported": 157,
+  "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
+  "logos_approved": 137,
+  "logos_rejected": [
+    {
+      "brand": "AmeLeis",
+      "reason": "Revue visuelle : Rendu flou lors de la revue à taille d'affichage."
+    },
+    {
+      "brand": "American Filament",
+      "reason": "Revue visuelle : Petit sigle pixellisé ; nom du fabricant préférable."
+    },
+    {
+      "brand": "ATARAXIA ART",
+      "reason": "Revue visuelle : Montage de produits, pas un logo lisible."
+    },
+    {
+      "brand": "Buddy3D",
+      "reason": "Revue visuelle : Icône floue à taille d'affichage."
+    },
+    {
+      "brand": "Gizmo Dorks",
+      "reason": "Logo trop petit/étroit pour un affichage lisible (2×7)"
+    },
+    {
+      "brand": "Hobby Lobby",
+      "reason": "Revue visuelle : Photo d'emballage, pas un logo isolé."
+    },
+    {
+      "brand": "IIID MAX",
+      "reason": "Revue visuelle : Sigle flou à taille d'affichage."
+    },
+    {
+      "brand": "iSangHu",
+      "reason": "Revue visuelle : Photo de bobine, pas un logo isolé."
+    },
+    {
+      "brand": "Jessie",
+      "reason": "Logo trop petit/étroit pour un affichage lisible (169×339)"
+    },
+    {
+      "brand": "Kimya",
+      "reason": "Revue visuelle : Visuel fourni non identifiable comme logo Kimya."
+    },
+    {
+      "brand": "Landu",
+      "reason": "Logo trop petit/étroit pour un affichage lisible (100×17)"
+    },
+    {
+      "brand": "LOCYFENS",
+      "reason": "Revue visuelle : Icône générique floue."
+    },
+    {
+      "brand": "MarsWork",
+      "reason": "Revue visuelle : Visuel incomplet ou tronqué dans le rendu SVG."
+    },
+    {
+      "brand": "Paramount 3D",
+      "reason": "Revue visuelle : Photo de bobine, pas un logo isolé."
+    },
+    {
+      "brand": "Polar Filament",
+      "reason": "Revue visuelle : Montage de visuels difficile à identifier à taille d'affichage."
+    },
+    {
+      "brand": "Protopasta",
+      "reason": "Revue visuelle : Photo de bobine, pas un logo isolé."
+    },
+    {
+      "brand": "Recreus",
+      "reason": "Revue visuelle : Lettrage flou à taille d'affichage."
+    },
+    {
+      "brand": "TEQStone",
+      "reason": "Revue visuelle : Bannière de produits, pas un logo isolé."
+    },
+    {
+      "brand": "Winkle",
+      "reason": "Contenu SVG externe/non vectoriel"
+    },
+    {
+      "brand": "XZN",
+      "reason": "Revue visuelle : Bannière de produits, pas un logo isolé."
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "source": "https://donkie.github.io/SpoolmanDB/filaments.json",
+  "sha256": "06f1788582d110008bec27a81ecd98b2abc963d22adf7149802967cc7a721c0c",
+  "license": "MIT",
+  "rejected": [],
+  "references": 599,
+  "incomplete": 51,
+  "brands_imported": 14,
+  "already_covered": 8862
+}

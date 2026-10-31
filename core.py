@@ -19,12 +19,14 @@ import re
 import subprocess
 import sys
 import tempfile
+import unicodedata
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Callable, Optional
 from pathlib import Path
 
 from scripts import db_io
+import printer_profiles
 
 DatabaseError = db_io.DatabaseError
 
@@ -32,7 +34,7 @@ DatabaseError = db_io.DatabaseError
 # APP_VERSION est la référence de version. spoolscribe.spec la lit ici ;
 # la CI vérifie que la version déclarée dans pyproject.toml reste alignée.
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.2.2"
+APP_VERSION = "0.3.0"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
@@ -72,7 +74,7 @@ SCRIPT_DIR   = RESOURCE_DIR                         # alias rétro-compatible
 
 # Données inscriptibles : repo en dev, dossier utilisateur en .exe (onefile :
 # sinon tout irait dans le dossier temporaire _MEIPASS et serait perdu).
-DATA_HOME   = os.environ.get("SPOOLSCRIBE_DATA_HOME") or (user_data_dir() if _FROZEN else RESOURCE_DIR)
+DATA_HOME   = os.environ.get("SPOOLSCRIBE_DATA_HOME") or user_data_dir()
 DATA_DIR    = os.path.join(DATA_HOME, "data")
 DB_PATH     = os.path.join(DATA_DIR, "polymaker_db.json")
 ORCA_DIR    = os.path.join(DATA_HOME, "orca_profiles")
@@ -94,8 +96,18 @@ def _seed_writable_data() -> None:
     if not _FROZEN:
         return
     bundled_path = Path(RESOURCE_DIR) / "data" / "polymaker_db.json"
+    if not bundled_path.is_file():
+        if not Path(DB_PATH).exists():
+            db_io.save_db(EMPTY_DB.copy(), DB_PATH)
+        return
     bundled = db_io.load_db(bundled_path)
-    digest = hashlib.sha256(bundled_path.read_bytes()).hexdigest()
+    extension_bytes = b""
+    for filename in ("catalogue_ofd.json", "catalogue_spoolman.json"):
+        extension_path = bundled_path.with_name(filename)
+        if extension_path.is_file():
+            extension_bytes += extension_path.read_bytes()
+            bundled.update(db_io.merge_bundled_db(bundled, db_io.load_db(extension_path))[0])
+    digest = hashlib.sha256(bundled_path.read_bytes() + extension_bytes).hexdigest()
     if os.path.exists(DB_PATH):
         local = db_io.load_db(DB_PATH)
         if local.get("_bundled_digest") != digest:
@@ -123,6 +135,8 @@ def _seed_writable_data() -> None:
 
 # Pipeline de mise à jour : (fichier_script, libellé, timeout_s)
 UPDATE_PIPELINE: list[tuple[str, str, int]] = [
+    ("sync_universal_catalogue.py",    "Catalogue multi-fabricants OFD", 300),
+    ("sync_spoolman_catalogue.py",     "Fabricants complémentaires SpoolmanDB", 90),
     ("scrape_wholesale.py",            "Scrape wholesale",          120),
     ("scrape_wiki_hex.py",             "Scrape hex wiki",            60),
     ("scrape_spoolman_hex.py",         "Scrape hex SpoolmanDB",      60),
@@ -143,9 +157,9 @@ UPDATE_PIPELINE: list[tuple[str, str, int]] = [
 # Affichée à l'utilisateur avant tout accès réseau (consentement éclairé).
 NETWORK_SOURCES: list[dict] = [
     {"name": "SpoolmanDB",            "license": "MIT",
-     "host": "raw.githubusercontent.com/Donkie/SpoolmanDB"},
+     "host": "raw.githubusercontent.com/Donkie/SpoolmanDB + donkie.github.io/SpoolmanDB (catalogue compilé)"},
     {"name": "Open Filament Database", "license": "MIT",
-     "host": "raw.githubusercontent.com/OpenFilamentCollective/open-filament-database"},
+     "host": "raw.githubusercontent.com/OpenFilamentCollective/open-filament-database + codeload.github.com (archive officielle)"},
     {"name": "Polymaker Presets (officiel)", "license": "MIT",
      "host": "raw.githubusercontent.com/polymaker3d/Polymaker-Preset"},
     {"name": "TheFilamentDB",         "license": "CC-BY 4.0 (attribution requise)",
@@ -167,7 +181,16 @@ DEFAULT_CONFIG = {
     "update_interval_days": 7,
     "last_update": None,
     "orca_overrides": False,   # Explicit choice before replacing local values at export.
+    "network_sources_revision": 0,
+    "nfc_tag_type": "NTAG216",
+    "nfc_profile": "auto",
+    "printer_profile": "u1",
+    "selected_sources": ["polymaker", "ofd", "spoolman", "bambu", "sunlu"],
+    "ui": {},
+    "show_extra_fields": False,
+    "nfc_reserved_bytes": 0,
 }
+NETWORK_SOURCES_REVISION = 2
 
 
 def load_config() -> dict:
@@ -188,16 +211,19 @@ def save_config(cfg: dict) -> None:
 
 def has_network_consent() -> bool:
     """True uniquement si l'utilisateur a explicitement accepté l'accès réseau."""
-    return load_config().get("network_consent") is True
+    cfg = load_config()
+    return cfg.get("network_consent") is True and cfg.get("network_sources_revision") == NETWORK_SOURCES_REVISION
 
 
 def consent_was_asked() -> bool:
-    return load_config().get("network_consent") is not None
+    cfg = load_config()
+    return cfg.get("network_consent") is False or has_network_consent()
 
 
 def set_network_consent(value: bool, auto_update: "bool | None" = None) -> None:
     cfg = load_config()
     cfg["network_consent"] = bool(value)
+    cfg["network_sources_revision"] = NETWORK_SOURCES_REVISION
     if auto_update is not None:
         cfg["auto_update"] = bool(auto_update)
     save_config(cfg)
@@ -283,10 +309,24 @@ def db_restored_this_session(path: Optional[str] = None) -> bool:
 
 def load_db(path: Optional[str] = None) -> dict:
     """Corrupt files are reported, never silently replaced with an empty DB."""
+    default_path = path is None
     path = path or DB_PATH
+    if default_path and not Path(path).exists():
+        db_io.save_db(EMPTY_DB.copy(), path)
     if _FROZEN and os.path.abspath(path) == os.path.abspath(DB_PATH) and not db_restored_this_session(path):
         _seed_writable_data()
-    return db_io.load_db(path)
+    db = db_io.load_db(path)
+    # Development also uses the separately audited offline extension. Preserve
+    # revision metadata and never write just because the catalogue was opened.
+    if not _FROZEN and not db_restored_this_session(path):
+        for filename in ("catalogue_ofd.json", "catalogue_spoolman.json"):
+            extension = Path(path).with_name(filename)
+            if extension.is_file():
+                merged, conflicts = db_io.merge_bundled_db(db, db_io.load_db(extension))
+                db.update(merged)
+                if conflicts:
+                    db.setdefault("_bundle_conflicts", []).extend(conflicts)
+    return db
 
 
 def save_db(db: dict, path: Optional[str] = None) -> None:
@@ -344,6 +384,10 @@ def find_orca_profile(product_name: str) -> Optional[str]:
     """Chemin du profil Orca pour ce produit, ou None."""
     if not os.path.isdir(ORCA_DIR):
         return None
+    # Universal material/product names can contain '/' (e.g. PA6/66). They
+    # cannot name one of our flat legacy presets, so no override is applicable.
+    if "/" in product_name or "\\" in product_name or len(product_name.encode("utf-8")) > 190:
+        return None
     path = os.path.join(ORCA_DIR, f"{product_name} @Snapmaker U1 - OrcaSlicer.json")
     if Path(path).resolve().parent != Path(ORCA_DIR).resolve():
         raise ExportValidationError("Le profil Orca doit rester dans son dossier de ressources.")
@@ -363,9 +407,10 @@ def app_logo_abs_path() -> Optional[str]:
     """Chemin absolu du logo de l'application SpoolScribe, ou None."""
     rel = os.path.join("data", "spoolscribe_logo.svg")
     for base in (DATA_HOME, RESOURCE_DIR):
-        abs_p = os.path.join(base, rel)
-        if os.path.exists(abs_p):
-            return abs_p
+        root = Path(base).resolve()
+        candidate = (root / rel).resolve()
+        if candidate.is_relative_to(root / "data") and candidate.is_file():
+            return str(candidate)
     return None
 
 
@@ -393,9 +438,10 @@ def logo_abs_path(db: dict, brand: str = "Polymaker") -> Optional[str]:
     rel = logo_path.replace("/", os.sep)
     # Données inscriptibles (mises à jour) d'abord, puis bundle en repli.
     for base in (DATA_HOME, RESOURCE_DIR):
-        abs_p = os.path.join(base, rel)
-        if os.path.exists(abs_p):
-            return abs_p
+        root = Path(base).resolve()
+        candidate = (root / rel).resolve()
+        if candidate.is_relative_to(root / "data") and candidate.is_file():
+            return str(candidate)
     return None
 
 
@@ -427,6 +473,10 @@ class SkuView:
     brand_meta: Optional[dict] = None
 
     @property
+    def display_product(self) -> str:
+        return self.product_data.get("display_name") or self.product
+
+    @property
     def type_str(self) -> str:
         t = self.product_data.get("type", "")
         st = self.product_data.get("subtype")
@@ -434,17 +484,21 @@ class SkuView:
 
     @property
     def nozzle_str(self) -> str:
-        return f"{self.product_data.get('min_temp')}–{self.product_data.get('max_temp')} °C"
+        lo, hi = self.product_data.get("min_temp"), self.product_data.get("max_temp")
+        return "Non renseigné" if lo is None or hi is None else f"{lo}–{hi} °C"
 
     @property
     def bed_str(self) -> str:
         lo = self.product_data.get("bed_min_temp")
         hi = self.product_data.get("bed_max_temp")
+        if lo is None or hi is None:
+            return "Non renseigné"
         return f"{lo} °C" if lo == hi else f"{lo}–{hi} °C"
 
     @property
     def density_str(self) -> str:
-        return f"{self.product_data.get('density')} g/cm³"
+        value = self.product_data.get("density")
+        return f"{value} g/cm³" if value is not None else "Non renseignée"
 
     @property
     def diameter_str(self) -> str:
@@ -481,13 +535,77 @@ def list_skus(db: dict) -> list[dict]:
     out = []
     for sku in sorted(skus):
         e = skus[sku]
+        p = db.get("_products", {}).get(e.get("product"), {})
+        issues = []
+        if not p:
+            issues.append("Produit absent")
+        if not validate_hex(e.get("hex")):
+            issues.append("Couleur à renseigner")
+        source_colors = e.get("source_colors", [])
+        if source_colors and (len(source_colors) > 5 or any(len(c) != 6 for c in source_colors)):
+            issues.append("Couleurs multiples incompatibles avec OpenSpool")
+        try:
+            _validate_physical(p)
+        except ExportValidationError:
+            issues.append("Caractéristiques à compléter")
+        if not p.get("brand") or not p.get("type"):
+            issues.append("Marque ou matière absente")
         out.append({
             "sku": sku,
-            "product": e.get("product", ""),
+            "product": p.get("display_name") or e.get("product", ""),
             "color_name": e.get("color_name", ""),
             "hex": e.get("hex"),
+            "brand": p.get("brand", ""),
+            "material": p.get("type", ""),
+            "diameter": p.get("diameter"),
+            "weight": e.get("weight"),
+            "density": p.get("density"),
+            "ready": not issues,
+            "quality": " ; ".join(issues) or "Export possible",
+            "source_id": e.get("source_id", ""),
+            "manufacturer_sku": e.get("manufacturer_sku", ""),
         })
     return out
+
+
+CATALOGUE_SORT_FIELDS = {
+    "sku": "Référence", "brand": "Fabricant", "material": "Matière",
+    "product": "Produit", "color_name": "Couleur", "diameter": "Diamètre",
+    "weight": "Masse", "density": "Densité", "quality": "Qualité",
+}
+
+
+def _search_key(value) -> str:
+    return "".join(c for c in unicodedata.normalize("NFKD", str(value or "")).casefold()
+                   if not unicodedata.combining(c))
+
+
+def query_catalogue(rows: list[dict], *, text: str = "", brand: str = "", material: str = "",
+                    quality: str = "all", sort1: str = "brand", sort2: str = "product",
+                    descending1: bool = False, descending2: bool = False) -> list[dict]:
+    """Filter the entire catalogue, then apply two stable keys (numeric where appropriate)."""
+    if sort1 not in CATALOGUE_SORT_FIELDS or sort2 not in (*CATALOGUE_SORT_FIELDS, ""):
+        raise ValueError("Colonne de tri inconnue.")
+    if quality not in ("all", "ready", "incomplete"):
+        raise ValueError("Filtre de qualité inconnu.")
+    terms = _search_key(text).split()
+    result = [r for r in rows if (not brand or r["brand"] == brand)
+              and (not material or r["material"] == material)
+              and (quality == "all" or r["ready"] == (quality == "ready"))
+              and all(t in _search_key(" ".join(str(r.get(k) or "") for k in
+                      ("sku", "source_id", "manufacturer_sku", "brand", "material", "product", "color_name", "hex")))
+                      for t in terms)]
+    result.sort(key=lambda r: _search_key(r["sku"]))
+    for key, reverse in ((sort2, descending2), (sort1, descending1)):
+        if not key:
+            continue
+        # Unknown numeric values always come last, including in descending order.
+        known = [r for r in result if r.get(key) is not None and r.get(key) != ""]
+        missing = [r for r in result if r.get(key) is None or r.get(key) == ""]
+        known.sort(key=lambda r: r[key] if key in ("diameter", "weight", "density") else _search_key(r[key]),
+                   reverse=reverse)
+        result = known + missing
+    return result
 
 
 def add_sku(db: dict, sku: str, product: str, color_name: str,
@@ -517,7 +635,11 @@ def set_sku_hex(db: dict, sku: str, hex_val: str, persist: bool = True,
     if alpha is not None and (not isinstance(alpha, str) or not re.fullmatch(r"[0-9A-Fa-f]{2}", alpha)):
         raise ValueError("Opacité alpha invalide : deux caractères HEX requis.")
     if sku in db.get("_skus", {}):
-        previous = dict(db["_skus"][sku])
+        import copy
+        previous = copy.deepcopy(db["_skus"][sku])
+        provenance = db["_skus"][sku].get("_field_sources", {})
+        provenance.pop("hex", None)
+        if alpha is not None: provenance.pop("alpha", None)
         db["_skus"][sku]["hex"] = norm
         if alpha is not None:
             db["_skus"][sku]["alpha"] = alpha.upper()
@@ -528,6 +650,31 @@ def set_sku_hex(db: dict, sku: str, hex_val: str, persist: bool = True,
             db["_skus"][sku] = previous
             raise
     return norm
+
+
+def set_product_physical(db: dict, sku: str, values: dict, *, path: Optional[str] = None) -> None:
+    """Explicit local edit of a product's shared physical fields; unknowns remain null."""
+    view = get_sku_view(db, sku)
+    allowed = {"min_temp", "max_temp", "bed_min_temp", "bed_max_temp", "density", "diameter"}
+    if view is None or not values or set(values) - allowed:
+        raise ExportValidationError("Produit ou caractéristiques à corriger invalides.")
+    import copy
+    updated = copy.deepcopy(view.product_data)
+    updated.update(values)
+    for field in values: updated.get("_field_sources", {}).pop(field, None)
+    db_io.validate_db({"_products": {view.product: updated}})
+    for key, value in values.items():
+        if key.endswith("temp") and value is not None and int(value) != value:
+            raise ExportValidationError("Les températures doivent être entières.")
+    # Publish through the revision-aware storage before updating the UI's object.
+    import copy
+    changed = copy.deepcopy(db)
+    changed["_products"][view.product] = updated
+    save_db(changed, path)
+    db.clear()
+    db.update(changed)
+    if isinstance(db, db_io.Database):
+        db.revision, db.source_path = changed.revision, changed.source_path
 
 
 # ─── Payload OpenSpool / NFC ──────────────────────────────────────────────
@@ -543,7 +690,13 @@ class NfcCapacityError(ExportValidationError):
     pass
 
 
+NTAG215_NDEF_AREA_BYTES = 496
 NTAG216_NDEF_AREA_BYTES = 872
+NFC_CAPACITIES = {"NTAG215": NTAG215_NDEF_AREA_BYTES, "NTAG216": NTAG216_NDEF_AREA_BYTES}
+# Explicit opt-in profile: preserve all printing/color values, omit descriptive fields only.
+NFC_ESSENTIAL_FIELDS = ("protocol", "version", "type", "color_hex", "brand", "min_temp", "max_temp",
+                        "bed_min_temp", "bed_max_temp", "diameter", "density", "subtype",
+                        "alpha", "additional_color_hexes")
 UPDATE_STATUS_LABELS = {"complete": "complète", "partial": "partielle", "failed": "en échec"}
 
 
@@ -643,9 +796,20 @@ def build_openspool(entry: dict, product_data: dict, brand_meta: Optional[dict] 
         payload["image"] = brand_meta.get("logo_url")
     for key in ("sku", "product", "color_name"):
         payload[key] = entry.get(key)
+    if src.get("display_name"):
+        payload["product"] = src["display_name"]
     for key in ("alpha", "additional_color_hexes"):
         if key in entry:
             payload[key] = entry[key]
+    if entry.get("source_colors"):
+        colors = entry["source_colors"]
+        if not isinstance(colors, list) or any(not isinstance(c, str) or not re.fullmatch(r"[0-9A-F]{6}", c) for c in colors):
+            raise ExportValidationError("Couleurs source multiples avec alpha ou format incompatible ; aucune couleur n'est supprimée.")
+        additional = list(dict.fromkeys(c for c in colors if c != hx))
+        if len(additional) > 4:
+            raise ExportValidationError("Trop de couleurs pour OpenSpool (quatre couleurs supplémentaires maximum).")
+        if "additional_color_hexes" not in payload:
+            payload["additional_color_hexes"] = additional
     validate_openspool(payload)
     return payload
 
@@ -657,35 +821,51 @@ class NfcSize:
     ndef_bytes: int
     type2_bytes: int
     capacity_bytes: int = NTAG216_NDEF_AREA_BYTES
+    reserved_bytes: int = 0
+
+    @property
+    def remaining_bytes(self) -> int:
+        return self.capacity_bytes - self.type2_bytes - self.reserved_bytes
 
     @property
     def fits(self) -> bool:
-        return self.type2_bytes <= self.capacity_bytes
+        return self.remaining_bytes >= 0
 
 
-def nfc_size(text: str) -> NfcSize:
+def nfc_size(text: str, *, tag_type: str = "NTAG216", reserved_bytes: int = 0) -> NfcSize:
     """One MIME application/json record, no ID, Type 2 TLV + terminator.
 
     Excludes the CC itself. Additional records written by another app are not
     included and must be checked by that writer.
     """
+    if tag_type not in NFC_CAPACITIES:
+        raise ValueError("Tag attendu : NTAG215 ou NTAG216.")
+    if type(reserved_bytes) is not int or not 0 <= reserved_bytes <= NFC_CAPACITIES[tag_type]:
+        raise ValueError("Réserve d'écriture invalide.")
     length = len(text.encode("utf-8"))
     record = (3 if length < 256 else 6) + len(b"application/json") + length
     total = record + (2 if record < 255 else 4) + 1
-    return NfcSize(len(text), length, record, total)
+    return NfcSize(len(text), length, record, total, NFC_CAPACITIES[tag_type], reserved_bytes)
 
 
-def serialize_openspool(payload: dict, *, mode: str = "nfc") -> str:
+def serialize_openspool(payload: dict, *, mode: str = "nfc", tag_type: str = "NTAG216",
+                        profile: str = "full", reserved_bytes: int = 0) -> str:
     validate_openspool(payload)
+    if profile not in ("full", "essential"):
+        raise ValueError("Profil attendu : full ou essential.")
     if mode not in ("nfc", "archive"):
         raise ValueError("Mode d'export attendu : nfc ou archive.")
-    text = (json.dumps(payload, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+    exported = ({key: payload[key] for key in NFC_ESSENTIAL_FIELDS if key in payload}
+                if mode == "nfc" and profile == "essential" else payload)
+    text = (json.dumps(exported, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
             if mode == "nfc" else json.dumps(payload, indent=2, ensure_ascii=False, allow_nan=False))
-    size = nfc_size(text)
+    size = nfc_size(text, tag_type=tag_type, reserved_bytes=reserved_bytes)
     if mode == "nfc" and not size.fits:
-        raise NfcCapacityError(f"Export trop volumineux pour NTAG216 : {size.type2_bytes} / "
+        raise NfcCapacityError(f"Export trop volumineux pour {tag_type} : {size.type2_bytes} + "
+                               f"{reserved_bytes} de réserve / "
                                f"{size.capacity_bytes} octets avec NDEF/TLV "
-                               f"({size.utf8_bytes} octets JSON UTF-8). Utilisez l'archive pour conserver la fiche.")
+                               f"({size.utf8_bytes} octets JSON UTF-8). Choisissez le profil essentiel, "
+                               "un tag plus grand ou l'archive complète.")
     return text
 
 
@@ -701,14 +881,18 @@ def openspool_filename(sku: str, product: str, color_name: str) -> str:
 def write_openspool(sku: str, entry: dict, product_data: dict,
                     output_dir: Optional[str] = None,
                     brand_meta: Optional[dict] = None, *, mode: str = "nfc",
-                    use_orca_overrides: bool = False) -> str:
+                    use_orca_overrides: bool = False, tag_type: str = "NTAG216",
+                    profile: str = "full", reserved_bytes: int = 0) -> str:
     entry_with_sku = dict(entry, sku=sku)
     payload = build_openspool(entry_with_sku, product_data, brand_meta=brand_meta,
                              use_orca_overrides=use_orca_overrides)
-    text = serialize_openspool(payload, mode=mode)
+    text = serialize_openspool(payload, mode=mode, tag_type=tag_type, profile=profile,
+                              reserved_bytes=reserved_bytes)
     filename = openspool_filename(sku, entry.get("product", ""), entry.get("color_name", ""))
     if mode == "archive":
         filename = filename.removesuffix(".json") + "_archive.json"
+    elif tag_type != "NTAG216" or profile != "full":
+        filename = filename.removesuffix(".json") + f"_{tag_type.lower()}_{profile}.json"
     directory = Path(output_dir or OUTPUT_DIR).resolve()
     destination = directory / filename
     if destination.resolve().parent != directory:
@@ -739,6 +923,7 @@ def run_update_pipeline(
     progress: Optional[Callable[[str, int, int], None]] = None,
     python: Optional[str] = None,
     consent: bool = False,
+    sources: Optional[list[str]] = None,
 ) -> list[StepResult]:
     """
     Exécute toute la pipeline de scrapers (accès réseau).
@@ -761,9 +946,15 @@ def run_update_pipeline(
     except (DatabaseError, OSError) as exc:
         return [StepResult("Sauvegarde avant mise à jour", False, -1, str(exc), "error")]
 
+    selected = sources if sources is not None else load_config().get("selected_sources")
+    # A caller overriding the legacy pipeline (including offline regression tests)
+    # can still execute its supplied steps; normal application use selects groups.
+    pipeline = selected_pipeline(selected) if UPDATE_PIPELINE == _ALL_PIPELINE else UPDATE_PIPELINE
+    if not pipeline:
+        return [StepResult("Sources", False, -2, "Sélectionnez au moins une source.", "unavailable")]
     python = python or venv_python()
     results: list[StepResult] = []
-    total = len(UPDATE_PIPELINE)
+    total = len(pipeline)
     # Force l'UTF-8 dans les process enfants : sous Windows, stdout utilise
     # cp1252 par défaut et les scripts (qui impriment —, ─, →…) plantent en
     # UnicodeEncodeError. PYTHONUTF8/PYTHONIOENCODING corrigent ça à la source.
@@ -772,7 +963,7 @@ def run_update_pipeline(
     child_env["PYTHONIOENCODING"] = "utf-8"
     child_env["SPOOLSCRIBE_DATA_HOME"] = DATA_HOME
     child_env["SPOOLSCRIBE_RESOURCE_DIR"] = RESOURCE_DIR
-    for i, (script, label, timeout) in enumerate(UPDATE_PIPELINE, 1):
+    for i, (script, label, timeout) in enumerate(pipeline, 1):
         if progress:
             try:
                 progress(label, i, total)
@@ -819,6 +1010,8 @@ def run_update_pipeline(
         status = update_status(results)
         db["_update_status"] = status
         db["_last_attempt"] = datetime.now().isoformat()
+        db["_selected_sources"] = list(selected or [])
+        db["_source_results"] = [dict(source=r.label, status=r.status, ok=r.ok, message=r.stderr) for r in results]
         if status == "complete":
             db["_last_updated"] = datetime.now().isoformat()
         save_db(db)
@@ -828,3 +1021,83 @@ def run_update_pipeline(
         results.append(StepResult("Validation / sauvegarde finale", False, -1, str(exc), "error"))
     return results
 
+
+
+# Source switches are explicit and are shared by GUI, CLI and subprocess workers.
+SOURCE_GROUPS = {
+    "polymaker": {"name": "Polymaker — fabricant", "detail": "Catalogue et couleurs officiels · us-wholesale.polymaker.com, wiki.polymaker.com", "scripts": ["sync_polymaker_official.py"]},
+    "ofd": {"name": "Open Filament Database — communauté", "detail": "Catalogue multi-fabricants · codeload.github.com", "scripts": ["sync_universal_catalogue.py"]},
+    "spoolman": {"name": "SpoolmanDB — communauté", "detail": "Références complémentaires, rapprochement sans doublon certain · donkie.github.io", "scripts": ["sync_spoolman_catalogue.py"]},
+    "bambu": {"name": "Bambu Lab — fabricant", "detail": "Complément des fiches Bambu déjà présentes : profils officiels Bambu Studio · raw.githubusercontent.com", "scripts": ["sync_bambu_official.py"]},
+    "sunlu": {"name": "SUNLU — fabricant", "detail": "Complément PLA : densité, plateau et couleurs officiels · www.sunlu.com", "scripts": ["sync_sunlu_official.py"]},
+    "orca": {"name": "Polymaker — profils Orca officiels", "detail": "Profils compatibles Snapmaker U1 · raw.githubusercontent.com", "scripts": ["download_orca_profiles.py", "import_orca_profiles.py"]},
+    "thefilamentdb": {"name": "TheFilamentDB — complément historique", "detail": "Instantané local historique seulement ; ROSA3D absent. Disponible depuis le dépôt, non embarqué.", "scripts": ["scrape_thefilamentdb_hex.py", "scrape_thefilamentdb_multibrand_hex.py"]},
+}
+UPDATE_PIPELINE += [("sync_polymaker_official.py", "Polymaker officiel", 180), ("sync_bambu_official.py", "Bambu Lab officiel", 240), ("sync_sunlu_official.py", "SUNLU officiel", 90)]
+_ALL_PIPELINE = list(UPDATE_PIPELINE)
+
+def selected_pipeline(sources=None):
+    selected = DEFAULT_CONFIG["selected_sources"] if sources is None else sources
+    if not isinstance(selected, list) or any(key not in SOURCE_GROUPS for key in selected):
+        raise ValueError("Sélection de sources invalide")
+    scripts = {script for key in selected for script in SOURCE_GROUPS[key]["scripts"]}
+    # Catalogues establish identity; authoritative manufacturer enrichment runs
+    # last and wins over source-owned community fields, never over user edits.
+    steps = [step for step in UPDATE_PIPELINE if step[0] in scripts]
+    return sorted(steps, key=lambda step: 0 if step[0] == "sync_polymaker_official.py" else 1)
+
+def recommended_nfc(payload, tag_type="NTAG216", profile="auto", reserved_bytes=0):
+    if profile != "auto":
+        serialize_openspool(payload, tag_type=tag_type, profile=profile, reserved_bytes=reserved_bytes)
+        return dict(tag_type=tag_type, profile=profile, reserved_bytes=reserved_bytes)
+    for candidate in ("full", "essential"):
+        try:
+            serialize_openspool(payload, tag_type=tag_type, profile=candidate, reserved_bytes=reserved_bytes)
+            return dict(tag_type=tag_type, profile=candidate, reserved_bytes=reserved_bytes)
+        except NfcCapacityError:
+            pass
+    raise NfcCapacityError("Même les données essentielles ne tiennent pas : utilisez un NTAG216 ou réduisez la réserve après vérification du logiciel d’écriture.")
+
+
+def export_settings(path):
+    # Consent is machine-local authorization, not transferable via a settings file.
+    cfg = load_config()
+    for key in ('network_consent', 'network_sources_revision', 'last_update'):
+        cfg.pop(key, None)
+    db_io.atomic_write(path, json.dumps({'format': 'spoolscribe-settings', 'version': 1, 'settings': cfg},
+                                     ensure_ascii=False, indent=2, allow_nan=False).encode())
+
+
+def import_settings(path):
+    raw = Path(path).read_bytes()
+    if len(raw) > 128 * 1024:
+        raise ValueError('Fichier de réglages trop volumineux')
+    doc = db_io.parse_json(raw)
+    if not isinstance(doc, dict) or doc.get('format') != 'spoolscribe-settings' or doc.get('version') != 1:
+        raise ValueError('Format de réglages inconnu')
+    incoming = doc.get('settings')
+    if not isinstance(incoming, dict): raise ValueError('Réglages invalides')
+    cfg = load_config()
+    allowed = set(DEFAULT_CONFIG) | {'recent_brands'}
+    for key, value in incoming.items():
+        if key in allowed and key not in ('network_consent', 'network_sources_revision', 'last_update'):
+            cfg[key] = value
+    if cfg['printer_profile'] not in printer_profiles.PROFILES or cfg['nfc_tag_type'] not in NFC_CAPACITIES or cfg['nfc_profile'] not in ('auto','full','essential'):
+        raise ValueError('Choix imprimante/NFC invalide')
+    if type(cfg['nfc_reserved_bytes']) is not int or not 0 <= cfg['nfc_reserved_bytes'] <= NFC_CAPACITIES[cfg['nfc_tag_type']]:
+        raise ValueError('Réserve NFC invalide')
+    selected_pipeline(cfg['selected_sources'])
+    if not isinstance(cfg['ui'],dict):raise ValueError('Présentation invalide')
+    ui=cfg['ui']
+    for key in ('brand','material','quality','search','sort1','sort2','view','header','geometry'):
+        if key in ui and (not isinstance(ui[key],str) or len(ui[key])>20000):raise ValueError('Présentation invalide')
+    for key in ('auto_update','orca_overrides','show_extra_fields'):
+        if type(cfg[key]) is not bool:raise ValueError('Option invalide')
+    if 'recent_brands' in cfg and (not isinstance(cfg['recent_brands'],list) or len(cfg['recent_brands'])>20 or any(not isinstance(v,str) for v in cfg['recent_brands'])):
+        raise ValueError('Fabricants récents invalides')
+    # Import never grants or widens network authorization silently.
+    if cfg['selected_sources'] != load_config()['selected_sources']:
+        cfg['network_sources_revision']=0
+    save_config(cfg)
+
+NETWORK_SOURCES = [dict(name=meta['name'], license=('MIT' if key in ('ofd','spoolman','orca') else 'CC-BY 4.0' if key=='thefilamentdb' else 'Données factuelles fabricant'), host=meta['detail']) for key,meta in SOURCE_GROUPS.items()]

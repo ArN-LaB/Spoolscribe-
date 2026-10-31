@@ -37,3 +37,14 @@ Polymaker's trademark rights.
 
 Trademark holders who wish to have their marks or assets removed may open an
 issue, and the project will comply promptly.
+
+
+## Universal catalogue identifiers and assets
+
+All additional manufacturer names and logos remain the property of their
+respective owners. Inclusion of Bambu Lab, eSUN, SUNLU, Anycubic, Creality, ELEGOO
+or any other source brand implies no affiliation or endorsement. The OFD/MIT
+dataset license does not transfer trademark ownership. Logos are used only to
+identify the selected source brand, retain original proportions/colors, and are
+replaced by text when no suitable reviewed asset is available. Source paths and
+asset hashes are recorded in `data/brand_logos/manifest.json`.

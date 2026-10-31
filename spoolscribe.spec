@@ -60,13 +60,10 @@ for _candidate in _cands:
         break
 
 # Données embarquées : (source, destination_relative_dans_le_bundle)
-datas = [
-    ("data", "data"),
-    ("scripts", "scripts"),
-    ("orca_profiles", "orca_profiles"),
-]
-# Filtre les dossiers absents pour éviter les erreurs de build.
-datas = [(src, dst) for src, dst in datas if os.path.isdir(src)]
+sys.path.insert(0, os.path.abspath("."))
+from packaging_rules import resources
+from pathlib import PurePosixPath
+datas = [(name, str(PurePosixPath(name).parent)) for name in resources(".")]
 datas += copy_metadata("certifi")
 
 # ─── Métadonnées de version Windows (réduit l'effet « Éditeur inconnu ») ──
@@ -102,7 +99,7 @@ a = Analysis(
     binaries=[],
     datas=datas,
     hiddenimports=[
-        "core", "scripts.db_io", "certifi",
+        "core", "scripts.db_io", "scripts.catalogue_sources", "scripts.catalogue_merge", "scripts.official_sources", "scripts.app_updates", "printer_profiles", "ui_catalogue", "certifi",
         # Les scrapers dans scripts/ sont lancés via runpy depuis l'exe gelé ;
         # PyInstaller n'analyse pas leurs imports, on les déclare donc ici.
         "urllib", "urllib.request", "urllib.error", "urllib.parse",

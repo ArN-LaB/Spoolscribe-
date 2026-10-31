@@ -1,68 +1,34 @@
 # Updating the Database
 
-SpoolScribe ships with a bundled database so it works **fully offline**. You can
-optionally refresh it from open data sources — but only with your explicit
-consent.
+The v0.3.0 development installer contains artwork and code, but **no filament
+catalogue or Orca profiles**. First launch opens source selection. Download once
+to constitute the local database; subsequent authorized launches refresh those
+sources. If a service is unavailable, the cached data remain usable offline.
 
-## How updates work
+**Mettre à jour** opens selectable sources. Choose **Télécharger et enregistrer**
+or **Enregistrer seulement**. Deselecting a source prevents future requests to it;
+it does not erase existing records. The first selection records network consent.
+Settings can revoke it. The CLI shares the choices (`--sources`), and `U` can
+reconsider consent. `--list` is a read-only offline command.
 
-- **Offline by default.** A fresh install never contacts the network on its own.
-- **Consent-gated.** The first time you trigger an update, the app shows the
-  exact list of sources and asks Yes/No. Your choice persists locally across sessions. Automatic startup updates also require a separate opt-in.
-- **Disclosed.** The full source list is in `DATA_SOURCES.md` and hard-coded in
-  `core.NETWORK_SOURCES`.
+Sources and endpoints: [DATA_SOURCES.md](../DATA_SOURCES.md).
+Manufacturer values take priority over source-owned community values, while
+explicit local edits/nulls remain protected. Exact identities merge complementary
+facts; ambiguous records are held separately instead of creating possible duplicates.
 
-## Triggering an update
+The bottom **Base de données** panel shows the last attempt, last complete refresh
+of the **selected** source set, each worker result, conflicts and pending identities.
+A skipped/deselected source is not reported as a successful check. Failed or partial
+steps prevent the complete-refresh date from advancing. A valid source with no
+novel facts can report unchanged. Missing factual fields remain explicit.
 
-- **GUI:** click **"Update database"**. Approve the consent dialog the first time.
-- **CLI:** type `U`. You'll be asked to grant (and optionally auto-update).
+Frozen builds retain certifi trust roots without disabling TLS verification. This
+does not guarantee availability of any source. The optional developer-only
+TheFilamentDB snapshot lacks ROSA3D colors; it is not included in the installer.
 
-## Sources
-
-| Source | License | Used for |
-|---|---|---|
-| [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) | MIT | Fill missing HEX; preserve existing local values |
-| [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database) | MIT | Generic brand enrichment |
-| [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) (official) | MIT | Polymaker temps / density |
-| [TheFilamentDB](https://thefilamentdb.issou.best/) | CC-BY 4.0 | Prusament HEX (gap-fill) |
-| [Polymaker Wiki / Wholesale](https://polymaker.com) | Factual data (© Polymaker) | Polymaker HEX / SKU |
-
-## Status and local data
-
-Frozen applications include Mozilla CA roots through certifi. They are used when
-Python finds no default trust roots. Existing system roots and explicit
-`SSL_CERT_FILE` / `SSL_CERT_DIR` settings are preserved; TLS certificate and
-hostname verification remain enabled. No system certificate store is modified.
-
-The bundled TheFilamentDB snapshot contains Prusament entries but no ROSA3D
-entries. Its multibrand step therefore reports a partial result for ROSA3D;
-this is independent of HTTPS connectivity and does not invent missing colors.
-
-Each worker reports changed, unchanged, unavailable, partial or failed. A pipeline
-with a failed/unavailable source is never a complete update. Only a fully checked,
-validated pipeline advances the complete-refresh date. Available partial data can
-be retained, with the previous complete-refresh date and an explicit partial status.
-An empty source or an index with no usable target colors is unavailable, even if
-the download succeeded. A valid source with no new matching data is unchanged.
-Missing data for one target brand makes a multibrand check partial; missing data
-for every target brand makes it unavailable.
-
-Writes are validated and atomic. `polymaker_db.json.bak` retains the previous valid
-revision; `polymaker_db.json.pre-update.bak` retains the state before the whole
-pipeline. A corrupt database is reported, not treated as an empty catalogue.
-
-Ordinary updates preserve existing HEX and physical corrections. Direct scraper
-`--force` options, where available, explicitly allow replacing existing values;
-the GUI pipeline does not pass them. New bundled catalogues add missing entries
-and fields, preserve existing values (including intentional null colors), and
-record conflicts in `_bundle_conflicts`, shown in the GUI stats tooltip.
-Export preserves local physical values by default. To explicitly prefer the Orca
-profile at export time, enable the GUI Settings option or CLI `--orca-overrides`.
-Profiles still fill missing physical fields; malformed profiles produce an error.
-
-Downloaded existing Orca files are preserved unless their downloader is explicitly
-run with `--force`. An invalid newly downloaded profile is rejected before replacing
-an existing file. No unverified PPS-CF10 characteristics or color mappings are added.
+Writes use validation, atomic replacement, revision checks and backups.
+`polymaker_db.json.pre-update.bak` preserves the pre-pipeline state. Ordinary
+updates do not overwrite existing Orca files. No printer or NAS is contacted.
 
 ## Restoring a backup
 
@@ -99,18 +65,9 @@ other writers before updates or restoration, and avoid editing the JSON in an
 external editor while SpoolScribe is saving. The recovery files are local copies,
 not an unlimited version history or a multi-file transaction.
 
-## Changing consent
+## Changing consent and preferences
 
-GUI Settings > **Retirer l'autorisation réseau** revokes consent and automatic
-updates. The CLI `U` command lets you grant or revoke consent again. Neither an
-export nor browsing requires network access.
-
-## Resetting your choice
-
-Delete the config file to be asked again:
-
-- **Windows:** `%APPDATA%\SpoolScribe\config.json`
-- **macOS:** `~/Library/Application Support/SpoolScribe/config.json`
-- **Linux:** `~/.config/SpoolScribe/config.json`
-
-See `PRIVACY.md` for the full transparency statement.
+Settings → **Retirer l'autorisation réseau** stops automatic network use. The
+Sources dialog can grant it again. Menu ⋯ exports/imports interface preferences;
+imported files never grant network consent. Application-update discovery is a
+separate explicit GitHub request; see [PRIVACY.md](../PRIVACY.md).

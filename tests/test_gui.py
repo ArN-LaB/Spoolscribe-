@@ -84,6 +84,72 @@ class GuiTests(unittest.TestCase):
         self.assertFalse(Path(core.OUTPUT_DIR).exists())
         self.window.worker = None
 
+    def test_universal_filters_double_sort_pagination_and_selection(self):
+        from scripts import db_io
+        from tests.support import ROOT
+        extension = db_io.load_db(ROOT / "data/catalogue_ofd.json")
+        self.window.db.update(db_io.merge_bundled_db(self.window.db, extension)[0])
+        self.window._reload_table()
+        self.assertEqual(self.window.table.rowCount(), 250)
+        self.assertEqual(self.window.brand_filter.currentData(), "Polymaker")
+        self.window.brand_filter.setCurrentIndex(0)
+        self.assertGreater(len(self.window._filtered_rows), 23000)
+        self.window.brand_filter.setCurrentIndex(self.window.brand_filter.findData("Bambu Lab"))
+        self.window.material_filter.setCurrentIndex(self.window.material_filter.findData("PLA"))
+        self.window.sort1.setCurrentIndex(self.window.sort1.findData("color_name"))
+        self.window.sort2.setCurrentIndex(self.window.sort2.findData("weight"))
+        self.window.sort2_direction.setCurrentIndex(1)
+        expected = core.query_catalogue(self.window._all_rows, brand="Bambu Lab", material="PLA",
+                                        sort1="color_name", sort2="weight", descending2=True)
+        self.assertEqual(self.window._filtered_rows, expected)
+        self.window.table.selectRow(0)
+        selected = self.window.current_sku
+        self.window._set_view_mode("grid")
+        self.assertEqual(self.window.current_sku, selected)
+        self.window._apply_filter()
+        self.assertEqual(self.window.current_sku, selected)
+        self.window.search.setText("absent-unique-example")
+        self.assertEqual(self.window.table.rowCount(), 0)
+        self.assertIsNone(self.window.current_sku)
+        self.window._reset_filters()
+        self.assertEqual(self.window.brand_filter.currentData(), "Polymaker")
+        self.window.brand_filter.setCurrentIndex(0)
+        self.window._change_page(1)
+        self.assertEqual(self.window._rows[0], self.window._filtered_rows[250])
+
+    def test_ntag215_essential_inspector_and_export_are_identical(self):
+        self.window.current_sku = "PB05001"
+        self.window._show_detail("PB05001")
+        self.window.tag_type.setCurrentIndex(self.window.tag_type.findData("NTAG215"))
+        self.window.nfc_profile.setCurrentIndex(self.window.nfc_profile.findData("essential"))
+        self.window.nfc_reserve.setValue(32)
+        self.window._refresh_inspector()
+        expected = self.window.inspector.toPlainText()
+        self.assertNotIn("brand_meta", json.loads(expected))
+        self.assertIn("marge", self.window.nfc_capacity.text())
+        with patch("app_gui.QMessageBox.information"):
+            self.window._generate()
+            self.window._generate(mode="archive")
+        files = list(Path(core.OUTPUT_DIR).glob("*ntag215_essential.json"))
+        self.assertEqual(files[0].read_text(), expected)
+        archive, = Path(core.OUTPUT_DIR).glob("*archive.json")
+        self.assertIn("brand_meta", json.loads(archive.read_text()))
+
+    def test_all_approved_logos_render_and_white_logo_has_contrast(self):
+        from tests.support import ROOT
+        manifest = json.loads((ROOT / "data/brand_logos/manifest.json").read_text())
+        for asset in manifest.values():
+            with self.subTest(brand=asset["name"]):
+                pixmap = app_gui.load_brand_pixmap(str(ROOT / asset["path"]), 48, 2, max_w=152)
+                self.assertIsNotNone(pixmap)
+                self.assertFalse(pixmap.isNull())
+                plate = app_gui.logo_with_contrast_plate(pixmap)
+                self.assertEqual((plate.width(), plate.height()), (320, 120))
+        logo = Path(self.tmp.name) / "white.svg"
+        logo.write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 30"><rect width="100" height="30" fill="white"/></svg>')
+        plate = app_gui.logo_with_contrast_plate(app_gui.load_brand_pixmap(str(logo), 48, 2))
+        self.assertLess(plate.toImage().pixelColor(8, 60).lightness(), 100)
+
     def test_real_startup_restore_stays_exact_with_auto_update_enabled(self):
         from PySide6.QtCore import QEventLoop, QTimer
         from scripts import db_io

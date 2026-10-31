@@ -63,3 +63,13 @@ Never run acquisition scripts against a real database during tests.
 
 Use the issue templates under **New issue**. Include your OS, Python version,
 and steps to reproduce. See also [SECURITY.md](SECURITY.md) for private reports.
+
+
+## Universal catalogue changes
+
+See [the data contract](../docs/DATA_FORMAT.md). Keep source adapters pure and
+standard-library-only, preserve unknowns and local corrections, and add offline
+fixtures for each source/schema edge case. Never run live requests from the test
+suite. Review snapshot audit reports and logo contact sheets; do not overwrite
+the historical catalogue or Orca profiles to update a supplement. New network
+hosts must be disclosed and the consent revision advanced when necessary.

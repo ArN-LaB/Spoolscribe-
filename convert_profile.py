@@ -11,6 +11,7 @@ import os
 import re
 import sys
 
+from pathlib import Path
 import core
 from core import (
     DB_PATH, OUTPUT_DIR,
@@ -55,16 +56,9 @@ def ensure_consent_interactive(force=False):
     except (EOFError, KeyboardInterrupt):
         resp = "n"
     consent = resp in ("o", "oui", "y", "yes")
-    auto = False
-    if consent:
-        try:
-            a = input("  Vérifier automatiquement au démarrage (tous les 7 j) ? (o/N) : ").strip().lower()
-            auto = a in ("o", "oui", "y", "yes")
-        except (EOFError, KeyboardInterrupt):
-            auto = False
-    core.set_network_consent(consent, auto_update=auto)
-    print(f"  → Consentement réseau : {'ACCORDÉ' if consent else 'REFUSÉ'} "
-          f"(auto: {'ON' if auto else 'OFF'}). Modifiable via la commande U.\n")
+    core.set_network_consent(consent, auto_update=False)
+    print(f"  → Consentement réseau : {'ACCORDÉ' if consent else 'REFUSÉ'}. "
+          "Les sources choisies seront actualisées au démarrage. Modifiable via U.\n")
     return consent
 
 
@@ -73,7 +67,7 @@ def check_and_update_db(force=False):
     if not force and core.db_restored_this_session(DB_PATH):
         return
     cfg = core.load_config()
-    db = load_db(DB_PATH)
+    db = core.load_db() if DB_PATH == core.DB_PATH and not Path(DB_PATH).exists() else load_db(DB_PATH)
 
     if force:
         # Commande U : action explicite de l'utilisateur.
@@ -81,13 +75,11 @@ def check_and_update_db(force=False):
             print("  Mise à jour ignorée (réseau refusé).\n")
             return
     else:
-        # Démarrage : uniquement si auto-update opt-in ET consentement ET DB périmée.
-        if not (core.has_network_consent() and cfg.get("auto_update")):
-            return
-        if not db_needs_update(db, cfg.get("update_interval_days", 7)):
-            return
+        if not core.has_network_consent():
+            if db.get("_skus") or core.consent_was_asked() or not ensure_consent_interactive():
+                return
 
-    print("\n─── Mise à jour DB Polymaker ──────────────────────────")
+    print("\n─── Mise à jour du catalogue ──────────────────────────")
 
     def progress(label, i, total):
         print(f"  [{i}/{total}] {label} …")
@@ -147,17 +139,17 @@ def prompt_hex_for_entry(sku, entry):
         print("[ERR] Code HEX invalide.")
 
 
-def print_known_skus(db):
-    rows = list_skus(db)
+def print_known_skus(db, *, limit=100, **filters):
+    rows = core.query_catalogue(list_skus(db), **filters)
     if not rows:
         print("  (aucun SKU enregistré)")
         return
     print(f"\n{'SKU':<12} {'Produit':<30} {'Couleur':<28} {'HEX'}")
     print("-" * 85)
-    for e in rows:
+    for e in rows[:limit]:
         hex_disp = e.get("hex") or "(null)"
         print(f"{e['sku']:<12} {e['product']:<30} {e['color_name']:<28} {hex_disp}")
-    print()
+    print(f"\n{min(limit, len(rows))} / {len(rows)} résultats. Utilisez --search, --brand, --material ou --limit.\n")
 
 
 # ─── Helpers d'affichage ──────────────────────────────────────────────────
@@ -238,11 +230,37 @@ def main():
     parser.add_argument("--compact", action="store_true", help="Mode compact")
     parser.add_argument("--export-format", choices=("nfc", "archive"), default="nfc",
                         help="NFC compact (défaut) ou archive JSON lisible, mêmes champs")
+    parser.add_argument("--tag-type", choices=tuple(core.NFC_CAPACITIES), default="NTAG216")
+    parser.add_argument("--nfc-profile", choices=("full", "essential"), default="full",
+                        help="Essentiel : omet descriptifs et logos, conserve tous les paramètres d'impression/couleur")
+    parser.add_argument("--reserve-bytes", type=int, default=0, help="Réserve pour les ajouts du logiciel d'écriture")
+    parser.add_argument("--sources", nargs="+", choices=tuple(core.SOURCE_GROUPS), help="Sources à conserver pour les prochaines mises à jour")
+    parser.add_argument("--list", action="store_true", help="Lister le catalogue filtré hors ligne, puis quitter")
+    parser.add_argument("--search", default="")
+    parser.add_argument("--brand", default="")
+    parser.add_argument("--material", default="")
+    parser.add_argument("--quality", choices=("all", "ready", "incomplete"), default="all")
+    parser.add_argument("--sort1", choices=tuple(core.CATALOGUE_SORT_FIELDS), default="brand")
+    parser.add_argument("--sort2", choices=tuple(core.CATALOGUE_SORT_FIELDS), default="product")
+    parser.add_argument("--descending1", action="store_true")
+    parser.add_argument("--descending2", action="store_true")
+    parser.add_argument("--limit", type=int, default=100)
     parser.add_argument("--orca-overrides", action="store_true",
                         help="Préférer explicitement les valeurs Orca aux valeurs locales à l'export")
     parser.add_argument("--restore-db", nargs="?", const=DB_PATH + ".bak", metavar="SAUVEGARDE",
                         help="Restaurer explicitement une sauvegarde (défaut : .bak)")
     args, _ = parser.parse_known_args()
+    if args.sources is not None:
+        cfg = core.load_config()
+        if args.sources != cfg["selected_sources"]:
+            cfg["network_sources_revision"] = 0
+        cfg["selected_sources"] = list(dict.fromkeys(args.sources))
+        core.save_config(cfg)
+    if args.limit < 1 or not 0 <= args.reserve_bytes <= core.NFC_CAPACITIES[args.tag_type]:
+        parser.error("Limite de résultats ou réserve NFC invalide.")
+    filters = dict(text=args.search, brand=args.brand, material=args.material, quality=args.quality,
+                   sort1=args.sort1, sort2=args.sort2, descending1=args.descending1, descending2=args.descending2)
+    nfc_options = dict(tag_type=args.tag_type, profile=args.nfc_profile, reserved_bytes=args.reserve_bytes)
     verbose = args.verbose
     compact = args.compact
     use_ansi = _supports_ansi()
@@ -276,11 +294,15 @@ def main():
             if answer not in ("o", "oui", "y", "yes"):
                 return 0
             core.restore_db(DB_PATH, args.restore_db)
-        check_and_update_db()
+        if not args.list:
+            check_and_update_db()
         db = load_db(DB_PATH)
     except (core.DatabaseError, OSError) as exc:
         print(f"[ERREUR] {exc}\nRestauration possible : --restore-db [chemin de sauvegarde]")
         return 1
+    if args.list:
+        print_known_skus(db, limit=args.limit, **filters)
+        return 0
     show_header(db)
 
     try:
@@ -316,7 +338,7 @@ def main():
             continue
 
         if cmd in ("L", "LIST"):
-            print_known_skus(db)
+            print_known_skus(db, limit=args.limit, **filters)
             continue
 
         sku = cmd
@@ -361,7 +383,7 @@ def main():
 
             title_fill = "─" * max(2, (W - len(sku) - 3))
             print(f"\n  ┌─ {sku} {title_fill}┐")
-            print(row("Produit", view.product))
+            print(row("Produit", view.display_product))
             print(row("Couleur", view.color_name))
             print(row("HEX", _hex_swatch(view.hex, use_ansi=use_ansi)))
             print(row("Type", view.type_str, color="96"))
@@ -370,7 +392,7 @@ def main():
             if not compact:
                 print(row("Densité", view.density_str))
 
-            logo_path = db.get("_brands", {}).get("Polymaker", {}).get("logo_path", "")
+            logo_path = (view.brand_meta or {}).get("logo_path", "")
             logo_state = "OK" if logo_path else "absent"
             print(row("Logo", logo_state, color="92" if logo_state == "OK" else "91"))
             if not compact:
@@ -382,8 +404,8 @@ def main():
                 print(row("Brand", view.product_data.get("brand", "Polymaker"), color="94"))
                 print(row("Subtype", subtype))
                 if not compact:
-                    print(row("Logo Meta", logo_signature(logo_abs_path(db))))
-                print(row("Logo URL", (db.get("_brands", {}).get("Polymaker", {}) or {}).get("logo_url", "(absent)")))
+                    print(row("Logo Meta", logo_signature(logo_abs_path(db, view.product_data.get("brand", "")))))
+                print(row("Logo URL", (view.brand_meta or {}).get("logo_url", "(absent)")))
             print(f"  └{'─' * W}┘")
 
             entry = db["_skus"][sku]
@@ -392,6 +414,7 @@ def main():
                 if confirm in ("", "o", "y"):
                     out = core_write_openspool(sku, entry, view.product_data,
                                                OUTPUT_DIR, brand_meta=view.brand_meta, mode=args.export_format,
+                                               **nfc_options,
                                                use_orca_overrides=args.orca_overrides)
                     print(f"[OK] Fichier généré : {os.path.basename(out)}")
                     break
@@ -401,8 +424,8 @@ def main():
                     payload = build_openspool(preview_entry, view.product_data, brand_meta=view.brand_meta,
                                              use_orca_overrides=args.orca_overrides)
                     print("\n  -- Payload JSON --")
-                    text = core.serialize_openspool(payload, mode=args.export_format)
-                    size = core.nfc_size(text)
+                    text = core.serialize_openspool(payload, mode=args.export_format, **nfc_options)
+                    size = core.nfc_size(text, tag_type=args.tag_type, reserved_bytes=args.reserve_bytes)
                     print(text)
                     print(f"JSON UTF-8 : {size.utf8_bytes} octets ; NDEF : {size.ndef_bytes} ; "
                           f"avec TLV : {size.type2_bytes}/{size.capacity_bytes} octets (un record MIME).")
