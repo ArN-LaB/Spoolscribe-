@@ -13,13 +13,26 @@ def parse_release(data, current):
     if data.get('html_url') != expected:
         raise ValueError('Adresse de publication inattendue.')
     version = tag[1:]
-    newer = tuple(map(int, version.split('.'))) > tuple(map(int, current.split('.')))
+    newer = tuple(map(int, version.split('.'))) > version_tuple(current)
     return dict(version=version, newer=newer, url=expected)
+
+
+def version_tuple(text):
+    """'0.3.1-dev' or '0.3.1rc1' compare as 0.3.1; anything else is invalid."""
+    match = re.match(r'(\d+)\.(\d+)\.(\d+)', str(text))
+    if not match:
+        raise ValueError(f'Version locale illisible : {text!r}')
+    return tuple(int(part) for part in match.groups())
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):
+        raise ValueError('Redirection de mise à jour refusée')
 
 
 def check_release(current):
     request=urllib.request.Request(URL, headers={'Accept':'application/vnd.github+json', 'User-Agent':'SpoolScribe'})
-    with urllib.request.urlopen(request,timeout=20) as response:
+    with urllib.request.build_opener(_NoRedirect()).open(request,timeout=20) as response:
         if response.url != URL: raise ValueError('Redirection de mise à jour inattendue')
         raw=response.read(1024*1024+1)
     if len(raw)>1024*1024:raise ValueError('Réponse GitHub trop volumineuse')

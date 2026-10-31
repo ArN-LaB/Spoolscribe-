@@ -26,20 +26,22 @@ RAW_BASE   = "https://raw.githubusercontent.com/polymaker3d/Polymaker-Preset/mai
 
 
 def fetch_json(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "polymaker-db/1.0"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode())
+    from scripts import official_sources
+    return json.loads(official_sources.fetch(url, 2 * 1024 * 1024).decode("utf-8"))
 
 
 def fetch_bytes(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "polymaker-db/1.0"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return r.read()
+    from scripts import official_sources
+    return official_sources.fetch(url, 2 * 1024 * 1024)
 
 
 def local_filename(material):
     """Nom de fichier local : '{material} @Snapmaker U1 - OrcaSlicer.json'"""
-    if not isinstance(material, str) or not material.strip() or any(c in material for c in ("/", "\\", "\x00")):
+    # Only a plain material name: no path separators, drive letters, NTFS
+    # streams, control characters or relative segments.
+    if (not isinstance(material, str) or not material.strip() or len(material) > 120
+            or any(c in material for c in ("/", "\\", ":", "\x00")) or any(ord(c) < 32 for c in material)
+            or material.strip() in (".", "..") or material != material.strip()):
         raise ValueError("Nom de matériau invalide pour un fichier Orca.")
     return f"{material} @Snapmaker U1 - OrcaSlicer.json"
 

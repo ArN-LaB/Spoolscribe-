@@ -20,6 +20,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 import unicodedata
 from dataclasses import dataclass
 from datetime import datetime
@@ -154,33 +155,22 @@ UPDATE_PIPELINE: list[tuple[str, str, int]] = [
 ]
 
 # ─── Transparence réseau ──────────────────────────────────────────────────
-# Liste EXHAUSTIVE des hôtes contactés par la pipeline de mise à jour.
-# Affichée à l'utilisateur avant tout accès réseau (consentement éclairé).
-NETWORK_SOURCES: list[dict] = [
-    {"name": "SpoolmanDB",            "license": "MIT",
-     "host": "raw.githubusercontent.com/Donkie/SpoolmanDB + donkie.github.io/SpoolmanDB (catalogue compilé)"},
-    {"name": "Open Filament Database", "license": "MIT",
-     "host": "raw.githubusercontent.com/OpenFilamentCollective/open-filament-database + codeload.github.com (archive officielle)"},
-    {"name": "Polymaker Presets (officiel)", "license": "MIT",
-     "host": "raw.githubusercontent.com/polymaker3d/Polymaker-Preset"},
-    {"name": "TheFilamentDB",         "license": "CC-BY 4.0 (attribution requise)",
-     "host": "issou.best / dump local thefilamentdb.jsonl.gz"},
-    {"name": "Polymaker Wiki",        "license": "Données factuelles (HEX) — © Polymaker",
-     "host": "wiki.polymaker.com"},
-    {"name": "Polymaker US Wholesale", "license": "Catalogue factuel — © Polymaker",
-     "host": "us-wholesale.polymaker.com"},
-    {"name": "Prusament (spécifications matériaux)", "license": "Données factuelles — © Prusa Research",
-     "host": "table interne hors-ligne + SpoolmanDB + TheFilamentDB (HEX couleurs) + Open Filament Database (logo)"},
-    {"name": "ROSA3D (spécifications matériaux)", "license": "Données factuelles — © ROSA PLAST",
-     "host": "table interne hors-ligne + SpoolmanDB (HEX couleurs) + Open Filament Database (logo)"},
-]
+# NETWORK_SOURCES (liste exhaustive des hôtes contactés, affichée avant tout
+# accès réseau) est dérivée de SOURCE_GROUPS en fin de module.
 
+# Cadence de l'actualisation automatique au lancement (update_interval_days) :
+# 0 = à chaque lancement, n > 0 = au plus une fois tous les n jours,
+# -1 = jamais (manuelle uniquement). Le consentement réseau reste requis.
+UPDATE_INTERVAL_CHOICES = ((0, "À chaque lancement"), (1, "Une fois par jour"),
+                           (7, "Une fois par semaine"), (-1, "Manuellement seulement"))
 
 DEFAULT_CONFIG = {
     "network_consent": None,    # None = jamais demandé ; True/False = choix explicite
-    "auto_update": False,       # opt-in : aucune mise à jour automatique par défaut
-    "update_interval_days": 7,
+    "auto_update": False,       # conservé pour les anciens réglages ; la cadence fait foi
+    "update_interval_days": 1,
     "last_update": None,
+    "last_update_attempt": None,   # dernière tentative (succès ou non), hors base de données
+    "last_update_status": None,
     "orca_overrides": False,   # Explicit choice before replacing local values at export.
     "network_sources_revision": 0,
     "nfc_tag_type": "NTAG216",
@@ -236,6 +226,29 @@ def mark_updated() -> None:
     save_config(cfg)
 
 
+def update_due(cfg: Optional[dict] = None, now: Optional[datetime] = None) -> bool:
+    """Whether the launch refresh should run, according to the configured cadence.
+
+    A manual update (button/CLI) ignores this and always runs after consent.
+    """
+    cfg = cfg if cfg is not None else load_config()
+    interval = cfg.get("update_interval_days")
+    if type(interval) is not int:
+        interval = DEFAULT_CONFIG["update_interval_days"]
+    if interval < 0:
+        return False
+    if interval == 0:
+        return True
+    last = cfg.get("last_update_attempt")
+    if not isinstance(last, str) or not last:
+        return True
+    try:
+        elapsed = ((now or datetime.now()) - datetime.fromisoformat(last)).total_seconds()
+    except ValueError:
+        return True
+    return elapsed >= interval * 86400
+
+
 # ─── Environnement Python ─────────────────────────────────────────────────
 def is_frozen() -> bool:
     """True si on tourne dans un bundle PyInstaller (.exe / .app)."""
@@ -281,6 +294,15 @@ def maybe_run_as_script_worker(argv: list[str]) -> bool:
             script_path = argv[idx + 1]
             if os.path.basename(script_path) == script_path:
                 script_path = os.path.join(SCRIPTS_DIR, script_path)
+            # The packaged application only runs its own bundled workers. CI
+            # probes opt in explicitly through the environment.
+            inside = Path(script_path).resolve()
+            allowed_roots = [Path(SCRIPTS_DIR).resolve()]
+            if os.environ.get("SPOOLSCRIBE_RUN_SCRIPT_ALLOW"):
+                allowed_roots.append(Path(os.environ["SPOOLSCRIBE_RUN_SCRIPT_ALLOW"]).resolve())
+            if not any(root == inside or root in inside.parents for root in allowed_roots) or not inside.is_file():
+                print(f"Script refusé : {script_path} (seuls les workers embarqués sont autorisés)", file=sys.stderr)
+                raise SystemExit(2)
             # Les scripts impriment des caractères Unicode (—, ─…). Dans un exe
             # gelé sous Windows, stdout/stderr utilisent cp1252 par défaut, ce
             # qui provoque un UnicodeEncodeError. On force l'UTF-8.
@@ -944,11 +966,40 @@ def update_status(results: list[StepResult]) -> str:
     return "failed"
 
 
+def _run_step_process(cmd: list[str], *, env: dict, timeout: int, cancel=None) -> subprocess.CompletedProcess:
+    """Run one worker; a cancel event (threading.Event) stops it between polls."""
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                               encoding="utf-8", errors="replace", env=env)
+    deadline = time.monotonic() + timeout
+    try:
+        while True:
+            try:
+                out, err = process.communicate(timeout=0.5)
+                return subprocess.CompletedProcess(cmd, process.returncode, out, err)
+            except subprocess.TimeoutExpired:
+                if cancel is not None and cancel.is_set():
+                    process.kill()
+                    out, err = process.communicate()
+                    raise UpdateCancelled("Mise à jour annulée par l'utilisateur.")
+                if time.monotonic() >= deadline:
+                    process.kill()
+                    out, err = process.communicate()
+                    raise subprocess.TimeoutExpired(cmd, timeout, out, err)
+    finally:
+        if process.poll() is None:
+            process.kill()
+
+
+class UpdateCancelled(RuntimeError):
+    pass
+
+
 def run_update_pipeline(
     progress: Optional[Callable[[str, int, int], None]] = None,
     python: Optional[str] = None,
     consent: bool = False,
     sources: Optional[list[str]] = None,
+    cancel=None,
 ) -> list[StepResult]:
     """
     Exécute toute la pipeline de scrapers (accès réseau).
@@ -989,6 +1040,9 @@ def run_update_pipeline(
     child_env["SPOOLSCRIBE_DATA_HOME"] = DATA_HOME
     child_env["SPOOLSCRIBE_RESOURCE_DIR"] = RESOURCE_DIR
     for i, (script, label, timeout) in enumerate(pipeline, 1):
+        if cancel is not None and cancel.is_set():
+            results.append(StepResult(label, False, -3, "Annulée avant exécution.", "cancelled"))
+            continue
         if progress:
             try:
                 progress(label, i, total)
@@ -1003,10 +1057,7 @@ def run_update_pipeline(
             with tempfile.TemporaryDirectory(prefix="spoolscribe-step-") as result_dir:
                 result_path = Path(result_dir) / "result.json"
                 step_env = dict(child_env, SPOOLSCRIBE_STEP_RESULT_PATH=str(result_path))
-                r = subprocess.run(
-                    cmd, capture_output=True, text=True, timeout=timeout,
-                    encoding="utf-8", errors="replace", env=step_env,
-                )
+                r = _run_step_process(cmd, env=step_env, timeout=timeout, cancel=cancel)
                 record = None
                 if result_path.is_file():
                     record = db_io.parse_json(result_path.read_bytes())
@@ -1028,29 +1079,44 @@ def run_update_pipeline(
             if not record:
                 detail = detail or "Le worker n'a pas fourni de résultat vérifiable."
             results.append(StepResult(label, ok, r.returncode, detail, status))
+        except UpdateCancelled as e:
+            results.append(StepResult(label, False, -3, str(e), "cancelled"))
         except Exception as e:
             results.append(StepResult(label, False, -1, str(e)))
+    now = datetime.now().isoformat()
+    status = update_status(results)
     try:
         db = load_db()
-        status = update_status(results)
-        db["_update_status"] = status
-        db["_last_attempt"] = datetime.now().isoformat()
-        db["_selected_sources"] = list(selected or [])
-        db["_source_results"] = [dict(source=r.label, status=r.status, ok=r.ok, message=r.stderr) for r in results]
+        metadata = {
+            "_update_status": status,
+            "_selected_sources": list(selected or []),
+            "_source_results": [dict(source=r.label, status=r.status, ok=r.ok, message=r.stderr) for r in results],
+        }
         if status == "complete":
-            db["_last_updated"] = datetime.now().isoformat()
-        save_db(db)
-        # The database carries the sole complete-refresh date. Do not maintain
-        # a second timestamp in consent settings that could diverge on failure.
+            metadata["_last_updated"] = now
+        # An offline launch that changes nothing must not rewrite (and back up)
+        # the whole database: only changed outcomes are recorded in it. The
+        # attempt itself lives in the settings file.
+        if any(r.status == "changed" for r in results) or any(db.get(k) != v for k, v in metadata.items()):
+            db.update(metadata)
+            db.pop("_last_attempt", None)
+            save_db(db)
     except (DatabaseError, OSError) as exc:
         results.append(StepResult("Validation / sauvegarde finale", False, -1, str(exc), "error"))
+    try:
+        cfg = load_config()
+        cfg["last_update_attempt"] = now
+        cfg["last_update_status"] = status
+        save_config(cfg)
+    except OSError:
+        pass
     return results
 
 
 
 # Source switches are explicit and are shared by GUI, CLI and subprocess workers.
 SOURCE_GROUPS = {
-    "polymaker": {"name": "Polymaker — fabricant", "detail": "Catalogue et couleurs officiels · us-wholesale.polymaker.com, wiki.polymaker.com", "scripts": ["sync_polymaker_official.py"]},
+    "polymaker": {"name": "Polymaker — fabricant", "detail": "Catalogue et couleurs officiels · us-wholesale.polymaker.com", "scripts": ["sync_polymaker_official.py"]},
     "ofd": {"name": "Open Filament Database — communauté", "detail": "Catalogue multi-fabricants · codeload.github.com", "scripts": ["sync_universal_catalogue.py"]},
     "spoolman": {"name": "SpoolmanDB — communauté", "detail": "Références complémentaires, rapprochement sans doublon certain · donkie.github.io", "scripts": ["sync_spoolman_catalogue.py"]},
     "bambu": {"name": "Bambu Lab — fabricant", "detail": "Complément des fiches Bambu déjà présentes : profils officiels Bambu Studio · raw.githubusercontent.com", "scripts": ["sync_bambu_official.py"]},

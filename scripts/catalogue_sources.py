@@ -34,10 +34,10 @@ def read_ofd_archive(raw: bytes) -> dict[str, bytes]:
                 parts = PurePosixPath(member.name).parts
                 if not parts or member.name.startswith("/") or ".." in parts or "\\" in member.name:
                     raise ValueError("Chemin d'archive invalide")
-                if member.isdir():
-                    continue
+                if member.isdir() or member.issym() or member.islnk():
+                    continue  # Links are never followed; a stray link elsewhere must not block the refresh.
                 if not member.isfile():
-                    raise ValueError("Liens d'archive non autorisés")
+                    raise ValueError("Entrée d'archive non autorisée")
                 total += member.size
                 if member.size > 16 * 1024 * 1024 or total > 256 * 1024 * 1024:
                     raise ValueError("Limite de décompression dépassée")

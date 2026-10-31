@@ -204,9 +204,17 @@ class CatalogueUx:
         self._restoring_ui = False
 
     def closeEvent(self, event):
-        if self.worker and self.worker.isRunning() or self._release_worker and self._release_worker.isRunning():
-            self.status.showMessage('Attendez la fin de la vérification en cours.', 5000)
-            event.ignore(); return
+        if self.worker and self.worker.isRunning():
+            answer = QMessageBox.question(self, 'Synchronisation en cours',
+                'Une synchronisation est en cours. Quitter quand même ?\n'
+                'L’étape en cours est interrompue ; la base locale reste celle d’avant.',
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if answer != QMessageBox.Yes:
+                event.ignore(); return
+            self.worker.cancel.set()
+            self.worker.wait(10000)
+        if self._release_worker and self._release_worker.isRunning():
+            self._release_worker.wait(3000)
         self._save_ui_preferences()
         super().closeEvent(event)
 
@@ -240,7 +248,8 @@ class CatalogueUx:
     def _database_details(self):
         dlg=QDialog(self);dlg.setWindowTitle('Base de données');dlg.resize(640,440)
         lay=QVBoxLayout(dlg);info=QPlainTextEdit();info.setReadOnly(True)
-        lines=[self.stats_label.text(),'',f'Dernière tentative : {self.db.get("_last_attempt","aucune")}',
+        cfg=core.load_config()
+        lines=[self.stats_label.text(),'',f'Dernière tentative : {cfg.get("last_update_attempt") or self.db.get("_last_attempt") or "aucune"}',
                f'Dernière synchronisation complète des sources choisies : {self.db.get("_last_updated","aucune")}',
                f'Fichier local : {core.DB_PATH}','', 'Le filtre « État des données » décrit les champs de la fiche, pas la qualité du filament.']
         for result in self.db.get('_source_results',[]):lines.append(f'\n{result["source"]} : {result["status"]}\n{result.get("message", "")}')
@@ -254,7 +263,7 @@ class CatalogueUx:
     def _choose_sources(self, checked=False, *, startup=False):
         dlg=QDialog(self);dlg.setWindowTitle('Sources du catalogue');dlg.resize(650,500)
         lay=QVBoxLayout(dlg)
-        note=QLabel('La base est téléchargée au premier lancement, puis actualisée à chaque démarrage.\nLes fabricants ont priorité sur les données communautaires ; vos corrections restent prioritaires.\nDécochez une source pour ne plus la contacter. Ses anciennes données restent disponibles.')
+        note=QLabel('La base est téléchargée au premier lancement, puis actualisée au lancement selon la cadence choisie dans Paramètres (quotidienne par défaut).\nLes fabricants ont priorité sur les données communautaires ; vos corrections restent prioritaires.\nDécochez une source pour ne plus la contacter. Ses anciennes données restent disponibles.')
         note.setWordWrap(True);lay.addWidget(note)
         cfg=core.load_config();selected=cfg['selected_sources'];checks={}
         for key,meta in core.SOURCE_GROUPS.items():
@@ -278,7 +287,10 @@ class CatalogueUx:
     def _maybe_auto_update(self):
         if not self.isVisible() or core.db_restored_this_session():return
         if core.has_network_consent():
-            self._start_update()
+            if not self.db.get('_skus') or core.update_due():
+                self._start_update()
+            else:
+                self.status.showMessage('Base déjà actualisée récemment ; « Mettre à jour » force une synchronisation.',8000)
         elif not core.load_config().get('network_consent') is False:
             self._choose_sources(startup=True)
         else:
@@ -402,6 +414,8 @@ class CatalogueUx:
 
     def _check_app_update(self):
         if self._release_worker and self._release_worker.isRunning():return
+        if core.load_config().get('network_consent') is False:
+            QMessageBox.information(self,'Mise à jour application','L’autorisation réseau a été retirée. Réactivez-la dans « Sources de la base » pour contacter GitHub.');return
         self.status.showMessage('Vérification de la version publiée sur GitHub…')
         self._release_worker=ReleaseWorker(self);self._release_worker.ready.connect(self._release_result);self._release_worker.start()
 

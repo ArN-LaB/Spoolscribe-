@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import sys
 import tempfile
+import time
 from contextlib import contextmanager, ExitStack, redirect_stdout, redirect_stderr
 from typing import Callable
 
@@ -226,14 +227,47 @@ def atomic_write(path: str | Path, data: bytes, *, before_replace: Callable[[], 
             os.unlink(temporary)
 
 
+STALE_LOCK_SECONDS = 15 * 60
+
+
+def _lock_is_stale(lock: Path) -> bool:
+    """A lock left by a dead or interrupted writer must not block the user forever.
+
+    POSIX checks the recorded PID; elsewhere (Windows has no harmless signal 0)
+    only an old lock is considered abandoned.
+    """
+    try:
+        age = time.time() - lock.stat().st_mtime
+        pid = int(lock.read_text(encoding="ascii").strip() or 0)
+    except (OSError, ValueError):
+        return False
+    if os.name == "posix" and pid > 0 and pid != os.getpid():
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return True
+        except PermissionError:
+            return False
+        return age > STALE_LOCK_SECONDS
+    return age > STALE_LOCK_SECONDS
+
+
 @contextmanager
 def _writer_lock(path: Path):
     lock = path.with_name(path.name + ".lock")
     try:
         fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
     except FileExistsError:
-        raise DatabaseError(f"Écriture déjà en cours : {lock}. Si un processus a été interrompu, "
-                            "vérifiez qu'il est arrêté avant de retirer ce verrou.") from None
+        if _lock_is_stale(lock):
+            try:
+                lock.unlink()
+                fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            except OSError:
+                raise DatabaseError(f"Écriture déjà en cours : {lock}. Si un processus a été interrompu, "
+                                    "vérifiez qu'il est arrêté avant de retirer ce verrou.") from None
+        else:
+            raise DatabaseError(f"Écriture déjà en cours : {lock}. Si un processus a été interrompu, "
+                                "vérifiez qu'il est arrêté avant de retirer ce verrou.") from None
     identity = os.fstat(fd)
     try:
         os.write(fd, str(os.getpid()).encode("ascii"))

@@ -70,6 +70,31 @@ Data integrity:
 - `tests/test_ux.py` skips its Qt interaction tests without PySide6 instead of
   failing at import; 12 new integrity tests.
 
+Synchronisation:
+- Launch refresh follows a cadence (**Paramètres**: every launch / daily (default)
+  / weekly / manual); the **Mettre à jour** button always forces a refresh. An
+  empty database still triggers the first download.
+- OFD, SpoolmanDB and the Bambu index send `If-None-Match`; an unchanged source
+  answers 304 and the step ends immediately without re-downloading.
+- A running synchronisation can be cancelled (button next to the progress bar)
+  and the window can be closed after confirmation; the current worker is killed
+  and the local database is left as it was.
+- An offline attempt no longer rewrites the 12 MB database and its backups at
+  every launch: unchanged outcomes stay out of the file, the attempt date lives
+  in the settings, and an offline start shows a status line instead of a modal box.
+- A single application instance per data folder (`spoolscribe.instance.lock`);
+  a database lock left by a dead or interrupted worker is recovered instead of
+  blocking every later save.
+- The Polymaker and Orca downloaders go through the bounded same-host fetcher
+  (8 MiB limit, declared User-Agent, no foreign redirect, 40-page cap) as
+  PRIVACY.md already stated. A stray symbolic link in the OFD archive is skipped
+  instead of failing the whole refresh; the Bambu index cap is 600 profiles.
+- `--run-script` only executes bundled workers (CI probes opt in through
+  `SPOOLSCRIBE_RUN_SCRIPT_ALLOW`). The release check refuses redirects before
+  following them and tolerates a `-dev` suffix on the local version.
+- Consent dialog and `NETWORK_SOURCES` describe exactly the hosts contacted
+  (wiki.polymaker.com removed; the obsolete first list is gone).
+
 ### Compatibility
 - Original catalogue bytes and all 1,008 compatible default exports are unchanged.
 - Unknown physical values remain null, source multicolors remain intact, and an

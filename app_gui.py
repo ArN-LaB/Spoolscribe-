@@ -13,10 +13,11 @@ import json
 import os
 import sys
 import time
+import threading
 import traceback
 import math
 
-from PySide6.QtCore import Qt, QThread, Signal, QSize, QTimer, QRectF
+from PySide6.QtCore import Qt, QThread, Signal, QSize, QTimer, QRectF, QLockFile
 from PySide6.QtGui import (
     QColor, QFont, QPixmap, QPainter, QIcon, QPalette, QPainterPath, QAction, QPen,
 )
@@ -126,16 +127,21 @@ class SpinningLogo(QWidget):
 
 # ─── Thread de mise à jour DB ─────────────────────────────────────────────
 class UpdateWorker(QThread):
-    """Exécute la pipeline de scrapers sans bloquer l'UI."""
+    """Exécute la pipeline de scrapers sans bloquer l'UI ; annulable entre deux sondages."""
     progress = Signal(str, int, int)   # label, index, total
     finished_ok = Signal(list)         # list[core.StepResult]
     failed = Signal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.cancel = threading.Event()
 
     def run(self):
         try:
             results = core.run_update_pipeline(
                 progress=lambda label, i, total: self.progress.emit(label, i, total),
                 consent=core.has_network_consent(),
+                cancel=self.cancel,
             )
             self.finished_ok.emit(results)
         except Exception:
@@ -643,12 +649,19 @@ class MainWindow(CatalogueUx, QMainWindow):
         self._muted_labels.append(self.stats_label)
         self.stats_label.hide()
 
-        # Barre de progression (cachée par défaut)
+        # Barre de progression (cachée par défaut) + annulation
+        progress_row = QHBoxLayout()
         self.progress = QProgressBar()
         self.progress.setVisible(False)
         self.progress.setTextVisible(True)
         self.progress.setFixedHeight(16)
-        root.addWidget(self.progress)
+        progress_row.addWidget(self.progress, 1)
+        self.cancel_update_btn = QPushButton("Annuler")
+        self.cancel_update_btn.setVisible(False)
+        self.cancel_update_btn.setToolTip("Interrompt la synchronisation ; la base locale reste celle d'avant.")
+        self.cancel_update_btn.clicked.connect(self._cancel_update)
+        progress_row.addWidget(self.cancel_update_btn)
+        root.addLayout(progress_row)
 
         # ── Splitter : liste/grille à gauche, panneau à droite ──────────
         splitter = self.splitter = QSplitter(Qt.Horizontal)
@@ -1600,6 +1613,8 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.menu_btn.setEnabled(False)
         self.btn_generate.setEnabled(False)
         self.progress.setVisible(True)
+        self.cancel_update_btn.setVisible(True)
+        self.cancel_update_btn.setEnabled(True)
         self.progress.setRange(0, len(core.selected_pipeline(core.load_config()["selected_sources"])))
         self.progress.setValue(0)
         self.status.showMessage("Mise à jour en cours…")
@@ -1614,10 +1629,23 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.progress.setValue(i)
         self.progress.setFormat(f"{i}/{total} — {label}")
 
-    def _on_update_done(self, results):
+    def _cancel_update(self):
+        if self.worker and self.worker.isRunning():
+            self.worker.cancel.set()
+            self.cancel_update_btn.setEnabled(False)
+            self.status.showMessage("Annulation demandée : l'étape en cours s'interrompt…", 8000)
+
+    def _finish_update_ui(self):
         self.progress.setVisible(False)
+        self.cancel_update_btn.setVisible(False)
         self.update_btn.setEnabled(True)
         self.menu_btn.setEnabled(True)
+
+    def _on_update_done(self, results):
+        self._finish_update_ui()
+        if self.worker:
+            self.worker.wait(2000)
+        cancelled = any(r.status == "cancelled" for r in results)
         try:
             self.db = core.load_db()
         except (core.DatabaseError, OSError) as exc:
@@ -1632,9 +1660,17 @@ class MainWindow(CatalogueUx, QMainWindow):
         if self.current_sku:
             self._show_detail(self.current_sku)
         n_ok = sum(1 for r in results if r.ok)
-        n_ko = [r for r in results if not r.ok]
+        n_ko = [r for r in results if not r.ok and r.status != "cancelled"]
         msg = f"Mise à jour {core.UPDATE_STATUS_LABELS[core.update_status(results)]} — {n_ok}/{len(results)} étapes OK."
+        if cancelled:
+            msg = f"Mise à jour annulée — {n_ok}/{len(results)} étapes terminées ; base locale conservée."
         self.status.showMessage(msg, 10000)
+        offline = n_ko and all(r.status == "unavailable" for r in n_ko)
+        if cancelled or offline:
+            # Being offline is a normal situation: a status-bar line, not a modal box.
+            if offline:
+                self.status.showMessage(msg + " Sources injoignables ; base locale conservée.", 12000)
+            return
         if n_ko:
             def _reason(r):
                 err = (r.stderr or "").strip().replace("\r", "")
@@ -1658,9 +1694,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             box.exec()
 
     def _on_update_failed(self, tb):
-        self.progress.setVisible(False)
-        self.update_btn.setEnabled(True)
-        self.menu_btn.setEnabled(True)
+        self._finish_update_ui()
         if self.current_sku:
             self._show_detail(self.current_sku)
         QMessageBox.critical(self, "Erreur de mise à jour", tb)
@@ -1676,9 +1710,17 @@ class MainWindow(CatalogueUx, QMainWindow):
         lay.setSpacing(12)
         lay.setContentsMargins(18, 18, 18, 14)
 
-        launch_note = QLabel("La base est actualisée à chaque démarrage depuis les sources choisies. En cas d’échec, la dernière base locale est conservée.")
+        launch_note = QLabel("La base est actualisée au lancement depuis les sources choisies, selon la cadence ci-dessous. En cas d’échec, la dernière base locale est conservée. Le bouton « Mettre à jour » force toujours une actualisation.")
         launch_note.setWordWrap(True)
         lay.addWidget(launch_note)
+        cadence_row = QHBoxLayout()
+        cadence_row.addWidget(QLabel("Actualisation au lancement"))
+        cadence = QComboBox()
+        for days, label in core.UPDATE_INTERVAL_CHOICES:
+            cadence.addItem(label, days)
+        cadence.setCurrentIndex(max(0, cadence.findData(cfg.get("update_interval_days", 1))))
+        cadence_row.addWidget(cadence, 1)
+        lay.addLayout(cadence_row)
         sources = QPushButton("Choisir les sources…")
         sources.clicked.connect(self._choose_sources)
         lay.addWidget(sources)
@@ -1716,6 +1758,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         if dlg.exec() == QDialog.Accepted:
             cfg = core.load_config()  # Source choices may have changed in the nested dialog.
             cfg["orca_overrides"] = chk_orca.isChecked()
+            cfg["update_interval_days"] = cadence.currentData()
             try:
                 core.save_config(cfg)
                 if self.inspector.isVisible():
@@ -1821,6 +1864,15 @@ def main():
     icon_path = core.app_icon_abs_path()
     if icon_path:
         app.setWindowIcon(QIcon(icon_path))
+    # Une seule instance par dossier de données : deux synchronisations
+    # simultanées se disputeraient la base et ses sauvegardes.
+    os.makedirs(core.DATA_HOME, exist_ok=True)
+    instance_lock = QLockFile(os.path.join(core.DATA_HOME, "spoolscribe.instance.lock"))
+    instance_lock.setStaleLockTime(0)
+    if not instance_lock.tryLock(200):
+        QMessageBox.information(None, "SpoolScribe", "SpoolScribe est déjà ouvert pour ce dossier de données.\n"
+                                "Utilisez la fenêtre existante.")
+        return 0
     try:
         win = MainWindow()
     except (core.DatabaseError, OSError) as exc:
@@ -1839,7 +1891,9 @@ def main():
             QMessageBox.critical(None, "Restauration impossible", str(recovery_error))
             return 1
     win.show()
-    return app.exec()
+    code = app.exec()
+    instance_lock.unlock()
+    return code
 
 
 if __name__ == "__main__":

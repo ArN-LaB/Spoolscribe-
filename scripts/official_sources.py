@@ -1,6 +1,7 @@
 """Bounded manufacturer downloads and parsers, separate from personal services."""
 import re
 from html.parser import HTMLParser
+import urllib.error
 import urllib.request
 import urllib.parse
 from scripts import db_io
@@ -13,11 +14,35 @@ class SameHost(urllib.request.HTTPRedirectHandler):
             raise db_io.SourceUnavailable('Redirection fabricant hors de l’hôte déclaré')
         return super().redirect_request(req,fp,code,msg,headers,newurl)
 
-def fetch(url,limit=8*1024*1024):
-    req=urllib.request.Request(url,headers={'User-Agent':'SpoolScribe/0.3 (public filament data)'})
-    with urllib.request.build_opener(SameHost()).open(req,timeout=30) as response:raw=response.read(limit+1)
+USER_AGENT='SpoolScribe/0.3 (+https://github.com/ArN-LaB/Spoolscribe-; public filament data)'
+
+class NotModified(Exception):
+    """The source answered 304: the cached data is still current."""
+
+def fetch(url,limit=8*1024*1024,*,etag=None,timeout=30,allowed_host=None):
+    """Bounded same-host HTTPS download. With an ETag, a 304 raises NotModified.
+
+    ``allowed_host`` lets a redirect target stay within one declared host when
+    the request's own host differs (archive endpoints); by default the request
+    host is the only acceptable one.
+    """
+    parsed=urllib.parse.urlsplit(url)
+    if parsed.scheme!='https':raise db_io.SourceUnavailable('Source non HTTPS refusée')
+    headers={'User-Agent':USER_AGENT}
+    if etag:headers['If-None-Match']=etag
+    req=urllib.request.Request(url,headers=headers)
+    try:
+        with urllib.request.build_opener(SameHost()).open(req,timeout=timeout) as response:
+            final=urllib.parse.urlsplit(response.url)
+            if final.hostname not in (parsed.hostname,allowed_host):raise db_io.SourceUnavailable('Redirection inattendue')
+            raw=response.read(limit+1);new_etag=response.headers.get('ETag')
+    except urllib.error.HTTPError as exc:
+        if exc.code==304 and etag:raise NotModified()
+        raise
     if len(raw)>limit:raise db_io.SourceUnavailable('Réponse fabricant trop volumineuse')
+    fetch.last_etag=new_etag
     return raw
+fetch.last_etag=None
 
 
 def bambu_fact(row,url):

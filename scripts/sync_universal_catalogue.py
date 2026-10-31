@@ -3,6 +3,7 @@ import hashlib
 import os
 from pathlib import Path
 import sys
+import urllib.error
 import urllib.request
 import urllib.parse
 
@@ -22,20 +23,40 @@ class _ArchiveRedirect(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-def fetch_archive():
-    request = urllib.request.Request(catalogue_sources.OFD_ARCHIVE_URL,
-                                     headers={"User-Agent": "SpoolScribe/0.3 catalogue update"})
-    with urllib.request.build_opener(_ArchiveRedirect()).open(request, timeout=120) as response:
-        if not response.url.startswith("https://codeload.github.com/"):
-            raise db_io.SourceUnavailable("Redirection OFD inattendue.")
-        raw = response.read(catalogue_sources.MAX_ARCHIVE_BYTES + 1)
+class NotModified(Exception):
+    """The archive endpoint confirmed the cached snapshot is current."""
+
+
+def fetch_archive(etag=None):
+    headers = {"User-Agent": "SpoolScribe/0.3 (+https://github.com/ArN-LaB/Spoolscribe-; catalogue update)"}
+    if etag:
+        headers["If-None-Match"] = etag
+    request = urllib.request.Request(catalogue_sources.OFD_ARCHIVE_URL, headers=headers)
+    try:
+        with urllib.request.build_opener(_ArchiveRedirect()).open(request, timeout=120) as response:
+            if not response.url.startswith("https://codeload.github.com/"):
+                raise db_io.SourceUnavailable("Redirection OFD inattendue.")
+            raw = response.read(catalogue_sources.MAX_ARCHIVE_BYTES + 1)
+            fetch_archive.last_etag = response.headers.get("ETag")
+    except urllib.error.HTTPError as exc:
+        if exc.code == 304 and etag:
+            raise NotModified()
+        raise
     return raw
 
 
+fetch_archive.last_etag = None
+
+
 def main():
+    db = db_io.load_db(DB_FILE)
+    previous = (db.get("_source_snapshots") or {}).get("ofd") or {}
     try:
-        raw = fetch_archive()
+        raw = fetch_archive(previous.get("etag"))
         files = catalogue_sources.read_ofd_archive(raw)
+    except NotModified:
+        print("OFD : archive inchangée depuis la dernière synchronisation (ETag).")
+        return "unchanged"
     except Exception as exc:
         raise db_io.SourceUnavailable(f"Catalogue OFD indisponible : {exc}") from exc
     manifest = ROOT / "data/brand_logos/manifest.json"
@@ -48,11 +69,14 @@ def main():
         logo = legacy_logos.get(catalogue_sources.brand_key(name))
         if logo and (ROOT / "data" / logo).is_file():
             meta.setdefault("logo_path", "data/" + logo)
-    db = db_io.load_db(DB_FILE)
     db_io.check_source_shrink(db, "ofd", len(incoming["_skus"]), "OFD")
     merged, conflicts = catalogue_merge.merge_catalogue(db, incoming, "Open Filament Database", 20)
     db.update(merged)
-    db.setdefault("_source_snapshots", {})["ofd"] = incoming["_source_snapshot"]
+    snapshot = dict(incoming["_source_snapshot"])
+    etag = getattr(fetch_archive, "last_etag", None)
+    if isinstance(etag, str) and etag:
+        snapshot["etag"] = etag
+    db.setdefault("_source_snapshots", {})["ofd"] = snapshot
     db["_source_conflicts"] = conflicts
     db_io.save_db(db, DB_FILE)
     print(f"OFD : {report['references']} références, {report['brands_imported']} fabricants ; "

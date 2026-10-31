@@ -322,22 +322,28 @@ def is_skip(title: str) -> bool:
     return any(s in normalized for s in SKIP_PRODUCTS)
 
 
+MAX_WHOLESALE_PAGES = 40
+
+
 def fetch_page(page: int) -> list:
+    """Bounded same-host download (8 MiB, declared User-Agent, no foreign redirect)."""
+    from scripts import official_sources
     url = WHOLESALE_BASE.format(page)
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            data = json.loads(resp.read().decode())
-            return data.get("products", [])
+        data = json.loads(official_sources.fetch(url).decode("utf-8"))
+        products = data.get("products", []) if isinstance(data, dict) else None
+        if not isinstance(products, list):
+            raise ValueError("réponse sans liste de produits")
+        return products
     except Exception as e:
         raise SourceUnavailable(f"Catalogue wholesale, page {page} : {e}") from e
 
 
 def fetch_all_products() -> list:
-    """Fetch all pages; stop when a page returns 0 products."""
+    """Fetch all pages; stop when a page returns 0 products or at the page cap."""
     all_products = []
     page = 1
-    while True:
+    while page <= MAX_WHOLESALE_PAGES:
         print(f"  Fetching page {page}…", end=" ", flush=True)
         prods = fetch_page(page)
         print(f"{len(prods)} products")

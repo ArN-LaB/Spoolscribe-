@@ -11,7 +11,7 @@ relative = ("SpoolScribe.exe" if sys.platform == "win32" else
             "SpoolScribe.app/Contents/MacOS/SpoolScribe" if sys.platform == "darwin" else "SpoolScribe")
 with tempfile.TemporaryDirectory() as directory:
     report = Path(directory) / "catalogue.json"
-    env = dict(os.environ, SPOOLSCRIBE_CATALOGUE_REPORT=str(report), SPOOLSCRIBE_DATA_HOME=directory,
+    env = dict(os.environ, SPOOLSCRIBE_RUN_SCRIPT_ALLOW=str(root / ".github/scripts"), SPOOLSCRIBE_CATALOGUE_REPORT=str(report), SPOOLSCRIBE_DATA_HOME=directory,
                SPOOLSCRIBE_CONFIG_PATH=str(Path(directory) / "config.json"))
     subprocess.run([str(root / "dist" / relative), "--run-script", str(root / ".github/scripts/probe_frozen_catalogue.py")],
                    env=env, check=True, timeout=120)
