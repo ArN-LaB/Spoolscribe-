@@ -116,6 +116,7 @@ def adapt_ofd(files: dict[str, bytes], *, source_digest: str, logos: dict | None
             filament = read(f"data/{slug}/{material_slug}/{filament_slug}/filament.json")
             variant = read(path)
             brand_name = _text(brand.get("name"), "Fabricant")
+            brand_name, product_line = manufacturer_of(brand_name)
             brand_uuid = _uuid(brand.get("uuid"))
             material_name = _text(material.get("material"), "Matière")
             filament_name = _text(filament.get("name"), "Produit")
@@ -152,8 +153,11 @@ def adapt_ofd(files: dict[str, bytes], *, source_digest: str, logos: dict | None
                 key = "OFD-" + source_id.upper()
                 pname = f"{brand_name} {material_name} {filament_name} · {diameter or '?'} mm [{filament_uuid[:8]}]"
                 product = dict(physical, type=material_name, brand=brand_name, diameter=diameter)
-                product["display_name"] = (f"{brand_name} {filament_name}" if material_name.casefold() in filament_name.casefold()
-                                           else f"{brand_name} {material_name} {filament_name}")
+                if product_line:
+                    product["line"] = product_line
+                shown_brand = brand_name if product_line is None or product_line.casefold() in filament_name.casefold() else f"{brand_name} {product_line}"
+                product["display_name"] = (f"{shown_brand} {filament_name}" if material_name.casefold() in filament_name.casefold()
+                                           else f"{shown_brand} {material_name} {filament_name}")
                 item = {"product": pname, "color_name": color_name, "hex": None,
                         "source": "Open Filament Database", "source_id": source_id,
                         "source_path": sizes_path if sizes_path in files else path,
@@ -188,13 +192,16 @@ def adapt_ofd(files: dict[str, bytes], *, source_digest: str, logos: dict | None
                     report["incomplete"] += 1
             meta = {"name": brand_name, "origin": brand.get("origin"), "source": OFD_REPOSITORY,
                     "source_id": brand_uuid, "source_slug": slug}
+            if product_line and brand_name in result["_brands"]:
+                meta = None  # the manufacturer's own metadata wins over a line folder
             website = brand.get("website")
             if isinstance(website, str) and website.strip():
                 meta["website"] = website if website.startswith("https://") else "https://" + website.removeprefix("http://")
-            approved = (logos or {}).get(brand_uuid)
-            if approved:
-                meta["logo_path"] = approved["path"]
-            result["_brands"].setdefault(brand_name, meta)
+            if meta is not None:
+                approved = (logos or {}).get(brand_uuid)
+                if approved:
+                    meta["logo_path"] = approved["path"]
+                result["_brands"].setdefault(brand_name, meta)
         except (ValueError, KeyError, TypeError, AttributeError) as exc:
             report["rejected"].append({"path": path, "reason": str(exc)})
     brand_paths = [p for p in files if len(PurePosixPath(p).parts) == 3 and p.endswith("/brand.json")]
@@ -217,6 +224,51 @@ SPOOLMAN_URL = "https://donkie.github.io/SpoolmanDB/filaments.json"
 def brand_key(name):
     key = re.sub(r"[^a-z0-9]", "", name.casefold())
     return {"esun": "esun3d", "rosa3dfilaments": "rosa3d"}.get(key, key)
+
+
+# Product lines that some sources list as brands. The manufacturer is the
+# brand; the line is kept on the product so nothing is lost.
+BRAND_LINES = {
+    "Polymaker": ["PolyLite", "PolyTerra", "PolyMax", "PolyFlex", "PolyMide", "PolySonic", "PolyCast",
+                  "PolySmooth", "PolyWood", "PolyDissolve", "PolySupport", "PolyBox", "Panchroma", "Fiberon"],
+    "3D Prima": ["PrimaCreator", "PrimaSelect", "PrimaValue", "3D Prima Basic", "PrimaFil"],
+    "Creality": ["Creality Hyper", "Hyper"],
+    "Fillamentum": ["Fillamentum Extrafill", "Extrafill"],
+}
+_LINE_INDEX = {brand_key(line): (maker, line) for maker, lines in BRAND_LINES.items() for line in lines}
+
+
+def manufacturer_of(brand_name):
+    """(manufacturer, line) for a source brand label; line is None for a real manufacturer."""
+    hit = _LINE_INDEX.get(brand_key(brand_name or ""))
+    return (hit[0], hit[1]) if hit else (brand_name, None)
+
+
+def normalize_brand_lines(db):
+    """Fold line-brands into their manufacturer in a loaded database (in memory).
+
+    Returns the number of products changed. Brand metadata of a line is kept
+    under the manufacturer only when the manufacturer has none.
+    """
+    changed = 0
+    products = db.get("_products", {})
+    brands = db.get("_brands", {})
+    for product in products.values():
+        maker, line = manufacturer_of(product.get("brand", ""))
+        if line is not None:
+            product["brand"] = maker
+            product.setdefault("line", line)
+            changed += 1
+    if changed:
+        for name in list(brands):
+            maker, line = manufacturer_of(name)
+            if line is not None:
+                meta = brands.pop(name)
+                target = brands.setdefault(maker, {"name": maker})
+                for key, value in meta.items():
+                    if key not in ("name", "logo_path", "logo", "logo_url", "logo_source", "source_slug", "source_id"):
+                        target.setdefault(key, value)
+    return changed
 
 
 def adapt_spoolman(rows, *, source_digest: str, covered_brands=()) -> tuple[dict, dict]:
@@ -248,6 +300,7 @@ def adapt_spoolman(rows, *, source_digest: str, covered_brands=()) -> tuple[dict
     for index, row in enumerate(rows):
         try:
             name = _text(row.get("manufacturer"), "Fabricant")
+            name, product_line = manufacturer_of(name)
             identifier = _text(row.get("id"), "Identifiant source")
             material = _text(row.get("material"), "Matière")
             color_name = _text(row.get("name"), "Nom")
@@ -268,6 +321,8 @@ def adapt_spoolman(rows, *, source_digest: str, covered_brands=()) -> tuple[dict
             display = f"{name} {material} {color_name}"
             pname = f"{display} [{sku}]"
             product = dict(physical, brand=name, type=material, display_name=display)
+            if product_line:
+                product["line"] = product_line
             item = {"product": pname, "color_name": color_name, "hex": None, "source": "SpoolmanDB",
                     "source_id": identifier, "weight": _number(row.get("weight"), "weight", positive=True)}
             single, multi = row.get("color_hex"), row.get("color_hexes")

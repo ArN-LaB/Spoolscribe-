@@ -46,10 +46,18 @@ def merge_fields(target, incoming, source, rank, conflicts, prefix):
             continue
         if key not in target:
             target[key]=copy.deepcopy(value);provenance[key]=dict(source=source,rank=rank,value=copy.deepcopy(value))
+        elif old and old.get('source')==db_io.USER_SOURCE:
+            # An explicit local correction (even a deliberate null) is never replaced.
+            if value is not None and target[key]!=value:conflicts.append(f'{prefix}.{key} (correction locale conservée)')
         elif old and target[key]==old.get('value') and value is None and target[key] is not None and old.get('source')==source:
             # A source that stops publishing a value never empties the local one.
             conflicts.append(f'{prefix}.{key} (valeur retirée par la source, conservée)')
         elif old and target[key]==old.get('value') and value is not None and (target[key] is None or rank>old.get('rank',0) or old.get('source')==source):
+            target[key]=copy.deepcopy(value);provenance[key]=dict(source=source,rank=rank,value=copy.deepcopy(value))
+        elif old is None and value is not None and (target[key] is None or rank>=db_io.LEGACY_OVERRIDE_RANK or target[key]==value):
+            # Unknown provenance (historical catalogue, older installations): a
+            # manufacturer source replaces it, anyone completes it, and an equal
+            # value simply gains its provenance.
             target[key]=copy.deepcopy(value);provenance[key]=dict(source=source,rank=rank,value=copy.deepcopy(value))
         elif target[key]!=value and value is not None:
             conflicts.append(f'{prefix}.{key}')
@@ -113,6 +121,9 @@ def merge_catalogue(local, incoming, source, rank=10):
                 pending.append(dict(source_id=sku,reason='Rapprochement fabricant/produit non démontré'));continue
         if matches:
             canonical=matches[0];target=result['_skus'][canonical];pkey=target['product']
+            # A historical orphan reference (product record missing) is healed
+            # with the matching source product instead of aborting the refresh.
+            result['_products'].setdefault(pkey,{})
             merge_fields(result['_products'][pkey],p,source,rank,conflicts,'_products.'+pkey)
             merge_fields(target,e,source,rank,conflicts,'_skus.'+canonical)
             if canonical != sku:

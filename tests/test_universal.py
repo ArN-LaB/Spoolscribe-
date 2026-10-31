@@ -79,6 +79,7 @@ class SourceAdapterTests(unittest.TestCase):
         incoming, _ = source.adapt_spoolman([row], source_digest="original")
         sku = next(iter(incoming["_skus"]))
         incoming["_skus"][sku].update(hex=None, user_note="intentional")
+        incoming["_skus"][sku]["_field_sources"] = {"hex": db_io.user_correction(None)}  # explicit local null
         incoming["_last_updated"] = "2020-01-01"
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "db.json"
@@ -88,7 +89,9 @@ class SourceAdapterTests(unittest.TestCase):
                 record, code = db_io._execute_step(spoolman_worker.main, str(path))
             self.assertEqual((record["status"], code), ("partial", 3))
             actual = db_io.load_db(path)
-            self.assertEqual(actual["_skus"][sku], incoming["_skus"][sku])
+            kept = actual["_skus"][sku]
+            self.assertIsNone(kept["hex"]); self.assertEqual(kept["user_note"], incoming["_skus"][sku]["user_note"])
+            self.assertTrue(db_io.is_user_owned(kept, "hex"))  # other fields merely gain their source provenance
             self.assertEqual(actual["_last_updated"], "2020-01-01")
             before = path.read_bytes()
             with patch.object(spoolman_worker, "DB_FILE", str(path)), patch.object(spoolman_worker, "fetch_catalogue", return_value=b"[]"):
@@ -167,6 +170,7 @@ class SourceAdapterTests(unittest.TestCase):
         incoming, _ = source.adapt_ofd(source_fixture(), source_digest="d")
         sku = next(iter(incoming["_skus"]))
         incoming["_skus"][sku].update(hex=None, user_note="local")
+        incoming["_skus"][sku]["_field_sources"] = {"hex": db_io.user_correction(None)}  # explicit local null
         incoming["_last_updated"] = "2020-01-01"
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "db.json"
@@ -174,7 +178,9 @@ class SourceAdapterTests(unittest.TestCase):
             with patch.object(worker, "DB_FILE", str(path)), patch.object(worker, "fetch_archive", return_value=tar_bytes(source_fixture())):
                 worker.main()
             actual = db_io.load_db(path)
-            self.assertEqual(actual["_skus"][sku], incoming["_skus"][sku])
+            kept = actual["_skus"][sku]
+            self.assertIsNone(kept["hex"]); self.assertEqual(kept["user_note"], incoming["_skus"][sku]["user_note"])
+            self.assertTrue(db_io.is_user_owned(kept, "hex"))  # other fields merely gain their source provenance
             self.assertEqual(actual["_last_updated"], "2020-01-01")
             before = path.read_bytes()
             with patch.object(worker, "DB_FILE", str(path)), patch.object(worker, "fetch_archive", side_effect=OSError("offline")):

@@ -46,6 +46,20 @@ class IdentityTests(unittest.TestCase):
         self.assertEqual(result['_products']['Audit PLA']['min_temp'], small_db()['_products']['Audit PLA']['min_temp'])
 
 
+class OrphanTests(unittest.TestCase):
+    def test_a_historical_orphan_reference_is_healed_instead_of_aborting(self):
+        local = small_db()
+        local['_skus']['ORPHAN'] = dict(entry(), product='Lost PLA', manufacturer_sku='ART-9')
+        incoming = small_db()
+        incoming['_products'] = {'Lost PLA': dict(incoming['_products']['Audit PLA'], display_name='Lost PLA')}
+        # The manufacturer worker keys its records by article: same key as the orphan.
+        incoming['_skus'] = {'ORPHAN': dict(entry(), product='Lost PLA', manufacturer_sku='ART-9', weight=None)}
+        result, _ = merge.merge_catalogue(local, incoming, 'OFD', 20)
+        self.assertIn('Lost PLA', result['_products'])
+        self.assertEqual(result['_products']['Lost PLA']['type'], 'PLA')
+        self.assertEqual(set(result['_skus']), {'LOCAL', 'ORPHAN'})
+
+
 class SourceEmptyingTests(unittest.TestCase):
     def test_a_source_cannot_empty_its_own_value(self):
         incoming = small_db()
@@ -79,14 +93,35 @@ class PlausibilityTests(unittest.TestCase):
         with self.assertRaises(core.MissingColorError):
             core.build_openspool(sku, db['_products']['Audit PLA'])
         # An explicit user confirmation of the same HEX is trusted.
-        sku['_field_sources'] = {'color_name': {'source': 'OFD', 'rank': 20, 'value': 'White'}}
+        sku['_field_sources'] = {'hex': db_io.user_correction('000000')}
         self.assertIsNone(db_io.implausible_color(sku))
         core.build_openspool(sku, db['_products']['Audit PLA'])
 
-    def test_historical_entries_without_source_are_not_second_guessed(self):
+    def test_fields_of_unknown_provenance_are_checked_like_source_data(self):
         sku = dict(entry(), color_name='White', hex='000000')
         sku.pop('source', None)
+        self.assertIsNotNone(db_io.implausible_color(sku))
+        core.set_sku_hex({'_skus': {'X': sku}}, 'X', '000000', persist=False)
+        self.assertTrue(db_io.is_user_owned(sku, 'hex'))
         self.assertIsNone(db_io.implausible_color(sku))
+
+    def test_manufacturer_source_replaces_legacy_fields_but_never_user_corrections(self):
+        local = small_db()   # no provenance at all: an older installation
+        incoming = small_db()
+        incoming['_skus']['LOCAL']['hex'] = '123456'
+        incoming['_products']['Audit PLA']['density'] = 1.27
+        community, conflicts = merge.merge_catalogue(copy.deepcopy(local), incoming, 'Community', 20)
+        self.assertEqual(community['_skus']['LOCAL']['hex'], 'FF0000')   # community keeps the legacy value
+        self.assertTrue(any(c.endswith('LOCAL.hex') for c in conflicts))
+        official, conflicts = merge.merge_catalogue(copy.deepcopy(local), incoming, 'Maker', db_io.MANUFACTURER_RANK)
+        self.assertEqual(official['_skus']['LOCAL']['hex'], '123456')     # manufacturer corrects it
+        self.assertEqual(official['_products']['Audit PLA']['density'], 1.27)
+        self.assertEqual(official['_skus']['LOCAL']['_field_sources']['hex']['source'], 'Maker')
+        corrected = copy.deepcopy(local)
+        core.set_sku_hex(corrected, 'LOCAL', 'ABCDEF', persist=False)
+        again, conflicts = merge.merge_catalogue(corrected, incoming, 'Maker', db_io.MANUFACTURER_RANK)
+        self.assertEqual(again['_skus']['LOCAL']['hex'], 'ABCDEF')
+        self.assertTrue(any('correction locale conservée' in c for c in conflicts))
 
     def test_out_of_range_source_physics_block_export_until_corrected(self):
         db = small_db()

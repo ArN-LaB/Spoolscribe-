@@ -135,6 +135,19 @@ class BoundedDownloadTests(unittest.TestCase):
         with self.assertRaises(db_io.SourceUnavailable):
             official_sources.fetch('http://example.invalid/data.json')
 
+    def test_throttled_source_is_retried_then_reported_as_unavailable(self):
+        calls = []
+        class Opener:
+            def open(self, request, timeout=0):
+                calls.append(request.full_url)
+                raise urllib.error.HTTPError(request.full_url, 429, 'Too Many Requests', {'Retry-After': '1'}, None)
+        with patch('urllib.request.build_opener', return_value=Opener()), patch('scripts.official_sources.time.sleep') as sleep:
+            with self.assertRaises(db_io.SourceUnavailable) as raised:
+                official_sources.fetch('https://example.invalid/products.json')
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(sleep.call_count, 2)
+        self.assertIn('429', str(raised.exception))
+
     def test_orca_filenames_cannot_escape_their_folder(self):
         for bad in ('D:evil', 'a/b', 'a\\b', '..', ' PLA', 'x\x00y'):
             with self.assertRaises(ValueError):

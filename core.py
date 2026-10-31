@@ -27,7 +27,7 @@ from datetime import datetime
 from typing import Callable, Optional
 from pathlib import Path
 
-from scripts import db_io
+from scripts import db_io, catalogue_sources
 import printer_profiles
 
 DatabaseError = db_io.DatabaseError
@@ -137,8 +137,8 @@ def _seed_writable_data() -> None:
 
 # Pipeline de mise à jour : (fichier_script, libellé, timeout_s)
 UPDATE_PIPELINE: list[tuple[str, str, int]] = [
-    ("sync_universal_catalogue.py",    "Catalogue multi-fabricants OFD", 300),
-    ("sync_spoolman_catalogue.py",     "Fabricants complémentaires SpoolmanDB", 90),
+    ("sync_universal_catalogue.py",    "Catalogue multi-fabricants OFD", 900),
+    ("sync_spoolman_catalogue.py",     "Fabricants complémentaires SpoolmanDB", 300),
     ("scrape_wholesale.py",            "Scrape wholesale",          120),
     ("scrape_wiki_hex.py",             "Scrape hex wiki",            60),
     ("scrape_spoolman_hex.py",         "Scrape hex SpoolmanDB",      60),
@@ -339,6 +339,8 @@ def load_db(path: Optional[str] = None) -> dict:
     if _FROZEN and os.path.abspath(path) == os.path.abspath(DB_PATH) and not db_restored_this_session(path):
         _seed_writable_data()
     db = db_io.load_db(path)
+    # Older installations and some sources list product lines as brands.
+    catalogue_sources.normalize_brand_lines(db)
     # Development also uses the separately audited offline extension. Preserve
     # revision metadata and never write just because the catalogue was opened.
     if not _FROZEN and not db_restored_this_session(path):
@@ -589,6 +591,8 @@ def list_skus(db: dict) -> list[dict]:
             issues.append("Caractéristiques à vérifier (" + " ; ".join(suspect_physical) + ")")
         if not p.get("brand") or not p.get("type"):
             issues.append("Marque ou matière absente")
+        family, variant = material_family(p.get("type", ""))
+        hex_info = (e.get("_field_sources") or {}).get("hex") or {}
         row = {
             "sku": sku,
             # Human-readable reference: the manufacturer article when known,
@@ -599,6 +603,9 @@ def list_skus(db: dict) -> list[dict]:
             "hex": e.get("hex"),
             "brand": p.get("brand", ""),
             "material": p.get("type", ""),
+            "family": family,
+            "variant": variant,
+            "line": p.get("line", ""),
             "diameter": p.get("diameter"),
             "weight": e.get("weight"),
             "density": p.get("density"),
@@ -606,11 +613,87 @@ def list_skus(db: dict) -> list[dict]:
             "quality": " ; ".join(issues) or "Export possible",
             "source_id": e.get("source_id", ""),
             "manufacturer_sku": e.get("manufacturer_sku", ""),
+            "_hex_rank": hex_info.get("rank", 0) if e.get("hex") else -1,
         }
         # Normalised once here, not for every keystroke and every row.
         row["_search"] = _search_key(" ".join(str(row.get(k) or "") for k in
                                               ("sku", "source_id", "manufacturer_sku", "brand", "material", "product", "color_name", "hex")))
         out.append(row)
+    return out
+
+
+# ─── Familles de matières ────────────────────────────────────────────────
+# Les sources écrivent la matière de façons diverses (« ABS+MATTE »,
+# « EASYASA », « HTPLA+ », « PA6-CF »). Le filtre et le regroupement utilisent
+# la famille ; la valeur source reste affichée et exportée telle quelle.
+MATERIAL_FAMILIES = (
+    "PLA", "PETG", "PCTG", "PET", "ABS", "ASA", "TPU", "TPE", "TPC", "TPI", "PA", "PC", "PP", "PVA",
+    "HIPS", "PEEK", "PEKK", "PEI", "PPSU", "PSU", "PES", "PPS", "PBT", "POM", "PMMA", "PVB", "PVDF",
+    "PHA", "PCL", "EVA", "PVC", "CPE", "BVOH", "PPE", "PEBA",
+)
+_MATERIAL_ALIASES = {"BVOH": "PVA", "PVOH": "PVA", "PPA": "PA", "NYLON": "PA", "PA6": "PA", "PA66": "PA",
+                     "PA11": "PA", "PA12": "PA"}
+_MATERIAL_PREFIXES = {"HT": "HT", "EASY": "Easy", "LW": "LW", "HS": "HS", "RAPID": "Rapid", "HF": "HF"}
+
+
+def material_family(material: str) -> tuple[str, str]:
+    """(famille, variante) d'un libellé de matière source ; famille inconnue = libellé nettoyé."""
+    raw = re.sub(r"\s+", "", str(material or "")).upper()
+    if not raw:
+        return "", ""
+    prefix = ""
+    for key, label in _MATERIAL_PREFIXES.items():
+        if raw.startswith(key) and len(raw) > len(key) and raw[len(key)] not in "+-":
+            candidate = raw[len(key):]
+            if any(candidate.startswith(f) for f in (*MATERIAL_FAMILIES, *_MATERIAL_ALIASES)):
+                prefix, raw = label, candidate
+                break
+    base = next((f for f in sorted((*MATERIAL_FAMILIES, *_MATERIAL_ALIASES), key=len, reverse=True) if raw.startswith(f)), "")
+    if not base:
+        return raw.title() if raw.islower() else raw, prefix
+    rest = raw[len(base):]
+    family = _MATERIAL_ALIASES.get(base, base)
+    grade = base if base in _MATERIAL_ALIASES and base not in ("BVOH", "PVOH", "NYLON") else ""
+    rest = re.sub(r"^[-_/ ]+", "", rest)
+    rest = rest.replace("MATTE", "Matte").replace("GLOSS", "Gloss").replace("SILK", "Silk")
+    parts = [p for p in (prefix, grade, rest) if p]
+    return family, " ".join(parts)
+
+
+def fmt_int(value: int) -> str:
+    """Nombre avec séparateur de milliers français (espace fine insécable)."""
+    return f"{value:,}".replace(",", "\u202f")
+
+
+def group_filaments(rows: list[dict]) -> list[dict]:
+    """Une ligne par filament (fabricant + produit + couleur) ; les conditionnements deviennent des variantes.
+
+    Le HEX retenu est celui de meilleure provenance (utilisateur > fabricant >
+    communauté > inconnu), puis le plus fréquent. Les lignes gardent toutes les
+    clés d'une référence ; ``variants`` liste chaque référence regroupée.
+    """
+    groups: dict[tuple, list[dict]] = {}
+    for row in rows:
+        key = (_search_key(row.get("brand")), _search_key(row.get("product")), _search_key(row.get("color_name")))
+        groups.setdefault(key, []).append(row)
+    out = []
+    for members in groups.values():
+        ranked = sorted(members, key=lambda r: (-r.get("_hex_rank", 0), not r.get("ready"), r["sku"]))
+        best = ranked[0]
+        hexes = [r["hex"] for r in members if r.get("hex")]
+        chosen = best.get("hex")
+        if chosen is None and hexes:
+            chosen = max(set(hexes), key=hexes.count)
+        primary = next((r for r in ranked if r.get("hex") == chosen), best)
+        group = dict(primary)
+        group["variants"] = [{"sku": r["sku"], "reference": r["reference"], "weight": r.get("weight"),
+                              "diameter": r.get("diameter"), "hex": r.get("hex"), "ready": r.get("ready"),
+                              "quality": r.get("quality"), "manufacturer_sku": r.get("manufacturer_sku", "")}
+                             for r in sorted(members, key=lambda r: (r.get("diameter") or 0, r.get("weight") or 0, r["sku"]))]
+        group["variant_count"] = len(members)
+        group["hex_variants"] = len(set(hexes))
+        group["_search"] = " ".join(_row_search(r) for r in members)
+        out.append(group)
     return out
 
 
@@ -640,13 +723,14 @@ def query_catalogue(rows: list[dict], *, text: str = "", brand: str = "", materi
     """Filter the entire catalogue, then apply two stable keys (numeric where appropriate)."""
     if sort1 not in CATALOGUE_SORT_FIELDS or sort2 not in (*CATALOGUE_SORT_FIELDS, ""):
         raise ValueError("Colonne de tri inconnue.")
-    if quality not in ("all", "ready", "incomplete"):
+    if quality not in ("all", "ready", "incomplete", "suspect"):
         raise ValueError("Filtre de qualité inconnu.")
     terms = _search_key(text).split()
     brand_key, material_key = brand.casefold().strip(), material.casefold().strip()
     result = [r for r in rows if (not brand_key or r["brand"].casefold() == brand_key)
-              and (not material_key or r["material"].casefold() == material_key)
-              and (quality == "all" or r["ready"] == (quality == "ready"))
+              and (not material_key or material_key in (r["material"].casefold(), r.get("family", "").casefold()))
+              and (quality == "all" or (quality == "suspect" and "à vérifier" in r["quality"].casefold())
+                   or (quality in ("ready", "incomplete") and r["ready"] == (quality == "ready")))
               and all(t in _row_search(r) for t in terms)]
     result.sort(key=lambda r: _search_key(r["sku"]))
     for key, reverse in ((sort2, descending2), (sort1, descending1)):
@@ -690,9 +774,9 @@ def set_sku_hex(db: dict, sku: str, hex_val: str, persist: bool = True,
     if sku in db.get("_skus", {}):
         import copy
         previous = copy.deepcopy(db["_skus"][sku])
-        provenance = db["_skus"][sku].get("_field_sources", {})
-        provenance.pop("hex", None)
-        if alpha is not None: provenance.pop("alpha", None)
+        provenance = db["_skus"][sku].setdefault("_field_sources", {})
+        provenance["hex"] = db_io.user_correction(norm)
+        if alpha is not None: provenance["alpha"] = db_io.user_correction(alpha.upper())
         db["_skus"][sku]["hex"] = norm
         if alpha is not None:
             db["_skus"][sku]["alpha"] = alpha.upper()
@@ -714,7 +798,8 @@ def set_product_physical(db: dict, sku: str, values: dict, *, path: Optional[str
     import copy
     updated = copy.deepcopy(view.product_data)
     updated.update(values)
-    for field in values: updated.get("_field_sources", {}).pop(field, None)
+    for field, value in values.items():
+        updated.setdefault("_field_sources", {})[field] = db_io.user_correction(value)
     db_io.validate_db({"_products": {view.product: updated}})
     for key, value in values.items():
         if key.endswith("temp") and value is not None and int(value) != value:
@@ -1141,7 +1226,7 @@ SOURCE_GROUPS = {
     "orca": {"name": "Polymaker — profils Orca officiels", "detail": "Profils compatibles Snapmaker U1 · raw.githubusercontent.com", "scripts": ["download_orca_profiles.py", "import_orca_profiles.py"]},
     "thefilamentdb": {"name": "TheFilamentDB — complément historique", "detail": "Instantané local historique seulement ; ROSA3D absent. Disponible depuis le dépôt, non embarqué.", "scripts": ["scrape_thefilamentdb_hex.py", "scrape_thefilamentdb_multibrand_hex.py"]},
 }
-UPDATE_PIPELINE += [("sync_polymaker_official.py", "Polymaker officiel", 180), ("sync_bambu_official.py", "Bambu Lab officiel", 240), ("sync_sunlu_official.py", "SUNLU officiel", 90)]
+UPDATE_PIPELINE += [("sync_polymaker_official.py", "Polymaker officiel", 300), ("sync_bambu_official.py", "Bambu Lab officiel", 600), ("sync_sunlu_official.py", "SUNLU officiel", 180)]
 _ALL_PIPELINE = list(UPDATE_PIPELINE)
 
 def selected_pipeline(sources=None):

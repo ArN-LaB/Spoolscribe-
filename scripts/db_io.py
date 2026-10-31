@@ -48,16 +48,30 @@ _LIGHT_NAMES = re.compile(r"white|blanc|weiss|weiß|bianco|blanco|clear|natural|
                           r"light|pastel|lemon|yellow|jaune|gelb|cyan|pink|rose", re.I)
 
 
-def _field_is_source_owned(entry: dict, key: str) -> bool:
-    """True when the value still comes from a source (never corrected by the user).
+USER_SOURCE = "Utilisateur"
+USER_RANK = 1000          # explicit local corrections beat every source
+MANUFACTURER_RANK = 100   # official manufacturer data beats community data
+LEGACY_OVERRIDE_RANK = MANUFACTURER_RANK  # ...and may replace fields of unknown provenance
 
-    Historical entries without a ``source`` are user-owned by precaution; an
-    explicit correction removes the field from ``_field_sources``.
+
+def user_correction(value) -> dict:
+    """Provenance record of an explicit local edit (including an intentional null)."""
+    return {"source": USER_SOURCE, "rank": USER_RANK, "value": copy.deepcopy(value)}
+
+
+def is_user_owned(entry: dict, key: str) -> bool:
+    info = (entry.get("_field_sources") or {}).get(key)
+    return bool(info) and info.get("source") == USER_SOURCE
+
+
+def _field_is_source_owned(entry: dict, key: str) -> bool:
+    """True unless the user explicitly set the field.
+
+    Fields without provenance (historical catalogue, older installations) are
+    source data of unknown origin: they are checked like any other source value
+    and a manufacturer source may replace them.
     """
-    if not entry.get("source") and "_field_sources" not in entry:
-        return False
-    provenance = entry.get("_field_sources")
-    return provenance is None or key in provenance
+    return not is_user_owned(entry, key)
 
 
 def implausible_color(entry: dict) -> str | None:

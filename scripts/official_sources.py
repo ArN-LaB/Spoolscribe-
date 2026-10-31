@@ -1,5 +1,6 @@
 """Bounded manufacturer downloads and parsers, separate from personal services."""
 import re
+import time
 from html.parser import HTMLParser
 import urllib.error
 import urllib.request
@@ -16,6 +17,11 @@ class SameHost(urllib.request.HTTPRedirectHandler):
 
 USER_AGENT='SpoolScribe/0.3 (+https://github.com/ArN-LaB/Spoolscribe-; public filament data)'
 
+def _retry_after(value,default=5.0,maximum=30.0):
+    try:return min(maximum,max(1.0,float(value)))
+    except (TypeError,ValueError):return default
+
+
 class NotModified(Exception):
     """The source answered 304: the cached data is still current."""
 
@@ -31,14 +37,22 @@ def fetch(url,limit=8*1024*1024,*,etag=None,timeout=30,allowed_host=None):
     headers={'User-Agent':USER_AGENT}
     if etag:headers['If-None-Match']=etag
     req=urllib.request.Request(url,headers=headers)
-    try:
-        with urllib.request.build_opener(SameHost()).open(req,timeout=timeout) as response:
-            final=urllib.parse.urlsplit(response.url)
-            if final.hostname not in (parsed.hostname,allowed_host):raise db_io.SourceUnavailable('Redirection inattendue')
-            raw=response.read(limit+1);new_etag=response.headers.get('ETag')
-    except urllib.error.HTTPError as exc:
-        if exc.code==304 and etag:raise NotModified()
-        raise
+    for attempt in range(3):
+        try:
+            with urllib.request.build_opener(SameHost()).open(req,timeout=timeout) as response:
+                final=urllib.parse.urlsplit(response.url)
+                if final.hostname not in (parsed.hostname,allowed_host):raise db_io.SourceUnavailable('Redirection inattendue')
+                raw=response.read(limit+1);new_etag=response.headers.get('ETag')
+            break
+        except urllib.error.HTTPError as exc:
+            if exc.code==304 and etag:raise NotModified()
+            if exc.code in (429,503) and attempt<2:
+                # The source throttles us: wait what it asks (bounded), then retry once or twice.
+                delay=_retry_after(exc.headers.get('Retry-After'))
+                time.sleep(delay);continue
+            if exc.code==429:
+                raise db_io.SourceUnavailable('Source saturée (HTTP 429) : réessayez plus tard, les données locales sont conservées.') from exc
+            raise
     if len(raw)>limit:raise db_io.SourceUnavailable('Réponse fabricant trop volumineuse')
     fetch.last_etag=new_etag
     return raw
