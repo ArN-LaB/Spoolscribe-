@@ -2,9 +2,8 @@
 
 Date : 31 octobre 2026. Branche : `feature/universal-catalogue`.
 Point de départ : `0130e67` (état de développement commité tel quel avant correctifs).
-Dernier commit du code validé : `d97aaaa`. Ce rapport est commité juste après ;
-le binaire de test correspond donc à `d97aaaa` (les documents n'entrent pas dans
-l'application). Rien n'est poussé, tagué ni publié.
+Dernier commit du code validé : `df2ff78` (binaire de test régénéré depuis ce
+commit). Rien n'est poussé, tagué ni publié.
 
 ## Ce qui a été corrigé, par commit
 
@@ -16,6 +15,8 @@ l'application). Rien n'est poussé, tagué ni publié.
 | `36d6aab`, `ad497f6` | Interface | Cases à cocher visibles, champs désactivés, pastilles, bouton Colonnes, raccourcis, référence fabricant en colonne, recherche temporisée, préférences écrites une fois, pastilles et logos en cache, logos à pleine taille Retina, plus de repli Polymaker, sélection et page conservées, blocs NFC masqués sans export, grille désélectionnable, champ Fabricant non réécrit, import de réglages cohérent, séparateur de milliers, colonnes par défaut lisibles, code mort retiré. |
 | `71898ef` | Build/CI | `.app` macOS en onedir, actions épinglées par SHA, concurrency et timeouts, Dependabot (PyInstaller ≥ 7, PySide6 ≥ 6.12 ignorés), `pyinstaller<7`, PyYAML retiré, attribution TheFilamentDB embarquée, archive macOS par `ditto` sans attributs étendus. |
 | `d97aaaa` | Docs | README en trois étapes, PRIVACY/DATA_SOURCES/DATA_FORMAT/ROADMAP/TRADEMARKS/UX/wiki/CONTRIBUTING alignés, anciens rapports dans `docs/archive/`. |
+| `7e79d24` | Interface | Correctif : plantage au rafraîchissement des accès rapides (régression de `ad497f6`, présente dans la première version test `d97aaaa`, trouvée par les captures). |
+| `df2ff78` | NFC | Choix d'étiquette par défaut enregistré explicitement (bouton « Définir par défaut », `--save-nfc-default`) ; un changement ponctuel ne modifie plus le défaut. |
 
 Le détail figure dans [CHANGELOG.md](../CHANGELOG.md), section « Audit fixes (31 October 2026) ».
 
@@ -27,13 +28,13 @@ Le détail figure dans [CHANGELOG.md](../CHANGELOG.md), section « Audit fixes (
 | Fiches signalées « À vérifier » sur l'instantané du dépôt (24 521 références) | 0 | 25 couleurs (HEX noir pour un nom clair) et 151 fiches physiques (dont 110 buses à 85 °C) ; exportables : 22 320 |
 | Exports historiques (1 008) | identiques v0.2.2 | 963 identiques ; 45 ne diffèrent que par des clés `null` omises (vérifié en réinsérant les nulls : empreinte v0.2.2 reproduite, conservée dans la fixture) |
 | Profil NFC recommandé | complet (8 966 références ne tenaient pas en NTAG215) | essentiel (toutes tiennent en NTAG215 et NTAG216) |
-| Tests | 131 | 153 (Python 3.10.20 et 3.12.13, PySide6 6.11.3, aucun ignoré, aucun échec) |
+| Tests | 131 | 157 (Python 3.10.20 et 3.12.13, PySide6 6.11.3, aucun ignoré, aucun échec) |
 
 ## Contrôles exécutés
 
 | Contrôle | Résultat |
 |---|---|
-| `python -B -m unittest discover -s tests -t .` (Qt hors écran) | 3.10 : 153 OK ; 3.12 : 153 OK |
+| `python -B -m unittest discover -s tests -t .` (Qt hors écran) | 3.10 : 157 OK ; 3.12 : 157 OK |
 | Réseau pendant les tests | interdit par `tests/support.py` ; aucune connexion |
 | `git diff --check`, index vide après chaque commit | OK |
 | PyInstaller 6.22.3, Python 3.12.13, macOS ARM64 | compilation sans avertissement ; `.app` onedir de 102 Mo |
@@ -42,12 +43,13 @@ Le détail figure dans [CHANGELOG.md](../CHANGELOG.md), section « Audit fixes (
 | Ressources du bundle | 175 fichiers identiques aux sources (`data/`, `scripts/`), aucun catalogue, cache ni profil Orca |
 | `verify_archive.py --version 0.3.0` | une seule racine `SpoolScribe.app`, Mach-O, version 0.3.0, permissions, CRC |
 | Archive extraite | `codesign --verify --deep --strict` OK ; lancement hors écran avec un dossier de données vierge : base vide créée, verrou d'instance posé, application vivante après 6 s |
-| Captures Qt hors écran | clair, sombre, Bambu (blocs NFC masqués), « À compléter » SUNLU (couleur à vérifier), dialogue des sources (cases visibles) |
+| Captures Qt hors écran | clair, sombre, Bambu (blocs NFC masqués), « À compléter » SUNLU (couleur à vérifier), dialogue des sources (cases visibles), bouton « Définir par défaut » |
 
-SHA-256 de `SpoolScribe-macos.zip` (`d97aaaa`) :
+SHA-256 de `SpoolScribe-macos.zip` (`df2ff78`, remplace l'archive `d97aaaa`
+qui contenait le plantage des accès rapides) :
 
 ```text
-91aa5ed315c057802895f23f71ead99053bc6b2f074e1e16f20b43ee003b0e01
+1dbf776b65c45ffc0eb3def7bd560bd082f37f20b48773d6baf576acaeb5889d
 ```
 
 Livraison locale, hors Git : `dist/test-audit-v0.3.0/` (archive, empreinte,
