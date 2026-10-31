@@ -87,6 +87,9 @@ CONFIG_PATH = os.environ.get("SPOOLSCRIBE_CONFIG_PATH") or os.path.join(user_dat
 # core ; on leur transmet le dossier inscriptible via l'environnement.
 os.environ.setdefault("SPOOLSCRIBE_DATA_HOME", DATA_HOME)
 os.environ.setdefault("SPOOLSCRIBE_RESOURCE_DIR", RESOURCE_DIR)
+# The printer list was loaded at import time, before these paths were known:
+# reload it so a newer user copy in DATA_HOME is taken into account.
+printer_profiles.reload()
 
 
 def _seed_writable_data() -> None:
