@@ -136,6 +136,48 @@ Interface:
   modal box; a corrupt `ui` setting no longer crashes startup; About text updated.
 - Dead code removed (`logo_with_contrast_plate`, `add_soft_halo`, unused imports).
 
+### Second review on real data (1 November 2026)
+
+Diagnosed on the user's installed database (24,649 references without any
+provenance, created by an earlier preview build that bundled the catalogue):
+
+- **Provenance model.** A local correction is recorded as `Utilisateur` (rank
+  1000) and is never replaced. Fields without provenance are source data of
+  unknown origin: a manufacturer source (rank ≥ 100) may correct them, any
+  source may complete them, and plausibility checks apply. Older installations
+  are no longer frozen against manufacturer updates.
+- **Product lines are not brands.** PolyLite, PolyTerra, PolyMax, PolyFlex,
+  PolyMide, PolySonic, Panchroma, Fiberon (Polymaker), PrimaSelect/PrimaValue/
+  PrimaCreator (3D Prima), Hyper (Creality) and Extrafill (Fillamentum) are
+  folded into their manufacturer; the line is kept on the product and shown
+  in the card. Existing databases are migrated in memory on load.
+- **Material families** (PLA, PETG, ABS, ASA, PA, …) are derived from source
+  labels such as `ABS+MATTE`, `EASYASA` or `HTPLA+` for the sidebar filter;
+  the source label and the exported `type` are unchanged.
+- **One row per filament.** References of the same manufacturer, product and
+  colour (spool sizes, refills, diameters) are grouped; the card lists them
+  with their state and warns when sources disagree on the hue. The chosen HEX
+  is the best-documented one (user > manufacturer > OFD > SpoolmanDB > legacy).
+- **Synchronisation.** An orphan historical reference no longer aborts the
+  Polymaker worker (`KeyError 'Fiberon PPS-CF10'`); HTTP 429/503 are retried
+  after `Retry-After` then reported as "source saturée"; worker timeouts raised
+  (OFD 900 s, SpoolmanDB 300 s, Polymaker 300 s, Bambu 600 s) because 2 MB
+  downloads took minutes on the tested link; a report window replaces the
+  "Mise à jour partielle" box (references, ready filaments, manufacturers,
+  conserved values, pending matches, per-source table); the sources dialog
+  shows each source's last result.
+- **Interface.** Sidebar with manufacturers (recent pinned, list filter,
+  counts), material families and data state replaces the three dropdowns and
+  quick-access chips; the card shows characteristics, references, provenance
+  and a hardware summary; **Mon matériel** (⚙ menu / *Modifier…*) holds the
+  printer/reader, firmware, tag and defaults.
+- **Printers and readers** live in `data/printers.json` (native OpenSpool,
+  via external reader, proprietary, no reader) with per-firmware "reads
+  OpenSpool" flags (Snapmaker U1 stock vs paxx12, Flashforge Zmod, Klipper +
+  Spoolman, Bambu with external OpenSpool reader, Bambu AMS, Prusa OpenPrintTag,
+  Creality CFS, Anycubic ACE, Elegoo, QIDI, UltiMaker, …). The list can be
+  refreshed from the repository into the user folder.
+
 Build, CI, licences and documentation:
 - macOS is built as a native onedir `.app` (resources under `Contents/Frameworks`):
   no 40 MB extraction at every launch, and no dependency on the onefile+BUNDLE
