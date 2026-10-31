@@ -113,6 +113,24 @@ jobs:
       - name: Build with PyInstaller
         run: pyinstaller spoolscribe.spec --noconfirm
 
+      - name: Verify bundled resources against Git
+        shell: python
+        run: |
+          import hashlib, os, pathlib, subprocess
+          from PyInstaller.archive.readers import CArchiveReader
+          binary = pathlib.Path('dist') / ('SpoolScribe.exe' if os.name == 'nt' else 'SpoolScribe')
+          reader = CArchiveReader(str(binary))
+          names = {name.replace('\\', '/'): name for name in reader.toc}
+          expected = {p.as_posix(): subprocess.check_output(['git', 'show', 'HEAD:' + p.as_posix()])
+                      for folder in ('data', 'scripts', 'orca_profiles')
+                      for p in pathlib.Path(folder).rglob('*') if p.is_file()}
+          actual = {name for name in names if name.startswith(('data/', 'scripts/', 'orca_profiles/'))}
+          assert actual == set(expected), 'Unexpected or missing bundled resources'
+          for name, raw in expected.items():
+              assert pathlib.Path(name).read_bytes() == raw, f'Checkout changed bytes: {name}'
+              assert reader.extract(names[name]) == raw, f'Bundle changed bytes: {name}'
+          print(f'Verified {len(expected)} bundled resources against HEAD')
+
       - name: Package artifact (zip + SHA256)
         shell: bash
         run: |
