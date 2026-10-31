@@ -1,10 +1,11 @@
 """Catalogue interaction, persistent workspace settings and guided exports."""
 from PySide6.QtCore import Qt, QByteArray, QThread, Signal, QUrl, QTimer
 from PySide6.QtGui import QDesktopServices, QPixmap, QPainter, QColor, QImage, QKeySequence, QShortcut
-from PySide6.QtWidgets import (QTableWidget, QListWidget, QCompleter, QMenu, QDialog, QVBoxLayout,
+from PySide6.QtWidgets import (QTableWidget, QListWidget, QListWidgetItem, QCompleter, QMenu, QDialog, QVBoxLayout,
     QHBoxLayout, QLabel, QPushButton, QToolButton, QCheckBox, QDialogButtonBox, QComboBox,
-    QFileDialog, QMessageBox, QPlainTextEdit)
+    QFileDialog, QMessageBox, QPlainTextEdit, QLineEdit, QWidget, QScrollArea, QFrame, QTableWidgetItem, QHeaderView)
 import core
+import printer_profiles
 from printer_profiles import PROFILES
 
 
@@ -57,6 +58,8 @@ class CatalogueUx:
     def _install_ux(self):
         self._restoring_ui = True
         self._release_worker = None
+        self._last_report = None
+        self._sync_before = None
         self.brand_filter.setEditable(True)
         self.brand_filter.setInsertPolicy(QComboBox.NoInsert)
         self.brand_filter.lineEdit().setPlaceholderText('Tapez 3–4 lettres du fabricant…')
@@ -66,10 +69,6 @@ class CatalogueUx:
         self.brand_filter.completer().setCaseSensitivity(Qt.CaseInsensitive)
         self.brand_filter.lineEdit().textEdited.connect(self._brand_typed)
         self.brand_filter.activated.connect(lambda *_: self._remember_brand())
-        self.quick_brands = QHBoxLayout()
-        self.quick_brands.addWidget(QLabel('Accès rapides'))
-        self.centralWidget().layout().insertLayout(2, self.quick_brands)
-        self._fill_quick_brands()
         hh = self.table.horizontalHeader()
         hh.setContextMenuPolicy(Qt.CustomContextMenu)
         hh.customContextMenuRequested.connect(self._header_menu)
@@ -124,35 +123,111 @@ class CatalogueUx:
             edit = self.brand_filter.lineEdit()
             edit.blockSignals(True); edit.setText(text); edit.blockSignals(False)
 
-    def _fill_quick_brands(self):
-        while self.quick_brands.count() > 1:
-            widget = self.quick_brands.takeAt(1).widget()
-            if widget:
-                widget.setParent(None)  # retiré tout de suite, pas au prochain tour de boucle
-                widget.deleteLater()
-        names = list(dict.fromkeys(['Polymaker'] + core.load_config().get('recent_brands', []) + ['Bambu Lab', 'Prusament', 'SUNLU']))[:5]
-        for name in names:
-            button = QPushButton(name)
-            button.setObjectName('chip')
-            button.setCursor(Qt.PointingHandCursor)
-            button.setToolTip(f'Afficher les filaments {name}')
-            button.clicked.connect(lambda checked=False, n=name: self._choose_brand(n))
-            self.quick_brands.addWidget(button)
-        self.quick_brands.addStretch()
+    # ── Barre latérale : fabricants, matières, état ───────────────────
+    def _build_sidebar(self):
+        side = QWidget(); side.setObjectName('sidebar')
+        side.setMinimumWidth(190); side.setMaximumWidth(320)
+        lay = QVBoxLayout(side); lay.setContentsMargins(0, 0, 6, 0); lay.setSpacing(6)
+        def caption(text):
+            label = QLabel(text); label.setObjectName('caption'); self._muted_labels.append(label); return label
+        lay.addWidget(caption('FABRICANTS'))
+        self.brand_search = QLineEdit(); self.brand_search.setPlaceholderText('Filtrer les fabricants…')
+        self.brand_search.setClearButtonEnabled(True); self.brand_search.textChanged.connect(self._filter_brand_list)
+        lay.addWidget(self.brand_search)
+        self.brand_list = QListWidget(); self.brand_list.setObjectName('facets')
+        self.brand_list.setUniformItemSizes(True); self.brand_list.setAlternatingRowColors(False)
+        self.brand_list.itemClicked.connect(lambda item: self._choose_brand(item.data(Qt.UserRole) or '', remember=bool(item.data(Qt.UserRole))))
+        lay.addWidget(self.brand_list, 3)
+        lay.addWidget(caption('MATIÈRES'))
+        self.family_list = QListWidget(); self.family_list.setObjectName('facets'); self.family_list.setUniformItemSizes(True)
+        self.family_list.itemClicked.connect(lambda item: self._choose_family(item.data(Qt.UserRole) or ''))
+        lay.addWidget(self.family_list, 2)
+        lay.addWidget(caption('ÉTAT DES DONNÉES'))
+        self.state_list = QListWidget(); self.state_list.setObjectName('facets'); self.state_list.setUniformItemSizes(True)
+        self.state_list.itemClicked.connect(lambda item: self._choose_state(item.data(Qt.UserRole) or 'all'))
+        self.state_list.setFixedHeight(4 * 26 + 6)
+        lay.addWidget(self.state_list)
+        self.reset_filters = QPushButton('Réinitialiser les filtres'); self.reset_filters.setObjectName('secondary')
+        self.reset_filters.clicked.connect(self._reset_filters)
+        lay.addWidget(self.reset_filters)
+        return side
 
-    def _choose_brand(self, name):
+    def _fill_sidebar(self):
+        if not hasattr(self, 'brand_list'): return
+        rows = getattr(self, '_all_rows', [])
+        brand_counts, family_counts, state_counts = {}, {}, {'all': len(rows), 'ready': 0, 'incomplete': 0, 'suspect': 0}
+        for r in rows:
+            if r.get('brand'): brand_counts[r['brand']] = brand_counts.get(r['brand'], 0) + 1
+            if r.get('family'): family_counts[r['family']] = family_counts.get(r['family'], 0) + 1
+            if r.get('ready'): state_counts['ready'] += 1
+            else:
+                state_counts['incomplete'] += 1
+                if 'à vérifier' in r.get('quality', '').casefold(): state_counts['suspect'] += 1
+        recent = [b for b in core.load_config().get('recent_brands', []) if b in brand_counts]
+        self.brand_list.blockSignals(True); self.brand_list.clear()
+        def add_brand(name, count, pinned=False):
+            item = QListWidgetItem(('★ ' if pinned else '') + (name or 'Tous les fabricants') + f'  ({core.fmt_int(count)})')
+            item.setData(Qt.UserRole, name); item.setToolTip(name or 'Toutes les marques')
+            self.brand_list.addItem(item)
+        add_brand('', len(rows))
+        for name in recent: add_brand(name, brand_counts[name], pinned=True)
+        for name in sorted(brand_counts, key=str.casefold):
+            if name not in recent: add_brand(name, brand_counts[name])
+        self.brand_list.blockSignals(False)
+        self.family_list.blockSignals(True); self.family_list.clear()
+        item = QListWidgetItem(f'Toutes les matières  ({len(rows)})'); item.setData(Qt.UserRole, ''); self.family_list.addItem(item)
+        for name in sorted(family_counts, key=lambda k: (-family_counts[k], k)):
+            item = QListWidgetItem(f'{name}  ({family_counts[name]})'); item.setData(Qt.UserRole, name); self.family_list.addItem(item)
+        self.family_list.blockSignals(False)
+        self.state_list.blockSignals(True); self.state_list.clear()
+        for key, label in (('all', 'Toutes les fiches'), ('ready', 'Prêtes à exporter'), ('incomplete', 'À compléter'), ('suspect', 'À vérifier')):
+            item = QListWidgetItem(f'{label}  ({state_counts[key]})'); item.setData(Qt.UserRole, key); self.state_list.addItem(item)
+        self.state_list.setToolTip('Complétude des champs OpenSpool de la fiche ; ce filtre ne note pas la qualité du filament.')
+        self.state_list.blockSignals(False)
+        self._filter_brand_list(self.brand_search.text())
+        self._sync_sidebar_selection()
+
+    def _filter_brand_list(self, text):
+        needle = core._search_key(text)
+        for i in range(self.brand_list.count()):
+            item = self.brand_list.item(i)
+            item.setHidden(bool(needle) and bool(item.data(Qt.UserRole)) and needle not in core._search_key(item.data(Qt.UserRole)))
+
+    def _sync_sidebar_selection(self):
+        if not hasattr(self, 'brand_list'): return
+        for widget, value in ((self.brand_list, self.brand_filter.currentData() or ''),
+                              (self.family_list, self.material_filter.currentData() or ''),
+                              (self.state_list, self.quality_filter.currentData() or 'all')):
+            widget.blockSignals(True)
+            for i in range(widget.count()):
+                item = widget.item(i)
+                if item.data(Qt.UserRole) == value:
+                    widget.setCurrentItem(item); break
+            else:
+                widget.clearSelection()
+            widget.blockSignals(False)
+
+    def _choose_family(self, name):
+        self.material_filter.setCurrentIndex(max(0, self.material_filter.findData(name)))
+
+    def _choose_state(self, key):
+        self.quality_filter.setCurrentIndex(max(0, self.quality_filter.findData(key)))
+
+    def _choose_brand(self, name, remember=True):
         index = self.brand_filter.findData(name)
         if index >= 0:
             self.brand_filter.setCurrentIndex(index)
-            self._remember_brand()
+            if remember: self._remember_brand()
 
     def _remember_brand(self):
         name = self.brand_filter.currentData()
         if name:
             cfg = core.load_config()
-            cfg['recent_brands'] = list(dict.fromkeys([name] + cfg.get('recent_brands', [])))[:4]
-            self._store_config(cfg)
-            self._fill_quick_brands()
+            recent = list(dict.fromkeys([name] + cfg.get('recent_brands', [])))[:4]
+            if recent != cfg.get('recent_brands', []):
+                cfg['recent_brands'] = recent
+                self._store_config(cfg)
+                self._fill_sidebar()
 
     def _sort_column(self, column):
         key = self._column_keys[column]
@@ -304,7 +379,8 @@ class CatalogueUx:
         if not hasattr(self,'database_btn'):return
         status = self.db.get('_update_status')
         suffix = {'complete':'à jour pour les sources choisies','partial':'mise à jour partielle','failed':'mise à jour échouée'}.get(status,'à synchroniser')
-        self.database_btn.setText(f'Base : {len(self.db.get("_skus",{})):,} références · {suffix} ⓘ'.replace(',', '\u202f'))
+        groups=len(getattr(self,'_all_rows',[]) or [])
+        self.database_btn.setText(f'Base : {len(self.db.get("_skus",{})):,} références · {groups:,} filaments · {suffix} ⓘ'.replace(',', '\u202f'))
         self.database_btn.setToolTip('État des sources, dernière synchronisation et corrections conservées')
 
     def _database_details(self):
@@ -320,7 +396,7 @@ class CatalogueUx:
         conflicts=self.stats_label.toolTip()
         if conflicts:lines+=['',conflicts]
         info.setPlainText('\n'.join(lines));lay.addWidget(info)
-        close=QDialogButtonBox(QDialogButtonBox.Close);close.rejected.connect(dlg.reject);lay.addWidget(close);dlg.exec()
+        close=QPushButton('Fermer');close.clicked.connect(dlg.accept);row=QHBoxLayout();row.addStretch(1);row.addWidget(close);lay.addLayout(row);dlg.exec()
 
     def _choose_sources(self, checked=False, *, startup=False):
         dlg=QDialog(self);dlg.setWindowTitle('Sources du catalogue');dlg.resize(650,500)
@@ -328,11 +404,21 @@ class CatalogueUx:
         note=QLabel('La base est téléchargée au premier lancement, puis actualisée au lancement selon la cadence choisie dans Paramètres (quotidienne par défaut).\nLes fabricants ont priorité sur les données communautaires ; vos corrections restent prioritaires.\nDécochez une source pour ne plus la contacter. Ses anciennes données restent disponibles.')
         note.setWordWrap(True);lay.addWidget(note)
         cfg=core.load_config();selected=cfg['selected_sources'];checks={}
+        last={r['source']:r for r in self.db.get('_source_results',[])}
+        labels={script:label for script,label,_ in core.UPDATE_PIPELINE}
         for key,meta in core.SOURCE_GROUPS.items():
             check=QCheckBox(meta['name']);check.setChecked(key in selected);check.setToolTip(meta['detail']);lay.addWidget(check)
-            detail=QLabel(meta['detail']);detail.setWordWrap(True);lay.addWidget(detail);checks[key]=check
+            results=[last[labels[s]] for s in meta['scripts'] if labels.get(s) in last]
+            status=''
+            if results:
+                worst=min(results,key=lambda r:(r.get('ok'),r.get('status')!='unchanged'))
+                state={'changed':'mise à jour','unchanged':'inchangée','unavailable':'injoignable','partial':'partielle','error':'en erreur','cancelled':'annulée'}.get(worst.get('status'),worst.get('status') or '—')
+                status=f'   ·   dernier résultat : {state}'+(f' — {str(worst.get("message",""))[:90]}' if worst.get('message') and not worst.get('ok') else '')
+            detail=QLabel(meta['detail']+status);detail.setWordWrap(True);detail.setObjectName('fieldvalue');lay.addWidget(detail);checks[key]=check
         error=QLabel();lay.addWidget(error)
-        buttons=QDialogButtonBox();run=buttons.addButton('Télécharger et enregistrer',QDialogButtonBox.AcceptRole)
+        if self._last_report:
+            report_btn=QPushButton('Voir le rapport de la dernière synchronisation');report_btn.clicked.connect(lambda:self._show_sync_report(*self._last_report));lay.addWidget(report_btn)
+        buttons=QDialogButtonBox();run=buttons.addButton('Synchroniser maintenant',QDialogButtonBox.AcceptRole)
         save=buttons.addButton('Enregistrer seulement',QDialogButtonBox.ActionRole)
         cancel=buttons.addButton('Annuler',QDialogButtonBox.RejectRole)
         state={'download':False}
@@ -345,6 +431,55 @@ class CatalogueUx:
             state['download']=download;dlg.accept()
         run.clicked.connect(lambda:accept(True));save.clicked.connect(lambda:accept(False));cancel.clicked.connect(dlg.reject);lay.addWidget(buttons)
         if dlg.exec()==QDialog.Accepted and state['download']:self._start_update()
+
+    # ── Rapport de synchronisation ────────────────────────────────────
+    def _snapshot_stats(self):
+        skus=self.db.get('_skus',{})
+        by_source={}
+        for e in skus.values():by_source[e.get('source') or 'Catalogue historique']=by_source.get(e.get('source') or 'Catalogue historique',0)+1
+        conflicts=list(self.db.get('_source_conflicts',[]))
+        for values in self.db.get('_source_conflicts_by_source',{}).values():conflicts.extend(values)
+        pending=sum(len(v) for v in self.db.get('_pending_source_matches',{}).values())
+        return dict(references=len(skus),products=len(self.db.get('_products',{})),brands=len(self.db.get('_brands',{})),
+                    by_source=by_source,conflicts=len(set(conflicts)),pending=pending,ready=sum(1 for r in getattr(self,'_sku_rows',[]) if r.get('ready')))
+
+    def _show_sync_report(self,results,before,after=None):
+        after=after or self._snapshot_stats()
+        self._last_report=(results,before,after)
+        dlg=QDialog(self);dlg.setWindowTitle('Rapport de synchronisation');dlg.resize(760,520)
+        lay=QVBoxLayout(dlg)
+        status=core.update_status(results)
+        cancelled=any(r.status=='cancelled' for r in results)
+        headline={'complete':'Synchronisation complète','partial':'Synchronisation partielle','failed':'Synchronisation en échec'}[status]
+        if cancelled:headline='Synchronisation annulée'
+        title=QLabel(headline);font=title.font();font.setPointSize(font.pointSize()+3);font.setBold(True);title.setFont(font);lay.addWidget(title)
+        delta=lambda key:after[key]-before[key]
+        summary=(f"Références : {core.fmt_int(after['references'])} ({delta('references'):+d}) · "
+                 f"filaments prêts à exporter : {core.fmt_int(after['ready'])} ({delta('ready'):+d}) · "
+                 f"fabricants : {after['brands']} ({delta('brands'):+d})\n"
+                 f"Valeurs locales ou fabricant conservées face à une source : {after['conflicts']} · "
+                 f"rapprochements en attente (non ajoutés, pas de doublon) : {after['pending']}\n"
+                 'Priorité appliquée : corrections locales > fabricants > Open Filament Database > SpoolmanDB > données anciennes.')
+        summary_label=QLabel(summary);summary_label.setWordWrap(True);lay.addWidget(summary_label)
+        table=QTableWidget(len(results),4);table.setHorizontalHeaderLabels(['Source','Résultat','Références','Détail'])
+        table.verticalHeader().setVisible(False);table.setEditTriggers(QTableWidget.NoEditTriggers);table.setSelectionMode(QTableWidget.NoSelection)
+        state_labels={'changed':'✔ mise à jour','unchanged':'✔ inchangée','unavailable':'⚠ injoignable','partial':'⚠ partielle','error':'✖ erreur','cancelled':'— annulée'}
+        source_of={label:key for key,meta in core.SOURCE_GROUPS.items() for script,label,_ in core.UPDATE_PIPELINE if script in meta['scripts']}
+        source_names={'polymaker':'Polymaker officiel','ofd':'Open Filament Database','spoolman':'SpoolmanDB','bambu':'Bambu Lab officiel','sunlu':'SUNLU officiel'}
+        for row,r in enumerate(results):
+            key=source_of.get(r.label);name=source_names.get(key)
+            count='' if not name else f"{core.fmt_int(after['by_source'].get(name,0))} ({after['by_source'].get(name,0)-before['by_source'].get(name,0):+d})"
+            message=(r.stderr or '').strip().replace('\r','')
+            for col,text in enumerate((r.label,state_labels.get(r.status,r.status or '—'),count,message.splitlines()[-1][:160] if message else '')):
+                item=QTableWidgetItem(text);item.setToolTip(message);table.setItem(row,col,item)
+        for col,width in ((0,230),(1,130),(2,120)):table.setColumnWidth(col,width)
+        table.horizontalHeader().setSectionResizeMode(3,QHeaderView.Stretch);lay.addWidget(table,1)
+        hint=QLabel('Une source injoignable ou trop lente conserve les données locales ; relancez plus tard. '
+                    'Les rapprochements incertains restent hors du tableau tant qu’une référence fabricant ne les confirme pas.')
+        hint.setWordWrap(True);hint.setObjectName('fieldvalue');lay.addWidget(hint)
+        close=QPushButton('Fermer');close.clicked.connect(dlg.accept)
+        close_row=QHBoxLayout();close_row.addStretch(1);close_row.addWidget(close);lay.addLayout(close_row)
+        dlg.show()
 
     def _maybe_auto_update(self):
         if not self.isVisible() or core.db_restored_this_session():return
@@ -359,27 +494,110 @@ class CatalogueUx:
             self.status.showMessage('Synchronisation au démarrage désactivée par le refus réseau. Ouvrez « Sources » pour la réactiver.',12000)
 
     def _build_export_assistant(self, layout):
+        """Page « Mon matériel » : imprimante/lecteur, firmware, étiquette."""
         cfg=core.load_config()
-        layout.addWidget(QLabel('Utiliser ce filament avec'))
-        self.printer=QComboBox()
-        for key,profile in PROFILES.items():self.printer.addItem(profile['label'],key)
-        self.printer.setCurrentIndex(max(0,self.printer.findData(cfg.get('printer_profile','u1'))));layout.addWidget(self.printer)
+        printer_id,firmware_id=printer_profiles.resolve(cfg.get('printer_profile'),cfg.get('printer_firmware'))
+        layout.addWidget(QLabel('Imprimante ou lecteur'))
+        self.printer=QComboBox();self._fill_printer_combo()
+        self.printer.setCurrentIndex(max(0,self.printer.findData(printer_id)));layout.addWidget(self.printer)
+        self.reader_info=QLabel();self.reader_info.setWordWrap(True);self.reader_info.setObjectName('fieldvalue');layout.addWidget(self.reader_info)
+        fw_row=QHBoxLayout();self.firmware_label=QLabel('Firmware');fw_row.addWidget(self.firmware_label)
+        self.firmware=QComboBox();fw_row.addWidget(self.firmware,1);layout.addLayout(fw_row)
+        self._fill_firmware_combo(printer_id,firmware_id)
         self.printer_help=QLabel();self.printer_help.setWordWrap(True);layout.addWidget(self.printer_help)
-        self.extra_fields=QCheckBox('Afficher aussi les références, la provenance et la masse')
-        self.extra_fields.setChecked(cfg.get('show_extra_fields',False))
-        self.extra_fields.toggled.connect(self._toggle_extra_fields)
-        layout.addWidget(self.extra_fields)
+        self.extra_fields=QCheckBox('Afficher aussi les références, la provenance et la masse');self.extra_fields.hide()  # conservé pour les réglages importés
         row=QHBoxLayout();self.tag_label=QLabel('Étiquette achetée');row.addWidget(self.tag_label)
         self.tag_choice=QComboBox();self.tag_choice.addItem('NTAG216 — recommandé','NTAG216');self.tag_choice.addItem('NTAG215 — petit format','NTAG215')
         self.tag_choice.setCurrentIndex(max(0,self.tag_choice.findData(core.nfc_defaults(cfg)['tag_type'])));row.addWidget(self.tag_choice,1)
         self.nfc_default_btn=QToolButton();self.nfc_default_btn.setAccessibleName('Définir ce choix d’étiquette par défaut');row.addWidget(self.nfc_default_btn)
         self.advanced_toggle=QToolButton();self.advanced_toggle.setText('Réglages avancés');self.advanced_toggle.setCheckable(True);row.addWidget(self.advanced_toggle);layout.addLayout(row)
 
+    def _fill_printer_combo(self):
+        current=self.printer.currentData()
+        self.printer.blockSignals(True);self.printer.clear()
+        catalogue=printer_profiles.load_catalogue()
+        for group in printer_profiles.GROUP_ORDER:
+            members=[(key,p) for key,p in PROFILES.items() if p['group']==group]
+            if not members:continue
+            self.printer.addItem('— '+catalogue['groups'].get(group,group)+' —',None)
+            self.printer.model().item(self.printer.count()-1).setEnabled(False)
+            for key,profile in members:self.printer.addItem('    '+profile['label'],key)
+        if current:self.printer.setCurrentIndex(max(0,self.printer.findData(current)))
+        self.printer.blockSignals(False)
+
+    def _fill_firmware_combo(self,printer_id,firmware_id=None):
+        self.firmware.blockSignals(True);self.firmware.clear()
+        for fw in PROFILES[printer_id]['firmwares']:
+            self.firmware.addItem(fw['label']+(' · lit OpenSpool' if fw['openspool'] else ''),fw['id'])
+        self.firmware.setCurrentIndex(max(0,self.firmware.findData(firmware_id)))
+        several=self.firmware.count()>1
+        self.firmware.setVisible(several);self.firmware_label.setVisible(several)
+        self.firmware.blockSignals(False)
+
+    def _build_hardware_dialog(self):
+        self.hardware_dialog=QDialog(self);self.hardware_dialog.setWindowTitle('Mon matériel');self.hardware_dialog.setMinimumWidth(560)
+        lay=QVBoxLayout(self.hardware_dialog)
+        intro=QLabel('Choisissez l’imprimante ou le lecteur qui lira l’étiquette, puis l’étiquette achetée. '
+                     'SpoolScribe n’écrit pas le tag : un logiciel d’écriture NFC s’en charge.')
+        intro.setWordWrap(True);lay.addWidget(intro)
+        lay.addWidget(self.hardware_page)
+        foot=QHBoxLayout()
+        self.printers_origin=QLabel();self.printers_origin.setObjectName('fieldvalue');foot.addWidget(self.printers_origin,1)
+        self.btn_update_printers=QPushButton('Mettre à jour la liste des imprimantes…');self.btn_update_printers.clicked.connect(self._update_printers)
+        foot.addWidget(self.btn_update_printers);lay.addLayout(foot)
+        close=QPushButton('Fermer');close.clicked.connect(self.hardware_dialog.accept)
+        close_row=QHBoxLayout();close_row.addStretch(1);close_row.addWidget(close);lay.addLayout(close_row)
+        self._refresh_printers_origin()
+
+    def _refresh_printers_origin(self):
+        catalogue=printer_profiles.load_catalogue()
+        origin='liste téléchargée' if catalogue.get('_origin')=='user' else 'liste embarquée'
+        self.printers_origin.setText(f'Imprimantes : {origin}, version du {catalogue.get("updated","?")}')
+
+    def _open_hardware(self):
+        self.hardware_dialog.show();self.hardware_dialog.raise_();self.hardware_dialog.activateWindow()
+
+    def _update_printers(self):
+        if core.load_config().get('network_consent') is not True:
+            QMessageBox.information(self,'Liste des imprimantes','Accordez d’abord l’autorisation réseau (Synchroniser → sources) pour contacter GitHub.');return
+        from scripts import official_sources
+        try:
+            raw=official_sources.fetch(printer_profiles.PRINTERS_URL,512*1024)
+            catalogue=printer_profiles.install_catalogue(raw)
+        except Exception as exc:
+            QMessageBox.warning(self,'Liste des imprimantes',f'Liste non mise à jour : {exc}');return
+        self._fill_printer_combo();self._printer_changed();self._refresh_printers_origin()
+        self.status.showMessage(f'Liste des imprimantes du {catalogue.get("updated","?")} installée ({len(catalogue["printers"])} entrées).',8000)
+
+    def _references_text(self,sku):
+        rows=[r for r in getattr(self,'_all_rows',[]) if r['sku']==sku]
+        variants=rows[0].get('variants') if rows and rows[0].get('variants') else None
+        if not variants:
+            entry=self.db['_skus'].get(sku,{})
+            parts=[sku]
+            if entry.get('manufacturer_sku') and entry['manufacturer_sku']!=sku:parts.append(f'réf. fabricant {entry["manufacturer_sku"]}')
+            if entry.get('weight'):parts.append(f'{entry["weight"]:g} g')
+            return ' · '.join(parts)
+        lines=[]
+        for v in variants:
+            ref=v['reference']
+            bits=[ref if not ref.startswith(('OFD-','SMDB-')) else ('source '+ref.split('-')[0])]
+            if v.get('weight'):bits.append(f'{v["weight"]:g} g')
+            if v.get('diameter'):bits.append(f'Ø {v["diameter"]:g} mm')
+            if not v.get('ready'):bits.append('à compléter')
+            lines.append(' · '.join(bits))
+        hexes={v.get('hex') for v in variants if v.get('hex')}
+        text='\n'.join(lines)
+        if len(hexes)>1:text+='\n⚠ Teintes différentes selon la source ; la mieux documentée est affichée.'
+        return text
+
     def _wire_export_assistant(self):
         self.advanced_toggle.toggled.connect(self.nfc_advanced.setVisible)
         self.tag_choice.currentIndexChanged.connect(lambda: self.tag_type.setCurrentIndex(self.tag_type.findData(self.tag_choice.currentData())))
         self.tag_type.currentIndexChanged.connect(lambda: self.tag_choice.setCurrentIndex(self.tag_choice.findData(self.tag_type.currentData())))
+        self._firmware_printer=None
         self.printer.currentIndexChanged.connect(self._printer_changed)
+        self.firmware.currentIndexChanged.connect(self._printer_changed)
         self.nfc_default_btn.clicked.connect(self._save_nfc_default)
         self._printer_changed()
         self._refresh_nfc_default_btn()
@@ -411,12 +629,17 @@ class CatalogueUx:
         self.status.showMessage(f'Choix NFC par défaut : {self._describe_nfc(saved)}.',6000)
         self._refresh_nfc_default_btn()
 
-    def _printer_changed(self):
-        cfg=core.load_config();cfg['printer_profile']=self.printer.currentData()
+    def _printer_changed(self,*_):
+        printer_id=self.printer.currentData() or printer_profiles.DEFAULT
+        if self.sender() is self.printer or self.firmware.count()==0 or self._firmware_printer!=printer_id:
+            self._fill_firmware_combo(printer_id,core.load_config().get('printer_firmware') if self._firmware_printer is None else None)
+        self._firmware_printer=printer_id
+        cfg=core.load_config();cfg['printer_profile']=printer_id;cfg['printer_firmware']=self.firmware.currentData()
         if hasattr(self,'status'):self._store_config(cfg)
-        self.printer_help.setText(PROFILES[self.printer.currentData()]['help'])
+        profile=PROFILES[printer_id];fw=printer_profiles.firmware(printer_id,self.firmware.currentData())
+        self.reader_info.setText(f'Lecteur : {profile.get("reader") or "aucun"}')
+        self.printer_help.setText(profile['help']+(('\n'+fw['notes']) if fw.get('notes') else ''))
         self._printer_field_help()
-        self._toggle_extra_fields(self.extra_fields.isChecked())
         if hasattr(self,'btn_generate'):self._refresh_nfc_capacity()
 
     def _printer_field_help(self):
@@ -433,19 +656,10 @@ class CatalogueUx:
         self.card.setToolTip('Survolez un champ pour connaître son usage pour cette imprimante. Les températures restent à adapter au plateau et au trancheur.')
 
     def _toggle_extra_fields(self, checked):
-        optional={'Produit','SKU','Source','SKU fabricant','Masse'}
-        for row in range(self.fields.rowCount()):
-            label=self.fields.itemAtPosition(row,0)
-            value=self.fields.itemAtPosition(row,1)
-            if label and value:
-                key=label.widget().property('field_key') or label.widget().text()
-                visible=checked or key not in optional
-                label.widget().setVisible(visible);value.widget().setVisible(visible)
-        if hasattr(self,'status'):
-            cfg=core.load_config();cfg['show_extra_fields']=checked;self._store_config(cfg)
+        pass  # références et provenance sont toujours visibles dans la fiche
 
     def _can_export_for_printer(self):
-        return PROFILES[self.printer.currentData()]['nfc']
+        return printer_profiles.can_export(self.printer.currentData() or printer_profiles.DEFAULT,self.firmware.currentData())
 
     def _nfc_options(self):
         payload=self._build_payload()
@@ -454,10 +668,14 @@ class CatalogueUx:
     def _refresh_nfc_capacity(self):
         if not hasattr(self,'printer'):return
         can=self._can_export_for_printer()
-        self.printer_help.setText(PROFILES[self.printer.currentData()]['help'] + ('\n* Requis pour identifier le filament. SpoolScribe valide aussi les températures, le diamètre et la densité avant export.' if self.printer.currentData()=='u1' else ''))
+        printer_id=self.printer.currentData() or printer_profiles.DEFAULT
         # Without an OpenSpool export, the tag controls are hidden, not merely greyed.
         for widget in (self.tag_label,self.tag_choice,self.nfc_default_btn,self.advanced_toggle):widget.setVisible(can)
         self.nfc_advanced.setVisible(can and self.advanced_toggle.isChecked())
+        summary='Pour : '+printer_profiles.describe(printer_id,self.firmware.currentData())
+        if can:summary+=f' · {self.tag_choice.currentData()} · {self._describe_nfc(self._current_nfc_choice()).split(" · ",1)[1]}'
+        else:summary+=' · pas d’export OpenSpool pour ce matériel'
+        if hasattr(self,'hardware_summary'):self.hardware_summary.setText(summary)
         self.btn_generate.setEnabled(can and bool(self.current_sku) and not (self.worker and self.worker.isRunning()))
         if hasattr(self,'btn_inspect'):self.btn_inspect.setEnabled(can and bool(self.current_sku))
         if not can:

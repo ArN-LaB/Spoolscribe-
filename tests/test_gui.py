@@ -12,6 +12,7 @@ from tests.support import catalogue
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 HAS_QT = importlib.util.find_spec("PySide6") is not None
 if HAS_QT:
+    from PySide6.QtCore import Qt
     from PySide6.QtWidgets import QApplication, QDialog, QLineEdit
     import app_gui
 
@@ -93,7 +94,10 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(self.window.table.rowCount(), 250)
         self.assertEqual(self.window.brand_filter.currentData(), "Polymaker")
         self.window.brand_filter.setCurrentIndex(0)
-        self.assertGreater(len(self.window._filtered_rows), 23000)
+        self.assertGreater(len(self.window._sku_rows), 23000)
+        self.assertGreater(len(self.window._filtered_rows), 14000)   # one row per filament, packagings grouped
+        grouped = next(r for r in self.window._filtered_rows if r.get("variant_count", 1) > 1)
+        self.assertEqual(len(grouped["variants"]), grouped["variant_count"])
         self.window.brand_filter.setCurrentIndex(self.window.brand_filter.findData("Bambu Lab"))
         self.window.material_filter.setCurrentIndex(self.window.material_filter.findData("PLA"))
         self.window.sort1.setCurrentIndex(self.window.sort1.findData("color_name"))
@@ -119,15 +123,27 @@ class GuiTests(unittest.TestCase):
         self.window._change_page(1)
         self.assertEqual(self.window._rows[0], self.window._filtered_rows[250])
 
-    def test_quick_brand_chips_refresh_after_a_choice(self):
+    def test_sidebar_facets_drive_the_filters_and_pin_recent_brands(self):
         w = self.window
         for name in ("Prusament", "ROSA3D", "Polymaker"):
             w._choose_brand(name)
             self.assertEqual(w.brand_filter.currentData(), name)
-        chips = [w.quick_brands.itemAt(i).widget().text() for i in range(1, w.quick_brands.count())
-                 if w.quick_brands.itemAt(i).widget()]
-        self.assertEqual(chips[0], "Polymaker")
-        self.assertEqual(len(chips), len(set(chips)))
+        labels = [w.brand_list.item(i).text() for i in range(w.brand_list.count())]
+        self.assertTrue(labels[0].startswith("Tous les fabricants"))
+        self.assertTrue(labels[1].startswith("★ Polymaker"))
+        self.assertEqual(w.brand_list.currentItem().data(Qt.UserRole), "Polymaker")
+        family = next(w.family_list.item(i) for i in range(w.family_list.count()) if w.family_list.item(i).data(Qt.UserRole) == "PETG")
+        w.family_list.itemClicked.emit(family)
+        self.assertEqual(w.material_filter.currentData(), "PETG")
+        self.assertTrue(all(r["family"] == "PETG" for r in w._filtered_rows))
+        state = next(w.state_list.item(i) for i in range(w.state_list.count()) if w.state_list.item(i).data(Qt.UserRole) == "incomplete")
+        w.state_list.itemClicked.emit(state)
+        self.assertTrue(all(not r["ready"] for r in w._filtered_rows))
+        w.brand_search.setText("rosa")
+        visible = [w.brand_list.item(i).data(Qt.UserRole) for i in range(w.brand_list.count()) if not w.brand_list.item(i).isHidden()]
+        self.assertEqual(visible, ["", "ROSA3D"])
+        w._reset_filters()
+        self.assertEqual((w.brand_filter.currentData(), w.material_filter.currentData(), w.quality_filter.currentData()), ("Polymaker", "", "all"))
 
     def test_tag_choice_is_per_session_until_saved_as_default(self):
         w = self.window

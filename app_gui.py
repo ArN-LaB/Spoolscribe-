@@ -490,53 +490,54 @@ class MainWindow(CatalogueUx, QMainWindow):
         seg.addWidget(self.btn_view_grid)
         top.addWidget(self.segwrap)
 
-        self.update_btn = QPushButton("Mettre à jour")
+        self.update_btn = QPushButton("Synchroniser")
         self.update_btn.setObjectName("primary")
         self.update_btn.setCursor(Qt.PointingHandCursor)
+        self.update_btn.setToolTip("Choisir les sources et actualiser la base")
         self.update_btn.clicked.connect(self._choose_sources)
         top.addWidget(self.update_btn)
 
-        # Menu ⋯ : Paramètres, À propos
+        # Menu ⚙ : matériel, sources, réglages, à propos
         self.menu_btn = QToolButton()
         self.menu_btn.setObjectName("ghost")
-        self.menu_btn.setText("⋯")
-        self.menu_btn.setToolTip("Plus")
+        self.menu_btn.setText("⚙")
+        self.menu_btn.setToolTip("Réglages")
+        self.menu_btn.setAccessibleName("Réglages")
         self.menu_btn.setCursor(Qt.PointingHandCursor)
         self.menu_btn.setPopupMode(QToolButton.InstantPopup)
         menu = QMenu(self.menu_btn)
+        act_hardware = QAction("Mon matériel : imprimante, lecteur et étiquette…", self)
+        act_hardware.triggered.connect(self._open_hardware)
+        menu.addAction(act_hardware)
         act_settings = QAction("Paramètres…", self)
         act_settings.triggered.connect(self._open_settings)
-        act_about = QAction("À propos de SpoolScribe", self)
-        act_about.triggered.connect(self._open_about)
         menu.addAction(act_settings)
+        menu.addSeparator()
         self.act_archive = QAction("Exporter la sélection en archive JSON…", self)
         self.act_archive.triggered.connect(lambda: self._generate(mode="archive"))
         menu.addAction(self.act_archive)
         menu.addSeparator()
+        act_about = QAction("À propos de SpoolScribe", self)
+        act_about.triggered.connect(self._open_about)
         menu.addAction(act_about)
         self.menu_btn.setMenu(menu)
         top.addWidget(self.menu_btn)
         root.addLayout(top)
 
-        filters = QHBoxLayout()
+        # Filtres : le modèle reste dans trois listes déroulantes cachées ;
+        # la barre latérale (fabricants, matières, état) les pilote.
         self.brand_filter = QComboBox()
         self.brand_filter.setAccessibleName("Filtrer par fabricant")
         self.material_filter = QComboBox()
         self.material_filter.setAccessibleName("Filtrer par matière")
         self.quality_filter = QComboBox()
-        self.quality_filter.setToolTip("Complétude des champs OpenSpool de la fiche ; ce filtre ne note pas la qualité du filament ni sa compatibilité avec chaque imprimante.")
-        for label, key in (("Toutes les fiches", "all"), ("Export possible", "ready"),
-                           ("À compléter", "incomplete")):
+        for label, key in (("Toutes les fiches", "all"), ("Prêtes à exporter", "ready"),
+                           ("À compléter", "incomplete"), ("À vérifier", "suspect")):
             self.quality_filter.addItem(label, key)
-        for label, combo in (("Fabricant", self.brand_filter), ("Matière", self.material_filter),
-                             ("État des données", self.quality_filter)):
-            filters.addWidget(QLabel(label))
-            filters.addWidget(combo, 1)
+        for combo in (self.brand_filter, self.material_filter, self.quality_filter):
+            combo.setParent(self)
+            combo.hide()
             combo.currentIndexChanged.connect(self._apply_filter)
-        self.reset_filters = QPushButton("Réinitialiser")
-        self.reset_filters.clicked.connect(self._reset_filters)
-        filters.addWidget(self.reset_filters)
-        root.addLayout(filters)
 
         sorting = QHBoxLayout()
         self.sort1, self.sort2 = QComboBox(), QComboBox()
@@ -591,10 +592,12 @@ class MainWindow(CatalogueUx, QMainWindow):
         progress_row.addWidget(self.cancel_update_btn)
         root.addLayout(progress_row)
 
-        # ── Splitter : liste/grille à gauche, panneau à droite ──────────
+        # ── Splitter : facettes · liste/grille · fiche ───────────────────
         splitter = self.splitter = QSplitter(Qt.Horizontal)
         splitter.setChildrenCollapsible(False)
         root.addWidget(splitter, 1)
+        self.sidebar = self._build_sidebar()
+        splitter.addWidget(self.sidebar)
 
         # Pile des deux présentations : table (liste) + grille de cartes
         self.list_stack = QStackedWidget()
@@ -632,10 +635,11 @@ class MainWindow(CatalogueUx, QMainWindow):
         for column, width in ((4, 96), (5, 70), (6, 54), (7, 62), (8, 122)):
             hh.setSectionResizeMode(column, QHeaderView.Interactive)
             self.table.setColumnWidth(column, width)
-        # Diamètre et masse restent disponibles dans « Colonnes » ; masqués par
-        # défaut pour laisser au produit une largeur lisible.
-        self.table.setColumnHidden(6, True)
-        self.table.setColumnHidden(7, True)
+        # Référence, diamètre et masse restent disponibles dans « Colonnes » ;
+        # masqués par défaut : la fiche liste les références de chaque
+        # conditionnement, et le produit garde une largeur lisible.
+        for column in (1, 6, 7):
+            self.table.setColumnHidden(column, True)
         self.table.itemSelectionChanged.connect(self._on_select)
         self.list_stack.addWidget(self.table)
 
@@ -684,9 +688,10 @@ class MainWindow(CatalogueUx, QMainWindow):
 
         splitter.addWidget(self.stack)
 
-        splitter.setStretchFactor(0, 3)
-        splitter.setStretchFactor(1, 2)
-        splitter.setSizes([580, 460])
+        splitter.setStretchFactor(0, 0)
+        splitter.setStretchFactor(1, 3)
+        splitter.setStretchFactor(2, 2)
+        splitter.setSizes([230, 620, 470])
 
         self.status = self.statusBar()
         self.database_btn = QPushButton("Base de données…")
@@ -827,9 +832,9 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.fields.setColumnStretch(1, 1)
 
         self._field_widgets: dict[str, QLabel] = {}
-        labels = ["Produit", "Type", "Couleur", "SKU", "Nozzle",
-                  "Bed", "Densité", "Diamètre", "Marque", "Source", "SKU fabricant", "Masse"]
-        for i, name in enumerate(labels):
+        shown = ["Type", "Couleur", "Nozzle", "Bed", "Densité", "Diamètre", "Marque", "Références", "Source"]
+        hidden = ["Produit", "SKU", "SKU fabricant", "Masse"]   # conservés pour le code existant, non affichés
+        for i, name in enumerate(shown):
             lab = QLabel(name)
             lab.setObjectName("fieldname")
             self._muted_labels.append(lab)
@@ -841,13 +846,41 @@ class MainWindow(CatalogueUx, QMainWindow):
             self.fields.addWidget(lab, i, 0, Qt.AlignTop)
             self.fields.addWidget(val, i, 1)
             self._field_widgets[name] = val
-        dl.addWidget(self.card)
-        self.btn_edit_physical = QPushButton("Compléter / corriger les caractéristiques…")
+        for name in hidden:
+            val = QLabel("—")
+            val.hide()
+            self._field_widgets[name] = val
+        caption_row = QHBoxLayout()
+        caption = QLabel("Caractéristiques")
+        caption.setObjectName("caption")
+        self._muted_labels.append(caption)
+        caption_row.addWidget(caption, 1)
+        self.btn_edit_physical = QToolButton()
+        self.btn_edit_physical.setText("Corriger…")
+        self.btn_edit_physical.setToolTip("Compléter ou corriger les caractéristiques locales de ce produit")
         self.btn_edit_physical.clicked.connect(self._edit_physical)
-        dl.addWidget(self.btn_edit_physical)
+        caption_row.addWidget(self.btn_edit_physical)
+        dl.addLayout(caption_row)
+        dl.addWidget(self.card)
+
+        # Matériel : résumé dans la fiche, réglages dans « Mon matériel »
+        hw_row = QHBoxLayout()
+        self.hardware_summary = QLabel()
+        self.hardware_summary.setWordWrap(True)
+        self.hardware_summary.setTextFormat(Qt.PlainText)
+        hw_row.addWidget(self.hardware_summary, 1)
+        self.btn_hardware = QToolButton()
+        self.btn_hardware.setText("Modifier…")
+        self.btn_hardware.setToolTip("Imprimante, lecteur, firmware et étiquette (Mon matériel)")
+        self.btn_hardware.clicked.connect(self._open_hardware)
+        hw_row.addWidget(self.btn_hardware)
+        dl.addLayout(hw_row)
 
         cfg = core.load_config()
-        self._build_export_assistant(dl)
+        self.hardware_page = QWidget()
+        hardware_layout = QVBoxLayout(self.hardware_page)
+        hardware_layout.setContentsMargins(0, 0, 0, 0)
+        self._build_export_assistant(hardware_layout)
         self.nfc_advanced = QWidget()
         advanced_layout = QVBoxLayout(self.nfc_advanced)
         nfc_row = QHBoxLayout()
@@ -874,8 +907,9 @@ class MainWindow(CatalogueUx, QMainWindow):
                                    "À vérifier dans ce logiciel ; zéro ne prédit pas ses ajouts.")
         reserve_row.addWidget(self.nfc_reserve)
         advanced_layout.addLayout(reserve_row)
-        dl.addWidget(self.nfc_advanced)
+        hardware_layout.addWidget(self.nfc_advanced)
         self.nfc_advanced.hide()
+        self._build_hardware_dialog()
         self.nfc_note = QLabel()
         self.nfc_note.setWordWrap(True)
         dl.addWidget(self.nfc_note)
@@ -1088,9 +1122,11 @@ class MainWindow(CatalogueUx, QMainWindow):
 
     # ── Données / table ──────────────────────────────────────────────────
     def _reload_table(self):
-        self._all_rows = core.list_skus(self.db)
+        self._sku_rows = core.list_skus(self.db)
+        grouped = core.load_config().get("ui", {}).get("group", True) if isinstance(core.load_config().get("ui"), dict) else True
+        self._all_rows = core.group_filaments(self._sku_rows) if grouped else list(self._sku_rows)
         for combo, key, label in ((self.brand_filter, "brand", "Tous les fabricants"),
-                                  (self.material_filter, "material", "Toutes les matières")):
+                                  (self.material_filter, "family", "Toutes les matières")):
             selected = combo.currentData()
             combo.blockSignals(True)
             combo.clear()
@@ -1099,6 +1135,7 @@ class MainWindow(CatalogueUx, QMainWindow):
                 combo.addItem(value, value)
             combo.setCurrentIndex(max(0, combo.findData(selected)))
             combo.blockSignals(False)
+        self._fill_sidebar()
         self._apply_filter()
 
     def _populate(self, rows):
@@ -1124,7 +1161,12 @@ class MainWindow(CatalogueUx, QMainWindow):
                 item.setToolTip(str(value) if value is not None else "Inconnu")
                 if col == 1:
                     item.setData(Qt.UserRole, e["sku"])
-                    item.setToolTip(f"Référence interne : {e['sku']}" + (f"\nRéférence fabricant : {e['manufacturer_sku']}" if e.get("manufacturer_sku") else ""))
+                    shown = e["reference"] if not e["reference"].startswith(("OFD-", "SMDB-")) else "—"
+                    if e.get("variant_count", 1) > 1:
+                        shown = f"{shown} +{e['variant_count'] - 1}" if shown != "—" else f"{e['variant_count']} cond."
+                    item.setText(shown)
+                    item.setToolTip(f"Référence interne : {e['sku']}" + (f"\nRéférence fabricant : {e['manufacturer_sku']}" if e.get("manufacturer_sku") else "")
+                                    + ("\nConditionnements : " + ", ".join(v["reference"] for v in e["variants"]) if e.get("variant_count", 1) > 1 else ""))
                 self.table.setItem(r, col, item)
             color_item = QTableWidgetItem(e["color_name"])
             color_item.setToolTip(f"#{e['hex']}" if e.get("hex") else "Couleur à renseigner")
@@ -1340,14 +1382,18 @@ class MainWindow(CatalogueUx, QMainWindow):
         self._field_widgets["Bed"].setText(view.bed_str)
         self._field_widgets["Densité"].setText(view.density_str)
         self._field_widgets["Diamètre"].setText(view.diameter_str)
-        self._field_widgets["Marque"].setText(view.product_data.get("brand") or "Non renseignée")
+        brand = view.product_data.get("brand") or "Non renseignée"
+        line = view.product_data.get("line")
+        self._field_widgets["Marque"].setText(f"{brand} · {line}" if line else brand)
         entry = self.db["_skus"][sku]
         source_names = {entry.get("source", "Catalogue historique")}
         source_names.update(info["source"] for info in view.product_data.get("_field_sources", {}).values() if info.get("source") and info.get("value") is not None)
+        source_names.update(info["source"] for info in entry.get("_field_sources", {}).values() if info.get("source"))
         source_names.update(view.product_data.get("_official_references", {}))
         self._field_widgets["Source"].setText(" + ".join(sorted(source_names)))
         self._field_widgets["SKU fabricant"].setText(entry.get("manufacturer_sku") or "Non fourni")
         self._field_widgets["Masse"].setText(f"{entry['weight']} g" if entry.get("weight") else "Non fournie")
+        self._field_widgets["Références"].setText(self._references_text(sku))
 
         self._refresh_logo(view.product_data.get("brand") or "")
 
@@ -1579,6 +1625,8 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.progress.setValue(0)
         self.status.showMessage("Mise à jour en cours…")
 
+        self._sync_before = self._snapshot_stats()
+        self._sync_manual = bool(self.sender() is not None and self.sender() is not self.worker)
         self.worker = UpdateWorker()
         self.worker.progress.connect(self._on_update_progress)
         self.worker.finished_ok.connect(self._on_update_done)
@@ -1626,32 +1674,16 @@ class MainWindow(CatalogueUx, QMainWindow):
             msg = f"Mise à jour annulée — {n_ok}/{len(results)} étapes terminées ; base locale conservée."
         self.status.showMessage(msg, 10000)
         offline = n_ko and all(r.status == "unavailable" for r in n_ko)
-        if cancelled or offline:
-            # Being offline is a normal situation: a status-bar line, not a modal box.
+        before = self._sync_before or self._snapshot_stats()
+        after = self._snapshot_stats()
+        self._last_report = (results, before, after)
+        if cancelled or (offline and not getattr(self, "_sync_manual", False)):
+            # Being offline at launch is a normal situation: a status-bar line, not a window.
             if offline:
                 self.status.showMessage(msg + " Sources injoignables ; base locale conservée.", 12000)
             return
-        if n_ko:
-            def _reason(r):
-                err = (r.stderr or "").strip().replace("\r", "")
-                if not err:
-                    return f"• {r.label} (code {r.code})"
-                last = err.splitlines()[-1].strip()
-                if len(last) > 160:
-                    last = last[:157] + "…"
-                return f"• {r.label} (code {r.code}) — {last}"
-
-            detail = "\n".join(_reason(r) for r in n_ko)
-            box = QMessageBox(self)
-            box.setIcon(QMessageBox.Warning)
-            box.setWindowTitle("Mise à jour partielle")
-            box.setText(f"{msg}\n\nÉtapes en échec :\n{detail}")
-            full = "\n\n".join(
-                f"=== {r.label} (code {r.code}) ===\n{(r.stderr or '(aucun message)').strip()}"
-                for r in n_ko
-            )
-            box.setDetailedText(full)
-            box.exec()
+        if n_ko or getattr(self, "_sync_manual", False):
+            self._show_sync_report(results, before, after)
 
     def _on_update_failed(self, tb):
         self._finish_update_ui()

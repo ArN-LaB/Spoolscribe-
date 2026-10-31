@@ -171,7 +171,7 @@ class CatalogueInteractionTests(unittest.TestCase):
     def test_click_same_row_blank_area_and_escape_deselect(self):
         w=self.window;w.show();self.app.processEvents()
         w.table.selectRow(0);self.assertIsNotNone(w.current_sku)
-        rect=w.table.visualItemRect(w.table.item(0,1));QTest.mouseClick(w.table.viewport(),Qt.LeftButton,pos=rect.center())
+        rect=w.table.visualItemRect(w.table.item(0,2));QTest.mouseClick(w.table.viewport(),Qt.LeftButton,pos=rect.center())
         self.assertIsNone(w.current_sku)
         w.table.selectRow(0);QTest.keyClick(w.table,Qt.Key_Escape)
         self.assertIsNone(w.current_sku)
@@ -182,7 +182,7 @@ class CatalogueInteractionTests(unittest.TestCase):
         w.current_sku='PB05001';w._show_detail(w.current_sku)
         w.printer.setCurrentIndex(w.printer.findData('bambu'))
         self.assertFalse(w.btn_generate.isEnabled());self.assertIn('RFID Bambu',w.printer_help.text())
-        w.printer.setCurrentIndex(w.printer.findData('prusa'));self.assertIn('NFC-V',w.printer_help.text())
+        w.printer.setCurrentIndex(w.printer.findData('prusa'));self.assertIn('ISO 15693',w.printer_help.text())
         w.printer.setCurrentIndex(w.printer.findData('u1'));self.assertTrue(w.btn_generate.isEnabled())
         self.assertTrue(w.nfc_advanced.isHidden())
         self.assertFalse(w.stats_label.isVisible());self.assertIn('Base :',w.database_btn.text())
