@@ -78,7 +78,10 @@ class CatalogueUx:
         self._prefs_timer.setSingleShot(True)
         self._prefs_timer.setInterval(700)
         self._prefs_timer.timeout.connect(self._save_ui_preferences)
-        hh.sectionResized.connect(lambda *_: self._schedule_ui_preferences())
+        # Seuls les redimensionnements faits à la souris sont des préférences ;
+        # la colonne extensible change aussi de largeur à chaque redimensionnement
+        # de fenêtre, sans qu'il y ait rien à enregistrer.
+        hh.sectionResized.connect(lambda *_: self._schedule_ui_preferences() if self.app.mouseButtons() & Qt.LeftButton else None)
         hh.sectionMoved.connect(lambda *_: self._schedule_ui_preferences())
         hh.setToolTip('Clic : tri principal, second clic : inverser. Maj + clic ou clic droit : tri secondaire et colonnes.')
         self.columns_btn.clicked.connect(self._columns_menu)
@@ -124,7 +127,9 @@ class CatalogueUx:
     def _fill_quick_brands(self):
         while self.quick_brands.count() > 1:
             item = self.quick_brands.takeAt(1)
-            if item.widget(): item.widget().deleteLater()
+            if item.widget():
+                item.widget().setParent(None)  # retiré tout de suite, pas au prochain tour de boucle
+                item.widget().deleteLater()
         names = list(dict.fromkeys(['Polymaker'] + core.load_config().get('recent_brands', []) + ['Bambu Lab', 'Prusament', 'SUNLU']))[:5]
         for name in names:
             button = QPushButton(name)

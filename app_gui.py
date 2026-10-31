@@ -626,12 +626,16 @@ class MainWindow(CatalogueUx, QMainWindow):
         hh.setSectionsClickable(True)
         hh.sectionClicked.connect(self._sort_column)
         hh.setToolTip("Clic : tri principal, second clic : inverser. Maj + clic ou clic droit : tri secondaire et colonnes.")
-        self.table.setColumnWidth(1, 118)
+        self.table.setColumnWidth(1, 110)
         hh.setSectionResizeMode(2, QHeaderView.Stretch)   # Produit absorbe la largeur restante.
-        self.table.setColumnWidth(3, 118)
-        for column, width in ((4, 104), (5, 76), (6, 58), (7, 66), (8, 132)):
+        self.table.setColumnWidth(3, 112)
+        for column, width in ((4, 96), (5, 70), (6, 54), (7, 62), (8, 122)):
             hh.setSectionResizeMode(column, QHeaderView.Interactive)
             self.table.setColumnWidth(column, width)
+        # Diamètre et masse restent disponibles dans « Colonnes » ; masqués par
+        # défaut pour laisser au produit une largeur lisible.
+        self.table.setColumnHidden(6, True)
+        self.table.setColumnHidden(7, True)
         self.table.itemSelectionChanged.connect(self._on_select)
         self.list_stack.addWidget(self.table)
 
@@ -1113,6 +1117,8 @@ class MainWindow(CatalogueUx, QMainWindow):
             self.table.setItem(r, 0, sw)
             for col, key in enumerate(self._column_keys[1:], 1):
                 value = e.get(key)
+                if isinstance(value, float) and value.is_integer():
+                    value = int(value)  # 1000 g, pas 1000.0
                 item = QTableWidgetItem(str(value) if value is not None else "—")
                 item.setToolTip(str(value) if value is not None else "Inconnu")
                 if col == 1:
