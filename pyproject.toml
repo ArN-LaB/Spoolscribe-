@@ -8,7 +8,7 @@ license = { text = "MIT" }
 authors = [{ name = "ArN-LaB" }]
 keywords = ["3d-printing", "filament", "nfc", "rfid", "openspool", "snapmaker", "polymaker"]
 dependencies = [
-    "PySide6>=6.6",
+    "PySide6>=6.6,<6.12",
 ]
 
 [project.optional-dependencies]

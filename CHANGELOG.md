@@ -11,9 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > public release. Their highlights are preserved below under *Development
 > history* for reference.
 
-## [0.2.2] - Unreleased
+## [0.2.2] - 2026-10-31
 
 ### Fixed
+- Use the validated PySide6/Shiboken 6.11.3 build set and exclude 6.12 to avoid
+  the native `none_dealloc` crash observed on Linux with Python 3.10 (CI-01).
 - Validate OpenSpool data before preview/export: no invented black color or
   manufacturer, no null/non-finite physical values or reversed ranges.
 - Compact NFC JSON keeps the complete existing field set. Capacity checks use
