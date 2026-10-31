@@ -17,6 +17,12 @@ import urllib.request
 from datetime import datetime
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    load_db, save_db, atomic_write, run_step, PartialUpdate, SourceUnavailable
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
@@ -49,11 +55,12 @@ def main() -> None:
     dry_run = "--dry-run" in sys.argv
     force   = "--force"   in sys.argv
 
-    with open(DB_FILE, encoding="utf-8") as f:
-        db = json.load(f)
+    db = load_db(DB_FILE)
 
     db.setdefault("_brands", {})
 
+    failures = []
+    checked = 0
     for db_key, ofd_slug, logo_filename, curated in BRANDS:
         brand_url = f"{_OFD}/{ofd_slug}/brand.json"
         logo_url  = f"{_OFD}/{ofd_slug}/logo.png"
@@ -62,15 +69,22 @@ def main() -> None:
 
         try:
             brand = _fetch_json(brand_url)
+            if not isinstance(brand, dict) or not any(
+                isinstance(brand.get(key), str) and brand[key].strip() for key in ("id", "name")
+            ):
+                raise SourceUnavailable("Métadonnées de marque vides ou inexploitables.")
         except Exception as exc:
             print(f"[WARN] {db_key}: impossible de récupérer brand.json — {exc}")
-            brand = {}
+            failures.append(f"{db_key} : {exc}")
+            continue
 
+        checked += 1
         logo_ok = os.path.exists(logo_file)
         if curated:
             # Asset soigné fourni avec le dépôt : pas de téléchargement.
             if not logo_ok:
                 print(f"[WARN] {db_key}: asset soigné absent ({logo_file})")
+                failures.append(f"{db_key} : logo indisponible.")
                 logo_path = ""
             else:
                 print(f"  {db_key}: asset vectoriel soigné conservé ({logo_filename})")
@@ -78,15 +92,15 @@ def main() -> None:
             try:
                 logo_bytes = _fetch_bytes(logo_url)
                 if not dry_run:
-                    with open(logo_file, "wb") as f:
-                        f.write(logo_bytes)
+                    atomic_write(logo_file, logo_bytes)
                 logo_ok = True
                 print(f"  {db_key}: logo téléchargé → {logo_file}")
             except Exception as exc:
                 print(f"[WARN] {db_key}: impossible de télécharger le logo — {exc}")
+                failures.append(f"{db_key} : logo indisponible.")
                 logo_path = ""
 
-        db["_brands"][db_key] = {
+        incoming = {
             "id":          brand.get("id",      ofd_slug),
             "name":        brand.get("name",     db_key),
             "website":     brand.get("website",  ""),
@@ -99,17 +113,28 @@ def main() -> None:
             "logo_url":    "" if curated else logo_url,
             "updated_at":  datetime.now().isoformat(),
         }
+        current = db.setdefault("_brands", {}).setdefault(db_key, {})
+        for field, value in incoming.items():
+            if field == "updated_at":
+                continue
+            if not current.get(field):
+                current[field] = value
+            elif current[field] != value:
+                print(f"CONFLIT marque : {field}, valeur locale conservée.")
+
         status = "OK" if logo_ok else "absent"
         print(f"  {db_key}: métadonnées {'simulées' if dry_run else 'mises à jour'} — logo {status}")
 
+    if not checked:
+        raise SourceUnavailable(" ; ".join(failures) or "Aucune marque vérifiée.")
     if not dry_run:
-        db["_last_updated"] = datetime.now().isoformat()
-        with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump(db, f, ensure_ascii=False, indent=2)
+        save_db(db, DB_FILE)
         print(f"DB sauvegardée : {DB_FILE}")
     else:
         print("[DRY RUN] Aucune modification écrite.")
+    if failures:
+        raise PartialUpdate(" ; ".join(failures))
 
 
 if __name__ == "__main__":
-    main()
+    run_step(main, DB_FILE)

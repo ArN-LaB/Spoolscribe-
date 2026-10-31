@@ -19,9 +19,14 @@ import os
 import re
 import sys
 import unicodedata
-from datetime import datetime
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    load_db, save_db, run_step, SourceUnavailable, requires_manual_color
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
@@ -86,7 +91,7 @@ def build_index(path: str) -> dict[str, list[dict[str, str]]]:
             product_key = _product_key(row.get("name", ""))
             color_name = _color_norm(row.get("colorName", ""))
             color_hex = (row.get("colorHex") or "").strip().lstrip("#").upper()
-            if len(color_hex) != 6:
+            if not product_key or not color_name or not re.fullmatch(r"[0-9A-F]{6}", color_hex):
                 continue
             index.setdefault(product_key, []).append(
                 {
@@ -209,16 +214,16 @@ def main() -> None:
     force = "--force" in sys.argv
     verbose = "--verbose" in sys.argv
 
-    with open(DB_FILE, encoding="utf-8") as f:
-        db = json.load(f)
+    db = load_db(DB_FILE)
     skus_dict: dict = db["_skus"]
 
     if not os.path.exists(THEFILE):
-        print(f"Missing file: {THEFILE}")
-        return
+        raise SourceUnavailable(f"Dump local absent : {THEFILE}")
 
     print("Loading TheFilamentDB…", end=" ", flush=True)
     index = build_index(THEFILE)
+    if not any(index.values()):
+        raise SourceUnavailable("TheFilamentDB Polymaker : aucune couleur exploitable.")
     print(f"{len(index)} product keys")
     if verbose:
         print(f"  total products indexed: {sum(len(v) for v in index.values())}")
@@ -227,6 +232,8 @@ def main() -> None:
 
     for sku, entry in skus_dict.items():
         existing = entry.get("hex")
+        if not existing and requires_manual_color(entry):
+            continue
         if existing and not force:
             continue
 
@@ -257,9 +264,7 @@ def main() -> None:
                 stats["skipped"] += 1
 
     if not dry_run:
-        db["_last_updated"] = datetime.now().isoformat()
-        with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump(db, f, ensure_ascii=False, indent=2)
+        save_db(db, DB_FILE)
         print(f"\nDB saved: {DB_FILE}")
 
     still_missing = sum(1 for v in skus_dict.values() if not v.get("hex"))
@@ -277,4 +282,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run_step(main, DB_FILE)

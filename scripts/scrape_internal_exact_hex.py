@@ -12,9 +12,14 @@ import json
 import os
 import sys
 from collections import defaultdict
-from datetime import datetime
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    load_db, save_db, run_step, requires_manual_color
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 DATA_DIR = os.path.join(_DATA_HOME, "data")
 DB_FILE = os.path.join(DATA_DIR, "polymaker_db.json")
@@ -30,8 +35,7 @@ def _key(entry: dict) -> tuple[str, str]:
 def main() -> None:
     dry_run = "--dry-run" in sys.argv
 
-    with open(DB_FILE, encoding="utf-8") as f:
-        db = json.load(f)
+    db = load_db(DB_FILE)
 
     skus = db.get("_skus", {})
     known_hex = defaultdict(set)
@@ -45,7 +49,7 @@ def main() -> None:
     ambiguous = 0
 
     for entry in skus.values():
-        if entry.get("hex"):
+        if entry.get("hex") or requires_manual_color(entry):
             continue
         key = _key(entry)
         candidates = known_hex.get(key, set())
@@ -57,9 +61,7 @@ def main() -> None:
             ambiguous += 1
 
     if not dry_run:
-        db["_last_updated"] = datetime.now().isoformat()
-        with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump(db, f, ensure_ascii=False, indent=2)
+        save_db(db, DB_FILE)
         print(f"DB saved: {DB_FILE}")
 
     still_missing = sum(1 for v in skus.values() if not v.get("hex"))
@@ -72,4 +74,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run_step(main, DB_FILE)

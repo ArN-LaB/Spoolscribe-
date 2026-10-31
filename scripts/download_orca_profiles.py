@@ -12,6 +12,12 @@ import urllib.request
 import urllib.parse
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    atomic_write, parse_json, run_step, SourceUnavailable, PartialUpdate, orca_values
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 ORCA_DIR   = os.path.join(_DATA_HOME, "orca_profiles")
 
@@ -33,6 +39,8 @@ def fetch_bytes(url):
 
 def local_filename(material):
     """Nom de fichier local : '{material} @Snapmaker U1 - OrcaSlicer.json'"""
+    if not isinstance(material, str) or not material.strip() or any(c in material for c in ("/", "\\", "\x00")):
+        raise ValueError("Nom de matériau invalide pour un fichier Orca.")
     return f"{material} @Snapmaker U1 - OrcaSlicer.json"
 
 
@@ -44,14 +52,11 @@ def main():
                         help="Re-télécharge même les fichiers déjà présents")
     args = parser.parse_args()
 
-    os.makedirs(ORCA_DIR, exist_ok=True)
-
     print("Téléchargement de l'index...")
     try:
         index = fetch_json(INDEX_URL)
     except Exception as e:
-        print(f"Erreur lors du téléchargement de l'index : {e}", file=sys.stderr)
-        sys.exit(1)
+        raise SourceUnavailable(f"Index Orca indisponible : {e}") from e
 
     # Filtrer les profils Snapmaker U1 / OrcaSlicer
     snapmaker_presets = [
@@ -62,8 +67,7 @@ def main():
     ]
 
     if not snapmaker_presets:
-        print("Aucun profil Snapmaker U1 trouvé dans l'index.")
-        sys.exit(0)
+        raise SourceUnavailable("Aucun profil Snapmaker U1 trouvé dans l'index.")
 
     print(f"{len(snapmaker_presets)} profils Snapmaker U1 trouvés dans l'index.")
     print(f"  Index mis à jour le : {index.get('updatedAt', '?')}\n")
@@ -94,8 +98,8 @@ def main():
 
         try:
             data = fetch_bytes(url)
-            with open(dest, "wb") as f:
-                f.write(data)
+            orca_values(parse_json(data))
+            atomic_write(dest, data)
             downloaded += 1
         except Exception as e:
             print(f"    ERREUR : {e}", file=sys.stderr)
@@ -108,7 +112,13 @@ def main():
         print(f"Terminé : {downloaded} téléchargé(s), {skipped} ignoré(s) (déjà présents), {errors} erreur(s).")
         if downloaded > 0:
             print("\nLancez scripts/import_orca_profiles.py pour synchroniser la DB.")
+    if errors:
+        if not downloaded and not skipped:
+            raise ValueError(f"Orca : aucun profil valide téléchargé ({errors} erreur(s)).")
+        raise PartialUpdate(f"Orca : {errors} téléchargement(s) ou profil(s) invalide(s).")
+    if downloaded and not args.dry_run:
+        return "changed"
 
 
 if __name__ == "__main__":
-    main()
+    run_step(main)

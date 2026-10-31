@@ -15,6 +15,12 @@ import os
 import sys
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    load_db, save_db, parse_json, run_step, orca_values
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 DB_FILE    = os.path.join(_DATA_HOME, "data", "polymaker_db.json")
 ORCA_DIR   = os.path.join(_DATA_HOME, "orca_profiles")
@@ -22,33 +28,14 @@ ORCA_DIR   = os.path.join(_DATA_HOME, "orca_profiles")
 
 # ── Helpers ───────────────────────────────────────────────────────────────
 
-def first(obj, key, default=None):
-    """Return the first element of an Orca array field, or default."""
-    v = obj.get(key, [default])
-    return v[0] if v else default
-
-
 def read_orca_data(path):
-    """Extract the relevant fields from an Orca profile JSON."""
-    with open(path, encoding="utf-8") as f:
-        p = json.load(f)
-
-    # Gather all plate temps; ignore 0 (= "not applicable for this plate type")
-    plate_keys = ["cool_plate_temp", "eng_plate_temp", "hot_plate_temp", "textured_plate_temp"]
-    bed_temps = [int(first(p, k, 0)) for k in plate_keys]
-    bed_temps_nonzero = [t for t in bed_temps if t > 0]
-    bed_min = min(bed_temps_nonzero) if bed_temps_nonzero else 0
-    bed_max = max(bed_temps_nonzero) if bed_temps_nonzero else 0
-
-    return {
-        "type":     first(p, "filament_type",            "PLA"),
-        "min_temp": int(first(p, "nozzle_temperature_range_low",  190)),
-        "max_temp": int(first(p, "nozzle_temperature_range_high", 230)),
-        "bed_min":  bed_min,
-        "bed_max":  bed_max,
-        "density":  float(first(p, "filament_density",            1.24)),
-        "diameter": float(first(p, "filament_diameter",           1.75)),
-    }
+    with open(path, encoding="utf-8") as stream:
+        profile = parse_json(stream.read())
+    values = orca_values(profile)
+    types = profile.get("filament_type")
+    if not isinstance(types, list) or not types or not isinstance(types[0], str) or not types[0].strip():
+        raise ValueError(f"Profil Orca sans filament_type valide : {path}")
+    return dict(values, type=types[0], bed_min=values["bed_min_temp"], bed_max=values["bed_max_temp"])
 
 
 def find_base_product(name, products_dict):
@@ -78,13 +65,13 @@ def derive_subtype(name, base_name):
 def main():
     dry_run = "--dry-run" in sys.argv
 
-    with open(DB_FILE, encoding="utf-8") as f:
-        db = json.load(f)
+    db = load_db(DB_FILE)
     products = db["_products"]
 
     stats = {"updated": 0, "added": 0, "skipped": 0}
     update_log = []
     added_log  = []
+    conflicts = []
 
     for fname in sorted(os.listdir(ORCA_DIR)):
         if not fname.endswith(".json"):
@@ -108,8 +95,10 @@ def main():
                 ("diameter",    orca["diameter"]),
             ]:
                 old_val = entry.get(field)
-                if old_val != new_val:
+                if old_val is None:
                     changes[field] = (old_val, new_val)
+                elif old_val != new_val:
+                    conflicts.append(f"{product_name}.{field} : valeur locale conservée ({old_val} / source {new_val})")
 
             if changes:
                 if not dry_run:
@@ -157,8 +146,7 @@ def main():
 
     # ── Save ──────────────────────────────────────────────────────────────
     if not dry_run:
-        with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump(db, f, ensure_ascii=False, indent=2)
+        save_db(db, DB_FILE)
         print(f"DB saved: {DB_FILE}")
 
     # ── Report ────────────────────────────────────────────────────────────
@@ -181,9 +169,11 @@ def main():
                   f"nozzle={entry['min_temp']}-{entry['max_temp']}, "
                   f"bed={entry['bed_min_temp']}-{entry['bed_max_temp']}, density={entry['density']})")
 
+    for conflict in conflicts:
+        print("CONFLIT : " + conflict)
     if dry_run:
         print("\n[DRY RUN] No changes written.")
 
 
 if __name__ == "__main__":
-    main()
+    run_step(main, DB_FILE)

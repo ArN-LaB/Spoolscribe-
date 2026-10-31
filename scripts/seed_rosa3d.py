@@ -27,9 +27,14 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    load_db, save_db, run_step, requires_manual_color
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
@@ -230,11 +235,7 @@ def build_entries() -> tuple[dict, dict]:
 def main() -> int:
     dry = "--dry-run" in sys.argv
 
-    if os.path.exists(DB_FILE):
-        with open(DB_FILE, encoding="utf-8") as f:
-            db = json.load(f)
-    else:
-        db = {"_products": {}, "_skus": {}, "_brands": {}}
+    db = load_db(DB_FILE, missing_ok=True)
     db.setdefault("_products", {})
     db.setdefault("_skus", {})
     db.setdefault("_brands", {})
@@ -245,8 +246,8 @@ def main() -> int:
 
     # Marque (toujours rafraîchie, c'est de la métadonnée stable).
     db["_brands"].setdefault(BRAND, {})
-    db["_brands"][BRAND].update(BRAND_META)
-    db["_brands"][BRAND]["updated_at"] = datetime.now().isoformat()
+    for key, value in BRAND_META.items():
+        db["_brands"][BRAND].setdefault(key, value)
 
     # Produits : on ne réécrit pas un produit déjà présent.
     for name, data in products.items():
@@ -261,7 +262,7 @@ def main() -> int:
             db["_skus"][sku] = entry
             added_s += 1
         else:
-            if not cur.get("hex") and entry.get("hex"):
+            if not cur.get("hex") and entry.get("hex") and not requires_manual_color(cur):
                 cur["hex"] = entry["hex"]
             cur.setdefault("product", entry["product"])
             cur.setdefault("color_name", entry["color_name"])
@@ -274,11 +275,10 @@ def main() -> int:
         return 0
 
     os.makedirs(DATA_DIR, exist_ok=True)
-    with open(DB_FILE, "w", encoding="utf-8") as f:
-        json.dump(db, f, indent=2, ensure_ascii=False)
+    save_db(db, DB_FILE)
     print(f"écrit : {DB_FILE}")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    run_step(main, DB_FILE)

@@ -18,6 +18,12 @@ import urllib.request
 from datetime import datetime
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    load_db, save_db, atomic_write, run_step
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
@@ -42,8 +48,7 @@ def main() -> None:
     dry_run = "--dry-run" in sys.argv
     force = "--force" in sys.argv
 
-    with open(DB_FILE, encoding="utf-8") as f:
-        db = json.load(f)
+    db = load_db(DB_FILE)
 
     brand = _fetch_json(BRAND_URL)
 
@@ -51,10 +56,9 @@ def main() -> None:
     if force or not logo_exists:
         logo_bytes = _fetch_bytes(LOGO_URL)
         if not dry_run:
-            with open(LOGO_FILE, "wb") as f:
-                f.write(logo_bytes)
+            atomic_write(LOGO_FILE, logo_bytes)
 
-    db.setdefault("_brands", {})["Polymaker"] = {
+    incoming = {
         "id": brand.get("id", "polymaker"),
         "name": brand.get("name", "Polymaker"),
         "website": brand.get("website", "https://polymaker.com/"),
@@ -67,10 +71,17 @@ def main() -> None:
         "updated_at": datetime.now().isoformat(),
     }
 
+    current = db.setdefault("_brands", {}).setdefault("Polymaker", {})
+    for field, value in incoming.items():
+        if field == "updated_at":
+            continue
+        if not current.get(field):
+            current[field] = value
+        elif current[field] != value:
+            print(f"CONFLIT marque : {field}, valeur locale conservée.")
+
     if not dry_run:
-        db["_last_updated"] = datetime.now().isoformat()
-        with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump(db, f, ensure_ascii=False, indent=2)
+        save_db(db, DB_FILE)
         print(f"DB saved: {DB_FILE}")
 
     print("Polymaker brand metadata updated")
@@ -80,4 +91,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run_step(main, DB_FILE)

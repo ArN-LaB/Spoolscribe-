@@ -1,0 +1,29 @@
+{
+  "provenance": "User-supplied hardware observations; no physical UIDs, temperatures or density inferred.",
+  "observations": [
+    {
+      "label": "Polymaker PETG Black",
+      "brand": "Polymaker",
+      "type": "PETG",
+      "color_hex": "070908",
+      "candidate_sku": "PB05001",
+      "mapping": "candidate; the physical SKU was not supplied"
+    },
+    {
+      "label": "Polymaker PLA ECO Yellow",
+      "brand": "Polymaker",
+      "type": "PLA",
+      "color_hex": "A78403",
+      "candidate_sku": null,
+      "mapping": "unconfirmed: catalogue PM70958 is PolyTerra PLA / Army Light Green"
+    },
+    {
+      "label": "Polymaker PLA Silk Green",
+      "brand": "Polymaker",
+      "type": "PLA",
+      "color_hex": "91C500",
+      "candidate_sku": null,
+      "mapping": "unconfirmed: catalogue PA03006 is Panchroma PLA Silk / Silk Lime"
+    }
+  ]
+}

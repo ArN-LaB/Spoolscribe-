@@ -45,9 +45,9 @@ def _print_network_disclosure():
     print("──────────────────────────────────────────────────────")
 
 
-def ensure_consent_interactive():
+def ensure_consent_interactive(force=False):
     """Demande le consentement réseau une fois, de façon explicite. Retourne bool."""
-    if core.consent_was_asked():
+    if core.consent_was_asked() and not force:
         return core.has_network_consent()
     _print_network_disclosure()
     try:
@@ -70,12 +70,14 @@ def ensure_consent_interactive():
 
 def check_and_update_db(force=False):
     """Met à jour la DB UNIQUEMENT avec consentement explicite de l'utilisateur."""
+    if not force and core.db_restored_this_session(DB_PATH):
+        return
     cfg = core.load_config()
     db = load_db(DB_PATH)
 
     if force:
         # Commande U : action explicite de l'utilisateur.
-        if not ensure_consent_interactive():
+        if not ensure_consent_interactive(force=True):
             print("  Mise à jour ignorée (réseau refusé).\n")
             return
     else:
@@ -91,9 +93,10 @@ def check_and_update_db(force=False):
         print(f"  [{i}/{total}] {label} …")
 
     results = run_update_pipeline(progress=progress, consent=core.has_network_consent())
+    print(f"  Résultat global : {core.UPDATE_STATUS_LABELS[core.update_status(results)]}")
     for r in results:
         if r.ok:
-            print(f"  {r.label} : OK")
+            print(f"  {r.label} : {'sans changement' if r.status == 'unchanged' else 'OK'}")
         else:
             print(f"  {r.label} : echec (code {r.code})")
             if r.stderr:
@@ -135,7 +138,7 @@ def prompt_new_sku(sku, products_dict):
 def prompt_hex_for_entry(sku, entry):
     print(f"\n[INFO] Pas de code HEX pour {sku} ({entry['color_name']}).")
     while True:
-        raw = ask("Code HEX (6 chars, vide/Q pour passer) : ")
+        raw = ask("HEX représentatif (6 chars, vide pour annuler l'export, Q pour revenir) : ")
         if raw == "":
             return None
         hex_val = validate_hex(raw)
@@ -230,9 +233,15 @@ def main():
             _stream.reconfigure(encoding="utf-8")
         except (AttributeError, ValueError):
             pass
-    parser = argparse.ArgumentParser(add_help=False)
+    parser = argparse.ArgumentParser()
     parser.add_argument("--verbose", action="store_true", help="Affichage détaillé")
     parser.add_argument("--compact", action="store_true", help="Mode compact")
+    parser.add_argument("--export-format", choices=("nfc", "archive"), default="nfc",
+                        help="NFC compact (défaut) ou archive JSON lisible, mêmes champs")
+    parser.add_argument("--orca-overrides", action="store_true",
+                        help="Préférer explicitement les valeurs Orca aux valeurs locales à l'export")
+    parser.add_argument("--restore-db", nargs="?", const=DB_PATH + ".bak", metavar="SAUVEGARDE",
+                        help="Restaurer explicitement une sauvegarde (défaut : .bak)")
     args, _ = parser.parse_known_args()
     verbose = args.verbose
     compact = args.compact
@@ -261,8 +270,17 @@ def main():
         _print_box(f"SpoolScribe {core.APP_VERSION} — OpenSpool / NFC", lines, width=panel_w)
         print()
 
-    check_and_update_db()
-    db = load_db(DB_PATH)
+    try:
+        if args.restore_db:
+            answer = input(f"Restaurer {args.restore_db} ? Le fichier actuel sera conservé. (o/N) : ").strip().lower()
+            if answer not in ("o", "oui", "y", "yes"):
+                return 0
+            core.restore_db(DB_PATH, args.restore_db)
+        check_and_update_db()
+        db = load_db(DB_PATH)
+    except (core.DatabaseError, OSError) as exc:
+        print(f"[ERREUR] {exc}\nRestauration possible : --restore-db [chemin de sauvegarde]")
+        return 1
     show_header(db)
 
     try:
@@ -276,8 +294,12 @@ def main():
             break
 
         if cmd in ("U", "UPDATE"):
-            check_and_update_db(force=True)
-            db = load_db(DB_PATH)
+            try:
+                check_and_update_db(force=True)
+                db = load_db(DB_PATH)
+            except (core.DatabaseError, OSError) as exc:
+                print(f"[ERREUR] {exc}")
+                continue
             st = db_stats(db)
             print(f"  ✔  DB rechargée — {st['skus']} SKUs, {st['products']} produits, "
                   f"{st['missing_hex']} hex manquants.\n")
@@ -314,10 +336,16 @@ def main():
 
             if not view.hex:
                 hex_val = prompt_hex_for_entry(sku, db["_skus"][sku])
-                if hex_val:
-                    set_sku_hex(db, sku, hex_val)
-                    view = get_sku_view(db, sku)
-                    print(f"[OK] HEX {hex_val} enregistré pour {sku}.")
+                if not hex_val:
+                    print("Export annulé : aucune couleur représentative validée.")
+                    continue
+                alpha = ask("Opacité alpha facultative (00 transparent, FF opaque ; vide pour conserver) : ")
+                if alpha and not re.fullmatch(r"[0-9A-Fa-f]{2}", alpha):
+                    print("[ERREUR] Alpha invalide ; export annulé.")
+                    continue
+                set_sku_hex(db, sku, hex_val, alpha=alpha or None)
+                view = get_sku_view(db, sku)
+                print(f"[OK] HEX {hex_val} enregistré pour {sku}.")
 
             panel_w = COMPACT_PANEL_W if compact else PANEL_W
             W = panel_w - 4
@@ -360,18 +388,24 @@ def main():
 
             entry = db["_skus"][sku]
             while True:
-                confirm = ask("  Générer le fichier NFC ? (O/n/I/Q) : ").lower()
+                confirm = ask(f"  Exporter ({args.export_format}) ? (O/n/I/Q) : ").lower()
                 if confirm in ("", "o", "y"):
                     out = core_write_openspool(sku, entry, view.product_data,
-                                               OUTPUT_DIR, brand_meta=view.brand_meta)
+                                               OUTPUT_DIR, brand_meta=view.brand_meta, mode=args.export_format,
+                                               use_orca_overrides=args.orca_overrides)
                     print(f"[OK] Fichier généré : {os.path.basename(out)}")
                     break
                 if confirm in ("i", "info"):
                     preview_entry = dict(entry)
                     preview_entry["sku"] = sku
-                    payload = build_openspool(preview_entry, view.product_data, brand_meta=view.brand_meta)
+                    payload = build_openspool(preview_entry, view.product_data, brand_meta=view.brand_meta,
+                                             use_orca_overrides=args.orca_overrides)
                     print("\n  -- Payload JSON --")
-                    print(json.dumps(payload, indent=2, ensure_ascii=False))
+                    text = core.serialize_openspool(payload, mode=args.export_format)
+                    size = core.nfc_size(text)
+                    print(text)
+                    print(f"JSON UTF-8 : {size.utf8_bytes} octets ; NDEF : {size.ndef_bytes} ; "
+                          f"avec TLV : {size.type2_bytes}/{size.capacity_bytes} octets (un record MIME).")
                     print("  ------------------")
                     continue
                 print("  Annulé.")
@@ -380,6 +414,9 @@ def main():
 
         except UserQuit:
             print("  Retour au menu principal.\n")
+            continue
+        except (core.ExportValidationError, core.DatabaseError, OSError, ValueError) as exc:
+            print(f"[ERREUR] {exc}\n")
             continue
 
     except (KeyboardInterrupt, UserQuit):
@@ -390,4 +427,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

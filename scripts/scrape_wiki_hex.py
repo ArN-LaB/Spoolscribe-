@@ -13,7 +13,6 @@ import os
 import re
 import sys
 import urllib.request
-from datetime import datetime
 
 WIKI_URL = (
     "https://wiki.polymaker.com/polymaker-wiki/polymaker-wiki-fr/"
@@ -22,6 +21,12 @@ WIKI_URL = (
 )
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    load_db, save_db, run_step, SourceUnavailable, requires_manual_color
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
@@ -43,8 +48,7 @@ def fetch_wiki_hex() -> dict[str, str]:
         with urllib.request.urlopen(req, timeout=30) as resp:
             html = resp.read().decode("utf-8", errors="ignore")
     except Exception as e:
-        print(f"FAILED ({e})")
-        return {}
+        raise SourceUnavailable(f"Wiki Polymaker indisponible : {e}") from e
 
     print(f"{len(html):,} bytes")
 
@@ -84,15 +88,13 @@ def main() -> None:
     force   = "--force"   in sys.argv
 
     # 1. Load DB
-    with open(DB_FILE, encoding="utf-8") as f:
-        db = json.load(f)
+    db = load_db(DB_FILE)
     skus_dict: dict = db["_skus"]
 
     # 2. Fetch wiki data
     wiki_hex = fetch_wiki_hex()
     if not wiki_hex:
-        print("Nothing to do (fetch failed).")
-        return
+        raise SourceUnavailable("Wiki Polymaker : aucune donnée exploitable.")
 
     # 3. Apply
     stats = {"filled": 0, "overridden": 0, "skipped": 0, "unknown_sku": 0}
@@ -104,6 +106,8 @@ def main() -> None:
 
         entry    = skus_dict[sku]
         existing = entry.get("hex")
+        if not existing and requires_manual_color(entry):
+            continue
 
         if not existing:
             # Fill missing hex
@@ -120,9 +124,7 @@ def main() -> None:
 
     # 4. Save
     if not dry_run:
-        db["_last_updated"] = datetime.now().isoformat()
-        with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump(db, f, ensure_ascii=False, indent=2)
+        save_db(db, DB_FILE)
         print(f"\nDB saved: {DB_FILE}")
 
     # 5. Report
@@ -141,4 +143,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run_step(main, DB_FILE)

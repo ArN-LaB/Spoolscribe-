@@ -16,13 +16,18 @@ import os
 import re
 import sys
 import urllib.request
-from datetime import datetime
 
 SPOOLMAN_URL = (
     "https://raw.githubusercontent.com/Donkie/SpoolmanDB/master/filaments/polymaker.json"
 )
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    load_db, save_db, run_step, SourceUnavailable, requires_manual_color
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
@@ -58,8 +63,12 @@ def build_spoolman_index(data: dict) -> dict[str, list[tuple[str, str]]]:
     index: dict[str, list[tuple[str, str]]] = {}
     for fil in data.get("filaments", []):
         prod_key = _product_key(fil.get("name", ""))
+        if not prod_key:
+            continue
         for color in fil.get("colors", []):
             color_norm = _norm(color.get("name", ""))
+            if not color_norm:
+                continue
             # Single hex
             hex_val = color.get("hex", "").lstrip("#").upper()
             if hex_val and len(hex_val) == 6 and all(c in "0123456789ABCDEF" for c in hex_val):
@@ -68,7 +77,7 @@ def build_spoolman_index(data: dict) -> dict[str, list[tuple[str, str]]]:
             hexes = color.get("hexes", [])
             if hexes:
                 h = hexes[0].lstrip("#").upper()
-                if len(h) == 6:
+                if len(h) == 6 and all(c in "0123456789ABCDEF" for c in h):
                     index.setdefault(prod_key, []).append((color_norm, h))
     return index
 
@@ -179,8 +188,7 @@ def fetch_spoolman() -> dict:
         with urllib.request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read())
     except Exception as e:
-        print(f"FAILED ({e})")
-        return {}
+        raise SourceUnavailable(f"SpoolmanDB Polymaker indisponible : {e}") from e
     fil_count = len(data.get("filaments", []))
     print(f"{fil_count} filament groups")
     return data
@@ -194,17 +202,17 @@ def main() -> None:
     verbose = "--verbose" in sys.argv
 
     # 1. Load DB
-    with open(DB_FILE, encoding="utf-8") as f:
-        db = json.load(f)
+    db = load_db(DB_FILE)
     skus_dict: dict = db["_skus"]
 
     # 2. Fetch & index SpoolmanDB
     data = fetch_spoolman()
-    if not data:
-        print("Nothing to do (fetch failed).")
-        return
+    if not isinstance(data, dict) or not isinstance(data.get("filaments"), list) or not data["filaments"]:
+        raise SourceUnavailable("SpoolmanDB Polymaker : aucune donnée exploitable.")
 
     index = build_spoolman_index(data)
+    if not any(index.values()):
+        raise SourceUnavailable("SpoolmanDB Polymaker : aucune couleur exploitable.")
     if verbose:
         print(f"  SpoolmanDB index: {len(index)} product keys")
         for k, v in sorted(index.items()):
@@ -215,6 +223,8 @@ def main() -> None:
 
     for sku, entry in skus_dict.items():
         existing = entry.get("hex")
+        if not existing and requires_manual_color(entry):
+            continue
         if existing and not force:
             continue
 
@@ -246,9 +256,7 @@ def main() -> None:
 
     # 4. Save
     if not dry_run:
-        db["_last_updated"] = datetime.now().isoformat()
-        with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump(db, f, ensure_ascii=False, indent=2)
+        save_db(db, DB_FILE)
         print(f"\nDB saved: {DB_FILE}")
 
     # 5. Report
@@ -267,4 +275,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run_step(main, DB_FILE)

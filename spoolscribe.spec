@@ -20,8 +20,8 @@ import sys
 block_cipher = None
 
 # ─── Métadonnées : source unique de vérité = core.py ──────────────────────
-# La version n'est définie qu'une seule fois (core.APP_VERSION). Le .spec et
-# pyproject.toml la lisent depuis là pour éviter toute désynchronisation (cf.
+# La référence de version est core.APP_VERSION. Le .spec la lit ici et
+# pyproject.toml est contrôlé par la CI pour éviter toute désynchronisation (cf.
 # l'ancienne release "sync version" inutile dans l'historique).
 def _read_core_metadata():
     meta = {"APP_NAME": "SpoolScribe", "APP_VERSION": "0.0.0", "APP_AUTHOR": "ArN-LaB"}
@@ -41,7 +41,7 @@ _meta = _read_core_metadata()
 APP_NAME = _meta["APP_NAME"]
 APP_VERSION = _meta["APP_VERSION"]
 APP_AUTHOR = _meta["APP_AUTHOR"]
-APP_DESC = "Write OpenSpool / NFC spool tags for the Snapmaker U1"
+APP_DESC = "Prepare OpenSpool / NFC spool-tag data for the Snapmaker U1"
 _v = tuple(int(p) for p in (APP_VERSION.split(".") + ["0", "0", "0", "0"])[:4])
 
 # ─── Icône optionnelle (par plateforme) ───────────────────────────────────
@@ -100,7 +100,7 @@ a = Analysis(
     binaries=[],
     datas=datas,
     hiddenimports=[
-        "core",
+        "core", "scripts.db_io",
         # Les scrapers dans scripts/ sont lancés via runpy depuis l'exe gelé ;
         # PyInstaller n'analyse pas leurs imports, on les déclare donc ici.
         "urllib", "urllib.request", "urllib.error", "urllib.parse",

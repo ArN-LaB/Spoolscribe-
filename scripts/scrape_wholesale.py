@@ -14,11 +14,16 @@ import re
 import sys
 import time
 import urllib.error
-from datetime import datetime
 import urllib.request
 from collections import defaultdict
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    load_db, save_db, atomic_write, run_step, SourceUnavailable, requires_manual_color
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE = os.path.join(DATA_DIR, "polymaker_db.json")
@@ -324,12 +329,8 @@ def fetch_page(page: int) -> list:
         with urllib.request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read().decode())
             return data.get("products", [])
-    except urllib.error.HTTPError as e:
-        print(f"  HTTP {e.code} on page {page}")
-        return []
     except Exception as e:
-        print(f"  Error on page {page}: {e}")
-        return []
+        raise SourceUnavailable(f"Catalogue wholesale, page {page} : {e}") from e
 
 
 def fetch_all_products() -> list:
@@ -356,8 +357,7 @@ def main():
     dry_run = "--dry-run" in sys.argv
 
     # 1. Load DB
-    with open(DB_FILE, encoding="utf-8") as f:
-        db = json.load(f)
+    db = load_db(DB_FILE)
     products_dict = db["_products"]
     skus_dict = db["_skus"]
 
@@ -370,9 +370,12 @@ def main():
         print("Fetching wholesale catalogue…")
         all_products = fetch_all_products()
         print(f"Total products fetched: {len(all_products)}")
-        with open(RAW_OUT, "w", encoding="utf-8") as f:
-            json.dump(all_products, f, ensure_ascii=False, indent=2)
-        print(f"Raw data saved to {RAW_OUT}")
+        if not dry_run:
+            atomic_write(RAW_OUT, json.dumps(all_products, ensure_ascii=False, indent=2, allow_nan=False).encode("utf-8"))
+        print(f"Raw data {'previewed' if dry_run else 'saved'}: {RAW_OUT}")
+
+    if not all_products:
+        raise SourceUnavailable("Catalogue wholesale vide : aucune actualisation validée.")
 
     # 3. Auto-add missing products to _products
     added_products = []
@@ -420,7 +423,7 @@ def main():
 
             if sku in skus_dict:
                 entry = skus_dict[sku]
-                if hex_code and not entry.get("hex"):
+                if hex_code and not entry.get("hex") and not requires_manual_color(entry):
                     if not dry_run:
                         entry["hex"] = hex_code
                     stats["hex_added"] += 1
@@ -436,9 +439,7 @@ def main():
 
     # 5. Save updated DB
     if not dry_run:
-        db["_last_updated"] = datetime.now().isoformat()
-        with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump(db, f, ensure_ascii=False, indent=2)
+        save_db(db, DB_FILE)
         print(f"\nDB saved: {DB_FILE}")
 
     # 6. Report
@@ -466,4 +467,4 @@ def main():
         print("\n[DRY RUN] No changes written.")
 
 if __name__ == "__main__":
-    main()
+    run_step(main, DB_FILE)

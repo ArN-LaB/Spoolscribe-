@@ -28,9 +28,14 @@ import os
 import re
 import sys
 import urllib.request
-from datetime import datetime
 
 _RESOURCE  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The worker also runs standalone; expose the project namespace to its helper.
+if _RESOURCE not in sys.path:
+    sys.path.insert(0, _RESOURCE)
+from scripts.db_io import (
+    load_db, save_db, run_step, SourceUnavailable, PartialUpdate, requires_manual_color
+)
 _DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
 DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
@@ -43,12 +48,7 @@ BRANDS: dict[str, str] = {
     "ROSA3D":    "rosa3d",
 }
 
-# Marques dont SpoolmanDB est considéré comme **source faisant autorité** :
-# les nuanciers y sont les valeurs officielles publiées (cas Prusament), donc
-# on remplace même les HEX déjà présents (approximations de la table interne).
-# Pour les autres (ex. ROSA3D, dont rosa3d.json contient des approximations CSS
-# pour certaines familles PLA), on se contente de combler les HEX manquants.
-AUTHORITATIVE_OVERRIDE_BRANDS: set[str] = {"Prusament"}
+# Existing local values are preserved unless the standalone user explicitly uses --force.
 
 # Type de produit interne → matériaux SpoolmanDB acceptés (normalisés)
 MATERIAL_MAP: dict[str, set[str]] = {
@@ -123,12 +123,6 @@ def find_hex(db_type: str, db_color: str, index: dict[str, dict[str, str]]) -> s
         bucket = index.get(mat)
         if bucket and target in bucket:
             return bucket[target]
-    # 2) Correspondance partielle (sous-chaîne) dans un matériau accepté.
-    for mat in materials:
-        bucket = index.get(mat) or {}
-        for cn, hx in bucket.items():
-            if target == cn or target in cn or cn in target:
-                return hx
     return None
 
 
@@ -142,8 +136,7 @@ def fetch_brand(file_slug: str) -> dict:
         with urllib.request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read())
     except Exception as e:  # noqa: BLE001
-        print(f"FAILED ({e})")
-        return {}
+        raise SourceUnavailable(f"SpoolmanDB {file_slug} indisponible : {e}") from e
     print(f"{len(data.get('filaments', []))} filament groups")
     return data
 
@@ -155,24 +148,32 @@ def main() -> None:
     force   = "--force"   in sys.argv
     verbose = "--verbose" in sys.argv
 
-    with open(DB_FILE, encoding="utf-8") as f:
-        db = json.load(f)
+    db = load_db(DB_FILE)
     products: dict = db["_products"]
     skus: dict = db["_skus"]
 
     stats = {"filled": 0, "overridden": 0, "skipped": 0, "no_match": 0}
+    failures = []
 
     for brand, slug in BRANDS.items():
-        data = fetch_brand(slug)
-        if not data:
+        try:
+            data = fetch_brand(slug)
+        except SourceUnavailable as exc:
+            failures.append(str(exc))
+            continue
+        if not isinstance(data, dict) or not isinstance(data.get("filaments"), list) or not data["filaments"]:
+            failures.append(f"SpoolmanDB {slug} : réponse vide ou inexploitable.")
             continue
         index = build_index(data)
+        if not any(index.values()):
+            failures.append(f"SpoolmanDB {slug} : aucune couleur exploitable.")
+            continue
         if verbose:
             print(f"  [{brand}] index: " + ", ".join(
                 f"{m}={len(c)}" for m, c in sorted(index.items())
             ))
 
-        brand_force = force or (brand in AUTHORITATIVE_OVERRIDE_BRANDS)
+        brand_force = force
 
         for sku, entry in skus.items():
             product = entry.get("product", "")
@@ -180,6 +181,8 @@ def main() -> None:
             if not prod or prod.get("brand") != brand:
                 continue
             existing = entry.get("hex")
+            if not existing and requires_manual_color(entry):
+                continue
             if existing and not brand_force:
                 continue
             color = entry.get("color_name", "")
@@ -206,9 +209,7 @@ def main() -> None:
                     stats["skipped"] += 1
 
     if not dry_run and (stats["filled"] or stats["overridden"]):
-        db["_last_updated"] = datetime.now().isoformat()
-        with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump(db, f, ensure_ascii=False, indent=2)
+        save_db(db, DB_FILE)
         print(f"\nDB saved: {DB_FILE}")
 
     print("\n-- Stats (SpoolmanDB multibrand) -----------------")
@@ -218,7 +219,11 @@ def main() -> None:
     print(f"  No match in SpoolmanDB      : {stats['no_match']}")
     if dry_run:
         print("\n[DRY RUN] No changes written.")
+    if failures:
+        if len(failures) == len(BRANDS):
+            raise SourceUnavailable(" ; ".join(failures))
+        raise PartialUpdate(" ; ".join(failures))
 
 
 if __name__ == "__main__":
-    main()
+    run_step(main, DB_FILE)

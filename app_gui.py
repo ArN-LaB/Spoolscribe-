@@ -541,6 +541,9 @@ class MainWindow(QMainWindow):
         act_about = QAction("À propos de SpoolScribe", self)
         act_about.triggered.connect(self._open_about)
         menu.addAction(act_settings)
+        self.act_archive = QAction("Exporter la sélection en archive JSON…", self)
+        self.act_archive.triggered.connect(lambda: self._generate(mode="archive"))
+        menu.addAction(self.act_archive)
         menu.addSeparator()
         menu.addAction(act_about)
         self.menu_btn.setMenu(menu)
@@ -785,7 +788,7 @@ class MainWindow(QMainWindow):
 
         # Action principale : c'est LA fonction de l'app → grande, pleine
         # largeur, bien en évidence au milieu du panneau.
-        self.btn_generate = QPushButton("Générer le tag NFC")
+        self.btn_generate = QPushButton("Exporter pour NFC")
         self.btn_generate.setObjectName("primary")
         self.btn_generate.setCursor(Qt.PointingHandCursor)
         self.btn_generate.setMinimumHeight(48)
@@ -1059,7 +1062,13 @@ class MainWindow(QMainWindow):
         self.stats_label.setText(
             f"SKUs: {st['skus']}    Produits: {st['products']}    "
             f"HEX manquants: {st['missing_hex']}    DB: {age_str}"
+            + (f"    Mise à jour : {core.UPDATE_STATUS_LABELS.get(self.db['_update_status'], self.db['_update_status'])}"
+               if self.db.get('_update_status') else "")
+            + (f"    Conflits locaux : {len(self.db['_bundle_conflicts'])}" if self.db.get('_bundle_conflicts') else "")
         )
+        conflicts = self.db.get("_bundle_conflicts", [])
+        self.stats_label.setToolTip("Valeurs locales conservées lors de la fusion :\n" + "\n".join(conflicts)
+                                   if conflicts else "")
 
     def _refresh_logo(self, brand: str = "Polymaker"):
         abs_path = core.logo_abs_path(self.db, brand)
@@ -1143,7 +1152,7 @@ class MainWindow(QMainWindow):
         self._cur_hex = view.hex
         self._paint_swatch()
 
-        self.btn_generate.setEnabled(True)
+        self.btn_generate.setEnabled(not (self.worker and self.worker.isRunning()))
         self.btn_inspect.setEnabled(True)
         if self.inspector.isVisible():
             self._refresh_inspector()
@@ -1154,17 +1163,62 @@ class MainWindow(QMainWindow):
             return None
         entry = dict(self.db["_skus"][self.current_sku])
         entry["sku"] = self.current_sku
-        return core.build_openspool(entry, view.product_data, brand_meta=view.brand_meta)
+        return core.build_openspool(entry, view.product_data, brand_meta=view.brand_meta,
+                                    use_orca_overrides=core.load_config().get("orca_overrides") is True)
 
     # ── Actions ──────────────────────────────────────────────────────────
-    def _generate(self):
+    def _complete_color(self) -> bool:
+        entry = self.db["_skus"][self.current_sku]
+        if core.validate_hex(entry.get("hex")):
+            return True
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Couleur à préciser")
+        lay = QVBoxLayout(dlg)
+        note = QLabel("La couleur est inconnue. Choisissez explicitement un HEX représentatif.\n"
+                      "Une couleur transparente ou multicolore ne sera pas remplacée automatiquement par du noir.")
+        note.setWordWrap(True)
+        lay.addWidget(note)
+        lay.addWidget(QLabel("HEX représentatif (6 caractères)"))
+        hx = QLineEdit()
+        lay.addWidget(hx)
+        lay.addWidget(QLabel("Alpha facultatif : 00 transparent, FF opaque ; vide pour conserver"))
+        alpha = QLineEdit(entry.get("alpha", ""))
+        lay.addWidget(alpha)
+        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(dlg.accept)
+        buttons.rejected.connect(dlg.reject)
+        lay.addWidget(buttons)
+        if dlg.exec() != QDialog.Accepted:
+            return False
+        value = core.validate_hex(hx.text())
+        if not value:
+            raise core.ExportValidationError("Couleur invalide : six caractères HEX requis.")
+        sku = self.current_sku
+        core.set_sku_hex(self.db, sku, value, alpha=alpha.text().strip() or None)
+        self._reload_table()
+        self.current_sku = sku
+        self._show_detail(sku)
+        self._update_stats()
+        return True
+
+    def _generate(self, checked=False, *, mode="nfc"):
         if not self.current_sku:
             return
+        if self.worker and self.worker.isRunning():
+            self.status.showMessage("Attendez la fin de la mise à jour avant de modifier ou exporter la fiche.", 6000)
+            return
         try:
+            if core.get_sku_view(self.db, self.current_sku) is None:
+                raise core.ExportValidationError("Produit introuvable pour cette référence.")
+            if not self._complete_color():
+                return
             view = core.get_sku_view(self.db, self.current_sku)
+            if view is None:
+                raise core.ExportValidationError("Produit introuvable pour cette référence.")
             entry = self.db["_skus"][self.current_sku]
             out = core.write_openspool(self.current_sku, entry, view.product_data,
-                                       brand_meta=view.brand_meta)
+                                       brand_meta=view.brand_meta, mode=mode,
+                                       use_orca_overrides=core.load_config().get("orca_overrides") is True)
             self.status.showMessage(f"Généré : {out}", 8000)
             QMessageBox.information(self, "Export OpenSpool",
                                     f"Fichier généré :\n{out}")
@@ -1186,9 +1240,17 @@ class MainWindow(QMainWindow):
             self.resize(self.width(), new_h)
 
     def _refresh_inspector(self):
-        payload = self._build_payload()
-        if payload is not None:
-            self.inspector.setPlainText(json.dumps(payload, indent=2, ensure_ascii=False))
+        try:
+            payload = self._build_payload()
+            if payload is not None:
+                text = core.serialize_openspool(payload)
+                size = core.nfc_size(text)
+                self.inspector.setPlainText(text)
+                self.status.showMessage(f"JSON : {size.utf8_bytes} octets UTF-8 ; "
+                                        f"occupation NFC : {size.type2_bytes}/{size.capacity_bytes} octets "
+                                        "(un enregistrement MIME).", 10000)
+        except (core.ExportValidationError, core.DatabaseError, OSError) as exc:
+            self.inspector.setPlainText(f"Export impossible : {exc}")
 
     def _open_output(self):
         out_dir = core.OUTPUT_DIR
@@ -1233,10 +1295,17 @@ class MainWindow(QMainWindow):
     def _start_update(self):
         if self.worker and self.worker.isRunning():
             return
-        if not self._ask_network_consent():
+        try:
+            consent = self._ask_network_consent()
+        except OSError as exc:
+            QMessageBox.critical(self, "Consentement non enregistré", str(exc))
+            return
+        if not consent:
             self.status.showMessage("Mise à jour annulée (réseau refusé).", 6000)
             return
         self.update_btn.setEnabled(False)
+        self.menu_btn.setEnabled(False)
+        self.btn_generate.setEnabled(False)
         self.progress.setVisible(True)
         self.progress.setRange(0, len(core.UPDATE_PIPELINE))
         self.progress.setValue(0)
@@ -1255,7 +1324,12 @@ class MainWindow(QMainWindow):
     def _on_update_done(self, results):
         self.progress.setVisible(False)
         self.update_btn.setEnabled(True)
-        self.db = core.load_db()
+        self.menu_btn.setEnabled(True)
+        try:
+            self.db = core.load_db()
+        except (core.DatabaseError, OSError) as exc:
+            QMessageBox.critical(self, "Base illisible", str(exc))
+            return
         self._reload_table()
         self._refresh_logo()
         self._update_stats()
@@ -1263,7 +1337,7 @@ class MainWindow(QMainWindow):
             self._show_detail(self.current_sku)
         n_ok = sum(1 for r in results if r.ok)
         n_ko = [r for r in results if not r.ok]
-        msg = f"Mise à jour terminée — {n_ok}/{len(results)} étapes OK."
+        msg = f"Mise à jour {core.UPDATE_STATUS_LABELS[core.update_status(results)]} — {n_ok}/{len(results)} étapes OK."
         self.status.showMessage(msg, 10000)
         if n_ko:
             def _reason(r):
@@ -1290,11 +1364,16 @@ class MainWindow(QMainWindow):
     def _on_update_failed(self, tb):
         self.progress.setVisible(False)
         self.update_btn.setEnabled(True)
+        self.menu_btn.setEnabled(True)
+        if self.current_sku:
+            self._show_detail(self.current_sku)
         QMessageBox.critical(self, "Erreur de mise à jour", tb)
 
     # ── Mise à jour automatique ──────────────────────────────────────────
     def _maybe_auto_update(self):
         """Lance une mise à jour au démarrage si l'option est activée et due."""
+        if core.db_restored_this_session():
+            return
         try:
             cfg = core.load_config()
         except Exception:
@@ -1319,6 +1398,22 @@ class MainWindow(QMainWindow):
         chk_auto = QCheckBox("Mettre à jour automatiquement la base au démarrage")
         chk_auto.setChecked(bool(cfg.get("auto_update")))
         lay.addWidget(chk_auto)
+        chk_orca = QCheckBox("À l'export, préférer les valeurs du profil Orca aux valeurs locales")
+        chk_orca.setChecked(cfg.get("orca_overrides") is True)
+        chk_orca.setToolTip("Option désactivée : les corrections locales sont conservées. "
+                            "L'inspecteur JSON montre les valeurs réellement exportées.")
+        lay.addWidget(chk_orca)
+        revoke = QPushButton("Retirer l'autorisation réseau")
+        revoke.setEnabled(core.has_network_consent())
+        def revoke_consent():
+            try:
+                core.set_network_consent(False, auto_update=False)
+                dlg.reject()
+                self.status.showMessage("Autorisation réseau retirée. Une mise à jour manuelle redemandera votre accord.", 8000)
+            except OSError as exc:
+                QMessageBox.critical(self, "Paramètres", str(exc))
+        revoke.clicked.connect(revoke_consent)
+        lay.addWidget(revoke)
 
         row = QHBoxLayout()
         row.addWidget(QLabel("Intervalle de mise à jour :"))
@@ -1346,9 +1441,15 @@ class MainWindow(QMainWindow):
 
         if dlg.exec() == QDialog.Accepted:
             cfg["auto_update"] = chk_auto.isChecked()
+            cfg["orca_overrides"] = chk_orca.isChecked()
             cfg["update_interval_days"] = spin.value()
-            core.save_config(cfg)
-            self.status.showMessage("Paramètres enregistrés.", 4000)
+            try:
+                core.save_config(cfg)
+                if self.inspector.isVisible():
+                    self._refresh_inspector()
+                self.status.showMessage("Paramètres enregistrés.", 4000)
+            except OSError as exc:
+                QMessageBox.critical(self, "Paramètres non enregistrés", str(exc))
 
     # ── À propos ─────────────────────────────────────────────────────────
     def _open_about(self):
@@ -1447,10 +1548,26 @@ def main():
     icon_path = core.app_icon_abs_path()
     if icon_path:
         app.setWindowIcon(QIcon(icon_path))
-    win = MainWindow()
+    try:
+        win = MainWindow()
+    except (core.DatabaseError, OSError) as exc:
+        backup = core.DB_PATH + ".bak"
+        if not os.path.isfile(backup) or QMessageBox.question(
+            None, "Base illisible", f"{exc}\n\nRestaurer {backup} ?\n"
+            "Le fichier actuel sera conservé séparément.", QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        ) != QMessageBox.Yes:
+            QMessageBox.critical(None, "Base illisible", str(exc))
+            return 1
+        try:
+            core.restore_db()
+            win = MainWindow()
+        except (core.DatabaseError, OSError) as recovery_error:
+            QMessageBox.critical(None, "Restauration impossible", str(recovery_error))
+            return 1
     win.show()
-    sys.exit(app.exec())
+    return app.exec()
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
