@@ -10,15 +10,21 @@
     "width": 242
   },
   "02a183dc-7459-4985-aabc-80929c5b2ab4": {
-    "height": 168,
+    "height": 117,
+    "logo_source": {
+      "licence_note": "Logo déposé Anycubic ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://store.anycubic.com/cdn/shop/files/logo_30ab490e-df79-44be-93ca-f1891724de75.png?v=1753086227"
+    },
     "name": "Anycubic",
     "path": "data/brand_logos/anycubic.png",
-    "sha256": "a8f754ebeff4ef15cfb0d79c0d35c290fb6b98c8f1fddc82e62047575930af99",
+    "sha256": "979a73589c47edfc011abcb403aee7e00ab5a038863ab4ec6aa2910242896311",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/anycubic/logo.png",
     "source_sha256": "f9f1f501e0e1135a9fb1998e4bd2dae8e071958c9434f91cc2464b94ab3665bd",
     "transparent_background": true,
-    "width": 199
+    "width": 842
   },
   "0457a82e-e752-4f3d-b138-4575c51ef5d9": {
     "height": 37,
@@ -32,13 +38,20 @@
     "width": 224
   },
   "09e98db0-8397-4fea-bb98-48c7057ed6a9": {
-    "height": 110,
+    "height": 120,
+    "logo_source": {
+      "licence_note": "Logo déposé Eolas Prints ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://eolasprints.com/cdn/shop/files/1707598815735-logo400x120.png?v=1707598817"
+    },
     "name": "Eolas Prints",
     "path": "data/brand_logos/eolas_prints.png",
-    "sha256": "935aa26516a164527d8ab65b2c393f7d25d6e1062f8dfeda604522770618298f",
+    "sha256": "2a6554f1a8e6c9cc1023efd3c6bb28892011f8af3df36ff29375a28e9b2a003e",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/eolas_prints/logo.png",
     "source_sha256": "fee0ea0a656bc226c9340ad855f90756100db22cb25ab9422e73c79e77f859f9",
+    "transparent_background": true,
     "width": 400
   },
   "0a98b6ca-4c53-4916-85c9-f426e309a046": {
@@ -73,24 +86,38 @@
     "width": 213
   },
   "153b5f61-1fc6-4fae-9fb9-453df654728c": {
-    "height": 208,
+    "height": 390,
+    "logo_source": {
+      "licence_note": "Logo déposé eSUN (Shenzhen Esun Industrial) ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://ueeshop.ly200-cdn.com/u_file/UPBB/UPBB609/2407/30/photo/logo.png"
+    },
     "name": "eSUN 3D",
     "path": "data/brand_logos/esun_3d.png",
-    "sha256": "75ff346341d340f36a912bbe9930205211c99b0da169bd5da4e3cd32e2691321",
+    "sha256": "9469a6c20924b81796155edf81d8f6f5f0e3f1b881bf70947d68ee53ae3c8fff",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/esun_3d/logo.png",
     "source_sha256": "1e4bd4b50ffdea17145284165425ef3510eb03352140f42ae8bd9666b4b6aebf",
-    "width": 220
+    "transparent_background": true,
+    "width": 1600
   },
   "160b4331-7ba4-4bbc-88ba-02180e376c21": {
-    "height": 73,
-    "name": "Amolen",
+    "height": 464,
+    "logo_source": {
+      "licence_note": "Logo déposé AMOLEN ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.amolen.com/cdn/shop/files/Amolen_logo_new-1.png?v=1760427986"
+    },
+    "name": "AMOLEN",
     "path": "data/brand_logos/amolen.png",
-    "sha256": "9e0ff553fc3e9c108824af6e99a5f4116cfe7daf08653b8aad47f53f8afede46",
+    "sha256": "9c9bf5fb8c46f12cf09605cd6f5d2a257dec3c6012ce9977c6546a49f167c990",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/amolen/logo.png",
     "source_sha256": "f0dd7a77dba0a855768398694b9f1d12974e25b8a1c0ab09cee9443c00698c04",
-    "width": 335
+    "transparent_background": true,
+    "width": 1600
   },
   "17db1e3c-1775-49f7-a1a8-5200c058be46": {
     "height": 212,
@@ -104,14 +131,21 @@
     "width": 184
   },
   "180aa9f5-d59c-4a43-a0ca-3f47a6933b68": {
-    "height": 134,
+    "height": 436,
+    "logo_source": {
+      "licence_note": "Logo déposé Copymaster3D ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://copymaster3d.com/cdn/shop/files/copymaster-logo.png?v=1652173787"
+    },
     "name": "Copymaster",
     "path": "data/brand_logos/copymaster.png",
-    "sha256": "61cb7a5ce8d02fc0f256c6944967c014dc6741ce3827f8adff01c5aeb196a787",
+    "sha256": "82b0c4cb01679e97f5fe5cd4a62e520e0c8063e4873465dd543b8e4cc2e2adc1",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/copymaster/logo.png",
     "source_sha256": "543494f58a1de698abf858de18b5dacd0c121131398f41cb712dcc770c4001c7",
-    "width": 113
+    "transparent_background": true,
+    "width": 729
   },
   "18523783-22c9-4652-b564-7fb015d2349d": {
     "height": 121,
@@ -126,24 +160,37 @@
   },
   "1863f11e-5295-4141-9b8f-0fc28802412f": {
     "height": 208,
-    "name": "3DJAKE",
+    "logo_source": {
+      "licence_note": "Logo déposé niceshops GmbH ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://3d.nice-cdn.com/disco/build/assets/Logo/threedjake-logo.e0559f435h0p.svg"
+    },
+    "name": "3DJake",
     "path": "data/brand_logos/3djake.svg",
-    "sha256": "d35e697ca9e0e8fd89b87139687b3c9a41f271483d791231d7e694748803ff2c",
+    "sha256": "5e2b7e67a4b3e6bebc531c424c1a42d803d5d18e0413dded0dbadb9d96118e53",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3djake/logo.svg",
     "source_sha256": "d35e697ca9e0e8fd89b87139687b3c9a41f271483d791231d7e694748803ff2c",
+    "transparent_background": true,
     "width": 622
   },
   "1a32af25-b3fa-43c6-bd38-f44b51725e7a": {
-    "height": 89,
+    "height": 166,
+    "logo_source": {
+      "licence_note": "Logo déposé Sakata 3D ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://sakata3d.com/img/logo-1748901612.jpg"
+    },
     "name": "Sakata 3D",
     "path": "data/brand_logos/sakata_3d.png",
-    "sha256": "8086687dd1fa723409da92fb2da3ea06460327ed3698b00a398b048fa236b040",
+    "sha256": "2b568f815102386c546369a11626c54699383f92dc49d8e8764806a175a60b6e",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/sakata_3d/logo.jpg",
     "source_sha256": "9a159411f8e72629634b436fca635304fee63e919c9109d02572d5c1a6dbd10b",
     "transparent_background": true,
-    "width": 400
+    "width": 750
   },
   "1b65f78a-ac84-4ab8-8dd8-e5768b80fb76": {
     "height": 64,
@@ -268,15 +315,21 @@
     "width": 239
   },
   "2b1046f6-3c47-4f48-9c70-22f02c2d16b4": {
-    "height": 200,
-    "name": "Add-North",
+    "height": 410,
+    "logo_source": {
+      "licence_note": "Logo déposé add:north ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://storage.googleapis.com/addnorth-com-public/images/logo_liggande.png"
+    },
+    "name": "add:north",
     "path": "data/brand_logos/add_north.png",
-    "sha256": "70056c63e6e3f6bf7b970744dc348e5089aa029120461ddbc609278771bbeb51",
+    "sha256": "59f80c652b3d9168f3ce55c69d517c482189d3b9fafa46a61ead5e8e4d448a4d",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/add_north/logo.jpg",
     "source_sha256": "d4daa969a16717adc3f4effd21330f73b8d2824e0ac03245fce3f55b2d23099d",
     "transparent_background": true,
-    "width": 158
+    "width": 1553
   },
   "2dc4fce1-ef8f-4c67-91a1-f685776b4f45": {
     "height": 63,
@@ -311,34 +364,55 @@
     "width": 230
   },
   "3258e368-bd9f-49d3-be11-79ae590af064": {
-    "height": 131,
+    "height": 166,
+    "logo_source": {
+      "licence_note": "Logo déposé Fiberlogy ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://fiberlogy.com/app/uploads/2026/04/logo.svg"
+    },
     "name": "Fiberlogy",
-    "path": "data/brand_logos/fiberlogy.png",
-    "sha256": "e9b605f1be1378d064ce6b6d217c60354cd79895e23cffb98c1cd939f37679a0",
+    "path": "data/brand_logos/fiberlogy.svg",
+    "sha256": "300ab560ea42e21e9096ab46cdb190bbd6682c83ab0fa9407317a4125ff99e3b",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/fiberlogy/logo.png",
     "source_sha256": "49745cc4bd73e75d0dccd0ddf2f4c0b7bb46c2d51ec3ded84e043b9e7d0dd3c1",
-    "width": 133
+    "transparent_background": true,
+    "width": 640
   },
   "35d26337-a860-4c75-b4ba-51a059345951": {
-    "height": 128,
+    "height": 214,
+    "logo_source": {
+      "licence_note": "Logo déposé Filamentive ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://filamentive.com/wp-content/uploads/2021/07/Filamentive_logo_2021.png"
+    },
     "name": "Filamentive",
     "path": "data/brand_logos/filamentive.png",
-    "sha256": "261283a9c9804c89b040430bbdbd55e92628fab60c79d9eefca4217ca2371409",
+    "sha256": "a245a6a5f1ab26b427a93847879e2ab31e6751694b94391e3e2f7416ae33d3f2",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/filamentive/logo.png",
     "source_sha256": "bef46cdb940e810ca0b1a87a14cc5a4ff916a028b0d5e39127bc7a90368bbd07",
-    "width": 128
+    "transparent_background": true,
+    "width": 741
   },
   "388366eb-e3b6-4a7e-aa43-cabad8431304": {
-    "height": 25,
+    "height": 210,
+    "logo_source": {
+      "licence_note": "Logo déposé Geeetech ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.geeetech.com/cdn/shop/files/logo_r.png?v=1780653605"
+    },
     "name": "Geeetech",
     "path": "data/brand_logos/geeetech.png",
-    "sha256": "e4dd46d320bb133ff61e20fa8a04d4e2f0833847d5539708fb303d0d6249d243",
+    "sha256": "7085627afb7b67e49d5f97ed0b3361020a4ce5a891aa1ba30b23f457f97775bf",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/geeetech/logo.png",
     "source_sha256": "3eecad291d97d246fb1b4b5706674c942f1d027cfa19b6f971c133bc3c5f363f",
-    "width": 162
+    "transparent_background": true,
+    "width": 1142
   },
   "3d78ad75-4838-4bbf-a120-7371290f2406": {
     "height": 31,
@@ -350,6 +424,20 @@
     "source_sha256": "7a7327211b0c24ce285c9bee3d8501acb728973f12c5672487b7b6f38f90dc4a",
     "transparent_background": true,
     "width": 221
+  },
+  "3d_prima": {
+    "height": 146,
+    "logo_source": {
+      "licence_note": "Logo déposé 3D Prima / Prima Printer Nordic ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://cdn03.plentymarkets.com/ioseuwg7moqp/frontend/Pics/3d-prima-01.svg"
+    },
+    "name": "3D Prima",
+    "path": "data/brand_logos/3d_prima.svg",
+    "sha256": "3fa6580e7e60e0bf66b9959a6568e748af0360dd93fd380287f4f1ac032d61e2",
+    "transparent_background": true,
+    "width": 640
   },
   "3f074b81-270b-471e-b889-cf4e36cf02a6": {
     "height": 107,
@@ -373,14 +461,21 @@
     "width": 400
   },
   "43be9ea2-7669-418f-81cb-cd54a408799c": {
-    "height": 361,
+    "height": 155,
+    "logo_source": {
+      "licence_note": "Logo déposé Bambu Lab ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://store.bblcdn.com/static/bambu_logo__1_110x.svg"
+    },
     "name": "Bambu Lab",
-    "path": "data/brand_logos/bambu_lab.png",
-    "sha256": "8c3fdd28007a4ea6e6ef097fd59742a920fc7c2290c5702ee7dc9f6e1c1431a9",
+    "path": "data/brand_logos/bambu_lab.svg",
+    "sha256": "609c91ad73652831a5d9685095e520c68593859d8ae66109690f39227e91db48",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/bambu_lab/logo.png",
     "source_sha256": "fc285d82745252854f02173978f842a9426f881e5f23a43328ff48187a8f9c90",
-    "width": 278
+    "transparent_background": true,
+    "width": 536
   },
   "43ed0e1e-9b23-4840-b16f-e332cd5a5325": {
     "height": 160,
@@ -394,24 +489,38 @@
     "width": 325
   },
   "45929416-971e-48bd-b0e3-95ebdc2d8bf5": {
-    "height": 86,
-    "name": "FilamentPM",
-    "path": "data/brand_logos/filamentpm.png",
-    "sha256": "77d35aa26d57ac742ec254bbea0ec39a78ef25a0d698e24e561f049cac7ce431",
+    "height": 136,
+    "logo_source": {
+      "licence_note": "Logo déposé Filament PM ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.filament-pm.com/dist/images/logo.svg"
+    },
+    "name": "Filament PM",
+    "path": "data/brand_logos/filamentpm.svg",
+    "sha256": "a9588c6afbe5b9c6b9423376cb75eb7e564b8e90493b3621222c96172458908d",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/filamentpm/logo.png",
     "source_sha256": "167c1fa3eb3d7520d257e4be4abe9009e5fa0ae4c3daa554c116fd2cd100d25c",
-    "width": 396
+    "transparent_background": true,
+    "width": 633
   },
   "467955e6-e6e1-4ff5-a211-c09c65bb6214": {
-    "height": 157,
+    "height": 193,
+    "logo_source": {
+      "licence_note": "Logo déposé Filkemp ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://filkemp.com/wp-content/uploads/2018/08/logo.png"
+    },
     "name": "Filkemp",
-    "path": "data/brand_logos/filkemp.svg",
-    "sha256": "8ac8eca12be2116e656dddce68848d845e32b153b31a4032d38258f596173583",
+    "path": "data/brand_logos/filkemp.png",
+    "sha256": "bf519fcf98566f734e9da212ee6ea4c5335b505d943eab5616df618e95f4fddd",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/filkemp/logo.svg",
     "source_sha256": "0bd016264021a5cf99d6c9bb5592f53e54ede4ee966ace820414c7dc224080ae",
-    "width": 618
+    "transparent_background": true,
+    "width": 500
   },
   "496fec1f-4bb8-4c3c-9399-a222cb14fa0e": {
     "height": 32,
@@ -424,15 +533,21 @@
     "width": 208
   },
   "4992db69-5d64-40b4-94e9-eb7f8211d516": {
-    "height": 89,
+    "height": 198,
+    "logo_source": {
+      "licence_note": "Logo déposé JAYO ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://jayo3d.com/cdn/shop/files/800-400_1.jpg?v=1727232047"
+    },
     "name": "JAYO",
     "path": "data/brand_logos/jayo.png",
-    "sha256": "4d7245c2f33073122d7545839f9ea7b84d8eb0b2454f9997deaa2bd2991b39ea",
+    "sha256": "9073b5e57fc994af3d58e2e88e9be82dc1cafc48e3af572e4b03c35cbe529149",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/jayo/logo.jpg",
     "source_sha256": "e0d0eedfb1f8e308111bd5e38d1e6ab8ab1e1abc2000aa937ec5f02b418f4a0e",
     "transparent_background": true,
-    "width": 347
+    "width": 754
   },
   "4b0b65de-13fd-437d-a5b9-ace7b370e222": {
     "height": 67,
@@ -466,14 +581,21 @@
     "width": 640
   },
   "4ed1fe89-52a6-42bb-9891-fd56c458d86f": {
-    "height": 90,
+    "height": 282,
+    "logo_source": {
+      "licence_note": "Logo déposé Devil Design ; page « Nos marques » (https://devildesign.com/en/nasze-marki/) le présente comme « Logo RGB Red 300ppi » sans conditions explicites.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://devildesign.com/wp-content/uploads/2018/11/Logo-RGB-Red-300ppi-.png"
+    },
     "name": "Devil Design",
     "path": "data/brand_logos/devil_design.png",
-    "sha256": "db9c2205fe22aa6fabee2d8406615b81790bfd60453a9b7fa63a8c7c25cd73f3",
+    "sha256": "53775239ac48edb640b507a584071383a606ece9a952acd7e1588a1d62751690",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/devil_design/logo.png",
     "source_sha256": "f6e5c7117f0c424ac56e7eeb8da3388225de56505107c9ef2a6ecbe89a52c3b8",
-    "width": 400
+    "transparent_background": true,
+    "width": 1280
   },
   "50b29a1b-9547-4b5b-8c7c-62a99b142ebe": {
     "height": 73,
@@ -486,15 +608,21 @@
     "width": 276
   },
   "51b476ce-30d4-4e70-8214-640442eb3a8e": {
-    "height": 91,
-    "name": "kexcelled",
+    "height": 520,
+    "logo_source": {
+      "licence_note": "Logo déposé Kexcelled ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://kexcelled3d.com/cdn/shop/files/LOGO-_800x800_1.png?v=1776755667"
+    },
+    "name": "Kexcelled",
     "path": "data/brand_logos/kexcelled.png",
-    "sha256": "6069dcdb3bf36f930db0e4766369346307d49acdd8e51948e4799e3442c466d7",
+    "sha256": "1a919f67ed2effa74c51d0bd5370823daac6582cabe79ea184834d07e5d6b516",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/kexcelled/logo.png",
     "source_sha256": "8cd33d1d5f864387df0cf8f35f65cb6cfb1c0b9acabfc3967316ad01418d9b47",
     "transparent_background": true,
-    "width": 383
+    "width": 538
   },
   "539e88ae-f1c5-4042-b002-bf9e17f2d08c": {
     "filled_shape": true,
@@ -520,31 +648,50 @@
     "width": 321
   },
   "56b51e8a-6b26-4b56-ae46-6c985a723ae5": {
-    "height": 45,
+    "height": 143,
+    "logo_source": {
+      "licence_note": "Logo déposé Spectrum Group ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://spectrumfilaments.com/wp-content/uploads/2024/10/logo.svg"
+    },
     "name": "Spectrum",
-    "path": "data/brand_logos/spectrum.png",
-    "sha256": "2b176649ab0bcb0c8b650c8aed5a8ef7fde5c5f059ba46aadac77479ce62eb98",
+    "path": "data/brand_logos/spectrum.svg",
+    "sha256": "2f163bdd9bb740b6317dc03e9d55a99eb6e163ee17b1d5a5817858e1f8b51b63",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/spectrum/logo.png",
     "source_sha256": "6175f240e3af5daa54c8cf033ae598e155b12bc217d85871ef1b80ba27e0ab07",
     "transparent_background": true,
-    "width": 200
+    "width": 640
   },
   "5b92fa9e-8461-4d2e-b192-0e5ad464f959": {
     "height": 126,
+    "logo_source": {
+      "licence_note": "Logo déposé colorFabb ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://colorfabb.com/static/version1792565382/frontend/ISM/color-fabb/default/images/logo.svg"
+    },
     "name": "colorFabb",
     "path": "data/brand_logos/colorfabb.svg",
     "sha256": "7340c3fc9ba6cbe71c05e8ea086f324cd8fc1faf0baa7aba48218102b6a68d57",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/colorfabb/logo.svg",
     "source_sha256": "b8a697f21484cc119492c707428c2bfef41a3c854accecc8424b541280950d33",
+    "transparent_background": true,
     "width": 640
   },
   "5cce9e9e-fd51-4818-bc40-9bbb6bfc0960": {
     "height": 127,
+    "logo_source": {
+      "licence_note": "Logo déposé FormFutura ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.formfutura.com/web/image/website/3/logo/FormFutura?unique=88b73d2"
+    },
     "name": "FormFutura",
     "path": "data/brand_logos/formfutura.png",
-    "sha256": "be7331d380ff946f8c7f787058647250f367be619f0333aff49a07c65c684eba",
+    "sha256": "88159b17d6a49b7177b3458da488e8bb0a3e10293db0e2cd0ddc4ad03ac70efa",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/formfutura/logo.png",
     "source_sha256": "a368e1ce26f38a66c8cc11b65b203715bdb41f0602e64a089664629ca628f3d9",
@@ -572,14 +719,21 @@
     "width": 271
   },
   "6122ca2b-4810-46b4-84b5-0a02ed609145": {
-    "height": 157,
+    "height": 403,
+    "logo_source": {
+      "licence_note": "Logo déposé Atomic Filament ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://atomicfilament.com/cdn/shop/files/logo.png?v=1650352936"
+    },
     "name": "Atomic Filament",
     "path": "data/brand_logos/atomic_filament.png",
-    "sha256": "b68c880388f7b517eff38b1c57e07ff78453ea1b704e3666d6d056094e232a8a",
+    "sha256": "1b43340c249667ce7f7c90fd84c48c3effaa3486ef9c85819413883868341c53",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/atomic_filament/logo.png",
     "source_sha256": "bd16c566f0d805c8ae0ad9d42b2f41dd4c7aaed66e6028fd9e3c31662c9b24b7",
-    "width": 394
+    "transparent_background": true,
+    "width": 800
   },
   "61d2732e-dcbf-42d2-9b0e-f71637c16aa3": {
     "height": 120,
@@ -593,14 +747,21 @@
     "width": 120
   },
   "62b8f029-bb99-46e1-bdcb-fc601d7d61cf": {
-    "height": 98,
+    "height": 249,
+    "logo_source": {
+      "licence_note": "Logo déposé Print With Smile ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.printwithsmile.cz/deploy/img/fck/Image/logos/print-with-smile-logo-1695029110.jpg"
+    },
     "name": "Print With Smile",
     "path": "data/brand_logos/print_with_smile.png",
-    "sha256": "0f696ada719d8ff57d5b9edc4ed36684e1120e96a05f9d9de933bd2d887ce2f0",
+    "sha256": "dc862a7a84b19da182a0a192ce85af1cae3072dade3c89b3d4b7ff284a2a5173",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/print_with_smile/logo.png",
     "source_sha256": "14d8295c7da40b2084e5578497411ae0003c4a3484665d07b3e5b909097934b8",
-    "width": 98
+    "transparent_background": true,
+    "width": 611
   },
   "66014e05-7168-4ca8-bdd2-ddefbd882b15": {
     "height": 74,
@@ -625,14 +786,21 @@
     "width": 280
   },
   "689257af-f221-487c-bcf8-220651aae92e": {
-    "height": 189,
+    "height": 358,
+    "logo_source": {
+      "licence_note": "Logo déposé Kingroon ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://kingroon.com/cdn/shop/files/logo_84f7ef73-556b-4db1-8259-8d91b5f51331.png?v=1715151840"
+    },
     "name": "Kingroon",
     "path": "data/brand_logos/kingroon.png",
-    "sha256": "c26e233c1654bd018849e68057446bb9ecb66c98ca79da0e784ba8de9dcfa59e",
+    "sha256": "4d9311c20921fc13fa6d4ed16fe052a711f7970cdd11c6c597615359d3d2c98c",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/kingroon/logo.png",
     "source_sha256": "04fd0f2d3c8fc45727b94f9f548cb6b2903f350f40fd68acdb39294b2470fffb",
-    "width": 203
+    "transparent_background": true,
+    "width": 1600
   },
   "68e1c465-01a8-4108-9d82-923bd88acd75": {
     "height": 373,
@@ -646,23 +814,37 @@
     "width": 357
   },
   "68eeb39a-0707-463b-a9e6-3eccb1a92c04": {
-    "height": 77,
+    "height": 520,
+    "logo_source": {
+      "licence_note": "Logo déposé QIDI Technology ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://qidi3d.com/cdn/shop/files/QIDI-TECH-logo-new.png?v=1726827742"
+    },
     "name": "QIDI Tech",
     "path": "data/brand_logos/qidi_tech.png",
-    "sha256": "e5b7678e246c143d5c15dac8a9422e96d4a86cbb9103961ae019e18046cbd699",
+    "sha256": "6498457ac1162827cff2f63e7d21ceb764c73ea38e5a39dbd64cb777e2329731",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/qidi_tech/logo.png",
     "source_sha256": "e28f368029f87cbf733842ea35b8e968db15e47b15050ffaba403a745d82b81d",
-    "width": 206
+    "transparent_background": true,
+    "width": 1189
   },
   "6c447110-e8ea-469d-892a-69008a38dbcd": {
     "height": 110,
+    "logo_source": {
+      "licence_note": "Logo déposé Verbatim (CMC Magnetics) ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.verbatim-europe.com/files/assets/verbatim-logo-tm.svg"
+    },
     "name": "Verbatim",
     "path": "data/brand_logos/verbatim.svg",
     "sha256": "916e564d44fc5767626bfbbbc6836bcf3df96d9c1e9d39f564786b548262ebe2",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/verbatim/logo.svg",
     "source_sha256": "916e564d44fc5767626bfbbbc6836bcf3df96d9c1e9d39f564786b548262ebe2",
+    "transparent_background": true,
     "width": 640
   },
   "6cf69613-f917-4d76-8a27-0b09eadda5b6": {
@@ -697,15 +879,21 @@
     "width": 400
   },
   "7b13de34-b50e-4c76-8f0b-91a80e1c686b": {
-    "height": 308,
+    "height": 520,
+    "logo_source": {
+      "licence_note": "Logo déposé BIQU ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://biqu.equipment/cdn/shop/files/BQ-LOGO_TM_0542b27c-c154-4e49-ab16-c3515878834c.png?v=1633748036"
+    },
     "name": "BIQU",
     "path": "data/brand_logos/biqu.png",
-    "sha256": "a523549fdea87bff3c1b87cddaca73acee1203d51147cfddf470478b6dab8b90",
+    "sha256": "76c3045bd2a0d781e54b5ebdd59091d1af81665f519409f74239a39f817a644c",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/biqu/logo.png",
     "source_sha256": "b32a8acb5bd0e6f508bca0a690c5eb4fa99d440a2a25fe7121096c21696f8681",
     "transparent_background": true,
-    "width": 400
+    "width": 642
   },
   "7b82eb83-f6c4-4e16-a2f5-5c7c6c15bca5": {
     "height": 259,
@@ -739,14 +927,21 @@
     "width": 397
   },
   "8872a57a-f1c9-4247-bf0a-156a40ffe771": {
-    "height": 51,
+    "height": 164,
+    "logo_source": {
+      "licence_note": "Logo déposé AURAPOL ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://aurapol.s16.cdn-upgates.com/_cache/7/8/78944a00c433d8118382f57d86ea62c1-aurapol-logo-360x.png"
+    },
     "name": "AURAPOL",
     "path": "data/brand_logos/aurapol.png",
-    "sha256": "febf0d90c78ee86f874e3d35100574f3d8d2073245a3e5ce5ca7cca62568be73",
+    "sha256": "6aef177d4589e3f62ac412e3e17f9d78d7c1a7b9937a14fab18362e80d5f9971",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/aurapol/logo.png",
     "source_sha256": "88f3bc226fe759cf1ae6cd1be847a56a83f46e05b2ffa22d0a53718dfeb56f87",
-    "width": 112
+    "transparent_background": true,
+    "width": 360
   },
   "88fc7fc2-2fec-4a1c-b0b3-749a02c6aa81": {
     "height": 350,
@@ -821,14 +1016,21 @@
     "width": 360
   },
   "99edd750-12bb-4ca2-acc4-be519e4fd91d": {
-    "height": 358,
+    "height": 520,
+    "logo_source": {
+      "licence_note": "Logo déposé IC3D Industries ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.ic3dprinters.com/ic3d/wp-content/uploads/2018/11/IC3D-logo-square-transparent-e1542470290387.png"
+    },
     "name": "IC3D",
     "path": "data/brand_logos/ic3d.png",
-    "sha256": "33b2923dd72ca5f8126be0832f93a92d92c01bdd449cb1de409927fe7c85ead1",
+    "sha256": "353e82d28a91b924d6c271598ef20ea3808904bf7309ffabc3f0270f5ac7c074",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/ic3d/logo.png",
     "source_sha256": "1c54c2a115182897ad3955cbc24cf8f09ee64a01d51eae0d9b8db0c225e82a45",
-    "width": 296
+    "transparent_background": true,
+    "width": 520
   },
   "9a80e970-5239-4e95-81c7-a4db07669080": {
     "height": 55,
@@ -872,14 +1074,21 @@
     "width": 86
   },
   "a09bc37d-ac95-4222-82cb-cc1c5913785f": {
-    "height": 54,
+    "height": 520,
+    "logo_source": {
+      "licence_note": "Logo déposé Eryone ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://eryone3d.com/cdn/shop/files/Eryone.png?v=1621309492"
+    },
     "name": "Eryone",
     "path": "data/brand_logos/eryone.png",
-    "sha256": "f3a3968b0fce47e8420e5e1ad54cd9eb7bdc61e831e3d90ace283505a7d32fce",
+    "sha256": "8af3995e3d2ed9fcb448a9dd86eba799bfde548f71dc4cda32bbe651e8e017fb",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/eryone/logo.png",
     "source_sha256": "c1e46188030f5d92e83e04765d0964fe4bdf2b4bb87a7b15d4918320a3ac16f5",
-    "width": 378
+    "transparent_background": true,
+    "width": 1292
   },
   "a1f703f8-b0ba-4cc5-9952-c2e9ae6c5da7": {
     "height": 118,
@@ -935,36 +1144,55 @@
     "width": 195
   },
   "a757cc17-bd4a-48eb-b1b9-501d6aa6a6f1": {
-    "height": 87,
-    "name": "Numakers",
+    "height": 410,
+    "logo_source": {
+      "licence_note": "Logo déposé NuMakers ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://numakers.com/cdn/shop/files/numaker-logo.png?v=1679155131"
+    },
+    "name": "NuMakers",
     "path": "data/brand_logos/numakers.png",
-    "sha256": "640b099dd032157d844d71d93a9265f664caac1de9af501a005638ec1587a3b0",
+    "sha256": "9ac14764d58bb1bb26218845291d3e2fc78f2d660cbab0edfe00af4f3e448de6",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/numakers/logo.png",
     "source_sha256": "b647afe58c575f253cc47deda05b52f6ad1145daed8c04841ec91a0db1fd0f81",
-    "width": 340
+    "transparent_background": true,
+    "width": 1600
   },
   "ad2ea0aa-0d66-496e-ab57-a1207f2e22e1": {
-    "height": 54,
+    "height": 325,
+    "logo_source": {
+      "licence_note": "Logo déposé Fillamentum ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://fillamentum.com/wp-content/uploads/2020/04/logo.png"
+    },
     "name": "Fillamentum",
     "path": "data/brand_logos/fillamentum.png",
-    "sha256": "a20c8c1f6f07b997fd524d3ef46f17db830df425243dc5b52a4c178dfda63c22",
+    "sha256": "8bfd2d60d957bf6b03f3ca6d757194f88528927a1fb867b6ec020d120952fa91",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/fillamentum/logo.png",
     "source_sha256": "103839264fab6dca392bb472ade87af3c12e19a4ad62098fc3823961458d71b2",
     "transparent_background": true,
-    "width": 151
+    "width": 958
   },
   "adf07433-76ea-4db3-8262-d2b82a17b415": {
-    "height": 82,
+    "height": 246,
+    "logo_source": {
+      "licence_note": "Logo déposé extrudr (FD3D GmbH) ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://s3.extrudr.com/extrudr-media/extrudr-logo-dark.png"
+    },
     "name": "extrudr",
     "path": "data/brand_logos/extrudr.png",
-    "sha256": "391427cce2e80db1e3380a253a4e0dffa44b7abe16fbee449fccb655105e5620",
+    "sha256": "99fd66f218169fbb136b8e05bca66647a6a46670e96f899986f917490f746315",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/extrudr/logo.png",
     "source_sha256": "cde588a46c0a0836d295024deaace8f0f5004049f41dbfc87086fb56252c0929",
     "transparent_background": true,
-    "width": 83
+    "width": 1600
   },
   "af65aa0d-5349-48d0-89e2-95b55d549dad": {
     "height": 230,
@@ -998,12 +1226,19 @@
   },
   "b578295b-3aa8-42bf-88dd-3a0812ea2766": {
     "height": 113,
+    "logo_source": {
+      "licence_note": "Logo déposé Cookiecad ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://cdn.shopify.com/oxygen-v2/22380/6804/13678/4916882/assets/cookiecad-logo-dark-7VwJX-XF.svg"
+    },
     "name": "Cookiecad",
     "path": "data/brand_logos/cookiecad.svg",
     "sha256": "31e8c7adb5cdf7309e5b7beacb5dbd49062d19f47875fc98ceb3b0b48f9da961",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/cookiecad/logo.svg",
     "source_sha256": "0c0bc66994d4b5acfa5c06243ab50ebfefe456e1e7f61ec36845264c43acc8d7",
+    "transparent_background": true,
     "width": 558
   },
   "b86ad784-fb74-48fe-b23c-dd687572ca05": {
@@ -1029,12 +1264,19 @@
   },
   "ba5689b2-d91e-4c27-8f23-383f0ff6fcf1": {
     "height": 200,
+    "logo_source": {
+      "licence_note": "Logo déposé NinjaTek / Fenner ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://ninjatek.com/ (SVG inline dans l'en-tête)"
+    },
     "name": "NinjaTek",
     "path": "data/brand_logos/ninjatek.svg",
-    "sha256": "130ec7781f1d5972a67175c5e2d71da40f8e1b428b4c12f1dcf100e568784516",
+    "sha256": "3d8ed444607a6b1ff07a3aaf848114092d69b9222662e8c0cabcb5f794fce534",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/ninjatek/logo.svg",
     "source_sha256": "130ec7781f1d5972a67175c5e2d71da40f8e1b428b4c12f1dcf100e568784516",
+    "transparent_background": true,
     "width": 640
   },
   "bc3059ca-cf1a-4153-8e93-12e21456fb72": {
@@ -1058,26 +1300,38 @@
     "width": 130
   },
   "c1ab8937-cfbe-4c27-bcb1-27ef9cb100c7": {
-    "height": 156,
-    "name": "FLASHFORGE",
+    "height": 112,
+    "logo_source": {
+      "licence_note": "Logo déposé Flashforge ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.flashforge.com/cdn/shop/files/LOGO-EN-_2x_66aaab68-61ed-4eaa-84fe-a74385d064b8.webp?v=1786583712"
+    },
+    "name": "Flashforge",
     "path": "data/brand_logos/flashforge.png",
-    "sha256": "f4bb3acb6173062f66c6ecf384a22fe80784f764a47fdbbaac75fa1e5dee018a",
+    "sha256": "0e1432c6640edfa9af6d487fd0f2db388997918296d69b85b07252ee4474659e",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/flashforge/logo.png",
     "source_sha256": "a4df72bc730ec44f02b5a5c09548f723aaef8213b119abb6463757e91bc5e2ce",
     "transparent_background": true,
-    "width": 155
+    "width": 360
   },
   "c1bb9c85-980d-4f95-845e-fe38e4597b8b": {
-    "height": 41,
-    "name": "YooPai",
+    "height": 106,
+    "logo_source": {
+      "licence_note": "Logo déposé Yoopai ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.yoopai.com/cdn/shop/files/Yoopai-removebg-preview_format_815d8fd0-8c50-4a4a-b700-1dbe74ff85a6.webp?v=1719915222"
+    },
+    "name": "Yoopai",
     "path": "data/brand_logos/yoopai.png",
-    "sha256": "4eff96ef64a7dc900ae2bda95c62581a410faabe495c7c5bdfb5cd1aa73acb64",
+    "sha256": "6b5f30bf975e8e6ffa895e78211358c365a6e254b250c268d12ca9df1fafe866",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/yoopai/logo.png",
     "source_sha256": "4b156bf8b0c6c648d0da762f4968ff97aec66025924845fb9867fdafb71883c4",
     "transparent_background": true,
-    "width": 193
+    "width": 469
   },
   "c46e06dd-abe9-4930-b461-6fa14cf20a45": {
     "height": 171,
@@ -1101,14 +1355,21 @@
     "width": 400
   },
   "cde68fa3-ae9d-4559-b143-f8efd64dd3e1": {
-    "height": 326,
+    "height": 520,
+    "logo_source": {
+      "licence_note": "Logo déposé Francofil ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://francofil.fr/wp-content/uploads/2023/07/cropped-Logo-Francofil.png"
+    },
     "name": "Francofil",
     "path": "data/brand_logos/francofil.png",
-    "sha256": "2b06215915b9db8a40779fa3777c66bef7b759c6ba1e4798ce6a5694c6f5c581",
+    "sha256": "cf2d4648b97cec4a2778eed96a3fbc93d7300c151476f5a5ed45e6ebe975afa9",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/francofil/logo.png",
     "source_sha256": "c814fc704e0fda6aae242471bc6f756e8565c6d6bab991b81bbf94e696e7de69",
-    "width": 382
+    "transparent_background": true,
+    "width": 520
   },
   "cef23847-06ab-4d9c-81f0-651cb50f592d": {
     "height": 208,
@@ -1121,15 +1382,21 @@
     "width": 208
   },
   "d049330e-0665-423f-9f5e-81a32ad144c8": {
-    "height": 113,
+    "height": 147,
+    "logo_source": {
+      "licence_note": "Logo déposé Creality ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.creality.com/images/header/creality-logo-black.svg"
+    },
     "name": "Creality",
-    "path": "data/brand_logos/creality.png",
-    "sha256": "8d0440e5e9b10b2f27ae5b6d8793101c810ee65505c9d0f2073c547d45399982",
+    "path": "data/brand_logos/creality.svg",
+    "sha256": "a7cacaa99f2a8484235d960f60e7fae27bf328090a6fce4ec378cbff402ed8e2",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/creality/logo.png",
     "source_sha256": "3009955fcc82f1dc89ad32c57b2feca174cd191c414ac1f907d08378eefe523e",
     "transparent_background": true,
-    "width": 165
+    "width": 640
   },
   "d1089235-2443-49ee-8138-24318020d93a": {
     "height": 51,
@@ -1165,23 +1432,37 @@
   },
   "d72dd208-d89a-409f-9f51-6b198171bd56": {
     "height": 149,
-    "name": "3DXTech",
+    "logo_source": {
+      "licence_note": "Logo déposé 3DXTECH ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.3dxtech.com/cdn/shop/files/3DXTECH-Logo-Horz.svg?v=1717417194"
+    },
+    "name": "3DXTECH",
     "path": "data/brand_logos/3dxtech.svg",
     "sha256": "8ca6d20d330cb60e9904e5173e5dbfdddad02cd797517f7b461c4f24e59f6a2b",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3dxtech/logo.svg",
     "source_sha256": "8ca6d20d330cb60e9904e5173e5dbfdddad02cd797517f7b461c4f24e59f6a2b",
+    "transparent_background": true,
     "width": 640
   },
   "d94e6564-7dce-4e98-80d3-07e659cc8aea": {
-    "height": 75,
+    "height": 81,
+    "logo_source": {
+      "licence_note": "Logo déposé ELEGOO ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.elegoo.com/cdn/shop/files/Logo_e6b0d316-e2b8-4362-9112-a9b185ebbf9b.png?v=1691652260"
+    },
     "name": "ELEGOO",
     "path": "data/brand_logos/elegoo.png",
-    "sha256": "406ca32b4d7bcb48135a84f6f3bc97f62e4f83cc2339f6acdb38f20902e97450",
+    "sha256": "29312279e2a4c9d6ca61aeccbe2a2763c6a70f57b47e0835e841b88485fb19c3",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/elegoo/logo.png",
     "source_sha256": "0c5cb7c8b7306aebc56bb72b528ec3d749d48eb70837f2c961b59ff0c64f6c54",
-    "width": 400
+    "transparent_background": true,
+    "width": 431
   },
   "da53e5fb-a090-4fec-801d-96122ca220da": {
     "height": 98,
@@ -1249,25 +1530,38 @@
     "width": 103
   },
   "e3c90ec7-9f11-42a9-8fd8-f3c24ed07ae2": {
-    "height": 97,
-    "name": "3D Fuel",
+    "height": 381,
+    "logo_source": {
+      "licence_note": "Logo déposé 3D-Fuel ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.3dfuel.com/cdn/shop/files/3D-Fuel_Logo_-_Full_Color.png?v=1613761649"
+    },
+    "name": "3D-Fuel",
     "path": "data/brand_logos/3d_fuel.png",
-    "sha256": "939149205cc98d73f9c2d1ea767c038dec44f8766cf09290d2d87b2c4f5fe7bc",
+    "sha256": "bf92d6c2aa21e0c0fb083b6ca617a16597b1bd7a784a7efb686f6b7389d33eb8",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3d_fuel/logo.png",
     "source_sha256": "f37a6a7241692836747097e0331fc5dba8094b0ed3cb84745b02afd10f414866",
-    "width": 400
+    "transparent_background": true,
+    "width": 1600
   },
   "e4768ea4-6381-42c7-b2b1-31c54dcc1ea9": {
-    "height": 94,
+    "height": 504,
+    "logo_source": {
+      "licence_note": "Logo déposé Zyltech ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://cdn11.bigcommerce.com/s-eblil3q2nd/images/stencil/original/spool_logo_1_1756046690__33530.original.jpg"
+    },
     "name": "Zyltech",
     "path": "data/brand_logos/zyltech.png",
-    "sha256": "4c8a8809b509f6af6c0c5dbd634dea76c8bf57b4dd41edf652f410315de399fd",
+    "sha256": "3c5ad8793b0fcde7330ed0a12e14e0fd0a37f55f495fbe320d4256d0772e9ffe",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/zyltech/logo.jpg",
     "source_sha256": "4d485f47b4d367b40fa1ba14e60a8a183468d29e2db1d128a45f1ea003047114",
     "transparent_background": true,
-    "width": 191
+    "width": 1022
   },
   "e6330b22-7144-4706-8347-26538fe7a219": {
     "height": 177,
@@ -1301,48 +1595,72 @@
     "width": 164
   },
   "e9bfa391-6e20-49ff-bb79-e22d82090bc7": {
-    "height": 68,
+    "height": 250,
+    "logo_source": {
+      "licence_note": "Logo déposé ZIRO ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://ziro3d.com/cdn/shop/files/LOGO_T_600.250.png?v=1745634931"
+    },
     "name": "ZIRO 3D",
     "path": "data/brand_logos/ziro_3d.png",
-    "sha256": "8bee1793c5a4de2246ac21e23ea79fff7ae08be94a4b7da60cc47d422bb0bfdf",
+    "sha256": "9aa8bff20c909edcee444e89a833270d09954face64c43309340c01197391fd3",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/ziro_3d/logo.png",
     "source_sha256": "9e1fb3faa8678fd94b478686039e685b256866fe2ffab06b84d65ae5ab7950a7",
     "transparent_background": true,
-    "width": 181
+    "width": 600
   },
   "eb3e5dfd-37ac-47ff-925f-1d78e9a9a6fc": {
-    "height": 118,
+    "height": 520,
+    "logo_source": {
+      "licence_note": "Logo déposé Das Filament ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://dasfilament.de/wp-content/uploads/2025/11/DAS_FILAMENT_LOGO-scaled.png"
+    },
     "name": "Das Filament",
     "path": "data/brand_logos/das_filament.png",
-    "sha256": "a0f505ee9192895080b95a4b2445112374f9735b75702430eadf2abd3e5a669b",
+    "sha256": "20197b646fb03fc4b25fa18d121cab3b9fc10115cfe1672bc490e0bbce61bb89",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/das_filament/logo.png",
     "source_sha256": "c4157eae543e948bad590a24c6d8d08c39c9034696d5f0cc53262f772fe02190",
     "transparent_background": true,
-    "width": 106
+    "width": 436
   },
   "ed8416bf-e9e7-402f-9aee-2e96071b6f00": {
-    "height": 66,
-    "name": "DuramiC 3D",
+    "height": 180,
+    "logo_source": {
+      "licence_note": "Logo déposé Duramic ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://cdn.shopify.com/s/files/1/0279/4933/4599/files/logo-big.png?v=1613689833"
+    },
+    "name": "DURAMIC 3D",
     "path": "data/brand_logos/duramic_3d.png",
-    "sha256": "37711e7b66663b4f1ce86eeef6d709cdbfae4627f7f31cdb243a6fa04c0a43f9",
+    "sha256": "2a76463b61b11e54dcf0e4dc16886d6f0332589098022ee52da8e4b4401386a1",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/duramic_3d/logo.jpg",
     "source_sha256": "ecd34bf6c704268fbb6a963ecddf03c8a21ca8d1bf9c8da643f06ebca45e18ef",
     "transparent_background": true,
-    "width": 258
+    "width": 756
   },
   "f20c543e-f0e1-4c64-9cd6-d01eaafdac46": {
-    "height": 185,
+    "height": 355,
+    "logo_source": {
+      "licence_note": "Logo déposé Overture ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://overture3d.com/cdn/shop/files/Overture-Logo-Standard_815def4f-b87b-4b61-8dc8-02420460aac0.png?v=1763464788"
+    },
     "name": "Overture",
     "path": "data/brand_logos/overture.png",
-    "sha256": "32be196fe91daf065d470190bef4351b5a25b819b8d15f37d87b969b8c0f972e",
+    "sha256": "f9970c089675703a4e4c5ccdbac79b4c8b08b7076176a88bc4b33a8691bb426e",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/overture/logo.png",
     "source_sha256": "689802e8f7961df5156ddc4a9d79366711471e6b19ec4a3b5f7dd47b51188486",
     "transparent_background": true,
-    "width": 378
+    "width": 1600
   },
   "f7ec4458-05a7-4dd9-a3e6-4ca5142e0b72": {
     "height": 134,
@@ -1355,15 +1673,21 @@
     "width": 382
   },
   "f8484ce3-b8b8-4f60-86fb-0b85c9c531aa": {
-    "height": 56,
-    "name": "TINMORRY",
+    "height": 520,
+    "logo_source": {
+      "licence_note": "Logo déposé Tinmorry ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://tinmorry.net/cdn/shop/files/LOGO-05_1.png?v=1781665585"
+    },
+    "name": "Tinmorry",
     "path": "data/brand_logos/tinmorry.png",
-    "sha256": "253212a9de9089ce9eb4f459a555f1a77f8491b8db1581fe0e11d409d0fbe6b7",
+    "sha256": "9ae0850a00d6593b2b7885006d5d567f817412b1dd1d238e0d679b9fd5138ec6",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/tinmorry/logo.jpg",
     "source_sha256": "7f5c200c74ea51aa9813d730a2a443da134cde9c7ac9c30d4878040a28917a49",
     "transparent_background": true,
-    "width": 348
+    "width": 520
   },
   "f85ba9d2-ab20-451b-a694-7456ae2cff2e": {
     "height": 88,
@@ -1418,5 +1742,145 @@
     "source_path": "data/polymide/logo.svg",
     "source_sha256": "f2826bf8ea3b973c1a24ef8a14013d44a533eaf80b28fdbabcee8d3b62fcdb91",
     "width": 208
+  },
+  "polar_filament": {
+    "height": 291,
+    "logo_source": {
+      "licence_note": "Logo déposé Polar Filament ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://polarfilament.com/cdn/shop/files/TextLogo.png?v=1705864625"
+    },
+    "name": "Polar Filament",
+    "path": "data/brand_logos/polar_filament.png",
+    "sha256": "4bd8377d0a62ead1d3db64af60f8434a8eaf14556393fdc53f1513352f71fccf",
+    "transparent_background": true,
+    "width": 872
+  },
+  "polymaker": {
+    "height": 454,
+    "logo_source": {
+      "licence_note": "Logo déposé Polymaker ; usage nominatif (identification de marque).",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://shop.polymaker.com/cdn/shop/files/Polymaker_New_Logo.png?v=1756260800&width=2000"
+    },
+    "name": "Polymaker",
+    "path": "data/brand_logos/polymaker.png",
+    "sha256": "973b49ec99955930ca34011d0f1022721456ea3ef6f3ed6b5738f80c2ffe3b87",
+    "transparent_background": true,
+    "width": 1600
+  },
+  "protopasta": {
+    "height": 520,
+    "logo_source": {
+      "licence_note": "Logo déposé Protoplant ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://proto-pasta.com/cdn/shop/files/long_lockup.png?v=1745461243"
+    },
+    "name": "Protopasta",
+    "path": "data/brand_logos/protopasta.png",
+    "sha256": "6f219cdabeec3805ba443011950a47db0e3005a208be2bcadfa07a82e501ad84",
+    "transparent_background": true,
+    "width": 1347
+  },
+  "prusament": {
+    "height": 110,
+    "logo_source": {
+      "licence_note": "Logo déposé Prusa Research. Kit presse officiel : https://www.prusa3d.com/page/media-assets_987/ (ZIP Prusament 80 Mo, manuel de marque).",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://prusament.com/wp-content/themes/prusament/images/logo.svg"
+    },
+    "name": "Prusament",
+    "path": "data/brand_logos/prusament.svg",
+    "sha256": "9de90ececfa8bfcb89c1957fafc8bf04eec1390a4329759ec4eeaf7043841495",
+    "transparent_background": true,
+    "width": 640
+  },
+  "r3d": {
+    "height": 167,
+    "logo_source": {
+      "licence_note": "Logo déposé R3D ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://r3d-europe.com/cdn/shop/files/Plan_de_travail_1.svg?v=1790325484"
+    },
+    "name": "R3D",
+    "path": "data/brand_logos/r3d.svg",
+    "sha256": "133ed8215c2f39c3f707a595ad9889a60adf3a39145b9a794ef36a119e6f8e3d",
+    "transparent_background": true,
+    "width": 636
+  },
+  "recreus": {
+    "height": 500,
+    "logo_source": {
+      "licence_note": "Logo déposé Recreus ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://recreus.com/cdn/shop/files/logo-recreus-desktop.png?v=1729233624"
+    },
+    "name": "Recreus",
+    "path": "data/brand_logos/recreus.png",
+    "sha256": "9a800a945b75ea5f1f3cb8d1338c90f46e37ef8dbf0be506dca4f0fda490bd57",
+    "transparent_background": true,
+    "width": 500
+  },
+  "redline_filament": {
+    "height": 520,
+    "logo_source": {
+      "licence_note": "Logo déposé Redline Filament GmbH ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://redline-filament.com/cdn/shop/files/Redline_Filament_Logo_red-white.png?v=1700553429"
+    },
+    "name": "Redline Filament",
+    "path": "data/brand_logos/redline_filament.png",
+    "sha256": "63cfe29b45f491c4b131115b001fdf0ee6f90fe9583b0b37680ab6d2801be3fc",
+    "transparent_background": true,
+    "width": 996
+  },
+  "sovol": {
+    "height": 380,
+    "logo_source": {
+      "licence_note": "Logo déposé Sovol ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://www.sovol3d.com/cdn/shop/files/Sovol_logo_61583546-cbe4-40f5-8f4c-f6174cfac8af.png?v=1740647815"
+    },
+    "name": "Sovol",
+    "path": "data/brand_logos/sovol.png",
+    "sha256": "f4c14c707aa87e2f0c6408c708c3661065bce28d1bedfdbfe9b86e0ad5615bb5",
+    "transparent_background": true,
+    "width": 1590
+  },
+  "voolt3d": {
+    "height": 404,
+    "logo_source": {
+      "licence_note": "Logo déposé Voolt3D ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://acdn-us.mitiendanube.com/stores/005/959/122/themes/common/logo-4569829627342265996-1771432741-a6d2ff3adbcb1506ade569cc7532a3091771432741.png"
+    },
+    "name": "Voolt3D",
+    "path": "data/brand_logos/voolt3d.png",
+    "sha256": "6162ff83980b557c7500a954444b9367b3a4e8989dfa2559805158668e68aca2",
+    "transparent_background": true,
+    "width": 1600
+  },
+  "winkle": {
+    "height": 146,
+    "logo_source": {
+      "licence_note": "Logo déposé Winkle / Laboratorio Geométrico ; usage nominatif.",
+      "retrieved": "2026-11-01",
+      "source_kind": "official_site",
+      "url": "https://winkle.shop/img/logo-1776669009.svg"
+    },
+    "name": "Winkle",
+    "path": "data/brand_logos/winkle.svg",
+    "sha256": "61006d5dc371e58aeba95de4a48cb3572594668a75a9476de9c4fe6c03e2280f",
+    "transparent_background": true,
+    "width": 452
   }
 }

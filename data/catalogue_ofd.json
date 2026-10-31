@@ -297890,7 +297890,7 @@
       "source_id": "43be9ea2-7669-418f-81cb-cd54a408799c",
       "source_slug": "bambu_lab",
       "website": "https://bambulab.com",
-      "logo_path": "data/brand_logos/bambu_lab.png"
+      "logo_path": "data/brand_logos/bambu_lab.svg"
     },
     "BIQU": {
       "name": "BIQU",
@@ -297979,7 +297979,7 @@
       "source_id": "d049330e-0665-423f-9f5e-81a32ad144c8",
       "source_slug": "creality",
       "website": "https://www.creality.com/",
-      "logo_path": "data/brand_logos/creality.png"
+      "logo_path": "data/brand_logos/creality.svg"
     },
     "Dancyn 3D Prints": {
       "name": "Dancyn 3D Prints",
@@ -298123,7 +298123,7 @@
       "source_id": "3258e368-bd9f-49d3-be11-79ae590af064",
       "source_slug": "fiberlogy",
       "website": "https://fiberlogy.com/",
-      "logo_path": "data/brand_logos/fiberlogy.png"
+      "logo_path": "data/brand_logos/fiberlogy.svg"
     },
     "Fiberon": {
       "name": "Fiberon",
@@ -298168,7 +298168,7 @@
       "source_id": "45929416-971e-48bd-b0e3-95ebdc2d8bf5",
       "source_slug": "filamentpm",
       "website": "https://filamentpm.com",
-      "logo_path": "data/brand_logos/filamentpm.png"
+      "logo_path": "data/brand_logos/filamentpm.svg"
     },
     "Filamentree": {
       "name": "Filamentree",
@@ -298204,7 +298204,7 @@
       "source_id": "467955e6-e6e1-4ff5-a211-c09c65bb6214",
       "source_slug": "filkemp",
       "website": "https://filkemp.com",
-      "logo_path": "data/brand_logos/filkemp.svg"
+      "logo_path": "data/brand_logos/filkemp.png"
     },
     "Fillamentum": {
       "name": "Fillamentum",
@@ -298883,7 +298883,7 @@
       "source_id": "56b51e8a-6b26-4b56-ae46-6c985a723ae5",
       "source_slug": "spectrum",
       "website": "https://spectrumfilaments.com/en/brand/spectrum-filaments-en/",
-      "logo_path": "data/brand_logos/spectrum.png"
+      "logo_path": "data/brand_logos/spectrum.svg"
     },
     "StrongHero3D": {
       "name": "StrongHero3D",
