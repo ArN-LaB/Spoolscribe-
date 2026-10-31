@@ -12,6 +12,10 @@ dist/
 # Sauvegardes / sorties
 *.bak
 output/
+# Récupération locale du stockage (peut contenir des corrections utilisateur)
+*.json.before-restore-*
+*.json.concurrent-*
+*.json.lock
 
 # Caches de données régénérés par les scripts de mise à jour
 data/wholesale_raw.json
