@@ -126,10 +126,10 @@ class CatalogueUx:
 
     def _fill_quick_brands(self):
         while self.quick_brands.count() > 1:
-            item = self.quick_brands.takeAt(1)
-            if item.widget():
-                item.widget().setParent(None)  # retiré tout de suite, pas au prochain tour de boucle
-                item.widget().deleteLater()
+            widget = self.quick_brands.takeAt(1).widget()
+            if widget:
+                widget.setParent(None)  # retiré tout de suite, pas au prochain tour de boucle
+                widget.deleteLater()
         names = list(dict.fromkeys(['Polymaker'] + core.load_config().get('recent_brands', []) + ['Bambu Lab', 'Prusament', 'SUNLU']))[:5]
         for name in names:
             button = QPushButton(name)

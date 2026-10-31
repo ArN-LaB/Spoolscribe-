@@ -119,6 +119,16 @@ class GuiTests(unittest.TestCase):
         self.window._change_page(1)
         self.assertEqual(self.window._rows[0], self.window._filtered_rows[250])
 
+    def test_quick_brand_chips_refresh_after_a_choice(self):
+        w = self.window
+        for name in ("Prusament", "ROSA3D", "Polymaker"):
+            w._choose_brand(name)
+            self.assertEqual(w.brand_filter.currentData(), name)
+        chips = [w.quick_brands.itemAt(i).widget().text() for i in range(1, w.quick_brands.count())
+                 if w.quick_brands.itemAt(i).widget()]
+        self.assertEqual(chips[0], "Polymaker")
+        self.assertEqual(len(chips), len(set(chips)))
+
     def test_ntag215_essential_inspector_and_export_are_identical(self):
         self.window.current_sku = "PB05001"
         self.window._show_detail("PB05001")
