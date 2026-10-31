@@ -9,7 +9,7 @@ def include_resource(name):
     if path.parts[0]!='data':return False
     return path.suffix.lower() in {'.svg','.png','.ico','.icns'} or name in {
         'data/brand_logos/manifest.json','data/brand_logos/OFD-LICENSE.txt','data/SpoolmanDB-LICENSE.txt',
-        'data/TheFilamentDB-ATTRIBUTION.txt'}
+        'data/TheFilamentDB-ATTRIBUTION.txt','data/printers.json'}
 
 
 def resources(root):
