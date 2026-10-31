@@ -12,8 +12,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-build = ["pyinstaller>=6.0", "Pillow>=10.0", "certifi>=2026.10.23"]
-dev   = ["PyYAML>=6.0", "Pillow>=10.0", "certifi>=2026.10.23"]
+build = ["pyinstaller>=6.0,<7", "Pillow>=10.0", "certifi>=2026.10.23"]
+dev   = ["Pillow>=10.0", "certifi>=2026.10.23"]
 
 [project.urls]
 Homepage = "https://github.com/ArN-LaB/Spoolscribe-"

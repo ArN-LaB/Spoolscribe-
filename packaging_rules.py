@@ -8,7 +8,8 @@ def include_resource(name):
     if path.parts[0]=='scripts':return path.suffix=='.py'
     if path.parts[0]!='data':return False
     return path.suffix.lower() in {'.svg','.png','.ico','.icns'} or name in {
-        'data/brand_logos/manifest.json','data/brand_logos/OFD-LICENSE.txt','data/SpoolmanDB-LICENSE.txt'}
+        'data/brand_logos/manifest.json','data/brand_logos/OFD-LICENSE.txt','data/SpoolmanDB-LICENSE.txt',
+        'data/TheFilamentDB-ATTRIBUTION.txt'}
 
 
 def resources(root):

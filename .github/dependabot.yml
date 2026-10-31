@@ -16,6 +16,19 @@ updates:
       - "python"
     commit-message:
       prefix: "deps"
+    ignore:
+      # PyInstaller 7 refuse l'association onefile + BUNDLE encore utilisée
+      # sous Windows/Linux ; migration à faire explicitement, pas par un bot.
+      - dependency-name: "pyinstaller"
+        versions: [">=7.0"]
+      # PySide6/Shiboken 6.12 plantent sous Linux/Python 3.10 (CI-01).
+      - dependency-name: "pyside6*"
+        versions: [">=6.12"]
+      - dependency-name: "shiboken6"
+        versions: [">=6.12"]
+      # Les majeures des autres dépendances sont revues à la main.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       python-deps:
         patterns:

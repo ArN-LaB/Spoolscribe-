@@ -32,8 +32,6 @@ pyside6-essentials==6.11.3
     #   pyside6-addons
 pywin32-ctypes==0.2.3 ; sys_platform == 'win32'
     # via pyinstaller
-pyyaml==6.0.3
-    # via -r requirements.txt
 setuptools==84.2.1
     # via pyinstaller
 shiboken6==6.11.3

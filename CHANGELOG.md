@@ -132,6 +132,26 @@ Interface:
   modal box; a corrupt `ui` setting no longer crashes startup; About text updated.
 - Dead code removed (`logo_with_contrast_plate`, `add_soft_halo`, unused imports).
 
+Build, CI, licences and documentation:
+- macOS is built as a native onedir `.app` (resources under `Contents/Frameworks`):
+  no 40 MB extraction at every launch, and no dependency on the onefile+BUNDLE
+  combination that PyInstaller 7 refuses. Windows and Linux stay single-file.
+  `upx` disabled for reproducible builds.
+- GitHub Actions are pinned by commit SHA; jobs have timeouts and a per-branch
+  concurrency group; internal pull requests are no longer tested twice.
+- Dependabot ignores PyInstaller ≥ 7, PySide6/Shiboken ≥ 6.12 and other majors;
+  `pyinstaller>=6.0,<7` in the requirements; unused PyYAML dropped and the
+  pinned build requirements regenerated.
+- CI resource verification handles the macOS bundle layout; frozen probes run
+  through `SPOOLSCRIBE_RUN_SCRIPT_ALLOW`.
+- TheFilamentDB attribution (CC BY 4.0) shipped in `data/TheFilamentDB-ATTRIBUTION.txt`;
+  logos documented as third-party marks modified by the build (TRADEMARKS.md);
+  Bambu Studio (AGPL-3.0, facts only) and SUNLU added to the source table.
+- README rewritten around a three-step quick start (download and Gatekeeper /
+  SmartScreen, first launch, export and write); PRIVACY, DATA_SOURCES,
+  DATA_FORMAT, ROADMAP, UX guide, wiki and CONTRIBUTING aligned with the code;
+  v0.2.2 and earlier v0.3.0 reports moved to `docs/archive/`.
+
 ### Compatibility
 - Original catalogue bytes and all 1,008 compatible default exports are unchanged.
 - Unknown physical values remain null, source multicolors remain intact, and an
@@ -387,6 +407,7 @@ These were same-day iterations, kept here for traceability:
 - Cleaned repository: removed one-off bootstrap scripts, raw scrape caches,
   bundled PDF, and generated output; minimized root directory.
 
-[0.2.2]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.1...HEAD
+[0.3.0]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.2.0

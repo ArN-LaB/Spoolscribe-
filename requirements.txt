@@ -2,15 +2,11 @@
 PySide6>=6.6,<6.12    # 6.12.0 crashes on Linux/Python 3.10 (CI-01)
 
 # Outillage build (optionnel, pour générer les exécutables)
-pyinstaller>=6.0
+pyinstaller>=6.0,<7   # 7.x refuse onefile + BUNDLE : migration explicite à prévoir
 certifi>=2026.10.23   # Portable CA roots for frozen applications
 
-# Outillage dev local (génération d'icônes, validation de YAML…)
+# Outillage dev local (scripts/make_icons.py)
 Pillow>=10.0
-PyYAML>=6.0
 
-# Optionnel : uniquement pour scripts/parse_pdf.py (génération initiale des SKU)
-# pdfplumber>=0.10
-#
-# Note : les scrapers de la pipeline de mise à jour n'utilisent que la
-# bibliothèque standard (urllib, gzip, json, re). Aucune dépendance réseau tierce.
+# Note : les workers de mise à jour n'utilisent que la bibliothèque standard
+# (urllib, gzip, json, re, tarfile). Aucune dépendance réseau tierce.

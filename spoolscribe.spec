@@ -2,7 +2,8 @@
 """
 spoolscribe.spec — Build PyInstaller multiplateforme (win/mac/linux).
 
-Mode **onefile** : produit un exécutable unique, sans dossier `_internal`.
+Windows et Linux : un exécutable unique (onefile), sans dossier `_internal`.
+macOS : un bundle .app natif en mode onedir (ressources dans Contents/Frameworks).
   - Windows : dist/SpoolScribe.exe
   - macOS   : dist/SpoolScribe.app
   - Linux   : dist/SpoolScribe
@@ -125,21 +126,15 @@ a = Analysis(
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
-# ─── Onefile : un seul exécutable autonome (pas de dossier _internal) ─────
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    [],
+# upx=False : builds reproductibles (UPX absent des runners, et déconseillé
+# avec les bibliothèques Qt).
+_common = dict(
     name=APP_NAME,
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     upx_exclude=[],
-    runtime_tmpdir=None,
     console=False,            # pas de console : app GUI pure
     disable_windowed_traceback=False,
     argv_emulation=False,
@@ -150,10 +145,15 @@ exe = EXE(
     version=version_info,      # None hors Windows
 )
 
-# ─── macOS : .app pour une expérience native ──────────────────────────────
 if sys.platform == "darwin":
+    # ─── macOS : .app en mode onedir ────────────────────────────────────
+    # Un .app onefile décompressait ~40 Mo à chaque lancement et sera refusé
+    # par PyInstaller 7 ; l'app native contient ses ressources dans
+    # Contents/Frameworks et démarre immédiatement.
+    exe = EXE(pyz, a.scripts, [], exclude_binaries=True, **_common)
+    coll = COLLECT(exe, a.binaries, a.zipfiles, a.datas, strip=False, upx=False, name=APP_NAME)
     app = BUNDLE(
-        exe,
+        coll,
         name=f"{APP_NAME}.app",
         icon=_icon,
         bundle_identifier=f"com.github.{APP_AUTHOR.lower()}.spoolscribe",
@@ -164,3 +164,6 @@ if sys.platform == "darwin":
             "LSApplicationCategoryType": "public.app-category.utilities",
         },
     )
+else:
+    # ─── Windows / Linux : un seul exécutable autonome ─────────────────
+    exe = EXE(pyz, a.scripts, a.binaries, a.zipfiles, a.datas, [], runtime_tmpdir=None, **_common)

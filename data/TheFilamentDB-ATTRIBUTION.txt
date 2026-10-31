@@ -1,0 +1,13 @@
+TheFilamentDB — attribution (CC BY 4.0)
+
+Source      : TheFilamentDB, https://thefilamentdb.issou.best/
+Licence     : Creative Commons Attribution 4.0 International (CC BY 4.0)
+              https://creativecommons.org/licenses/by/4.0/
+Fichiers    : data/thefilamentdb.jsonl.gz (instantané local, dépôt seulement,
+              non embarqué dans les installeurs) et les valeurs HEX dérivées
+              présentes dans data/polymaker_db.json pour quelques références
+              historiques (Polymaker, Prusament).
+Modifications : extraction des couleurs HEX par référence et normalisation en
+              six caractères majuscules ; aucune autre donnée n'est reprise.
+Avis        : SpoolScribe n'est pas affilié à TheFilamentDB. Les données sont
+              fournies « en l'état » par leur auteur, sans garantie.
