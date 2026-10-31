@@ -95,7 +95,8 @@ class SourceRegressionTests(unittest.TestCase):
         db_io.save_db(db, self.db_path)
         self.write_dump([{"brand": "Prusament", "name": "PLA", "colorName": "Red", "colorHex": "FF0000"}])
         record, code = self.run_source(filament_multi)
-        self.assertEqual((record["status"], code), ("partial", 3))
+        # ROSA3D is documented as absent from the local dump: a warning, not a partial step.
+        self.assertEqual((record["status"], code), ("changed", 0))
         self.assertEqual(db_io.load_db(self.db_path)["_skus"]["LOCAL"]["hex"], "FF0000")
 
     def test_empty_required_step_cannot_advance_refresh_date(self):

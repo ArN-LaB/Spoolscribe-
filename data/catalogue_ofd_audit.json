@@ -35,7 +35,7 @@
   "references": 22838,
   "brands_imported": 157,
   "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
-  "logos_approved": 137,
+  "logos_approved": 136,
   "logos_rejected": [
     {
       "brand": "AmeLeis",
@@ -116,6 +116,10 @@
     {
       "brand": "XZN",
       "reason": "Revue visuelle : Bannière de produits, pas un logo isolé."
+    },
+    {
+      "brand": "Professional LAB",
+      "reason": "Boîte recadrée dont le texte touche les quatre coins ; nom du fabricant préférable."
     }
   ]
 }
