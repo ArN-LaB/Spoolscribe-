@@ -7,16 +7,31 @@ from scripts.catalogue_sources import brand_key
 
 
 def normalized(value):
-    return ''.join(c for c in unicodedata.normalize('NFKD', str(value or '').replace('™','').replace('®','').replace('©','')).casefold() if c.isalnum())
+    # '+' distinguishes product grades (PLA+ vs PLA, ABS+ vs ABS); every other
+    # punctuation mark, accent and trademark symbol is ignored.
+    return ''.join(c for c in unicodedata.normalize('NFKD', str(value or '').replace('™','').replace('®','').replace('©','')).casefold() if c.isalnum() or c=='+')
 
 
 def identity(entry, product, sku=''):
     brand=brand_key(product.get('brand',''))
     article=entry.get('manufacturer_sku') or (sku if sku and not sku.startswith(('OFD-','SMDB-')) else '')
     package=(product.get('diameter'),entry.get('weight'),entry.get('spool_refill'))
-    if article:return ('article',brand,normalized(article),*package)
+    # Sources reuse one article number for several colours: the colour is part
+    # of the identity, and only a compatible colour can match by article below.
+    if article:return ('article',brand,normalized(article),normalized(entry.get('color_name')),*package)
     return ('description',brand,normalized(product.get('display_name') or entry.get('product')),
             normalized(entry.get('color_name')),*package)
+
+
+def _color_compatible(a, b):
+    """Same colour name, one unknown name, or the same HEX under different names."""
+    name_a,name_b=normalized(a.get('color_name')),normalized(b.get('color_name'))
+    if not name_a or not name_b or name_a==name_b:return True
+    return bool(a.get('hex')) and a.get('hex')==b.get('hex')
+
+
+def _package_compatible(a, b):
+    return all(x is None or y is None or x==y for x,y in zip(a,b))
 
 
 def merge_fields(target, incoming, source, rank, conflicts, prefix):
@@ -31,7 +46,10 @@ def merge_fields(target, incoming, source, rank, conflicts, prefix):
             continue
         if key not in target:
             target[key]=copy.deepcopy(value);provenance[key]=dict(source=source,rank=rank,value=copy.deepcopy(value))
-        elif old and target[key]==old.get('value') and (value is not None and (target[key] is None or rank>old.get('rank',0)) or old.get('source')==source):
+        elif old and target[key]==old.get('value') and value is None and target[key] is not None and old.get('source')==source:
+            # A source that stops publishing a value never empties the local one.
+            conflicts.append(f'{prefix}.{key} (valeur retirée par la source, conservée)')
+        elif old and target[key]==old.get('value') and value is not None and (target[key] is None or rank>old.get('rank',0) or old.get('source')==source):
             target[key]=copy.deepcopy(value);provenance[key]=dict(source=source,rank=rank,value=copy.deepcopy(value))
         elif target[key]!=value and value is not None:
             conflicts.append(f'{prefix}.{key}')
@@ -72,18 +90,17 @@ def merge_catalogue(local, incoming, source, rank=10):
             for candidate in candidates:
                 old=result['_skus'][candidate];old_p=result['_products'].get(old.get('product'),{})
                 old_id=identity(old,old_p,candidate)
-                if all(a is None or b is None or a==b for a,b in zip(ident[3:],old_id[3:])):matches.append(candidate)
+                if _package_compatible(ident[4:],old_id[4:]) and _color_compatible(e,old):matches.append(candidate)
 
         if not matches:
             candidates=set(c for key in family_keys(e,p) for c in family_index.get(key,[]))
             for candidate in sorted(candidates):
                 old=result['_skus'][candidate];old_p=result['_products'].get(old.get('product'),{})
-                old_id=identity(old,old_p,candidate)
                 old_article=old.get('manufacturer_sku')
                 if old_article and e.get('manufacturer_sku') and normalized(old_article)!=normalized(e['manufacturer_sku']):continue
                 old_package=(old_p.get('diameter'),old.get('weight'),old.get('spool_refill'))
                 package=(p.get('diameter'),e.get('weight'),e.get('spool_refill'))
-                if all(a is None or b is None or a==b for a,b in zip(package,old_package)):matches.append(candidate)
+                if _package_compatible(package,old_package):matches.append(candidate)
         if len(matches)>1:
             pending.append(dict(source_id=sku,reason='Identité ambiguë',candidates=matches));continue
         # Unproven cross-source identities stay outside the selectable table.
@@ -98,7 +115,13 @@ def merge_catalogue(local, incoming, source, rank=10):
             canonical=matches[0];target=result['_skus'][canonical];pkey=target['product']
             merge_fields(result['_products'][pkey],p,source,rank,conflicts,'_products.'+pkey)
             merge_fields(target,e,source,rank,conflicts,'_skus.'+canonical)
-            if canonical != sku: target.setdefault('_source_aliases',{})[source]=sku
+            if canonical != sku:
+                # Every absorbed source record stays traceable, not only the last one.
+                aliases=target.setdefault('_source_aliases',{})
+                known=aliases.get(source)
+                known=[known] if isinstance(known,str) else list(known or [])
+                if sku not in known:known.append(sku)
+                aliases[source]=known
         else:
             pkey=e['product'];result['_products'].setdefault(pkey,{})
             merge_fields(result['_products'][pkey],p,source,rank,conflicts,'_products.'+pkey)

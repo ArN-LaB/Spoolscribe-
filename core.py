@@ -11,6 +11,7 @@ Tout est testable et appelable sans effet de bord visuel.
 """
 from __future__ import annotations
 
+import copy
 import json
 import hashlib
 import math
@@ -319,10 +320,18 @@ def load_db(path: Optional[str] = None) -> dict:
     # Development also uses the separately audited offline extension. Preserve
     # revision metadata and never write just because the catalogue was opened.
     if not _FROZEN and not db_restored_this_session(path):
-        for filename in ("catalogue_ofd.json", "catalogue_spoolman.json"):
+        for filename, source_name in (("catalogue_ofd.json", "Open Filament Database"),
+                                      ("catalogue_spoolman.json", "SpoolmanDB")):
             extension = Path(path).with_name(filename)
             if extension.is_file():
                 merged, conflicts = db_io.merge_bundled_db(db, db_io.load_db(extension))
+                # Snapshot records keep their source provenance: should they be
+                # saved, a later refresh can still update them (they are not user edits).
+                for section in ("_products", "_skus"):
+                    for key, item in merged.get(section, {}).items():
+                        if key not in db.get(section, {}) and "_field_sources" not in item:
+                            item["_field_sources"] = {k: dict(source=item.get("source", source_name), rank=20, value=copy.deepcopy(v))
+                                                      for k, v in item.items() if not k.startswith("_")}
                 db.update(merged)
                 if conflicts:
                     db.setdefault("_bundle_conflicts", []).extend(conflicts)
@@ -548,6 +557,14 @@ def list_skus(db: dict) -> list[dict]:
             _validate_physical(p)
         except ExportValidationError:
             issues.append("Caractéristiques à compléter")
+        # Source values that contradict themselves are kept visible but need a
+        # confirmation before they can reach a tag.
+        suspect_color = db_io.implausible_color(e)
+        if suspect_color:
+            issues.append(f"Couleur à vérifier ({suspect_color})")
+        suspect_physical = db_io.implausible_physical(p)
+        if suspect_physical:
+            issues.append("Caractéristiques à vérifier (" + " ; ".join(suspect_physical) + ")")
         if not p.get("brand") or not p.get("type"):
             issues.append("Marque ou matière absente")
         out.append({
@@ -759,13 +776,21 @@ def build_openspool(entry: dict, product_data: dict, brand_meta: Optional[dict] 
             raise MissingColorError("Couleur HEX inconnue : renseignez explicitement une couleur représentative "
                                     "avant l'export NFC. Aucune couleur noire n'est inventée.")
         raise ExportValidationError("Couleur HEX invalide.")
+    suspect_color = db_io.implausible_color(entry)
+    if suspect_color:
+        raise MissingColorError(f"Couleur à confirmer avant l'export : {suspect_color}. "
+                                "Renseignez explicitement la couleur représentative.")
+    suspect_physical = db_io.implausible_physical(product_data)
+    if suspect_physical:
+        raise ExportValidationError("Caractéristiques à vérifier avant l'export : " + " ; ".join(suspect_physical)
+                                    + ". Corrigez-les explicitement dans la fiche.")
     src = dict(product_data)
     orca_path = find_orca_profile(entry.get("product", ""))
     if orca_path:
         try:
             values = load_orca_temps(orca_path)
             for key, value in values.items():
-                if use_orca_overrides or src.get(key) is None:
+                if value is not None and (use_orca_overrides or src.get(key) is None):
                     src[key] = value
         except (ValueError, TypeError, OSError) as exc:
             raise ExportValidationError(f"Profil Orca inutilisable ({orca_path}) : {exc}") from exc

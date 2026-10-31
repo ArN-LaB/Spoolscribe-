@@ -29,7 +29,7 @@ class SourcePolicyTests(unittest.TestCase):
         incoming=small_db();incoming['_skus']={'OFD-NEW':dict(entry(),manufacturer_sku='ABC',weight=None)}
         result,_=merge.merge_catalogue(db,incoming,'OFD',20)
         self.assertEqual(set(result['_skus']),{'LOCAL'})
-        self.assertEqual(result['_skus']['LOCAL']['_source_aliases']['OFD'],'OFD-NEW')
+        self.assertEqual(result['_skus']['LOCAL']['_source_aliases']['OFD'],['OFD-NEW'])
         db['_skus']['DUPLICATE']=dict(db['_skus']['LOCAL'])
         result,_=merge.merge_catalogue(db,incoming,'OFD',20)
         self.assertNotIn('OFD-NEW',result['_skus'])
@@ -137,11 +137,14 @@ class SourcePolicyTests(unittest.TestCase):
 
 
 from tests import test_gui as gui_fixture
-from PySide6.QtCore import Qt
-from PySide6.QtTest import QTest
-from PySide6.QtWidgets import QDialog, QCheckBox, QDialogButtonBox
-import app_gui
+if gui_fixture.HAS_QT:
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QDialog, QCheckBox, QDialogButtonBox
+    import app_gui
 
+
+@unittest.skipUnless(gui_fixture.HAS_QT, "PySide6 non installé : interactions Qt non mesurées")
 class CatalogueInteractionTests(unittest.TestCase):
     setUpClass=classmethod(gui_fixture.GuiTests.setUpClass.__func__)
     def setUp(self):

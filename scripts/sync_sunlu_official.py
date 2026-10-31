@@ -6,7 +6,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts import db_io, official_sources as source
 from scripts.catalogue_merge import apply_official_facts
 ROOT=Path(__file__).resolve().parents[1]
-DB_FILE=str(Path(os.environ.get('SPOOLSCRIBE_DATA_HOME') or ROOT)/'data/polymaker_db.json')
+DB_FILE=db_io.default_db_path()
 
 def main():
     try:facts=source.sunlu_facts(source.fetch(source.SUNLU_URL).decode('utf-8'))

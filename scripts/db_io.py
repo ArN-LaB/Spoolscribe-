@@ -39,6 +39,85 @@ def requires_manual_color(entry: dict) -> bool:
         r"\b(transparent|translucent|clear|rainbow|gradient|dual|multicolor|multicolour)\b", name, re.I))
 
 
+_DARK_NAMES = re.compile(r"black|noir|schwarz|negro|nero|dark|carbon|charcoal|onyx|obsidian|midnight|graphite|"
+                         r"jet|ebony|coal|raven|ink|shadow|espresso|galaxy|space|night|anthracite|cf\b|fiber|fibre|"
+                         r"matte|matt\b|shadow|smoke|grey|gray|gris|slate|steel|iron|titan|military|army|camo|licorice",
+                         re.I)
+_LIGHT_NAMES = re.compile(r"white|blanc|weiss|weiß|bianco|blanco|clear|natural|naturel|ivory|cream|snow|milk|pearl|"
+                          r"light|pastel|lemon|yellow|jaune|gelb|cyan|pink|rose", re.I)
+
+
+def _field_is_source_owned(entry: dict, key: str) -> bool:
+    """True when the value still comes from a source (never corrected by the user).
+
+    Historical entries without a ``source`` are user-owned by precaution; an
+    explicit correction removes the field from ``_field_sources``.
+    """
+    if not entry.get("source") and "_field_sources" not in entry:
+        return False
+    provenance = entry.get("_field_sources")
+    return provenance is None or key in provenance
+
+
+def implausible_color(entry: dict) -> str | None:
+    """A source HEX that contradicts the color name must be confirmed, not exported.
+
+    Only a flagrant contradiction is reported (black HEX for a light name, or a
+    white HEX for a dark name). The HEX is kept; nothing is replaced.
+    """
+    hx = str(entry.get("hex") or "").upper().removeprefix("#")
+    name = str(entry.get("color_name") or "")
+    if hx not in ("000000", "FFFFFF") or not name or not _field_is_source_owned(entry, "hex"):
+        return None
+    if hx == "000000" and _LIGHT_NAMES.search(name) and not _DARK_NAMES.search(name):
+        return f"HEX noir pour « {name} »"
+    if hx == "FFFFFF" and _DARK_NAMES.search(name) and not _LIGHT_NAMES.search(name):
+        return f"HEX blanc pour « {name} »"
+    return None
+
+
+PHYSICAL_PLAUSIBILITY = {"min_temp": (120, 500), "max_temp": (120, 500), "bed_min_temp": (0, 200),
+                         "bed_max_temp": (1, 200), "density": (0.5, 4.0), "diameter": (1.0, 3.2)}
+
+
+def implausible_physical(product: dict) -> list[str]:
+    """Source values outside printable ranges; user corrections are trusted."""
+    issues = []
+    labels = {"min_temp": "buse", "max_temp": "buse", "bed_min_temp": "plateau", "bed_max_temp": "plateau",
+              "density": "densité", "diameter": "diamètre"}
+    for key, (low, high) in PHYSICAL_PLAUSIBILITY.items():
+        value = product.get(key)
+        if value is None or type(value) not in (int, float) or not _field_is_source_owned(product, key):
+            continue
+        if not low <= value <= high:
+            detail = "non renseigné (0)" if key == "bed_max_temp" and value == 0 else f"{value} hors plage {low}–{high}"
+            issues.append(f"{labels[key]} : {detail}")
+    return issues
+
+
+def default_db_path() -> str:
+    """The user's writable database, shared with the application (never the repository)."""
+    home = os.environ.get("SPOOLSCRIBE_DATA_HOME")
+    if not home:
+        if sys.platform.startswith("win"):
+            base = os.environ.get("APPDATA") or os.path.expanduser("~")
+        elif sys.platform == "darwin":
+            base = os.path.expanduser("~/Library/Application Support")
+        else:
+            base = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+        home = os.path.join(base, "SpoolScribe")
+    return os.path.join(home, "data", "polymaker_db.json")
+
+
+def check_source_shrink(db: dict, snapshot_key: str, incoming_count: int, label: str) -> None:
+    """Refuse a refresh that would silently lose most of a source's references."""
+    previous = (db.get("_source_snapshots") or {}).get(snapshot_key) or {}
+    before = previous.get("references")
+    if isinstance(before, int) and before >= 20 and incoming_count < before * 0.5:
+        raise SourceUnavailable(f"{label} : {incoming_count} références reçues contre {before} auparavant ; "
+                                "mise à jour refusée par précaution, données locales conservées.")
+
+
 class Database(dict):
     """A JSON dict with an out-of-band revision to detect stale writers."""
     revision: str | None = None
@@ -304,11 +383,12 @@ def orca_values(profile: dict) -> dict:
     plates = [number(key, 0, integer=True) for key in
               ("cool_plate_temp", "eng_plate_temp", "hot_plate_temp", "textured_plate_temp")]
     nonzero = [temp for temp in plates if temp > 0]
+    # A profile without any plate temperature has an unknown bed, not 0 °C.
     result = {
         "min_temp": number("nozzle_temperature_range_low", integer=True),
         "max_temp": number("nozzle_temperature_range_high", integer=True),
-        "bed_min_temp": min(nonzero) if nonzero else 0,
-        "bed_max_temp": max(nonzero) if nonzero else 0,
+        "bed_min_temp": min(nonzero) if nonzero else None,
+        "bed_max_temp": max(nonzero) if nonzero else None,
         "density": number("filament_density"),
         "diameter": number("filament_diameter"),
     }

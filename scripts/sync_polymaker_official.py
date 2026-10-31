@@ -7,7 +7,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from scripts import db_io, catalogue_merge
 from scripts import scrape_wholesale as wholesale
 ROOT=Path(__file__).resolve().parents[1]
-DB_FILE=str(Path(os.environ.get('SPOOLSCRIBE_DATA_HOME') or ROOT)/'data/polymaker_db.json')
+DB_FILE=db_io.default_db_path()
 
 
 def adapt(rows):
@@ -50,8 +50,9 @@ def main():
     try:rows=wholesale.fetch_all_products()
     except Exception as exc:raise db_io.SourceUnavailable(f'Polymaker officiel : {exc}') from exc
     incoming,rejected=adapt(rows)
-    db=db_io.load_db(DB_FILE);merged,conflicts=catalogue_merge.merge_catalogue(db,incoming,'Polymaker officiel',100)
-    db.update(merged);db.setdefault('_source_conflicts_by_source',{})['Polymaker officiel']=conflicts
+    db=db_io.load_db(DB_FILE);db_io.check_source_shrink(db,'polymaker',len(incoming['_skus']),'Polymaker')
+    merged,conflicts=catalogue_merge.merge_catalogue(db,incoming,'Polymaker officiel',100)
+    db.update(merged);db.setdefault('_source_snapshots',{})['polymaker']={'references':len(incoming['_skus'])};db.setdefault('_source_conflicts_by_source',{})['Polymaker officiel']=conflicts
     db_io.save_db(db,DB_FILE)
     print(f'Polymaker : {len(incoming["_skus"])} références fabricant examinées, {len(conflicts)} valeurs locales conservées.')
     if rejected:raise db_io.PartialUpdate(f'{len(rejected)} anomalies fabricant : {rejected[0]}')

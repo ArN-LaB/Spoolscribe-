@@ -10,7 +10,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts import catalogue_sources as sources, db_io, catalogue_merge
 
-DB_FILE = str(Path(os.environ.get("SPOOLSCRIBE_DATA_HOME") or ROOT) / "data/polymaker_db.json")
+DB_FILE = db_io.default_db_path()
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -35,7 +35,8 @@ def main():
         raise db_io.SourceUnavailable(f"SpoolmanDB indisponible : {exc}") from exc
     db = db_io.load_db(DB_FILE)
     covered = [name for name, meta in db["_brands"].items() if meta.get("source") != "SpoolmanDB"]
-    incoming, report = sources.adapt_spoolman(rows, source_digest=hashlib.sha256(raw).hexdigest(), covered_brands=[])
+    incoming, report = sources.adapt_spoolman(rows, source_digest=hashlib.sha256(raw).hexdigest(), covered_brands=covered)
+    db_io.check_source_shrink(db, "spoolman", len(incoming["_skus"]), "SpoolmanDB")
     merged, conflicts = catalogue_merge.merge_catalogue(db, incoming, "SpoolmanDB", 10)
     db.update(merged)
     db.setdefault("_source_snapshots", {})["spoolman"] = incoming["_source_snapshot"]

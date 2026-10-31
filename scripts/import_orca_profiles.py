@@ -95,6 +95,8 @@ def main():
                 ("diameter",    orca["diameter"]),
             ]:
                 old_val = entry.get(field)
+                if new_val is None:
+                    continue  # An unknown plate temperature never replaces anything.
                 if old_val is None:
                     changes[field] = (old_val, new_val)
                 elif old_val != new_val:

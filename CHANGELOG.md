@@ -28,9 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Added
-- Offline universal catalogue: 22,838 OFD references / 157 new brands plus 599
-  SpoolmanDB references / 14 complementary manufacturers. Snapshots, provenance,
-  strict JSON checks and upstream MIT notices are bundled separately.
+- Universal catalogue sources: 22,838 OFD references / 157 new brands plus 599
+  SpoolmanDB references / 14 complementary manufacturers, kept in the repository
+  as audited regression snapshots. Installers contain no catalogue: the first
+  launch downloads the selected sources. Upstream MIT notices are bundled.
 - Manufacturer, material and completeness filters; accent-insensitive multi-word
   search; primary/secondary column sorting with numeric values and 250-row pages.
 - Explicit editing of local product temperatures, diameter and density.
@@ -41,10 +42,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Manufacturer-specific CLI metadata instead of a hard-coded Polymaker lookup.
-- Logos retain aspect ratio, avoid bitmap upscaling, and use a contrast background
-  in both themes. 137 new logos reviewed; unsuitable images use a name fallback.
+- Logos retain aspect ratio and transparent surroundings with a subtle outline;
+  no background plate is added. 137 new logos reviewed; unsuitable images use a
+  name fallback.
 - Material names containing slashes (e.g. PA6/66) no longer trigger an invalid
   legacy Orca profile lookup. Existing Orca presets remain unchanged.
+
+### Audit fixes (31 October 2026)
+
+Data integrity:
+- Reconciliation identities keep product grades (`PLA+` ≠ `PLA`) and include the
+  colour when a manufacturer article number is reused: an OFD refresh no longer
+  absorbs ~650 references nor rewrites temperatures/colours of another product.
+  Every absorbed source record is now listed in `_source_aliases`.
+- A source that stops publishing a value never empties the local one; the case
+  is reported as a conserved conflict. A refresh returning less than half of a
+  source's previous references is refused before merging.
+- Source values that contradict themselves are flagged **À vérifier** and cannot
+  reach a tag until explicitly corrected: black HEX for a light colour name,
+  white HEX for a dark one, nozzle/bed/density/diameter outside printable ranges,
+  bed maximum of 0 °C. User corrections and historical entries are trusted.
+- Orca profiles without plate temperature give an unknown bed, not 0 °C.
+- Workers run directly default to the user data folder, never the repository
+  fixture. Development snapshot records merged in memory carry provenance, so a
+  later refresh can still update them.
+- SpoolmanDB complements only manufacturers not already covered, as documented.
+- `tests/test_ux.py` skips its Qt interaction tests without PySide6 instead of
+  failing at import; 12 new integrity tests.
 
 ### Compatibility
 - Original catalogue bytes and all 1,008 compatible default exports are unchanged.

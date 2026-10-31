@@ -11,8 +11,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts import catalogue_sources, db_io, catalogue_merge
 
-DATA_DIR = Path(os.environ.get("SPOOLSCRIBE_DATA_HOME") or ROOT) / "data"
-DB_FILE = str(DATA_DIR / "polymaker_db.json")
+DB_FILE = db_io.default_db_path()
 
 
 class _ArchiveRedirect(urllib.request.HTTPRedirectHandler):
@@ -50,6 +49,7 @@ def main():
         if logo and (ROOT / "data" / logo).is_file():
             meta.setdefault("logo_path", "data/" + logo)
     db = db_io.load_db(DB_FILE)
+    db_io.check_source_shrink(db, "ofd", len(incoming["_skus"]), "OFD")
     merged, conflicts = catalogue_merge.merge_catalogue(db, incoming, "Open Filament Database", 20)
     db.update(merged)
     db.setdefault("_source_snapshots", {})["ofd"] = incoming["_source_snapshot"]
