@@ -38,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow the CLI to reconsider saved network consent; GUI settings can revoke it.
 
 ### Tests and packaging
+- Bundle portable CA roots for frozen HTTPS workers, preserving existing trust
+  configuration and strict TLS verification. Check native frozen TLS trust offline
+  on all three build platforms.
 - Package only the native application for each OS: `.app` on macOS, `.exe` on
   Windows, and the Linux executable. Validate archive layout and binary format.
 - Add offline catalogue, OpenSpool, NFC size, storage, updater, Orca and GUI tests.

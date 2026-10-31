@@ -16,6 +16,7 @@ Build :
 """
 import os
 import sys
+from PyInstaller.utils.hooks import copy_metadata
 
 block_cipher = None
 
@@ -66,6 +67,7 @@ datas = [
 ]
 # Filtre les dossiers absents pour éviter les erreurs de build.
 datas = [(src, dst) for src, dst in datas if os.path.isdir(src)]
+datas += copy_metadata("certifi")
 
 # ─── Métadonnées de version Windows (réduit l'effet « Éditeur inconnu ») ──
 version_info = None
@@ -100,7 +102,7 @@ a = Analysis(
     binaries=[],
     datas=datas,
     hiddenimports=[
-        "core", "scripts.db_io",
+        "core", "scripts.db_io", "certifi",
         # Les scrapers dans scripts/ sont lancés via runpy depuis l'exe gelé ;
         # PyInstaller n'analyse pas leurs imports, on les déclare donc ici.
         "urllib", "urllib.request", "urllib.error", "urllib.parse",
@@ -110,7 +112,7 @@ a = Analysis(
     ],
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=[],
+    runtime_hooks=[".github/runtime_hooks/tls_certificates.py"],
     excludes=[
         # Allège le bundle : modules Qt inutilisés.
         "PySide6.QtQml", "PySide6.QtQuick", "PySide6.Qt3DCore",

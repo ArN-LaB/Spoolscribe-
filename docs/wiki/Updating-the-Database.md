@@ -29,6 +29,15 @@ consent.
 
 ## Status and local data
 
+Frozen applications include Mozilla CA roots through certifi. They are used when
+Python finds no default trust roots. Existing system roots and explicit
+`SSL_CERT_FILE` / `SSL_CERT_DIR` settings are preserved; TLS certificate and
+hostname verification remain enabled. No system certificate store is modified.
+
+The bundled TheFilamentDB snapshot contains Prusament entries but no ROSA3D
+entries. Its multibrand step therefore reports a partial result for ROSA3D;
+this is independent of HTTPS connectivity and does not invent missing colors.
+
 Each worker reports changed, unchanged, unavailable, partial or failed. A pipeline
 with a failed/unavailable source is never a complete update. Only a fully checked,
 validated pipeline advances the complete-refresh date. Available partial data can
