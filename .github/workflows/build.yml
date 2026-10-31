@@ -137,10 +137,15 @@ jobs:
         shell: bash
         run: |
           cd dist
-          # onefile : dist/ contient l'exécutable (ou le .app sur macOS).
-          # On zippe tout son contenu pour rester générique entre OS.
-          7z a "../${{ matrix.artifact }}.zip" ./* >/dev/null 2>&1 || zip -r "../${{ matrix.artifact }}.zip" ./*
+          case "$RUNNER_OS" in
+            macOS) target="SpoolScribe.app" ;;
+            Windows) target="SpoolScribe.exe" ;;
+            Linux) target="SpoolScribe" ;;
+            *) exit 1 ;;
+          esac
+          7z a "../${{ matrix.artifact }}.zip" "$target" >/dev/null 2>&1 || zip -r "../${{ matrix.artifact }}.zip" "$target"
           cd ..
+          python .github/scripts/verify_archive.py "${{ matrix.artifact }}.zip"
           # Empreinte SHA256 pour que les utilisateurs vérifient l'intégrité.
           if command -v sha256sum >/dev/null 2>&1; then
             sha256sum "${{ matrix.artifact }}.zip" > "${{ matrix.artifact }}.zip.sha256"
@@ -186,7 +191,7 @@ jobs:
       - name: Verify all three archives and checksums
         shell: python
         run: |
-          import hashlib, pathlib, zipfile
+          import hashlib, pathlib, subprocess, sys
           root = pathlib.Path('artifacts')
           expected = {f'SpoolScribe-{os}.zip{suffix}'
                       for os in ('windows', 'macos', 'linux') for suffix in ('', '.sha256')}
@@ -197,8 +202,7 @@ jobs:
               digest, filename = checksum.read_text().strip().split()
               assert filename.lstrip('*') == archive.name, checksum
               assert hashlib.sha256(archive.read_bytes()).hexdigest() == digest, archive
-              with zipfile.ZipFile(archive) as z:
-                  assert z.namelist() and z.testzip() is None, archive
+              subprocess.run([sys.executable, '.github/scripts/verify_archive.py', str(archive)], check=True)
 
       - name: Upload complete draft release
         uses: softprops/action-gh-release@v3

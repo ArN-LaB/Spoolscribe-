@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow the CLI to reconsider saved network consent; GUI settings can revoke it.
 
 ### Tests and packaging
+- Package only the native application for each OS: `.app` on macOS, `.exe` on
+  Windows, and the Linux executable. Validate archive layout and binary format.
 - Add offline catalogue, OpenSpool, NFC size, storage, updater, Orca and GUI tests.
 - Run tests on pushes/PRs and require them before the existing three-OS builds.
 - Record a Python 3.12 build dependency snapshot in `requirements-build.txt`.
