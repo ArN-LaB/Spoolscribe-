@@ -6,8 +6,10 @@ The user database `polymaker_db.json` and the repository snapshots
 `catalogue_ofd.json` / `catalogue_spoolman.json` share three maps:
 
 - `_brands`: source brand labels with optional local logo/website metadata.
-- `_products`: material (`type`, optional `subtype`), `brand`, `display_name`
-  and the physical fields. Internal keys identify products unambiguously.
+- `_products`: material (`type`, optional `subtype`), `brand` (the
+  manufacturer), optional `line` (a product line a source listed as a brand,
+  e.g. `PolyLite`), `display_name` and the physical fields. Internal keys
+  identify products unambiguously.
 - `_skus`: internal reference → product key, `color_name`, `hex`, source
   identity (`source`, `source_id`, `source_path`), packaging (`weight`,
   `spool_refill`), optional `manufacturer_sku`, `source_colors`, `alpha`.
@@ -26,7 +28,7 @@ A single temperature published by SpoolmanDB becomes an equal minimum/maximum.
 
 | Key | Where | Meaning |
 |---|---|---|
-| `_field_sources` | product, reference | `{field: {source, rank, value}}` for every imported field. A field absent from this map is yours (or historical) and is never replaced. |
+| `_field_sources` | product, reference | `{field: {source, rank, value}}`. Your edits are recorded with source `Utilisateur` and rank 1000 and are never replaced. A field absent from this map has unknown provenance (historical catalogue, older installations): a manufacturer source (rank ≥ 100) may replace it, any source may complete it, and it is checked like source data. |
 | `_source_aliases` | reference | `{source: [source ids…]}` — every source record absorbed into this reference, in order. Older files may hold a single string; it is upgraded to a list on the next merge. |
 | `_product_aliases` | reference | Reviewed historical product names (Polymaker renames). |
 | `_pending_source_matches` | database | `{source: [{source_id, reason, candidates?}]}` — ambiguous records kept out of the table. |
@@ -50,9 +52,19 @@ symbols but keeps `+`, so `PLA+` and `PLA` stay distinct. Anything else is
 pending, never a duplicate.
 
 `core.list_skus` rows expose `sku` (internal), `reference` (manufacturer article
-when known, else the internal identifier; shown in the *Référence* column),
-`manufacturer_sku`, `source_id`, the display fields, `ready`, `quality` (the data
-state) and a private `_search` key normalized once per reload.
+when known, else the internal identifier), `manufacturer_sku`, `source_id`, the
+display fields, `family` and `variant` (from `core.material_family`), `line`,
+`ready`, `quality` (the data state), a private `_hex_rank` (provenance rank of
+the HEX, −1 when absent) and a private `_search` key normalized once per reload.
+
+`core.group_filaments(rows)` returns one row per filament, keyed by normalized
+manufacturer, product and colour name. The row copies its primary reference (the
+best-documented HEX, then the ready one, then the first identifier) and adds
+`variants` (`sku`, `reference`, `weight`, `diameter`, `hex`, `ready`, `quality`,
+`manufacturer_sku` of every grouped reference), `variant_count` and
+`hex_variants` (distinct HEX values among them). The interface shows grouped
+rows by default (`ui.group` setting); the *Référence* column then shows the
+manufacturer article plus `+n`, or `n cond.` when no article is known.
 
 ## Data state
 
@@ -64,8 +76,11 @@ The last two mark source values that contradict themselves (black HEX for a
 light name, white HEX for a dark name, nozzle outside 120–500 °C, bed outside
 0–200 °C or bed maximum 0 °C, density outside 0.5–4.0, diameter outside 1.0–3.2);
 `core.build_openspool` refuses to export them until they are corrected, which
-removes their provenance and makes them yours. Historical entries without
-`source` are never flagged.
+records the field as yours (`Utilisateur`). Only user-owned fields are exempt;
+fields without provenance are checked like source data.
+
+The state filter accepts `all`, `ready`, `incomplete` (not ready) and
+`suspect` (any *À vérifier* reason).
 
 ## Settings (`config.json`)
 
@@ -77,13 +92,40 @@ removes their provenance and makes them yours. Historical entries without
 | `last_update_attempt`, `last_update_status` | Date and status (`complete` / `partial` / `failed`) of the last attempt, successful or not |
 | `last_update` | Legacy date kept for older settings |
 | `nfc_tag_type`, `nfc_profile` (`auto` / `essential` / `full`), `nfc_reserved_bytes` | Saved NFC default, written only by **Définir par défaut** or `--save-nfc-default`; invalid values fall back to NTAG216 / `auto` / 0 |
-| `printer_profile`, `orca_overrides`, `show_extra_fields` | Export assistant |
-| `ui` | Filters, sorting, columns, geometry, splitter, view |
-| `recent_brands` | Quick-access manufacturers |
+| `printer_profile`, `printer_firmware` | Printer/reader and firmware chosen in **Mon matériel** (`u1_stock` from older settings maps to `u1` + `stock`) |
+| `orca_overrides`, `show_extra_fields` | Export options (`show_extra_fields` is kept for imported settings; the card always shows references and provenance) |
+| `ui` | Filters, sorting, columns, geometry, splitter, view, `group` (one row per filament, default `true`) |
+| `recent_brands` | Manufacturers pinned at the top of the sidebar |
 | `auto_update` | Legacy flag, accepted but unused; the cadence applies |
 
 Settings exported from the application contain everything except the consent
 keys; importing never grants consent.
+
+## Printers and readers (`data/printers.json`)
+
+`{"format": "spoolscribe-printers", "version": 1, "updated": "YYYY-MM-DD",
+"groups": {…}, "printers": [...], "external_readers": [...], "unverified": [...]}`.
+Each printer has a stable `id`, `vendor`, `label`, a `group` (`native`,
+`external`, `incompatible`, `none`), the `reader` technology, `firmwares`
+(`id`, `label`, boolean `openspool`, optional `url` and `notes`), a `help` text
+and optional per-field guidance (`fields`). `printer_profiles.validate_catalogue`
+rejects unknown formats, duplicate or missing identifiers, unknown groups and
+firmwares without a boolean `openspool`. The bundled file is used unless a valid
+copy in the user data folder (`data/printers.json`, installed by **Mettre à jour
+la liste des imprimantes…**) carries an `updated` date at least as recent.
+`printer_profiles.can_export(printer, firmware)` is the only test used to show
+the tag controls and allow an OpenSpool export.
+
+## Logo manifest (`data/brand_logos/manifest.json`)
+
+One entry per reviewed logo, keyed by the OFD brand UUID (or a slug for a logo
+imported from another source): `name`, `path`, `sha256`, `width`, `height`;
+for OFD images `source_path`, `source_commit`, `source_sha256`; for imported or
+retouched images `transparent_background: true` and `logo_source` (`url`,
+`source_kind`, `licence_note`, `retrieved`); `filled_shape: true` marks a
+square/round logo that legitimately fills its corners. The application resolves
+a brand's logo through this manifest first (by normalized brand name), then
+through the `logo_path` stored in the database.
 
 ## Colours
 

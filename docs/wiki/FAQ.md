@@ -10,17 +10,19 @@ Research, SUNLU, eSUN…) or to Snapmaker. See
 ## Does it send my data anywhere?
 
 No. There is **no telemetry, no tracking, no account**. The network is used for
-three things only, all listed before you agree: the first download of the
+four things only, all listed before you agree: the first download of the
 catalogue, the refresh of the sources you selected (at the cadence you choose,
-daily by default, or when you click **Mettre à jour**), and the release check
-when you click **⋯ → Vérifier une mise à jour de l'application**. Servers see
+daily by default, or when you click **Synchroniser**), the printer list refresh
+when you click **Mon matériel → Mettre à jour la liste des imprimantes…**, and
+the release check when you click **⚙ → Vérifier une mise à jour de
+l'application**. Servers see
 your IP and the User-Agent, nothing about your catalogue or printer. See
 [PRIVACY.md](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/PRIVACY.md).
 
 ## Why is the app empty after installation?
 
 The installer contains no catalogue. Choose your sources in the first dialog
-and click **Télécharger et enregistrer**. Offline, nothing can be shown until a
+and click **Synchroniser maintenant**. Offline, nothing can be shown until a
 first download has succeeded; afterwards the cached catalogue works offline.
 
 ## Is the data free to use?
@@ -30,6 +32,28 @@ The code is MIT. Open Filament Database and SpoolmanDB are MIT;
 provided); manufacturer pages provide factual values only. Logos remain the
 trademarks of their owners. Full details:
 [DATA_SOURCES.md](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DATA_SOURCES.md).
+
+## Why do PolyLite, Panchroma or Fiberon not appear as manufacturers?
+
+They are Polymaker product lines that some sources list as brands. SpoolScribe
+files them under Polymaker (likewise PrimaSelect/PrimaValue under 3D Prima,
+Hyper under Creality, Extrafill under Fillamentum); the card shows
+« Marque · ligne ».
+
+## Why is there one row for several spool sizes?
+
+A row is a filament: manufacturer, product and colour. Its 1 kg, 3 kg, refill
+or 2.85 mm references are grouped and listed in the card (**Références**),
+each with its state. The OpenSpool tag does not depend on the spool size. When
+the sources disagree on the hue, the best-documented HEX (yours, then the
+manufacturer's, then the community's) is shown and the card says so.
+
+## My printer is not in the list, or my firmware is missing
+
+**⚙ → Mon matériel → Mettre à jour la liste des imprimantes…** downloads the
+current `data/printers.json` from the repository (network authorization
+required). If your machine is still missing, open an issue with the reader
+technology and firmware; see [[Printers and Readers|Printers-and-Readers]].
 
 ## Do I need the paxx12 firmware?
 
@@ -43,8 +67,8 @@ works on any machine. Other OpenSpool-capable readers can use the same files.
 
 - **Missing colour**: the GUI and the CLI ask for an explicit representative HEX
   at export time; cancelling the colour cancels the export.
-- **Missing temperatures / density / diameter**: use **Compléter / corriger les
-  caractéristiques…**; the values apply to every variant of that product.
+- **Missing temperatures / density / diameter**: use **Corriger…** in the
+  card; the values apply to every reference of that product.
 - **« À vérifier »**: the source published a value that contradicts itself
   (for example a black HEX for a "White" filament, or a density of 7 g/cm³).
   Open the card, correct the value explicitly, and the record becomes exportable.
@@ -52,7 +76,9 @@ works on any machine. Other OpenSpool-capable readers can use the same files.
   product. Contributions upstream (to Open Filament Database or SpoolmanDB)
   benefit everyone.
 
-Your corrections are saved locally and survive every refresh.
+Your corrections are saved locally with the provenance « Utilisateur » and
+survive every refresh. Values of unknown origin (older installations) are
+corrected by manufacturer sources and completed by community sources.
 
 ## What does « Export possible » mean?
 
@@ -73,8 +99,10 @@ SpoolFlux on iPhone. See [[Writing RFID Tags|Writing-RFID-Tags]].
 
 ## Can I remove a manufacturer logo?
 
-Logos are bundled in the application; the packaged app shows the brand name when
-a logo is absent. To build your own copy without a logo, remove its file from
+Logos are bundled in the application with a transparent background (checked by
+a test); the packaged app shows the brand name when a logo is absent. Official
+logos are being re-sourced brand by brand with their origin recorded in the
+manifest. To build your own copy without a logo, remove its file from
 `data/brand_logos/` and its entry in `manifest.json` (or list the brand in
 `.github/catalogue-logo-exclusions.json`). Trademark holders can also ask for
 removal by opening an issue.

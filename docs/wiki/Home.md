@@ -14,7 +14,8 @@ OpenSpool readers.
 - [[Getting Started|Getting-Started]] — install, first run, first tag
 - [[Writing RFID Tags|Writing-RFID-Tags]] — from JSON to a programmed tag
 - [[Snapmaker U1 & paxx12|Snapmaker-U1-and-paxx12]] — the open firmware context
-- [[Updating the Database|Updating-the-Database]] — sources, consent, cadence, backups
+- [[Updating the Database|Updating-the-Database]] — sources, consent, cadence, report, backups
+- [[Printers and Readers|Printers-and-Readers]] — which printers read which tags
 - [[FAQ|FAQ]] — common questions
 
 ## The catalogue in one paragraph
@@ -25,10 +26,15 @@ downloads them into your user folder: about 24,000 references from 170+
 manufacturers. Manufacturer facts outrank community values, your own corrections
 outrank both, and anything uncertain is held aside instead of merged. Internal
 `OFD-…` / `SMDB-…` identifiers are not manufacturer SKUs; the *Référence*
-column shows the manufacturer article number when the source provides one.
-Filters (manufacturer, material, data state « État des données »), search,
-two-level header sorting and 250-row pages apply to the whole catalogue. Logos
-are reviewed local assets; a readable name replaces an unsuitable image.
+column (optional) shows the manufacturer article number when the source provides one.
+The table shows one row per filament: the spool sizes, refills and diameters of
+one manufacturer, product and colour are grouped, and the card lists each
+reference. Product lines some sources list as brands (PolyLite, Panchroma,
+Fiberon…) appear under their manufacturer. The sidebar (manufacturers, material
+families, data state « État des données »), the search field, two-level header
+sorting and 250-row pages apply to the whole catalogue. Logos are reviewed local
+assets with a transparent background; a readable name replaces an unsuitable
+image.
 
 Reference documentation in the repository:
 [data sources](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DATA_SOURCES.md),

@@ -20,13 +20,24 @@ is meant to be low-friction.
   supports it.
 - Don't bundle new trademarked assets without noting them in
   [TRADEMARKS.md](../docs/TRADEMARKS.md).
-- Never guess a value: unknown stays `null`, user corrections are never
-  overwritten, identities are never merged on material/colour alone.
+- Never guess a value: unknown stays `null`, user corrections (provenance
+  `Utilisateur`) are never overwritten, identities are never merged on
+  material/colour alone. A manufacturer source may correct fields of unknown
+  provenance; a community source may only complete them.
+- A new manufacturer logo needs a transparent background and a recorded origin:
+  add it through `.github/scripts/import_brand_logos.py` (review file + files),
+  never by copying an image into `data/brand_logos/`; `tests/test_logos.py`
+  checks the result. Note the mark in [TRADEMARKS.md](../docs/TRADEMARKS.md).
+- A new printer or reader is a `data/printers.json` entry (group, reader,
+  firmwares with the `openspool` flag, help), not code; cite a primary source
+  and list what is unverified.
 
 ## Architecture
 
 - `core.py` — **pure logic, no `print`/`input`**. Put business logic here.
-- `app_gui.py`, `ui_catalogue.py` — Qt UI only.
+- `app_gui.py`, `ui_catalogue.py` — Qt UI only (sidebar, card, **Mon matériel**,
+  sources and report dialogs).
+- `printer_profiles.py` + `data/printers.json` — printers/readers catalogue.
 - `convert_profile.py` — terminal UI only.
 - `scripts/` — source adapters (`catalogue_sources.py`, `official_sources.py`,
   `catalogue_merge.py`), update workers (`sync_*.py`, standard library only)

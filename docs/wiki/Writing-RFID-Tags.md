@@ -1,11 +1,14 @@
 # Writing RFID Tags
 
-Choose the printer/reader first (**Utiliser ce filament avec**). For the
-Snapmaker U1 with an OpenSpool-capable firmware and for other OpenSpool readers,
-SpoolScribe produces an OpenSpool 1.0 JSON payload. Bambu proprietary tags and
-Prusa OpenPrintTag are not generated; for those printers the card is a
-reference sheet and the tag controls are hidden. See the
-[printer/field guidance (French)](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/UX-v0.3.0.md).
+Choose the printer or reader first (**⚙ → Mon matériel**, or **Modifier…** in
+the card), with its firmware when that matters. For the Snapmaker U1 under the
+paxx12 firmware, for Flashforge machines under Zmod + FF_NFC, for Klipper +
+Spoolman readers, for a Bambu printer fed by an external OpenSpool reader and
+for other OpenSpool readers, SpoolScribe produces an OpenSpool 1.0 JSON payload.
+Bambu AMS, Prusa OpenPrintTag, Creality CFS, Anycubic ACE, Elegoo, QIDI or
+UltiMaker tags are not generated; for those printers the card is a reference
+sheet and the tag controls are hidden. See
+[[Printers and Readers|Printers-and-Readers]].
 
 SpoolScribe prepares the **JSON data** only. A separate writer, such as
 SpoolFlux on iPhone, programs the physical NFC tag. SpoolScribe does not write
@@ -17,11 +20,11 @@ memory pages, change a Capability Container (CC) or associate a hardware UID.
   version, material type and subtype, brand, representative HEX, explicit alpha
   and additional colours, nozzle and bed ranges, diameter and density. This is
   everything a reader uses, and it fits every catalogue reference on an NTAG215.
-- **Full** — an explicit choice under **Réglages avancés** (or `--nfc-profile
-  full`): the essential fields plus the reference, product and colour names and
+- **Full** — an explicit choice under **Mon matériel → Réglages avancés** (or
+  `--nfc-profile full`): the essential fields plus the reference, product and colour names and
   brand metadata (website, logo URL). Larger, with no effect on printing.
   Unknown metadata is omitted, never written as `null`.
-- **Readable archive** (**⋯ → Exporter la sélection en archive JSON…**): all
+- **Readable archive** (**⚙ → Exporter la sélection en archive JSON…**): all
   full-profile fields, indented, under an `_archive.json` filename. It may
   exceed a tag's capacity and is not meant to be written verbatim.
 
@@ -83,10 +86,11 @@ diameter/density as positive numbers, HEX as six uppercase characters.
 
 ## Writing and diagnosis
 
-1. Choose the printer/reader, the tag (NTAG215 or NTAG216), optionally the
-   profile and the writer reserve under **Réglages avancés**. These choices
-   apply to the current session; **Définir par défaut** next to the tag selector
-   keeps them for later launches (CLI: `--save-nfc-default`).
+1. In **Mon matériel**, choose the printer/reader and its firmware, the tag
+   (NTAG215 or NTAG216), optionally the profile and the writer reserve under
+   **Réglages avancés**. These choices apply to the current session; **Définir
+   par défaut** next to the tag selector keeps them for later launches (CLI:
+   `--save-nfc-default`).
 2. Export the NFC file and check its size estimate in the card.
 3. Import it into your writer and select MIME `application/json`.
 4. Program the tag and read it back.

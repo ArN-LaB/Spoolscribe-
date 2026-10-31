@@ -27,16 +27,21 @@ Use of these names does not imply any endorsement by the trademark holders.
 ## Brand assets (logos)
 
 The application bundles reviewed manufacturer logos (`data/brand_logos/`,
-137 files listed in `manifest.json`) and three historical ones
+136 files listed in `manifest.json`) and three historical ones
 (`data/polymaker_logo.svg`, `data/prusament_logo.png`, `data/rosa3d_logo.png`).
-They come from the Open Filament Database repository, whose MIT licence covers
-its data files but **does not waive the trademark rights** of the brands depicted.
+Most come from the Open Filament Database repository, whose MIT licence covers
+its data files but **does not waive the trademark rights** of the brands
+depicted; logos imported from a manufacturer's own site or press kit record
+their origin in the manifest (`logo_source`). Either way the mark stays its
+owner's.
 
 - A logo is shown only next to the records of its own brand, to identify it.
-- The build script (`.github/scripts/build_catalogue_snapshot.py`) crops empty
-  transparent margins of SVG files and normalizes raster files (format, size);
-  it does not recolour or redraw artwork. The application keeps proportions and
-  transparency and adds a thin outline for legibility.
+- The build scripts (`.github/scripts/build_catalogue_snapshot.py`,
+  `.github/scripts/import_brand_logos.py`) crop empty margins, normalize format
+  and size and make a uniform background transparent; they do not recolour or
+  redraw artwork. A transparent background is required and checked by a test.
+  The application keeps proportions and transparency and adds a thin outline
+  for legibility.
 - Logos judged unsuitable (blurred, product photos, incomplete artwork) are
   excluded in `.github/catalogue-logo-exclusions.json`; those brands show their
   name instead.

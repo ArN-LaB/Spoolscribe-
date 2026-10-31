@@ -15,7 +15,8 @@ the adapter uses it and what it refuses to guess.
 | [Bambu Studio profiles](https://github.com/bambulab/BambuStudio/tree/master/resources/profiles/BBL/filament) | Bambu Lab | Repository under **AGPL-3.0**; only facts are kept | Density, diameter and nozzle range of `Bambu … @base` profiles, plus the profile URL | No profile, G-code or printer setting is redistributed |
 | [SUNLU PLA product page](https://www.sunlu.com/products/pla-3d-printing-filament) | SUNLU | Public product page; factual values | Density, bed range, official colour codes of SUNLU PLA | Facts only |
 | [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) (optional source) | Polymaker (official) | **MIT** | OrcaSlicer profiles for the Snapmaker U1 (temperature overrides at export) | Keep the upstream notice |
-| [TheFilamentDB](https://thefilamentdb.issou.best/) (legacy, developer snapshot) | issou.best | **CC-BY 4.0** | Historical colour HEX of the curated brands | **Attribution required**: see `data/TheFilamentDB-ATTRIBUTION.txt` and below |
+| [TheFilamentDB](https://thefilamentdb.issou.best/) (legacy, developer snapshot) | issou.best | **CC-BY 4.0** | Historical colour HEX of the curated brands (ROSA3D is absent from the snapshot: a warning, not a failure) | **Attribution required**: see `data/TheFilamentDB-ATTRIBUTION.txt` and below |
+| [Printer list](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/data/printers.json) (optional, on click) | This project | **MIT** (repository file) | Printers/readers, firmwares and tag protocols shown in **Mon matériel** | Downloaded only on request; validated; installed only when newer than the bundled copy |
 | Manufacturer logos | Respective brands | **Trademarks**, not covered by any of the licences above | Identification of the selected brand in the interface | Identification only; removal on request ([TRADEMARKS.md](TRADEMARKS.md)) |
 
 A new source is added as a group in `core.SOURCE_GROUPS` (name, hosts, worker
@@ -30,13 +31,49 @@ value). When sources disagree:
 
 | Rank | Owner | Can replace |
 |---:|---|---|
-| — | **Your corrections** (a field without provenance, including a deliberate `null`) | Nothing replaces them, ever |
-| 100 | Manufacturer workers: Polymaker, Bambu Lab, SUNLU | Community values that have not been edited |
+| 1000 | **Your corrections**, recorded as source `Utilisateur` (including a deliberate `null`) | Nothing replaces them, ever; a differing source value is listed as `… (correction locale conservée)` |
+| 100 | Manufacturer workers: Polymaker, Bambu Lab, SUNLU | Community values and fields of unknown provenance |
 | 20 | Open Filament Database | SpoolmanDB values, and its own earlier values |
 | 10 | SpoolmanDB | Its own earlier values; fills unknowns left by higher ranks |
+| 0 | Fields without provenance (historical catalogue, databases created by an older build) | Replaced by a manufacturer, completed by any source, re-asserted by their own source; checked like any source value |
 
-Historical records without a `source` field are treated as user-owned by
-precaution. A lower-ranked source can fill a value the higher rank left unknown.
+A lower-ranked source can fill a value the higher rank left unknown. A field of
+unknown provenance that already equals the incoming value simply gains that
+provenance. Databases created by an earlier preview build (all fields without
+provenance) are therefore no longer frozen: the next manufacturer refresh
+corrects them.
+
+### Product lines and manufacturers
+
+Some sources list product lines as brands. `scripts/catalogue_sources.BRAND_LINES`
+folds them into their manufacturer and keeps the line on the product (`line`):
+PolyLite, PolyTerra, PolyMax, PolyFlex, PolyMide, PolySonic, PolyCast, PolySmooth,
+PolyWood, PolyDissolve, PolySupport, PolyBox, Panchroma and Fiberon → Polymaker;
+PrimaCreator, PrimaSelect, PrimaValue, 3D Prima Basic and PrimaFil → 3D Prima;
+Hyper → Creality; Extrafill → Fillamentum. Adapters apply the table at import;
+an existing database is migrated in memory when it is loaded (174 → 165 brands
+on the first real database reviewed) and the brand metadata of the manufacturer
+wins over the line's.
+
+### Material families and filament grouping
+
+`core.material_family` derives a family (`core.MATERIAL_FAMILIES`: PLA, PETG,
+PCTG, PET, ABS, ASA, TPU, TPE, TPC, TPI, PA, PC, PP, PVA, HIPS, PEEK, PEKK, PEI,
+PPSU, PSU, PES, PPS, PBT, POM, PMMA, PVB, PVDF, PHA, PCL, EVA, PVC, CPE, BVOH,
+PPE, PEBA) and a variant from each source label: `ABS+MATTE` → ABS "+Matte",
+`EASYASA` → ASA "Easy", `HTPLA+` → PLA "HT +", `PA6-CF` → PA "PA6 CF". The
+family only drives the sidebar filter; the source label and the exported
+OpenSpool `type` are unchanged.
+
+`core.group_filaments` shows one row per filament (manufacturer + product +
+colour name): spool sizes, refills and diameters become `variants`
+(`variant_count`), and the HEX shown is the best-documented one (user, then
+manufacturer, then OFD, then SpoolmanDB, then unknown provenance; ties go to the
+most frequent value). `hex_variants` counts the distinct hues the sources gave
+to that filament; the card warns when it exceeds one.
+
+A matched source record whose local product record is missing (a historical
+orphan) is healed with the source product instead of aborting the refresh.
 
 Identity between sources is never guessed from material and colour alone. Two
 records are the same filament when they share the brand, a manufacturer article
@@ -63,13 +100,19 @@ SpoolmanDB only adds manufacturers that no other source already covers.
   120–500 °C, a bed temperature outside 0–200 °C or a bed maximum of 0 °C, a
   density outside 0.5–4.0 g/cm³ or a diameter outside 1.0–3.2 mm mark the record
   **À vérifier** in the data-state column. Export is refused until the value is
-  corrected explicitly, which also makes it yours. Your corrections and
-  historical records are never second-guessed.
+  corrected explicitly, which also makes it yours. Only your own corrections
+  (source `Utilisateur`) are exempt; fields of unknown provenance are checked
+  like any source value.
 - **Unknown stays unknown.** Missing physical values are `null`; an Orca profile
   without plate temperature gives an unknown bed, not 0 °C; no colour, alpha or
   temperature is inferred from a product name.
 - **Conditional downloads.** OFD, SpoolmanDB and the Bambu index are fetched
   with `If-None-Match`; an unchanged source ends the step without download.
+- **Throttling and slow links.** `429`/`503` answers are retried after the
+  server's `Retry-After` (1–30 s, 5 s by default), twice at most, then the source
+  is reported as saturated. Workers have fixed budgets (OFD 900 s, Bambu 600 s,
+  SpoolmanDB and Polymaker 300 s, SUNLU 180 s); a timeout ends the step as
+  unreachable and keeps the local data.
 
 ## Adapter limits
 
@@ -106,8 +149,9 @@ offline files are test fixtures and are excluded from installers:
 | SpoolmanDB compiled catalogue | `data/catalogue_spoolman.json` | 14 | 599 |
 
 With the three curated brands the fixture exposes 174 source brand labels and
-24,521 references. A reference is a source colour/size/packaging record, not
-necessarily a unique formulation or SKU; a source can list sub-brands as brands.
+24,521 references (165 manufacturers once product lines are folded, about
+15,500 filaments once packagings are grouped). A reference is a source
+colour/size/packaging record, not necessarily a unique formulation or SKU.
 
 OFD snapshot: commit
 [`1dda27a4afcc4f9200b5b3867e85e75f8e1ea147`](https://github.com/OpenFilamentCollective/open-filament-database/tree/1dda27a4afcc4f9200b5b3867e85e75f8e1ea147),
@@ -119,15 +163,25 @@ rejected and incomplete records. Twenty OFD brand folders have no usable variant
 
 ### Logos
 
-137 OFD logos passed a format, size and contact-sheet review; twenty were
-excluded (`.github/catalogue-logo-exclusions.json`) and 14 complementary
-manufacturers have none, so 34 brands show their name instead. The build script
-(`.github/scripts/build_catalogue_snapshot.py`) crops transparent SVG margins and
-normalizes raster images; the application keeps colours, proportions and
-transparency, adds a thin outline and shows the name for bitmaps under 24 px.
-Hashes are recorded in `data/brand_logos/manifest.json`. Runtime updates never
-download or approve a logo. The MIT licence of the OFD repository covers its
-data, not the trademarks it depicts: see [TRADEMARKS.md](TRADEMARKS.md).
+136 logos (115 PNG, 21 SVG) are listed in `data/brand_logos/manifest.json`
+with their hash, size and provenance; twenty-one OFD images were excluded
+(`.github/catalogue-logo-exclusions.json`) and 14 complementary manufacturers
+have none, so those brands show their name instead. **A transparent background
+is mandatory**: `tests/test_logos.py` checks that every raster logo has
+transparent corners (three filled square/round logos are marked
+`filled_shape` and exempt) and that no SVG carries a full-size background
+rectangle. `.github/scripts/import_brand_logos.py` imports reviewed logos from a
+`sources.json` review file (official site, press kit, GitHub, Wikimedia), makes
+a uniform background transparent, trims and bounds the image and records
+`logo_source` (`url`, `source_kind`, `licence_note`); its `--retouch-existing`
+mode reprocesses the logos already listed. The bundled manifest takes precedence
+over the `logo_path` a database remembers, so a replaced logo shows without a
+refresh. Official logos are being re-sourced brand by brand through that
+process; until a brand is imported, its reviewed OFD image stays. The
+application keeps colours, proportions and transparency, adds a thin outline and
+shows the name for bitmaps under 24 px. Runtime updates never download or
+approve a logo. The MIT licence of the OFD repository covers its data, not the
+trademarks it depicts: see [TRADEMARKS.md](TRADEMARKS.md).
 
 ## Attribution required: TheFilamentDB (CC-BY 4.0)
 

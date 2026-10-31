@@ -32,20 +32,23 @@ It is **not affiliated with any filament manufacturer or with Snapmaker**; see
    [Releases](https://github.com/ArN-LaB/Spoolscribe-/releases) page, unzip it and open
    SpoolScribe. The binaries are not code-signed: see [Windows SmartScreen](#windows-unknown-publisher--smartscreen)
    and [macOS Gatekeeper](#macos-gatekeeper) below.
-2. **First launch**: choose the data sources you want and click *Télécharger et enregistrer*
-   (download and save). The installer contains no catalogue; the download builds it in your
-   user folder. Later launches refresh it once a day by default.
-3. **Export a tag**: pick a filament, your printer/reader and the tag you bought, then
-   *Exporter pour NFC*. Write the JSON file with SpoolFlux (or another NDEF writer), read the
-   tag back, and check that the printer shows the expected brand, material and colour.
+2. **First launch**: choose the data sources you want and click *Synchroniser maintenant*.
+   The installer contains no catalogue; the download builds it in your user folder. Later
+   launches refresh it once a day by default.
+3. **Tell it what you own**, once: *⚙ → Mon matériel* (my hardware) — your printer or
+   reader, its firmware when that matters (a stock Snapmaker U1 does not read OpenSpool, the
+   paxx12 firmware does) and the tag you bought (NTAG216 or NTAG215).
+4. **Export a tag**: pick a filament in the list, then *Exporter pour NFC*. Write the JSON
+   file with SpoolFlux (or another NDEF writer), read the tag back, and check that the printer
+   shows the expected brand, material and colour.
 
 ## Status
 
 v0.3.0 is in development on the `feature/universal-catalogue` branch. The published stable
 release is [v0.2.2](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.2.2).
-The 31 October 2026 audit and its fixes are recorded in `docs/VALIDATION-AUDIT-v0.3.0.md`
-(test build) and in [CHANGELOG.md](CHANGELOG.md); earlier reports are in
-[docs/archive/](docs/archive/).
+The 31 October 2026 audit, the review on real data of 1 November 2026 and their fixes are
+recorded in [docs/VALIDATION-AUDIT-v0.3.0.md](docs/VALIDATION-AUDIT-v0.3.0.md) (test build)
+and in [CHANGELOG.md](CHANGELOG.md); earlier reports are in [docs/archive/](docs/archive/).
 
 ## Download
 
@@ -93,28 +96,58 @@ Run from source (below).
 - Catalogue downloaded from selected public sources: Open Filament Database, SpoolmanDB,
   Polymaker, Bambu Lab (Bambu Studio profiles) and SUNLU, about 24,000 references from
   170+ manufacturers. Nothing is bundled; nothing is contacted without your consent.
-- Manufacturer values outrank community values; your own corrections outrank both and
-  survive every refresh. Uncertain cross-source matches are held aside, never merged.
+- Manufacturer values outrank community values and also correct records of unknown origin
+  (older installations); your own corrections outrank everything and survive every refresh.
+  Uncertain cross-source matches are held aside, never merged.
+- One row per filament: the spool sizes, refills and diameters of the same manufacturer,
+  product and colour are grouped, and the card lists each reference with its state. Product
+  lines listed as brands by some sources (PolyLite, Panchroma, Fiberon, PrimaSelect…) are
+  shown under their manufacturer.
 - Values that contradict themselves (a black HEX for "White", a 7.2 g/cm³ density…) are
   flagged **to be checked** (« À vérifier ») and cannot reach a tag until you confirm them.
 - Refresh cadence of your choice (every launch, daily, weekly, manual); sources answer
   "not modified" when nothing changed; a running refresh can be cancelled.
-- Search, manufacturer / material / data state (« État des données ») filters, two-level
-  sorting from the column headers, column chooser, list and grid views, 250 rows per page.
-- Manufacturer logos reviewed for legibility, with a name fallback; light and dark themes.
-- Printer/reader choice (Snapmaker U1 OpenSpool, U1 stock, Bambu Lab, Prusa, other
-  OpenSpool reader) explains which fields matter. No Bambu RFID or OpenPrintTag is generated.
+- Sidebar with manufacturers (recent ones pinned), material families and data state
+  (« État des données »), plus search, two-level sorting from the column headers, a column
+  chooser, list and grid views and 250 rows per page.
+- Manufacturer logos with a transparent background (checked by a test), a name fallback and
+  light/dark themes.
+- A data-driven list of printers and readers (`data/printers.json`, refreshable from the
+  repository) says, per firmware, whether the machine reads an OpenSpool tag at all. No Bambu
+  RFID, Creality/Anycubic/QIDI tag or OpenPrintTag is generated; see
+  [Printers and readers](docs/wiki/Printers-and-Readers.md).
 - NTAG215 / NTAG216 capacity check with the exact NDEF framing; the inspector shows the
   byte-identical JSON that will be exported.
 - Explicit local editing of temperatures, diameter, density and colour; atomic saves,
   backups and restore.
 - Persistent workspace (filters, columns, layout, printer, tag), settings import/export,
-  keyboard shortcuts (Ctrl+F search, Ctrl+E export, Ctrl+U update, Esc deselect).
-- Release check on demand only (*⋯ → Vérifier une mise à jour de l'application*).
+  keyboard shortcuts (Ctrl+F search, Ctrl+E export, Ctrl+U synchronise, Esc deselect).
+- A synchronisation report (references, ready filaments, manufacturers, conserved values,
+  pending matches, result per source) after every manual refresh.
+- Release check on demand only (*⚙ → Vérifier une mise à jour de l'application*).
 
 Internal `OFD-…` / `SMDB-…` identifiers name source records; they are **not manufacturer
-SKUs**. The *Référence* column shows the manufacturer article number when the source
-provides one, and the internal identifier otherwise.
+SKUs**. The optional *Référence* column shows the manufacturer article number when the
+source provides one (`+n` when several packagings share it) and `n cond.` otherwise; the
+card always lists every reference.
+
+### Interface
+
+Left, a **sidebar** of facets: manufacturers (★ recent ones first, a field filters the
+list, counts next to each name), material families (PLA, PETG, ABS, ASA, PA…) and data
+state (all / ready to export / to complete / to check), with *Réinitialiser les filtres*
+at the bottom. Top, the search field, the list/grid toggle, **Synchroniser** and the
+**⚙** menu (*Mon matériel…*, *Paramètres…*, *Exporter la sélection en archive JSON…*,
+*Sources de la base…*, *Enregistrer/Charger des réglages…*, *Vérifier une mise à jour…*,
+*À propos*). Centre, the table: one row per filament with colour swatch, product, colour,
+manufacturer, material and data state; *Colonnes* adds the reference, diameter and weight.
+Right, the **card**: logo, product, main reference and colour, the colour band, the
+characteristics (material, colour, nozzle, bed, density, diameter, brand · product line)
+with *Corriger…*, the references of every packaging (weight, diameter, state; a warning
+when sources disagree on the hue), the provenance, a one-line summary of your hardware
+(*Pour : printer — firmware · tag · profile*) with *Modifier…*, the format and capacity
+notes, **Exporter pour NFC**, *Inspecter le JSON* and *Dossier d'export*. The status bar
+shows references, filaments and the database state and opens the database details.
 
 ### Writing NTAG215 or NTAG216 tags
 
@@ -218,12 +251,12 @@ offers restoration when its database is unreadable. See
 |---|---|
 | `core.py` | Pure business logic (no terminal I/O), shared by CLI and GUI. |
 | `app_gui.py`, `ui_catalogue.py` | PySide6 interface and saved catalogue workspace. |
-| `printer_profiles.py` | Printer/reader field guidance and export limits. |
+| `printer_profiles.py`, `data/printers.json` | Printers and readers (reader technology, firmwares, "reads OpenSpool" flag, field guidance); the JSON can be refreshed from the repository into the user folder. |
 | `packaging_rules.py` | Which resources go into installers (code, artwork, licences; never a catalogue). |
 | `convert_profile.py` | Command-line interface. |
 | `scripts/` | Source adapters and update workers (standard library only), plus legacy scrapers kept for reference. |
-| `.github/scripts/` | Offline snapshot/logo preparation and packaged-build checks. |
-| `data/` | Regression snapshots, audit reports, reviewed logos and licences. |
+| `.github/scripts/` | Offline snapshot preparation, logo import with transparent background (`import_brand_logos.py`) and packaged-build checks. |
+| `data/` | Regression snapshots, audit reports, reviewed logos (`brand_logos/manifest.json`, checked by `tests/test_logos.py`), printer list and licences. |
 | `orca_profiles/` | Official [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) OrcaSlicer profiles for the Snapmaker U1 (temperature overrides). |
 | `docs/` | Documentation; `docs/archive/` holds superseded validation reports. |
 
@@ -232,7 +265,8 @@ offers restoration when its database is unreadable. See
 - [docs/PRIVACY.md](docs/PRIVACY.md) — network transparency and consent
 - [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) — sources, licences and merge rules
 - [docs/DATA_FORMAT.md](docs/DATA_FORMAT.md) — identifiers, JSON validation, settings keys
-- [docs/UX-v0.3.0.md](docs/UX-v0.3.0.md) — interface behaviour and printer guidance (French)
+- [docs/UX-v0.3.0.md](docs/UX-v0.3.0.md) — interface behaviour and the two user reviews (French)
+- [docs/wiki/Printers-and-Readers.md](docs/wiki/Printers-and-Readers.md) — which printers read which tags
 - [docs/TRADEMARKS.md](docs/TRADEMARKS.md) — trademarks and non-affiliation
 - [docs/ROADMAP.md](docs/ROADMAP.md) — done and remaining work
 - [docs/archive/](docs/archive/) — superseded validation reports

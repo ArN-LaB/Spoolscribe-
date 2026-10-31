@@ -52,7 +52,33 @@ addressed in separate commits, see [CHANGELOG.md](../CHANGELOG.md):
       PyInstaller < 7, macOS one-directory `.app`, licences and trademarks
       clarified, README quick start, archived reports.
 
+### Second review on real data, 1 November 2026 — applied
+
+The first test build was run on a real installation (24,649 references created
+by an earlier preview build, without provenance). Six remarks, all addressed:
+
+- [x] **Interface** — sidebar of facets (manufacturers with pinned recents,
+      material families, data state) instead of three dropdowns and quick-access
+      chips; ⚙ menu; **Mon matériel** dialog; card with references, provenance
+      and a hardware summary; one row per filament.
+- [x] **Inconsistent lists and colours** — product lines folded into their
+      manufacturer (PolyLite, Panchroma, Fiberon…); packagings of one filament
+      grouped with the best-documented HEX; manufacturer sources now correct
+      fields of unknown provenance, so old installations are no longer frozen.
+- [x] **Duplicates and merging** — grouping, orphan records healed, a report
+      after each refresh (references, ready filaments, conserved values, pending
+      matches, result per source), last result shown per source.
+- [x] **Printers** — data-driven list (`data/printers.json`) with reader
+      technology, firmware and "reads OpenSpool" flag, refreshable from the
+      repository.
+- [x] **Logos** — transparent background enforced by a test, import tool with
+      provenance, manifest-first resolution.
+- [x] **Search and filters** — the sidebar replaces the redundant controls.
+
 ### Remaining before a v0.3.0 release
+
+- [ ] Finish re-sourcing official manufacturer logos through
+      `.github/scripts/import_brand_logos.py` (the review file is being built).
 
 - [ ] Run the revision through the remote four-configuration CI and the three builds.
 - [ ] Human acceptance on macOS, Windows and Linux (first launch, download, export).
@@ -105,7 +131,7 @@ SUNLU page) that only add facts to families the catalogues already contain.
 - [x] **Bambu Lab**, **eSUN**, **SUNLU**, and every other manufacturer present in OFD/SpoolmanDB.
 - [x] Generic import of the path-addressed OFD source tree from its official HTTPS archive.
 - [ ] Direct static REST API ingestion once HTTPS endpoints/redirects are reliably usable.
-- [x] A brand selector in the UI, with reviewed logos and metadata.
+- [x] A manufacturer sidebar in the UI, with reviewed logos and metadata.
 - [x] Source registry in `core.SOURCE_GROUPS`; the consent list is derived from it.
 
 > Any new data source MUST be documented in [DATA_SOURCES.md](DATA_SOURCES.md)
