@@ -10,78 +10,117 @@
   <img src="https://img.shields.io/badge/status-for%20fun%20%C2%B7%20free%20time-blueviolet" alt="Status: for fun">
 </p>
 
-> Prepare OpenSpool / NFC spool-tag data for the **[open-firmware Snapmaker U1](https://snapmaker.com/snapmaker-u1)**, so
-> your printer auto-recognizes the filament loaded in your [PolyDryer](https://polymaker.com/product/polydryer/) + [PolyBox](https://polymaker.com/product/polybox/)
-> or AMS-style feeders.
+> Prepare [OpenSpool](https://github.com/spuder/OpenSpool) data for NFC spool tags, so a printer with an
+> OpenSpool-capable reader — such as the **[Snapmaker U1](https://snapmaker.com/snapmaker-u1)** with the
+> [paxx12 firmware fork](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) — recognizes the
+> filament loaded from a [PolyDryer](https://polymaker.com/product/polydryer/) + [PolyBox](https://polymaker.com/product/polybox/)
+> or an AMS-style feeder.
 
-**SpoolScribe** is a small, cross-platform desktop app (Windows / macOS / Linux)
-that lets you look up a filament by its **SKU**, see its color, temperatures and
-density, and generate the **OpenSpool JSON payload** used to program an
-**RFID/NFC tag**. Pair it with the [paxx12 Snapmaker U1 firmware
-fork](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) that exposes the machine's RFID reader, and the
-U1 can identify each spool automatically.
+**SpoolScribe** is a small desktop app (Windows / macOS / Linux) with a CLI. It downloads a
+multi-manufacturer filament catalogue from public sources, shows each reference's colour,
+temperatures, diameter and density, and generates the **OpenSpool JSON payload** that a
+separate writer (for example [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us)) programs
+onto an **NTAG215 or NTAG216** tag.
 
-Made by [@ArN-LaB](https://github.com/ArN-LaB) — a **for-fun, free-time** hobby
-project, developed when time allows. No roadmap pressure, no commercial intent.
+Made by [@ArN-LaB](https://github.com/ArN-LaB) — a **for-fun, free-time** hobby project.
+It is **not affiliated with any filament manufacturer or with Snapmaker**; see
+[docs/TRADEMARKS.md](docs/TRADEMARKS.md).
 
-> [!IMPORTANT]
-> SpoolScribe is an **unofficial hobby project**. It is **not affiliated with
-> any listed filament manufacturer or Snapmaker**. See [docs/TRADEMARKS.md](docs/TRADEMARKS.md).
+## Quick start
 
-## Development status
+1. **Download** the archive for your system from the
+   [Releases](https://github.com/ArN-LaB/Spoolscribe-/releases) page, unzip it and open
+   SpoolScribe. The binaries are not code-signed: see [Windows SmartScreen](#windows-unknown-publisher--smartscreen)
+   and [macOS Gatekeeper](#macos-gatekeeper) below.
+2. **First launch**: choose the data sources you want and click *Télécharger et enregistrer*
+   (download and save). The installer contains no catalogue; the download builds it in your
+   user folder. Later launches refresh it once a day by default.
+3. **Export a tag**: pick a filament, your printer/reader and the tag you bought, then
+   *Exporter pour NFC*. Write the JSON file with SpoolFlux (or another NDEF writer), read the
+   tag back, and check that the printer shows the expected brand, material and colour.
 
-This working tree prepares **v0.3.0**. The published stable release remains
-[v0.2.2](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.2.2).
-The expanded catalogue and interface below are development changes, not a new release.
-Executed checks and remaining CI/hardware acceptance are recorded in
-[the initial report](docs/VALIDATION-v0.3.0-dev.md) and [the UX revision report](docs/VALIDATION-UX-v0.3.0.md).
+## Status
+
+v0.3.0 is in development on the `feature/universal-catalogue` branch. The published stable
+release is [v0.2.2](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.2.2).
+The 31 October 2026 audit and its fixes are recorded in `docs/VALIDATION-AUDIT-v0.3.0.md`
+(test build) and in [CHANGELOG.md](CHANGELOG.md); earlier reports are in
+[docs/archive/](docs/archive/).
+
+## Download
+
+Each release ships three archives with a SHA-256 checksum file next to each one:
+
+| Archive | Content | Notes |
+|---|---|---|
+| `SpoolScribe-windows.zip` | `SpoolScribe.exe`, single file | Windows 10/11, x64 |
+| `SpoolScribe-macos.zip` | `SpoolScribe.app` bundle | **Apple Silicon (arm64) only**; built on `macos-latest` |
+| `SpoolScribe-linux.zip` | `SpoolScribe`, single file | Built on `ubuntu-latest`; needs a recent glibc and Qt runtime libraries (`libegl1`, `libxkbcommon0`, `libdbus-1-3`) |
+
+Verify a download before running it:
+
+```sh
+shasum -a 256 SpoolScribe-macos.zip      # macOS / Linux: sha256sum
+Get-FileHash .\SpoolScribe-windows.zip -Algorithm SHA256   # Windows PowerShell
+```
+
+The database, settings and exports live in your user folder, not next to the application:
+`%APPDATA%\SpoolScribe` (Windows), `~/Library/Application Support/SpoolScribe` (macOS),
+`~/.config/SpoolScribe` (Linux).
+
+### macOS Gatekeeper
+
+The `.app` has an ad-hoc signature, not a Developer ID, so macOS blocks the first launch.
+Either right-click (Control-click) the app and choose **Open**, then **Open** again in the
+dialog, or remove the quarantine attribute once:
+
+```sh
+xattr -dr com.apple.quarantine SpoolScribe.app
+```
+
+### Windows: "Unknown publisher" / SmartScreen
+
+SpoolScribe is **free, open-source software** and the binaries are **not code-signed**
+(a signing certificate costs money this hobby project doesn't spend). Windows SmartScreen
+may show a blue *"Windows protected your PC"* prompt the first time you run it. This is
+expected for any unsigned app — it is **not** a virus warning. Click **More info** →
+**Run anyway**, or verify the SHA-256 first. The executable embeds version metadata, so its
+**Properties → Details** show *SpoolScribe* by *ArN-LaB*. Prefer not to trust a binary?
+Run from source (below).
 
 ## Features
 
-- **Download the catalogue on first launch.** The installer contains no filament
-  database or Orca profiles. Select the sources once; the app refreshes them on
-  subsequent launches and keeps the last local database when a source fails.
-- Manufacturer facts take priority over community-owned values. Complementary
-  sources are reconciled by verified identifiers or exact product/color matches;
-  uncertain cross-source identities are held for review rather than duplicated.
-  Personal corrections, including intentional unknowns, take priority over both.
-- **Polymaker by default**, searchable manufacturer picker and recent-brand shortcuts.
-  Material and **État des données** filters describe record completeness, not filament quality.
-- **Sorting in column headers:** click for ascending/descending; right-click for
-  primary/secondary sorting and visible columns. No separate sorting dropdowns.
-  Pagination stays below the table; database/source health lives in the bottom status area.
-- Click the selected row again or press **Escape** to deselect. Columns, widths,
-  order, filters, view, printer, NFC preferences and window layout are saved.
-- Reviewed logos preserve proportions and transparent surroundings, without an
-  added rectangular contrast plate. Missing/unsuitable logos use a name fallback.
-- Choose your **printer/reader**, then your actual tag. The automatic OpenSpool
-  profile retains full details when they fit and otherwise uses the essential
-  fields, with an explicit explanation. Manual profile and byte reserve are advanced settings.
-  Bambu/Prusa guidance does not claim their native tags can be generated by SpoolScribe.
-- Settings can be exported/imported from **⋯**. Imported settings never grant
-  network authorization. **⋯ → Vérifier une mise à jour de l’application** checks
-  the stable GitHub release and opens its official download page if newer.
-- Browse/edit/export the downloaded local database offline. Source selection and
-  application-release checks are explicit; no personal server or printer is contacted.
+- Catalogue downloaded from selected public sources: Open Filament Database, SpoolmanDB,
+  Polymaker, Bambu Lab (Bambu Studio profiles) and SUNLU, about 24,000 references from
+  170+ manufacturers. Nothing is bundled; nothing is contacted without your consent.
+- Manufacturer values outrank community values; your own corrections outrank both and
+  survive every refresh. Uncertain cross-source matches are held aside, never merged.
+- Values that contradict themselves (a black HEX for "White", a 7.2 g/cm³ density…) are
+  flagged **to be checked** (« À vérifier ») and cannot reach a tag until you confirm them.
+- Refresh cadence of your choice (every launch, daily, weekly, manual); sources answer
+  "not modified" when nothing changed; a running refresh can be cancelled.
+- Search, manufacturer / material / data state (« État des données ») filters, two-level
+  sorting from the column headers, column chooser, list and grid views, 250 rows per page.
+- Manufacturer logos reviewed for legibility, with a name fallback; light and dark themes.
+- Printer/reader choice (Snapmaker U1 OpenSpool, U1 stock, Bambu Lab, Prusa, other
+  OpenSpool reader) explains which fields matter. No Bambu RFID or OpenPrintTag is generated.
+- NTAG215 / NTAG216 capacity check with the exact NDEF framing; the inspector shows the
+  byte-identical JSON that will be exported.
+- Explicit local editing of temperatures, diameter, density and colour; atomic saves,
+  backups and restore.
+- Persistent workspace (filters, columns, layout, printer, tag), settings import/export,
+  keyboard shortcuts (Ctrl+F search, Ctrl+E export, Ctrl+U update, Esc deselect).
+- Release check on demand only (*⋯ → Vérifier une mise à jour de l'application*).
 
-Internal `OFD-…` / `SMDB-…` references identify source records. They are **not
-manufacturer SKUs**. Actual manufacturer article numbers, when supplied, are
-shown separately and searchable. Different spool sizes/refills can have separate
-references. Source brand labels can include product families, not just legal entities.
-
-## Why this exists
-
-The [Snapmaker U1](https://snapmaker.com/snapmaker-u1)'s firmware was opened up (via the [paxx12 fork](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware)), exposing the
-onboard **RFID reader**. That means spools sitting in **[PolyDryer](https://polymaker.com/product/polydryer/) + [PolyBox](https://polymaker.com/product/polybox/)**
-dryers or **AMS-style** multi-material feeders can be identified automatically —
-*if* each spool carries a tag describing it. SpoolScribe produces the JSON data in
-the open [OpenSpool](https://github.com/spuder/OpenSpool) format. Just for fun.
+Internal `OFD-…` / `SMDB-…` identifiers name source records; they are **not manufacturer
+SKUs**. The *Référence* column shows the manufacturer article number when the source
+provides one, and the internal identifier otherwise.
 
 ### Writing NTAG215 or NTAG216 tags
 
 SpoolScribe generates the data; a separate writer, such as
 [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us), writes the physical tag.
-The selected chip changes the capacity check, not the OpenSpool 1.0 protocol.
+The chip choice changes the capacity check, not the OpenSpool 1.0 protocol.
 
 | Chip | User memory | Standard CC-declared NDEF area |
 |---|---:|---:|
@@ -89,25 +128,24 @@ The selected chip changes the capacity check, not the OpenSpool 1.0 protocol.
 | NTAG216 | 888 bytes | 872 bytes |
 
 These are the [NXP documented capacities](https://www.nxp.com/docs/en/data-sheet/NTAG213_215_216.pdf).
-The estimate includes UTF-8 JSON, one MIME `application/json` NDEF record and the
-Type 2 TLV/terminator. The default **Automatique** chooses the largest supported
-profile that fits. Under **Réglages avancés**, select **Complet** or **Essentiel**;
-the essential profile omits product/reference/color-name/logo metadata while keeping
-all printing values, representative HEX, explicit alpha and additional colors.
-Nothing is silently truncated. Oversized exports are blocked before writing.
+The estimate counts the UTF-8 JSON, one MIME `application/json` NDEF record and the Type 2
+TLV/terminator.
 
-Set a byte reserve for extra data added by your writer; zero does not predict
-that writer's overhead. The writer must check actual writable space and read the
-tag back. A fitting JSON file does not establish printer or tag compatibility.
-SpoolScribe does not program tags or modify their Capability Container.
+The recommended profile is **essential**: protocol, type, brand, colour (HEX, optional
+alpha and additional colours), nozzle and bed ranges, diameter, density and subtype —
+everything a reader uses. It fits every reference on an NTAG215. The **full** profile adds
+the SKU, product and colour names and brand metadata (website, logo URL); it is an explicit
+choice under *Réglages avancés* (advanced settings) or with `--nfc-profile full`. Unknown
+metadata is omitted, never written as `null`. Nothing is silently truncated; oversized
+exports are refused before writing.
 
-Unknown colors require an explicit representative HEX. The GUI **⋯** menu and
-CLI `--export-format archive` retain the complete supported record separately.
-See [the NFC guide](docs/wiki/Writing-RFID-Tags.md).
+A byte reserve accounts for records your writer may add. SpoolScribe never programs tags
+or modifies their Capability Container; unknown colours require an explicit representative
+HEX. See [the NFC guide](docs/wiki/Writing-RFID-Tags.md).
 
 ```sh
-python convert_profile.py --list --brand "Bambu Lab" --material PLA --sort1 color_name --sort2 weight
-python convert_profile.py --tag-type NTAG215 --nfc-profile essential --reserve-bytes 32
+python convert_profile.py --list --brand "bambu lab" --material PLA --sort1 color_name --sort2 weight
+python convert_profile.py --tag-type NTAG215 --nfc-profile auto --reserve-bytes 32
 ```
 
 ## Install (from source)
@@ -124,101 +162,75 @@ python convert_profile.py  # terminal app
 
 ## Build a standalone app
 
-The same PyInstaller spec works on all three OSes (run it on the target OS):
+One PyInstaller spec builds all three systems (run it on the target OS):
 
 ```sh
-python -m pip install -r requirements-build.txt  # Python 3.12 build snapshot
+python -m pip install -r requirements-build.txt  # pinned Python 3.12 build set
 python -B -m unittest discover -s tests -t . -v
 pyinstaller spoolscribe.spec --noconfirm
 ```
 
-Output lands in `dist/` as a **single self-contained file** (`SpoolScribe.exe`
-on Windows, `SpoolScribe.app` on macOS, a `SpoolScribe` binary on Linux) — no
-`_internal` folder, nothing to install. CI in
-[`.github/workflows/build.yml`](.github/workflows/build.yml) builds all three
-OSes after the offline tests pass, and attaches them (with **SHA256 checksums**) to a GitHub
-Release when you push a `v*` tag.
-
-## Windows: "Unknown publisher" / SmartScreen
-
-SpoolScribe is **free, open-source software** and the binaries are **not
-code-signed** (a signing certificate costs money this hobby project doesn't
-spend). So Windows SmartScreen may show a blue *"Windows protected your PC"*
-prompt the first time you run it.
-
-This is expected for any unsigned app — it is **not** a virus warning. To run it:
-
-1. Click **More info** → **Run anyway**.
-2. Or verify the download first: compare the SHA256 of the `.zip` against the
-   `.sha256` file published with the release:
-
-   ```powershell
-   Get-FileHash .\SpoolScribe-windows.zip -Algorithm SHA256
-   ```
-
-The executable embeds version metadata, so its **Properties → Details** and the
-prompt itself show *SpoolScribe* by *ArN-LaB* rather than a blank publisher.
-Prefer not to trust a binary? **Run from source** (see above) — the code is all
-here.
+Output lands in `dist/`: a **single file** on Windows (`SpoolScribe.exe`) and Linux
+(`SpoolScribe`), and a regular **`SpoolScribe.app` bundle** on macOS (one-directory layout
+under `Contents/`, which starts faster than a self-extracting file and stays compatible with
+PyInstaller 7). CI in [`.github/workflows/build.yml`](.github/workflows/build.yml) runs the
+offline tests on four configurations, builds the three archives, checks them and attaches
+them with SHA-256 checksums to a GitHub Release when a `v*` tag is pushed.
 
 ## Tests and local data
 
-Run `python -B -m unittest discover -s tests -t . -v`. Use the pinned build dependencies for the full suite. GUI tests run when PySide6
-is installed (otherwise explicitly skipped).
-Tests use temporary databases and fake network sources, never a printer or personal
-Spoolman server. The original catalogue retains its reviewed exceptions and its 1,008 compatible
-exports. New records with missing physical values or colors stay visible as
-**À compléter** and cannot silently become valid exports. See the machine-readable
-`data/catalogue_*_audit.json` reports and [data format](docs/DATA_FORMAT.md).
+```sh
+python -B -m unittest discover -s tests -t . -v
+```
 
-Database writes are validated and atomic. The previous good revision is kept in
-`polymaker_db.json.bak`; a full update also keeps `polymaker_db.json.pre-update.bak`.
-The CLI `--restore-db [backup-path]` asks before restoring and retains replaced bytes.
-The packaged GUI offers restoration if its database is unreadable. Ordinary updates
-preserve local values; source conflicts and pending identity matches are listed in
-the bottom **Base de données** panel. Existing installations keep their local database.
+Core tests need Python 3.10+ and `certifi`; GUI tests need PySide6 and are skipped
+otherwise. Tests block network access, use temporary data folders and never touch a
+printer or a personal Spoolman server. The repository snapshots in `data/`
+(`polymaker_db.json`, `catalogue_ofd.json`, `catalogue_spoolman.json`) are regression
+fixtures, excluded from installers; `data/catalogue_*_audit.json` record their counts and
+hashes. The 1,008 historical Polymaker exports are checked byte for byte
+(`tests/fixtures/legacy_catalogue_contract.json`).
 
-Export also preserves local physical values by default. Explicitly prefer a
-matching Orca profile with the GUI Settings option or CLI `--orca-overrides`;
-the JSON inspector shows the actual exported values.
+Database writes are validated and atomic; the previous revision is kept in
+`polymaker_db.json.bak` and a full update also keeps `polymaker_db.json.pre-update.bak`.
+`python convert_profile.py --restore-db [backup]` restores explicitly; the packaged GUI
+offers restoration when its database is unreadable. See
+[docs/DATA_FORMAT.md](docs/DATA_FORMAT.md).
 
 ## Privacy & data
 
-- The first launch needs Internet to constitute a catalogue. The source-selection
-  dialog records your authorization. Later launches refresh those selected sources;
-  a failure preserves cached data and reports a partial/failed update.
-- Deselecting a source prevents subsequent requests to it, without deleting its
-  already downloaded records. Revoking network permission keeps browsing offline.
-- Data sources and licenses: [DATA_SOURCES.md](docs/DATA_SOURCES.md).
-  Network behavior: [PRIVACY.md](docs/PRIVACY.md).
-
-Repository snapshots in `data/` remain unchanged regression fixtures and are
-**excluded from installers**, as are the 48 legacy Orca files. Reviewed artwork
-and licenses remain bundled. The user database is stored outside the application
-on every platform, including source execution. Restoration suppresses automatic
-updates for the rest of that session. See [the UX guide](docs/UX-v0.3.0.md).
+- Network access only after you select sources; the dialog lists the exact hosts.
+  Deselecting a source stops future requests without deleting its records. Settings can
+  revoke the authorization; imported settings never grant it.
+- Only one instance runs per data folder. A refresh can be cancelled; an offline launch
+  keeps the cached database untouched.
+- Sources and licences: [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
+  Network behaviour: [docs/PRIVACY.md](docs/PRIVACY.md).
 
 ## Project layout
 
 | Path | Role |
 |---|---|
-| `core.py` | Pure business logic (no terminal I/O). Shared by CLI & GUI. |
+| `core.py` | Pure business logic (no terminal I/O), shared by CLI and GUI. |
 | `app_gui.py`, `ui_catalogue.py` | PySide6 interface and saved catalogue workspace. |
-| `printer_profiles.py` | Printer/reader field guidance and explicit compatibility limits. |
-| `packaging_rules.py` | Shared resource policy: no catalogue or Orca data in installers. |
+| `printer_profiles.py` | Printer/reader field guidance and export limits. |
+| `packaging_rules.py` | Which resources go into installers (code, artwork, licences; never a catalogue). |
 | `convert_profile.py` | Command-line interface. |
-| `scripts/` | Generic source adapters, conservative update workers and legacy scrapers (standard library). |
-| `.github/scripts/build_catalogue_snapshot.py` | Offline snapshot/logo preparation from downloaded source archives. |
-| `data/` | Historical database, OFD/Spoolman supplements, audit reports, reviewed logos and licenses. |
-| `orca_profiles/` | Official [OrcaSlicer](https://github.com/SoftFever/OrcaSlicer) presets (temperature overrides). |
+| `scripts/` | Source adapters and update workers (standard library only), plus legacy scrapers kept for reference. |
+| `.github/scripts/` | Offline snapshot/logo preparation and packaged-build checks. |
+| `data/` | Regression snapshots, audit reports, reviewed logos and licences. |
+| `orca_profiles/` | Official [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) OrcaSlicer profiles for the Snapmaker U1 (temperature overrides). |
+| `docs/` | Documentation; `docs/archive/` holds superseded validation reports. |
 
 ## Documentation
 
-- [docs/PRIVACY.md](docs/PRIVACY.md) — network transparency & consent
-- [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) — sources & licenses
-- [docs/DATA_FORMAT.md](docs/DATA_FORMAT.md) — identifiers, JSON validation and unknown values
-- [docs/TRADEMARKS.md](docs/TRADEMARKS.md) — trademarks & non-affiliation
-- [docs/ROADMAP.md](docs/ROADMAP.md) — ideas for future versions
+- [docs/PRIVACY.md](docs/PRIVACY.md) — network transparency and consent
+- [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) — sources, licences and merge rules
+- [docs/DATA_FORMAT.md](docs/DATA_FORMAT.md) — identifiers, JSON validation, settings keys
+- [docs/UX-v0.3.0.md](docs/UX-v0.3.0.md) — interface behaviour and printer guidance (French)
+- [docs/TRADEMARKS.md](docs/TRADEMARKS.md) — trademarks and non-affiliation
+- [docs/ROADMAP.md](docs/ROADMAP.md) — done and remaining work
+- [docs/archive/](docs/archive/) — superseded validation reports
 - [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) — how to help
 - [.github/SECURITY.md](.github/SECURITY.md) — reporting issues
 - [CHANGELOG.md](CHANGELOG.md) — version history
@@ -226,16 +238,17 @@ updates for the rest of that session. See [the UX guide](docs/UX-v0.3.0.md).
 
 ## Acknowledgements
 
-- [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) (MIT)
 - [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database) (MIT)
+- [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) (MIT)
 - [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) (MIT)
 - [TheFilamentDB](https://thefilamentdb.issou.best/) (CC-BY 4.0)
+- [Bambu Studio](https://github.com/bambulab/BambuStudio) profiles (factual values only)
 - [OpenSpool](https://github.com/spuder/OpenSpool) format
 - [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us) — separate iPhone app for programming NFC tags
 - The [**paxx12**](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) Snapmaker U1 firmware fork that makes the RFID reader usable
 
 ## License
 
-Source code: **MIT** — see [LICENSE](LICENSE). Datasets and brand assets keep
-their own licenses (see [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) and
+Source code: **MIT** — see [LICENSE](LICENSE). Datasets and brand assets keep their own
+licences and trademark rights (see [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) and
 [docs/TRADEMARKS.md](docs/TRADEMARKS.md)).

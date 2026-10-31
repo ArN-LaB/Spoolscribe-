@@ -1,50 +1,51 @@
 # Trademarks & non-affiliation
 
-**SpoolScribe is an unofficial, community, hobby project. It is NOT affiliated
-with, endorsed by, sponsored by, or connected to Polymaker, Snapmaker, or any
-other company mentioned.**
+**SpoolScribe is an unofficial, community, hobby project. It is not affiliated
+with, endorsed by, sponsored by or connected to any filament manufacturer, to
+Snapmaker, or to any other company mentioned.**
 
 ## Trademarks
 
-All product names, brand names, and logos are the property of their respective
-owners and are used here only for **identification and interoperability**
-(nominative fair use), to let you correctly tag the spools you already own.
+Product names, brand names and logos are the property of their respective
+owners. They are used only for **identification and interoperability**
+(nominative use), so that you can tag the spools you already own.
 
 Non-exhaustive list of third-party trademarks referenced:
 
-- **Polymaker®**, **Panchroma™**, **PolyTerra™**, **PolyLite™**,
-  **PolyDryer™**, **PolyBox™**, **Fiberon™** — trademarks of Polymaker.
-- **Snapmaker®** — trademark of Snapmaker.
-- **Bambu Lab®**, **AMS™** — trademarks of Bambu Lab.
-- **OrcaSlicer**, **OpenSpool**, **Spoolman** — names of their respective
-  open-source projects.
+- **Polymaker®**, **Panchroma™**, **PolyTerra™**, **PolyLite™**, **PolyDryer™**,
+  **PolyBox™**, **Fiberon™** — Polymaker.
+- **Snapmaker®** — Snapmaker.
+- **Bambu Lab®**, **AMS™**, **Bambu Studio** — Bambu Lab.
+- **Prusament®**, **PrusaSlicer** — Prusa Research.
+- **SUNLU**, **eSUN**, **ROSA3D**, **Anycubic**, **Creality**, **ELEGOO** and the
+  other manufacturers listed in the catalogue — their respective owners.
+- **OrcaSlicer**, **OpenSpool**, **Spoolman**, **OpenPrintTag** — names of
+  their respective open-source projects.
 
-Use of these names does **not** imply any endorsement by the trademark holders.
+Use of these names does not imply any endorsement by the trademark holders.
 
 ## Brand assets (logos)
 
-The Polymaker logo (`data/polymaker_logo.svg`) is a **trademark** of Polymaker.
-It is fetched from the MIT-licensed Open Filament Database for display
-convenience, but the MIT license of that repository does **not** waive
-Polymaker's trademark rights.
+The application bundles reviewed manufacturer logos (`data/brand_logos/`,
+137 files listed in `manifest.json`) and three historical ones
+(`data/polymaker_logo.svg`, `data/prusament_logo.png`, `data/rosa3d_logo.png`).
+They come from the Open Filament Database repository, whose MIT licence covers
+its data files but **does not waive the trademark rights** of the brands depicted.
 
-- The logo is used only to visually identify Polymaker products within the app.
-- It is **not** modified and **not** used to suggest official status.
-- If you redistribute SpoolScribe and prefer to avoid bundling the logo, delete
-  `data/polymaker_logo.svg`; the app degrades gracefully without it.
+- A logo is shown only next to the records of its own brand, to identify it.
+- The build script (`.github/scripts/build_catalogue_snapshot.py`) crops empty
+  transparent margins of SVG files and normalizes raster files (format, size);
+  it does not recolour or redraw artwork. The application keeps proportions and
+  transparency and adds a thin outline for legibility.
+- Logos judged unsuitable (blurred, product photos, incomplete artwork) are
+  excluded in `.github/catalogue-logo-exclusions.json`; those brands show their
+  name instead.
+- No logo is ever downloaded at runtime.
 
 ## Requests
 
-Trademark holders who wish to have their marks or assets removed may open an
-issue, and the project will comply promptly.
-
-
-## Universal catalogue identifiers and assets
-
-All additional manufacturer names and logos remain the property of their
-respective owners. Inclusion of Bambu Lab, eSUN, SUNLU, Anycubic, Creality, ELEGOO
-or any other source brand implies no affiliation or endorsement. The OFD/MIT
-dataset license does not transfer trademark ownership. Logos are used only to
-identify the selected source brand, retain original proportions/colors, and are
-replaced by text when no suitable reviewed asset is available. Source paths and
-asset hashes are recorded in `data/brand_logos/manifest.json`.
+Trademark holders who want a mark or a logo removed can open an issue; the
+asset will be removed from the repository and the next build, and its brand
+will fall back to a text label. Remove `data/brand_logos/<file>` and its
+`manifest.json` entry (or add the brand to the exclusion file) to build your
+own copy without it.

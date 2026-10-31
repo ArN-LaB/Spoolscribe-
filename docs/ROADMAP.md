@@ -1,8 +1,8 @@
 # Roadmap
 
 SpoolScribe is a **for-fun, free-time** project. There is no deadline, no
-commercial goal, and no guarantee any of this ships. This roadmap simply records
-ideas in roughly the order they might happen — contributions welcome.
+commercial goal, and no guarantee any of this ships. This roadmap records what
+is done and what remains — contributions welcome.
 
 ## Guiding principles
 
@@ -14,35 +14,59 @@ ideas in roughly the order they might happen — contributions welcome.
 ## v0.3.0 — universal catalogue (development, not released)
 
 - [x] Generic OFD source adapter covering all usable manufacturers in the official archive.
-- [x] Complementary SpoolmanDB adapter for manufacturers absent from the curated/OFD catalogue.
+- [x] Complementary SpoolmanDB adapter for manufacturers absent from the other sources.
 - [x] Separate, traceable offline snapshots; original catalogue and local corrections preserved.
-- [x] Manufacturer/material/completeness filters, multi-word search, numeric two-level sorting and pagination.
+- [x] Manufacturer/material/data-state filters, multi-word search, two-level header sorting, column chooser, pagination.
 - [x] Reviewed HiDPI logos with transparent backgrounds and a readable name fallback.
-- [x] Explicit local editing of temperatures, density and diameter.
-- [x] NTAG215/NTAG216 capacity selection, optional essential payload, writer reserve and exact preview/export parity.
-- [x] Offline data, GUI, CLI, migration and export regression coverage.
-- [x] Native packaged catalogue/TLS smoke checks added to the three-platform workflow.
-- [x] Header sorting/context menus, selectable columns, searchable brands/recent shortcuts and deselection.
-- [x] No catalogue/Orca data in installers; first download and refresh at each authorized launch.
+- [x] Explicit local editing of temperatures, density, diameter and colour.
+- [x] NTAG215/NTAG216 capacity check, essential/full profiles, writer reserve and exact preview/export parity.
+- [x] No catalogue/Orca data in installers; first download, then refresh at a configurable cadence.
 - [x] Manufacturer-first provenance, complementary values and pending ambiguous identity matches.
-- [x] Selectable sources; official Polymaker, Bambu and SUNLU adapters.
-- [x] Printer/reader guidance, automatic NFC sizing, advanced options hidden by default.
+- [x] Selectable sources; explicit Polymaker, Bambu Studio and SUNLU manufacturer enrichment.
+- [x] Printer/reader guidance, advanced options hidden by default.
 - [x] Persistent settings, settings file import/export and explicit application-update discovery.
-- [ ] Additional reviewed manufacturer parsers: eSUN, versioned Prusa settings; no generic scraping promises.
-- [ ] OpenPrintTag encoder (separate protocol/hardware), if requested.
-- [ ] Run the new revision through the remote four-configuration CI and three builds.
-- [ ] Human macOS/Windows/Linux acceptance and physical NTAG215/216 read-back.
-- [ ] Release decision for v0.3.0.
+- [x] Native packaged catalogue/TLS smoke checks in the three-platform workflow.
 
-The historical repository regression snapshot (excluded from installers) adds 22,838 OFD references from 157 brands and 599
-SpoolmanDB references from 14 complementary manufacturers. Twenty OFD brand
-folders have no usable variants. Missing data remain explicit; these figures
-are source coverage, not a guarantee of complete manufacturer catalogues.
+### Audit 31 October 2026 — applied
+
+Four read-only audits (data/core, sources/network/security, Qt interface,
+build/CI/tests/docs) were run on the development branch; every finding was
+addressed in separate commits, see [CHANGELOG.md](../CHANGELOG.md):
+
+- [x] **Data integrity** — merge identities keep product grades and colours
+      (no more absorption of ~650 OFD references), a source cannot empty its own
+      values, a shrunken source is refused, implausible colours/physics are
+      flagged *À vérifier* and blocked at export, workers never write to the
+      repository fixture.
+- [x] **Synchronisation** — refresh cadence, conditional downloads (ETag),
+      cancellation, closable window, no database rewrite when offline, single
+      instance, stale-lock recovery, bounded Polymaker/Orca downloaders,
+      `--run-script` restricted to bundled workers.
+- [x] **NFC** — essential profile recommended (fits NTAG215), full profile
+      explicit and free of `null` metadata, CLI `--nfc-profile auto`.
+- [x] **Interface** — visible checkboxes, readable references, debounced
+      search and settings writes, cached swatches/logos at Retina size, no
+      Polymaker fallback, selection kept across refreshes, hidden tag controls
+      without OpenSpool export, keyboard shortcuts, dead code removed.
+- [x] **CI, packaging, docs** — actions pinned by commit, Dependabot bounds,
+      PyInstaller < 7, macOS one-directory `.app`, licences and trademarks
+      clarified, README quick start, archived reports.
+
+### Remaining before a v0.3.0 release
+
+- [ ] Run the revision through the remote four-configuration CI and the three builds.
+- [ ] Human acceptance on macOS, Windows and Linux (first launch, download, export).
+- [ ] Physical NTAG215/NTAG216 write and read-back with a real printer.
+- [ ] Optionally move the legacy scrapers (`scripts/scrape_*`, `seed_*`,
+      `sync_*_assets.py`) to `scripts/legacy/` and shrink the bundled scripts.
+- [ ] Optionally store `data/catalogue_ofd.json` gzip-compressed (11.9 MB in Git).
+- [ ] Additional reviewed manufacturer parsers (eSUN, versioned Prusa settings), no generic scraping.
+- [ ] OpenPrintTag encoder (separate protocol/hardware), if requested.
 
 ## v0.2.2 — released
 
 - [x] Compact NFC export with retained metadata, validation and capacity check.
-- [x] Explicit missing-color entry in GUI and CLI.
+- [x] Explicit missing-colour entry in GUI and CLI.
 - [x] Atomic database storage, backups, conservative bundled-data merge.
 - [x] Honest update status, preserved local corrections and offline tests.
 - [x] PySide6 6.11.3 compatibility correction, archive-layout checks and bundled TLS roots.
@@ -53,7 +77,7 @@ are source coverage, not a guarantee of complete manufacturer catalogues.
 - [x] Cross-platform GUI (PySide6) + CLI sharing a pure `core`.
 - [x] Polymaker SKU lookup → OpenSpool / NFC JSON export.
 - [x] Consent-gated, fully disclosed data updates.
-- [x] Multiplatform single-file builds via GitHub Actions + tagged releases.
+- [x] Multiplatform builds via GitHub Actions + tagged releases.
 - [x] **Prusament** curated coverage — HEX from SpoolmanDB (authoritative) + TheFilamentDB.
 - [x] **ROSA3D** curated coverage — HEX from SpoolmanDB (fill-missing) with curated Silk/Pastel values.
 - [x] Brand logos in the detail panel; OS light/dark theming; friendly empty state.
@@ -62,29 +86,31 @@ are source coverage, not a guarantee of complete manufacturer catalogues.
 ## Next quality-of-life work
 
 - [x] Search ergonomics and local physical-field editing.
-- [ ] Broader catalogue creation/editing beyond those fields.
-- [ ] Export presets / batch export of multiple SKUs.
-- [x] Settings panel (sources, consent revocation, saved workspace) in the GUI.
+- [ ] Broader catalogue creation/editing beyond those fields; manual editor for pending matches.
+- [ ] Export presets / batch export of multiple references.
+- [x] Settings panel (sources, cadence, consent revocation, saved workspace) in the GUI.
 - [ ] Study optional Spoolman filament lookup only after a distinct user need is validated;
       no duplication of Filament Manager/SpoolLink or UID migration in SpoolScribe.
-- [ ] Localisation (the UI currently mixes FR/EN).
+- [ ] Localisation (the UI is French, the docs mostly English).
 
 ## Universal database: delivered foundation and remaining work
 
-SpoolScribe now uses generic adapters. Remaining source/API work is separate
-from the implemented v0.3.0 development scope:
+The catalogue comes from two generic community adapters (OFD archive,
+SpoolmanDB compiled JSON) that need no per-brand code, plus explicit
+manufacturer enrichment adapters (Polymaker wholesale, Bambu Studio profiles,
+SUNLU page) that only add facts to families the catalogues already contain.
 
-- [x] **Prusament** (Prusa) — via SpoolmanDB + TheFilamentDB. ✓
-- [x] **ROSA3D** — via SpoolmanDB. ✓
-- [x] **Bambu Lab**, **eSUN**, **SUNLU**, and all other compatible source manufacturers.
+- [x] **Prusament** (Prusa) — via SpoolmanDB + TheFilamentDB.
+- [x] **ROSA3D** — via SpoolmanDB.
+- [x] **Bambu Lab**, **eSUN**, **SUNLU**, and every other manufacturer present in OFD/SpoolmanDB.
 - [x] Generic import of the path-addressed OFD source tree from its official HTTPS archive.
 - [ ] Direct static REST API ingestion once HTTPS endpoints/redirects are reliably usable.
-      The archive adapter already provides broad coverage without per-brand scrapers.
 - [x] A brand selector in the UI, with reviewed logos and metadata.
-- [x] Pure source-adapter registry; new manufacturers require no per-brand parser.
+- [x] Source registry in `core.SOURCE_GROUPS`; the consent list is derived from it.
 
 > Any new data source MUST be documented in [DATA_SOURCES.md](DATA_SOURCES.md)
-> and added to `core.NETWORK_SOURCES` so it appears in the consent disclosure.
+> and [PRIVACY.md](PRIVACY.md), and added as a group in `core.SOURCE_GROUPS`
+> so it appears in the consent disclosure.
 
 ## Maybe / nice-to-have
 

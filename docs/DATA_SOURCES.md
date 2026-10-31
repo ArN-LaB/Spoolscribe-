@@ -1,184 +1,169 @@
 # Data sources & licensing
 
-SpoolScribe does not own the filament data it displays. It aggregates publicly
-available data from the sources listed below. This file documents each source,
-its license, and the obligations that come with it.
-
-The application **never accesses any of these sources without your explicit,
-saved consent** (see [PRIVACY.md](PRIVACY.md)).
+SpoolScribe does not own the filament data it displays. It downloads publicly
+available data from the sources below, after your explicit, saved consent (see
+[PRIVACY.md](PRIVACY.md)). This file documents each source, its licence, how
+the adapter uses it and what it refuses to guess.
 
 ## Summary
 
-| Source | Maintainer | License | Obligation |
-|---|---|---|---|
-| [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) | Donkie & contributors | **MIT** | Retain copyright and permission notice when redistributing substantial portions |
-| [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database) | Open Filament Collective / SimplyPrint | **MIT** | Retain the upstream copyright and permission notice |
-| [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) | Polymaker (official) | **MIT** | Retain the upstream copyright and permission notice |
-| [TheFilamentDB](https://thefilamentdb.issou.best/) | issou.best | **CC-BY 4.0** | **Attribution required** (see below) |
-| Polymaker Wiki | Polymaker | Factual data only | See "Factual data" below |
-| Polymaker US Wholesale catalogue | Polymaker | Factual data only | See "Factual data" below |
+| Source | Maintainer | Licence / basis | Used for | Obligation |
+|---|---|---|---|---|
+| [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database) (OFD) | Open Filament Collective | **MIT** (data) | Broad manufacturer / material / colour / size catalogue, read from the official repository archive | Keep the upstream notice (`data/brand_logos/OFD-LICENSE.txt`). Logos in that repository remain their owners' trademarks (see below) |
+| [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) | Donkie & contributors | **MIT** | Complementary references for manufacturers not covered by the other sources | Keep the upstream notice (`data/SpoolmanDB-LICENSE.txt`) |
+| Polymaker US wholesale catalogue | Polymaker | Public Shopify product JSON; factual values | Product variants, article numbers, explicit colour HEX, packaging | Facts only; see "Factual data" |
+| [Bambu Studio profiles](https://github.com/bambulab/BambuStudio/tree/master/resources/profiles/BBL/filament) | Bambu Lab | Repository under **AGPL-3.0**; only facts are kept | Density, diameter and nozzle range of `Bambu … @base` profiles, plus the profile URL | No profile, G-code or printer setting is redistributed |
+| [SUNLU PLA product page](https://www.sunlu.com/products/pla-3d-printing-filament) | SUNLU | Public product page; factual values | Density, bed range, official colour codes of SUNLU PLA | Facts only |
+| [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) (optional source) | Polymaker (official) | **MIT** | OrcaSlicer profiles for the Snapmaker U1 (temperature overrides at export) | Keep the upstream notice |
+| [TheFilamentDB](https://thefilamentdb.issou.best/) (legacy, developer snapshot) | issou.best | **CC-BY 4.0** | Historical colour HEX of the curated brands | **Attribution required**: see `data/TheFilamentDB-ATTRIBUTION.txt` and below |
+| Manufacturer logos | Respective brands | **Trademarks**, not covered by any of the licences above | Identification of the selected brand in the interface | Identification only; removal on request ([TRADEMARKS.md](TRADEMARKS.md)) |
 
-## Runtime policy after the UX revision
+A new source is added as a group in `core.SOURCE_GROUPS` (name, hosts, worker
+scripts), documented here and in PRIVACY.md. The consent dialog and
+`core.NETWORK_SOURCES` are derived from that table; there is no second list to
+maintain.
 
-The installer no longer contains catalogue snapshots. The source picker selects
-which network workers run; the resulting database is cached in the user directory.
-Manufacturer-owned fields outrank community fields when provenance proves that
-no personal edit has occurred. Unknown source-owned fields may be complemented
-by a lower-priority source. Explicit user edits/nulls remain protected.
+## Priority and merge rules
 
-| Source | Implemented use | Identity / limits |
+Every imported field carries its provenance (`_field_sources`: source, rank,
+value). When sources disagree:
+
+| Rank | Owner | Can replace |
+|---:|---|---|
+| — | **Your corrections** (a field without provenance, including a deliberate `null`) | Nothing replaces them, ever |
+| 100 | Manufacturer workers: Polymaker, Bambu Lab, SUNLU | Community values that have not been edited |
+| 20 | Open Filament Database | SpoolmanDB values, and its own earlier values |
+| 10 | SpoolmanDB | Its own earlier values; fills unknowns left by higher ranks |
+
+Historical records without a `source` field are treated as user-owned by
+precaution. A lower-ranked source can fill a value the higher rank left unknown.
+
+Identity between sources is never guessed from material and colour alone. Two
+records are the same filament when they share the brand, a manufacturer article
+number **and** a compatible colour (same name, or same HEX under another name)
+with compatible packaging, or when brand, product name and colour match
+exactly with compatible packaging. Product grades stay distinct (`PLA+` is not
+`PLA`). Reviewed historical Polymaker renames are explicit aliases. Anything
+ambiguous is listed in `_pending_source_matches` and kept out of the table.
+Every absorbed source record is listed in `_source_aliases` of the record that
+kept it.
+
+SpoolmanDB only adds manufacturers that no other source already covers.
+
+## Guard rails
+
+- **A source cannot empty its own value.** A field the source stops publishing
+  keeps its local value; the case is reported as a conserved conflict
+  (`… (valeur retirée par la source, conservée)`).
+- **A shrunken source is refused.** A refresh returning less than half of the
+  references the same source delivered before is rejected before merging
+  (`check_source_shrink`); the local data stay untouched.
+- **Implausible values are flagged, not exported.** A black HEX (`000000`) for a
+  light colour name, a white HEX for a dark name, a nozzle temperature outside
+  120–500 °C, a bed temperature outside 0–200 °C or a bed maximum of 0 °C, a
+  density outside 0.5–4.0 g/cm³ or a diameter outside 1.0–3.2 mm mark the record
+  **À vérifier** in the data-state column. Export is refused until the value is
+  corrected explicitly, which also makes it yours. Your corrections and
+  historical records are never second-guessed.
+- **Unknown stays unknown.** Missing physical values are `null`; an Orca profile
+  without plate temperature gives an unknown bed, not 0 °C; no colour, alpha or
+  temperature is inferred from a product name.
+- **Conditional downloads.** OFD, SpoolmanDB and the Bambu index are fetched
+  with `If-None-Match`; an unchanged source ends the step without download.
+
+## Adapter limits
+
+| Source | Implemented use | Not done |
 |---|---|---|
-| Polymaker wholesale, official | Product variants, article numbers and explicit HEX | Manufacturer SKU, size/packaging, exact names and reviewed historical rename mappings; no guessed physics |
-| OFD, MIT | Broad manufacturer/material/color/size catalogue | Namespaced source IDs; exact reconciliation with existing records |
-| SpoolmanDB, MIT | Complementary catalogue and facts | Exact identity matches merge; ambiguous same-brand records stay in the pending-match audit |
-| [Bambu Studio manufacturer profiles](https://github.com/bambulab/BambuStudio/tree/master/resources/profiles/BBL/filament) | Directly stated density, diameter and nozzle range from Bambu `@base` profiles | Exact family-name matching; printer/plate-specific temperatures and G-code are not generalized or executed |
-| [SUNLU official PLA](https://www.sunlu.com/products/pla-3d-printing-filament) | Density, bed range, explicit color codes | Exact SUNLU PLA family/color; nozzle ranges tied to print speed are not flattened |
+| Polymaker wholesale | Variants, article numbers, packaging, explicit HEX from option labels, reviewed rename aliases | No guessed temperatures or density; at most 40 catalogue pages |
+| OFD | `brand → material → filament → variant → sizes` from the archive, namespaced `OFD-` identifiers, logos reviewed offline | Archive links are skipped; the static REST API is not used |
+| SpoolmanDB | `SMDB-` references with exact normalized brand names and the explicit eSUN/ROSA aliases | No fuzzy product merge; covered manufacturers are skipped |
+| Bambu Studio | Density, diameter, nozzle range of `@base` profiles matched to existing Bambu families by exact name (at most 600 profiles) | Plate-specific temperatures and G-code are never generalized or executed |
+| SUNLU | Density, bed range and colour table of the PLA page, matched to existing SUNLU PLA families | Speed-dependent nozzle ranges are not flattened; an unrecognized page fails the step |
 
-Polymaker initializes first; community catalogues can complement missing factual
-values. Bambu/SUNLU enrichment follows identity acquisition and uses the same
-manufacturer-first field priority. Existing legacy values without provenance are
-protected conservatively rather than retroactively classified as automatic data.
-A full-refresh date applies to **the selected source set**, recorded with the result
-of every step. Deselecting a source does not erase data. No exact-identity duplicate
-is inserted; uncertain identities are not claimed to be resolved.
+Manufacturer enrichment runs after the catalogues that establish identity and
+needs an existing family to attach to; it never creates references.
 
-### Other sources researched
+### Other sources researched, not imported
 
-- [eSUN PLA+ manufacturer page](https://www.esun3d.com/pla-pro-product) and
-  [official printer-specific parameters](https://www.esun3d.com/uploads/eSUN-Fast-filaments-print-parameters2.pdf):
-  identified, not imported automatically. Product revision and printer-specific
-  table context need a dedicated parser and fixtures before normalizing values.
+- [eSUN PLA+ page](https://www.esun3d.com/pla-pro-product) and
+  [printer-specific parameters](https://www.esun3d.com/uploads/eSUN-Fast-filaments-print-parameters2.pdf):
+  revision- and printer-dependent tables need a dedicated parser and fixtures.
 - [PrusaSlicer settings](https://github.com/prusa3d/PrusaSlicer-settings): official,
-  versioned and printer-dependent. A guessed unversioned `PrusaResearch.ini` URL
-  returned 404; no fallback data were invented. No automatic adapter in this pass.
-- [SimplyPrint](https://simplyprint.io/alternatives/filameter) also uses OFD; treating
-  it as an independent catalogue would duplicate the same upstream dataset.
-- [SpoolSense](https://spoolsense.org/intro/how-it-works/) is a reader/integration
-  project, not an additional independent filament catalogue ingested here.
-- [OpenPrintTag](https://openprinttag.org/) publishes a data-format specification;
-  that is not a second manufacturer catalogue. Its encoder is outside this pass.
+  versioned and printer-dependent; no adapter yet.
+- [SimplyPrint](https://simplyprint.io/alternatives/filameter) republishes OFD;
+  [SpoolSense](https://spoolsense.org/intro/how-it-works/) is a reader project;
+  [OpenPrintTag](https://openprinttag.org/) is a tag format, not a catalogue.
 
-The manufacturer parsers store factual fields and source URLs, not whole product
-pages or executable printer profiles. Upstream licenses and trademark rights apply.
+## Repository regression snapshot (not installed)
 
-## Repository regression snapshot — initial v0.3.0 development pass (not installed)
+`data/polymaker_db.json` keeps the original curated records. The additive
+offline files are test fixtures and are excluded from installers:
 
-The original `data/polymaker_db.json` is unchanged. Additive offline files contain:
-
-| Source | File | Additional source brands | References |
+| Source | File | Source brands | References |
 |---|---|---:|---:|
 | OFD source tree | `data/catalogue_ofd.json` | 157 | 22,838 |
 | SpoolmanDB compiled catalogue | `data/catalogue_spoolman.json` | 14 | 599 |
 
-The historical repository fixture, together with the three curated brands, exposes **174 source brand labels
-and 24,521 references**. A reference identifies a source color/size/packaging
-record, not necessarily a unique physical formulation or manufacturer SKU.
-The source can represent sub-brands as independent manufacturers.
+With the three curated brands the fixture exposes 174 source brand labels and
+24,521 references. A reference is a source colour/size/packaging record, not
+necessarily a unique formulation or SKU; a source can list sub-brands as brands.
 
 OFD snapshot: commit
 [`1dda27a4afcc4f9200b5b3867e85e75f8e1ea147`](https://github.com/OpenFilamentCollective/open-filament-database/tree/1dda27a4afcc4f9200b5b3867e85e75f8e1ea147),
 archive SHA-256 `6830802bd85f00c8979ea086414c2e1f3a76ec5d931c295bd779b72d3087bd6e`.
-The adapter reads `brand.json → material.json → filament.json → variant.json →
-sizes.json` from the official HTTPS archive without extracting archive paths.
-The static REST API was evaluated; some endpoints redirected or failed, so the
-archive is the implemented transport. It uses the same canonical path-based data.
-
 SpoolmanDB snapshot: [`filaments.json`](https://donkie.github.io/SpoolmanDB/filaments.json),
 SHA-256 `06f1788582d110008bec27a81ecd98b2abc963d22adf7149802967cc7a721c0c`.
-Only manufacturers not covered by the curated/OFD catalogues are added, including
-Fusion, R3D, CR3D, Filament Unger and REDLINE FILAMENT. Exact normalized brand names
-and the explicit eSUN/ROSA aliases are used; there is no fuzzy product merge.
+Both collected on 2026-10-31; `data/catalogue_*_audit.json` record counts, hashes,
+rejected and incomplete records. Twenty OFD brand folders have no usable variant.
 
-Both snapshots were collected on 2026-10-31. The `data/catalogue_*_audit.json`
-files record counts, hashes, rejected records, incomplete records and exclusions.
-Twenty OFD brand folders contain no usable variant. The curated Polymaker,
-Prusament and ROSA3D sets retain priority to avoid ambiguous cross-source joins.
-Unknown values stay unknown; public community data are not a manufacturer warranty.
+### Logos
 
-The upstream MIT notices are retained in `data/brand_logos/OFD-LICENSE.txt` and
-`data/SpoolmanDB-LICENSE.txt`. Original licenses and trademark rights still apply.
-
-### Logo quality
-
-137 additional OFD logos passed format, dimensions and visual contact-sheet review.
-SVG artwork stays vector-based; unnecessary transparent margins are cropped.
-Raster images are decoded and normalized without upscaling. Twenty unsuitable
-images were excluded (tiny/blurred graphics, product photos, incomplete artwork);
-14 complementary manufacturers have no reviewed logo in this snapshot. These
-34 brands use a readable name fallback. See `data/brand_logos/manifest.json`,
-`data/catalogue_ofd_audit.json` and `.github/catalogue-logo-exclusions.json`.
-
-Selection never downloads a remote image. Logos keep their colors, proportions and
-transparent surroundings; the UX revision removes added rectangular plates and uses a subtle outline.
-A future upstream logo change needs a new asset review before bundling.
-
-### Update and import contract
-
-`sync_universal_catalogue.py` and `sync_spoolman_catalogue.py` use the pure adapters
-in `scripts/catalogue_sources.py`. They add missing fields/references through the
-existing revision-aware storage. Local values, nulls and corrections win. An
-unavailable source reports failure; rejected records make an update partial and
-prevent advancement of the complete-refresh date. Incomplete but structurally
-valid data are explicitly distinguishable from a failed source request.
-
-Runtime hosts are disclosed in `core.NETWORK_SOURCES` and the source picker.
-Existing consent is renewed for this source revision.
-See [DATA_FORMAT.md](DATA_FORMAT.md) for identifiers, units and export validation.
+137 OFD logos passed a format, size and contact-sheet review; twenty were
+excluded (`.github/catalogue-logo-exclusions.json`) and 14 complementary
+manufacturers have none, so 34 brands show their name instead. The build script
+(`.github/scripts/build_catalogue_snapshot.py`) crops transparent SVG margins and
+normalizes raster images; the application keeps colours, proportions and
+transparency, adds a thin outline and shows the name for bitmaps under 24 px.
+Hashes are recorded in `data/brand_logos/manifest.json`. Runtime updates never
+download or approve a logo. The MIT licence of the OFD repository covers its
+data, not the trademarks it depicts: see [TRADEMARKS.md](TRADEMARKS.md).
 
 ## Attribution required: TheFilamentDB (CC-BY 4.0)
 
-Hex color data derived from TheFilamentDB is licensed under
+Colour HEX values derived from TheFilamentDB are licensed under
 [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/).
 
-> Color data: © TheFilamentDB (https://thefilamentdb.issou.best/), CC-BY 4.0.
+> Colour data: © TheFilamentDB (https://thefilamentdb.issou.best/), CC-BY 4.0.
+> Values were normalized to six-digit HEX and matched to products by material
+> and colour name; no other change.
 
-This attribution is retained here and in the application's "Sources" disclosure.
+The attribution is kept in `data/TheFilamentDB-ATTRIBUTION.txt`, here and in the
+application's About dialog. The developer snapshot `data/thefilamentdb.jsonl.gz`
+is not bundled in installers.
 
-## Multi-brand color enrichment (Prusament & ROSA3D)
+## Curated colour enrichment (Prusament & ROSA3D)
 
-Beyond Polymaker, SpoolScribe enriches the **color HEX** of other brands from
-the same public databases, cross-referenced by material + color name:
+- **Prusament** — colours from [SpoolmanDB `prusament.json`](https://raw.githubusercontent.com/Donkie/SpoolmanDB/master/filaments/prusament.json)
+  (fill-missing; local corrections preserved), then TheFilamentDB for remaining gaps.
+- **ROSA3D** — colours from [SpoolmanDB `rosa3d.json`](https://raw.githubusercontent.com/Donkie/SpoolmanDB/master/filaments/rosa3d.json)
+  in fill-missing mode; the curated Silk / Pastel values are kept.
 
-- **Prusament** — colors are taken from
-  [SpoolmanDB `prusament.json`](https://raw.githubusercontent.com/Donkie/SpoolmanDB/master/filaments/prusament.json)
-  (used to fill missing values; existing local corrections are preserved),
-  with [TheFilamentDB](https://thefilamentdb.issou.best/) filling any remaining
-  gaps (CC-BY 4.0, attribution above).
-- **ROSA3D** — colors are taken from
-  [SpoolmanDB `rosa3d.json`](https://raw.githubusercontent.com/Donkie/SpoolmanDB/master/filaments/rosa3d.json)
-  in **fill-missing** mode only (the project's curated values for the Silk /
-  Pastel PLA families are more representative than SpoolmanDB's CSS-approximated
-  entries, so they are preserved).
+Transparent, translucent and multicolour variants keep no solid HEX on purpose.
+Export requires an explicitly chosen representative HEX; `000000` is never
+substituted. An explicit `alpha` can express transparency; additional colours are
+retained when the source provides them (reader support varies).
 
-Transparent / translucent variants (e.g. "Red Transparent", "Clear") are left
-without a solid HEX on purpose — no authoritative solid color exists. Export
-requires an explicitly chosen representative HEX; it never substitutes `000000`.
-A user-provided `alpha` can express transparency. Additional colors are retained
-when explicitly provided, but reader support varies (Paxx12-24 OpenRFID does not
-use additional colors). No color or transparency is inferred from a product name.
+## Factual data (manufacturer pages)
 
-## Factual data (Polymaker Wiki & Wholesale catalogue)
-
-SpoolScribe also reads **factual values** — HEX color codes, nozzle/bed
-temperatures, density, SKU identifiers — published by Polymaker on its public
-wiki and wholesale catalogue.
-
-- Individual facts (a hex code, a temperature) are **not protected by
-  copyright**; they are data, not creative expression.
-- These values are used solely for **interoperability** (to let you tag your
-  own spools), under nominative fair use of the product names.
-- SpoolScribe does **not** redistribute Polymaker's pages, layout, or any
-  creative compilation; it stores only the minimal factual fields needed.
-
-If Polymaker (or any source) requests removal of specific data, open an issue
-and it will be removed promptly.
-
-## Brand assets
-
-Manufacturer names and logos remain **trademarks of their respective owners** and are NOT
-covered by this project's MIT license. See [TRADEMARKS.md](TRADEMARKS.md).
+Individual facts — a HEX code, a temperature, a density, an article number — are
+data, not creative expression, and are used for interoperability only, under
+nominative use of the product names. SpoolScribe stores the minimal factual
+fields and the source URL, never the pages, layouts or profile files. If a
+manufacturer or any source asks for removal of specific data, open an issue and
+it will be removed.
 
 ## Your own generated output
 
-The OpenSpool / NFC JSON files you generate describe **your own physical
-spools**. They are yours to use freely.
+The OpenSpool / NFC JSON files you generate describe your own spools. They are
+yours to use freely.

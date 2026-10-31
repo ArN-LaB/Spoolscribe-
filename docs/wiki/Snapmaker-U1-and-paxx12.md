@@ -24,7 +24,7 @@ No more manually selecting the filament for each slot.
 ## Important
 
 - This is a **community hobby setup**, "just for fun".
-- It is **not** official Snapmaker or Polymaker functionality.
+- It is **not** official Snapmaker functionality.
 - Flashing custom firmware is at your own risk. Follow the paxx12 project's own
   instructions and safety notes.
 

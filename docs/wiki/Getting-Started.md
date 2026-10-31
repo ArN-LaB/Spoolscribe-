@@ -1,11 +1,23 @@
 # Getting Started
 
+Three steps: install, download the catalogue, export a tag.
+
 ## 1. Install
 
 ### Option A — standalone app (no Python)
 
-Download the build for your OS from the **[Releases](https://github.com/ArN-LaB/Spoolscribe-/releases)** page (produced by CI), unzip,
-and run `SpoolScribe` (`.exe` on Windows, `.app` on macOS, binary on Linux).
+Download the archive for your system from the
+**[Releases](https://github.com/ArN-LaB/Spoolscribe-/releases)** page and unzip it:
+`SpoolScribe.exe` (Windows), `SpoolScribe.app` (macOS, Apple Silicon only) or the
+`SpoolScribe` binary (Linux, recent glibc). Each archive has a `.sha256` file to
+verify the download.
+
+The binaries are not code-signed:
+
+- **Windows** — SmartScreen shows *"Windows protected your PC"*: click **More
+  info** → **Run anyway**.
+- **macOS** — Gatekeeper blocks the first launch: right-click the app → **Open**
+  → **Open**, or run `xattr -dr com.apple.quarantine SpoolScribe.app` once.
 
 ### Option B — from source
 
@@ -17,43 +29,39 @@ pip install -r requirements.txt
 python app_gui.py
 ```
 
-## 2. First run
+## 2. First run: download the catalogue
 
-- First launch asks you to choose and authorize data sources, then downloads the catalogue. Later authorized launches refresh the selected sources; the local cache survives failures.
-- Browse or search filaments by SKU, product, or color.
-- Select a filament to see its details and color swatch.
+The app starts empty. The **Sources du catalogue** dialog lists the sources and
+the hosts they use; tick the ones you want and click **Télécharger et enregistrer**.
+This records your consent and downloads the data into your user folder
+(`%APPDATA%\SpoolScribe`, `~/Library/Application Support/SpoolScribe` or
+`~/.config/SpoolScribe`).
 
-## 3. Generate a tag payload
+Later launches refresh the selected sources once a day by default (change the
+cadence in **⋯ → Paramètres**); **Mettre à jour** forces a refresh at any time,
+and **Annuler** stops one. Offline, the cached catalogue stays usable. See
+[[Updating the Database|Updating-the-Database]].
 
-1. Select a SKU.
-2. (Optional) Click **Inspect JSON** to review the [OpenSpool](https://github.com/spuder/OpenSpool) payload.
-3. Click **Exporter pour NFC**. If HEX is missing, explicitly enter a representative color or cancel.
-4. Use **Dossier d’export** to find the file. Both packaged and source apps use the per-user data directory, outside the application.
-5. For a readable archive, use the **⋯** menu. No physical tag is written by SpoolScribe.
+Then browse: type in the search box (Ctrl+F), filter by manufacturer, material
+or data state, click a column header to sort (second click reverses, Shift-click
+or right-click adds a secondary sort), and select a row to open its card.
 
-Next: [[Writing RFID Tags|Writing-RFID-Tags]].
+## 3. Export a tag payload
 
+1. Select a reference. The card shows its colour, temperatures, diameter,
+   density and the data state. Fill in missing values with **Compléter /
+   corriger les caractéristiques…** if needed; values flagged *À vérifier* must
+   be confirmed before export.
+2. Choose your printer/reader (**Utiliser ce filament avec**) and the tag you
+   bought (**Étiquette achetée**: NTAG216 or NTAG215). The recommended
+   *essential* profile fits every reference on both chips; the *full* profile is
+   under **Réglages avancés**.
+3. (Optional) **Inspecter le JSON** shows the exact bytes that will be exported.
+4. Click **Exporter pour NFC** (Ctrl+E). If the colour is unknown, enter a
+   representative HEX or cancel. **Dossier d'export** opens the output folder.
+5. Write the JSON onto the tag with a separate writer (for example SpoolFlux),
+   read the tag back, and check what the printer reports. SpoolScribe never
+   writes a tag itself. See [[Writing RFID Tags|Writing-RFID-Tags]].
 
-## Universal catalogue (v0.3.0 development)
-
-The repository regression fixture contains 24,521 references across 174 brand
-labels; it is not bundled. The live catalogue depends on selected sources. Use the manufacturer/material/completeness filters together with the
-search box. Click a column header for ascending/descending order; right-click
-for primary/secondary sorting and visible columns. Both views
-show 250 results per page, while filters/search operate on the entire catalogue.
-
-Internal OFD/SMDB references are distinct from a manufacturer SKU. Unknown
-physical data can be filled using **Compléter / corriger les caractéristiques…**;
-these edits affect the product's variants and are preserved during updates.
-Logos are local reviewed assets; a readable manufacturer name replaces an
-unsuitable or unavailable image.
-
-Choose **NTAG215** or **NTAG216** before export. Complete exports retain metadata;
-the automatic choice uses the essential profile when required, omitting descriptives/logos while preserving printing
-values and colors. The inspector shows the exact exported JSON. See the
-[NFC guide](Writing-RFID-Tags.md), [data contract](../DATA_FORMAT.md) and
-[roadmap](../ROADMAP.md). These development changes are not a published v0.3.0 release.
-
-The latest interaction and printer guidance is in [UX v0.3.0](../UX-v0.3.0.md).
-Settings persist; logos have no added rectangular plate; the automatic NFC profile
-chooses what fits. Technical overrides are under **Réglages avancés**.
+For Bambu Lab and Prusa printers the card is a reference sheet for your slicer
+profile; no proprietary RFID tag or OpenPrintTag is generated.

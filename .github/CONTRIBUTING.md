@@ -7,20 +7,30 @@ is meant to be low-friction.
 
 - Be respectful — see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 - Keep the project **honest about licensing**. Any new data source **must**:
-  - have a clearly compatible license (MIT/CC-BY/public-domain facts), and
-  - be documented in [DATA_SOURCES.md](../docs/DATA_SOURCES.md), and
-  - be added to `core.NETWORK_SOURCES` so it appears in the consent disclosure.
-- Never add silent network calls. **All** network access must stay behind the
-  explicit consent gate (see [PRIVACY.md](../docs/PRIVACY.md)).
+  - have a clearly compatible licence (MIT / CC-BY / public-domain facts),
+  - be added as a group in `core.SOURCE_GROUPS` (name, hosts, worker scripts),
+    which feeds the consent dialog and `core.NETWORK_SOURCES`, and
+  - be documented in [DATA_SOURCES.md](../docs/DATA_SOURCES.md) and
+    [PRIVACY.md](../docs/PRIVACY.md); bump `core.NETWORK_SOURCES_REVISION` so
+    existing users are asked again.
+- Never add silent network calls. **All** network access stays behind the
+  explicit consent gate, goes through a bounded same-host fetcher
+  (`scripts/official_sources.fetch` or an equivalent with size limit, declared
+  User-Agent and redirect check), and sends `If-None-Match` when the server
+  supports it.
 - Don't bundle new trademarked assets without noting them in
   [TRADEMARKS.md](../docs/TRADEMARKS.md).
+- Never guess a value: unknown stays `null`, user corrections are never
+  overwritten, identities are never merged on material/colour alone.
 
 ## Architecture
 
 - `core.py` — **pure logic, no `print`/`input`**. Put business logic here.
-- `app_gui.py` — Qt UI only.
+- `app_gui.py`, `ui_catalogue.py` — Qt UI only.
 - `convert_profile.py` — terminal UI only.
-- `scripts/` — standalone scrapers (standard library; no heavy deps).
+- `scripts/` — source adapters (`catalogue_sources.py`, `official_sources.py`,
+  `catalogue_merge.py`), update workers (`sync_*.py`, standard library only)
+  and legacy scrapers kept for reference.
 
 If you add a feature, prefer putting the logic in `core.py` so both the CLI and
 GUI benefit.
@@ -43,27 +53,33 @@ python convert_profile.py   # smoke-test the CLI
 python app_gui.py           # smoke-test the GUI
 ```
 
-The tests block network connections, use temporary user data, and never contact
-a printer or personal Spoolman instance. Core tests need Python 3.10+ only; GUI
-tests are explicitly skipped when PySide6 is absent. Build with Python 3.12 and
+Core tests need Python 3.10+ and `certifi`; GUI tests need PySide6 and are
+skipped otherwise (set `QT_QPA_PLATFORM=offscreen` on a headless machine). The
+tests block network connections, use temporary user data, and never contact a
+printer or a personal Spoolman instance. Build with Python 3.12 and
 `requirements-build.txt` for the recorded dependency snapshot.
 
 Packaged QA can isolate its data with `SPOOLSCRIBE_DATA_HOME` and its consent
 settings with `SPOOLSCRIBE_CONFIG_PATH`, both pointing inside a temporary folder.
-Never run acquisition scripts against a real database during tests.
+Never run acquisition scripts against a real database during tests; run directly,
+the workers write to the user data folder, never to the repository fixture.
 
-## Pull requests
+## Commits and pull requests
 
 1. Fork and create a feature branch.
-2. Keep changes focused and small.
-3. Describe **what** changed and **why** in the PR.
-4. Confirm no new un-consented network access was introduced.
+2. Keep changes focused and small; one logical change per commit.
+3. Commit messages are in French and follow the conventional prefixes used in
+   the history: `feat:`, `fix:`, `build:`, `ci:`, `docs:`, `test:` — for example
+   `fix(sync): cadence et annulation`.
+4. Add the change to the *Unreleased* section of [CHANGELOG.md](../CHANGELOG.md);
+   that text becomes the release notes.
+5. Describe **what** changed and **why** in the PR, and confirm no new
+   un-consented network access was introduced.
 
 ## Reporting bugs / ideas
 
 Use the issue templates under **New issue**. Include your OS, Python version,
 and steps to reproduce. See also [SECURITY.md](SECURITY.md) for private reports.
-
 
 ## Universal catalogue changes
 
@@ -71,5 +87,6 @@ See [the data contract](../docs/DATA_FORMAT.md). Keep source adapters pure and
 standard-library-only, preserve unknowns and local corrections, and add offline
 fixtures for each source/schema edge case. Never run live requests from the test
 suite. Review snapshot audit reports and logo contact sheets; do not overwrite
-the historical catalogue or Orca profiles to update a supplement. New network
-hosts must be disclosed and the consent revision advanced when necessary.
+the historical catalogue or Orca profiles to update a supplement. The 1,008
+historical exports are checked byte for byte: a deliberate change to the export
+format must be verified and recorded in `tests/fixtures/legacy_catalogue_contract.json`.

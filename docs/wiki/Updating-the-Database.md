@@ -1,73 +1,86 @@
 # Updating the Database
 
-The v0.3.0 development installer contains artwork and code, but **no filament
-catalogue or Orca profiles**. First launch opens source selection. Download once
-to constitute the local database; subsequent authorized launches refresh those
-sources. If a service is unavailable, the cached data remain usable offline.
+The installer contains artwork and code, but **no filament catalogue and no
+Orca profiles**. The first launch opens the source selection; the download
+builds the local database in your user folder. If a source is unavailable, the
+cached data remain usable offline.
 
-**Mettre à jour** opens selectable sources. Choose **Télécharger et enregistrer**
-or **Enregistrer seulement**. Deselecting a source prevents future requests to it;
-it does not erase existing records. The first selection records network consent.
-Settings can revoke it. The CLI shares the choices (`--sources`), and `U` can
-reconsider consent. `--list` is a read-only offline command.
+## Sources and consent
 
-Sources and endpoints: [DATA_SOURCES.md](../DATA_SOURCES.md).
-Manufacturer values take priority over source-owned community values, while
-explicit local edits/nulls remain protected. Exact identities merge complementary
-facts; ambiguous records are held separately instead of creating possible duplicates.
+**Mettre à jour** (Ctrl+U) opens the **Sources du catalogue** dialog. Each source
+shows the host it contacts. **Télécharger et enregistrer** saves the choice and
+starts a refresh; **Enregistrer seulement** saves it for the next launch.
+Deselecting a source prevents future requests to it; existing records are kept.
+The first selection records your network consent; **⋯ → Paramètres → Retirer
+l'autorisation réseau** withdraws it. The CLI shares the choices (`--sources`)
+and its `U` command can reconsider consent.
 
-The bottom **Base de données** panel shows the last attempt, last complete refresh
-of the **selected** source set, each worker result, conflicts and pending identities.
-A skipped/deselected source is not reported as a successful check. Failed or partial
-steps prevent the complete-refresh date from advancing. A valid source with no
-novel facts can report unchanged. Missing factual fields remain explicit.
+Sources, hosts and licences:
+[DATA_SOURCES.md](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DATA_SOURCES.md),
+[PRIVACY.md](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/PRIVACY.md).
 
-Frozen builds retain certifi trust roots without disabling TLS verification. This
-does not guarantee availability of any source. The optional developer-only
-TheFilamentDB snapshot lacks ROSA3D colors; it is not included in the installer.
+## Cadence
 
-Writes use validation, atomic replacement, revision checks and backups.
-`polymaker_db.json.pre-update.bak` preserves the pre-pipeline state. Ordinary
-updates do not overwrite existing Orca files. No printer or NAS is contacted.
+**⋯ → Paramètres → Actualisation au lancement** sets when the app refreshes by
+itself: at every launch, once a day (default), once a week, or manually only.
+An empty database always triggers the first download. **Mettre à jour** forces a
+refresh regardless of the cadence.
 
-## Restoring a backup
+Open Filament Database, SpoolmanDB and the Bambu profile index are fetched
+conditionally: when the server answers that nothing changed since the last
+download, the step ends immediately. Polymaker runs first, then the community
+catalogues, then the Bambu and SUNLU enrichment.
 
-Close other writers first. The GUI offers restoration of `.bak` when its database
-is unreadable. From source, `python convert_profile.py --restore-db` asks before
-restoring `.bak`; give a path to choose another backup, for example:
+## During a refresh
+
+A progress bar shows the current source; **Annuler** stops the running worker
+and keeps the database as it was. Closing the window during a refresh asks for
+confirmation and does the same. Only one instance of SpoolScribe runs per data
+folder.
+
+When the sources cannot be reached, the status bar says so and nothing is
+rewritten. When a refresh changes something, the bottom **Base de données**
+button opens the details: date of the last attempt, last complete refresh of
+the selected sources, result of each source, conserved local values and pending
+identity matches.
+
+## What a refresh may and may not change
+
+- Manufacturer values replace community values that you have not edited.
+- Your corrections, including a deliberately unknown value, are never replaced.
+- A source that stops publishing a value does not empty the local one; the
+  case is listed as a conserved value.
+- A source that returns less than half of its previous references is refused.
+- Values that contradict themselves are flagged *À vérifier* and blocked at
+  export until you confirm them.
+- Uncertain identities between sources are held aside, never merged.
+
+## Backups and restoration
+
+Every save keeps the previous revision in `polymaker_db.json.bak`; a refresh
+also keeps `polymaker_db.json.pre-update.bak`. The GUI offers restoration of
+`.bak` when the database is unreadable. From source:
 
 ```sh
+python convert_profile.py --restore-db
 python convert_profile.py --restore-db "/path/to/polymaker_db.json.pre-update.bak"
 ```
 
-The replaced file is retained as `polymaker_db.json.before-restore-*`; a backup is
-validated before restoration. An interrupted write may leave a `.lock` file. Verify
-that no writer is running before removing that lock and retrying.
+The replaced file is kept as `polymaker_db.json.before-restore-*`. After a
+restoration, automatic refreshes are suspended for the rest of that session.
 
-After a successful restoration, automatic startup updates and bundled catalogue
-merges are suspended for that database for the rest of the current application
-process. The restored file remains the exact selected backup until an explicit
-edit or manual update. Consent and automatic-update preferences are preserved;
-the next launch uses them normally.
+## Concurrent edits and locks
 
-## Concurrent edits
+Writes use validation, atomic replacement, a writer lock and revision checks.
+If an external editor changed the file meanwhile, the save stops and the
+detected bytes are kept in `polymaker_db.json.concurrent-*`. A lock left by a
+crashed or killed worker is recovered automatically (dead process, or lock
+older than 15 minutes); a lock of a live process still blocks. Close other
+writers before updates or restoration.
 
-Application writers use a shared lock and stale-revision checks. A further check
-runs after the temporary file is flushed, immediately before publication. If a
-concurrent change is detected, the save stops and the detected bytes are retained
-in `polymaker_db.json.concurrent-*`, including unfinished JSON. The error reports
-the recovery path; compare versions before retrying. If the file was deleted,
-there are no concurrent bytes to copy and the save still stops.
+## Settings file
 
-This is not absolute exclusion of external editors or synchronizers that ignore
-the lock: they can still write between the final check and replacement. Close
-other writers before updates or restoration, and avoid editing the JSON in an
-external editor while SpoolScribe is saving. The recovery files are local copies,
-not an unlimited version history or a multi-file transaction.
-
-## Changing consent and preferences
-
-Settings → **Retirer l'autorisation réseau** stops automatic network use. The
-Sources dialog can grant it again. Menu ⋯ exports/imports interface preferences;
-imported files never grant network consent. Application-update discovery is a
-separate explicit GitHub request; see [PRIVACY.md](../PRIVACY.md).
+**⋯ → Enregistrer les réglages… / Charger des réglages…** export and import the
+interface, source, printer and tag preferences. Imported files never grant
+network consent, and a different source selection invalidates the previous
+authorization until you confirm it in the Sources dialog.

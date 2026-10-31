@@ -47,7 +47,7 @@ référence orpheline n'est introduite. Aucun rejet de format dans les deux
 instantanés retenus ; les valeurs inconnues sont des `null` explicites.
 
 Les audits JSON contiennent les empreintes et exclusions ; les sources et
-licences sont détaillées dans [DATA_SOURCES.md](DATA_SOURCES.md).
+licences sont détaillées dans [DATA_SOURCES.md](../DATA_SOURCES.md).
 Les 144 fichiers générés (instantanés, audits, logos, manifeste, licences)
 sont reproductibles hors ligne depuis les deux téléchargements conservés.
 
@@ -119,7 +119,7 @@ SpoolFlux ou un autre logiciel peut ajouter des données/enregistrements :
 leur volume réel n'a pas été mesuré. La réserve est configurable, la marge
 diminue d'autant et l'export est bloqué s'il ne tient plus. Une marge de zéro
 ne laisse aucune place à un ajout. Détails et référence NXP dans
-[Writing RFID Tags](wiki/Writing-RFID-Tags.md).
+[Writing RFID Tags](../wiki/Writing-RFID-Tags.md).
 
 ## Limites et prochaines validations
 

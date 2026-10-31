@@ -9,7 +9,7 @@ catalogue et de packaging décrivent un état antérieur.
 ## Réponses aux retours
 
 Les treize points et leur fonctionnement sont décrits dans
-[UX-v0.3.0.md](UX-v0.3.0.md) : tris dans les en-têtes, recherche et accès rapides
+[UX-v0.3.0.md](../UX-v0.3.0.md) : tris dans les en-têtes, recherche et accès rapides
 fabricants avec Polymaker par défaut, sources sélectionnables, colonnes
 configurables, logos sans fond ajouté, export guidé par imprimante et étiquette,
 réglages persistants/importables, recherche de mise à jour applicative,
@@ -100,7 +100,7 @@ les suites finales, sans répéter la collecte publique entière.
 Les adaptateurs officiels ne généralisent pas une température dépendant de la
 vitesse, du plateau ou de l'imprimante. Les valeurs manquantes restent inconnues.
 Les nouvelles sources étudiées et les limites des adaptateurs sont détaillées
-dans [DATA_SOURCES.md](DATA_SOURCES.md). Les recherches eSUN et Prusa n'ont pas
+dans [DATA_SOURCES.md](../DATA_SOURCES.md). Les recherches eSUN et Prusa n'ont pas
 été présentées comme de nouveaux imports opérationnels. Aucun NAS, serveur
 Spoolman personnel, firmware ou matériel RFID n'a été modifié.
 

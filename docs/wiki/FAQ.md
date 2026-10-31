@@ -1,66 +1,87 @@
 # FAQ
 
-## Is this an official Polymaker, Prusa Research or Snapmaker app?
+## Is this an official app of a filament manufacturer or of Snapmaker?
 
 No. SpoolScribe is an **unofficial hobby project**, not affiliated with, endorsed
-by, or connected to Polymaker, Prusa Research, ROSA3D or Snapmaker.
-See `TRADEMARKS.md`.
+by, or connected to any filament manufacturer (Polymaker, Bambu Lab, Prusa
+Research, SUNLU, eSUN…) or to Snapmaker. See
+[TRADEMARKS.md](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/TRADEMARKS.md).
 
 ## Does it send my data anywhere?
 
-No. There is **no telemetry, no tracking, no account**. The only network access
-is the optional, consent-gated database update. See `PRIVACY.md`.
+No. There is **no telemetry, no tracking, no account**. The network is used for
+three things only, all listed before you agree: the first download of the
+catalogue, the refresh of the sources you selected (at the cadence you choose,
+daily by default, or when you click **Mettre à jour**), and the release check
+when you click **⋯ → Vérifier une mise à jour de l'application**. Servers see
+your IP and the User-Agent, nothing about your catalogue or printer. See
+[PRIVACY.md](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/PRIVACY.md).
+
+## Why is the app empty after installation?
+
+The installer contains no catalogue. Choose your sources in the first dialog
+and click **Télécharger et enregistrer**. Offline, nothing can be shown until a
+first download has succeeded; afterwards the cached catalogue works offline.
 
 ## Is the data free to use?
 
-The code is MIT. Most data sources are MIT; [TheFilamentDB](https://thefilamentdb.issou.best/) is CC-BY 4.0
-(attribution provided). Some factual values come from Polymaker's public pages.
-Full details: `DATA_SOURCES.md`.
+The code is MIT. Open Filament Database and SpoolmanDB are MIT;
+[TheFilamentDB](https://thefilamentdb.issou.best/) is CC-BY 4.0 (attribution
+provided); manufacturer pages provide factual values only. Logos remain the
+trademarks of their owners. Full details:
+[DATA_SOURCES.md](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DATA_SOURCES.md).
 
 ## Do I need the paxx12 firmware?
 
-To have the **[Snapmaker U1](https://snapmaker.com/snapmaker-u1) read tags automatically**, yes — the [paxx12 fork](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) exposes the
-RFID reader. SpoolScribe itself just generates the tag payloads and works on any
-machine.
+To have the **[Snapmaker U1](https://snapmaker.com/snapmaker-u1) read tags
+automatically**, yes — the
+[paxx12 fork](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware)
+exposes the RFID reader. SpoolScribe itself only generates the tag payloads and
+works on any machine. Other OpenSpool-capable readers can use the same files.
 
-## A SKU is missing or has no color. Can I fix it?
+## A reference is missing, has no colour, or is marked « À vérifier »
 
-The CLI can add an unknown SKU against an existing product. Both the GUI and
-CLI ask for an explicit representative HEX when exporting a reference with an
-unknown color. Skipping the color cancels export. Corrections are saved locally
-and ordinary updates preserve them. Contributions back upstream are welcome — see
-`CONTRIBUTING.md`.
+- **Missing colour**: the GUI and the CLI ask for an explicit representative HEX
+  at export time; cancelling the colour cancels the export.
+- **Missing temperatures / density / diameter**: use **Compléter / corriger les
+  caractéristiques…**; the values apply to every variant of that product.
+- **« À vérifier »**: the source published a value that contradicts itself
+  (for example a black HEX for a "White" filament, or a density of 7 g/cm³).
+  Open the card, correct the value explicitly, and the record becomes exportable.
+- **Missing reference**: the CLI can add an unknown reference against an existing
+  product. Contributions upstream (to Open Filament Database or SpoolmanDB)
+  benefit everyone.
+
+Your corrections are saved locally and survive every refresh.
+
+## What does « Export possible » mean?
+
+Only that the fields OpenSpool needs are filled in. It says nothing about the
+filament's quality, nor that every printer recognizes the tag.
+
+## Which tag and which profile?
+
+NTAG215 (504 bytes) or NTAG216 (888 bytes). The recommended *essential* profile
+(material, colours, temperatures, diameter, density) fits every reference on
+both. The *full* profile adds names and brand metadata and is an explicit choice.
+See [[Writing RFID Tags|Writing-RFID-Tags]].
 
 ## Which tag hardware do I need?
 
-Any NFC/RFID writer compatible with the tag format your reader expects. See
-[[Writing RFID Tags|Writing-RFID-Tags]].
+Any NFC writer able to write an NDEF MIME `application/json` record, for example
+SpoolFlux on iPhone. See [[Writing RFID Tags|Writing-RFID-Tags]].
 
-## Can I remove the Polymaker logo?
+## Can I remove a manufacturer logo?
 
-Yes — delete `data/polymaker_logo.svg`. The app works fine without it.
+Logos are bundled in the application; the packaged app shows the brand name when
+a logo is absent. To build your own copy without a logo, remove its file from
+`data/brand_logos/` and its entry in `manifest.json` (or list the brand in
+`.github/catalogue-logo-exclusions.json`). Trademark holders can also ask for
+removal by opening an issue.
 
+## Where are my files?
 
-## Universal catalogue (v0.3.0 development)
-
-The repository regression fixture contains 24,521 references across 174 brand
-labels; it is not bundled. The live catalogue depends on selected sources. Use the manufacturer/material/completeness filters together with the
-search box. Click a column header for ascending/descending order; right-click
-for primary/secondary sorting and visible columns. Both views
-show 250 results per page, while filters/search operate on the entire catalogue.
-
-Internal OFD/SMDB references are distinct from a manufacturer SKU. Unknown
-physical data can be filled using **Compléter / corriger les caractéristiques…**;
-these edits affect the product's variants and are preserved during updates.
-Logos are local reviewed assets; a readable manufacturer name replaces an
-unsuitable or unavailable image.
-
-Choose **NTAG215** or **NTAG216** before export. Complete exports retain metadata;
-the automatic choice uses the essential profile when required, omitting descriptives/logos while preserving printing
-values and colors. The inspector shows the exact exported JSON. See the
-[NFC guide](Writing-RFID-Tags.md), [data contract](../DATA_FORMAT.md) and
-[roadmap](../ROADMAP.md). These development changes are not a published v0.3.0 release.
-
-The latest interaction and printer guidance is in [UX v0.3.0](../UX-v0.3.0.md).
-Settings persist; logos have no added rectangular plate; the automatic NFC profile
-chooses what fits. Technical overrides are under **Réglages avancés**.
+Database, settings and exports are in your user folder, never next to the
+application: `%APPDATA%\SpoolScribe` (Windows), `~/Library/Application
+Support/SpoolScribe` (macOS), `~/.config/SpoolScribe` (Linux). Backups
+(`polymaker_db.json.bak`, `.pre-update.bak`) sit next to the database.
