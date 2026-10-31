@@ -37,10 +37,20 @@ pip install -r requirements.txt
 Quick checks before opening a PR:
 
 ```sh
+python -B -m unittest discover -s tests -t . -v
 python -c "import core, app_gui, convert_profile; print('imports OK')"
 python convert_profile.py   # smoke-test the CLI
 python app_gui.py           # smoke-test the GUI
 ```
+
+The tests block network connections, use temporary user data, and never contact
+a printer or personal Spoolman instance. Core tests need Python 3.10+ only; GUI
+tests are explicitly skipped when PySide6 is absent. Build with Python 3.12 and
+`requirements-build.txt` for the recorded dependency snapshot.
+
+Packaged QA can isolate its data with `SPOOLSCRIBE_DATA_HOME` and its consent
+settings with `SPOOLSCRIBE_CONFIG_PATH`, both pointing inside a temporary folder.
+Never run acquisition scripts against a real database during tests.
 
 ## Pull requests
 

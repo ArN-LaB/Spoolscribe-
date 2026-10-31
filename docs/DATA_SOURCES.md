@@ -5,7 +5,7 @@ available data from the sources listed below. This file documents each source,
 its license, and the obligations that come with it.
 
 The application **never accesses any of these sources without your explicit,
-per-session consent** (see [PRIVACY.md](PRIVACY.md)).
+saved explicit consent** (see [PRIVACY.md](PRIVACY.md)).
 
 ## Summary
 
@@ -34,7 +34,7 @@ the same public databases, cross-referenced by material + color name:
 
 - **Prusament** — colors are taken from
   [SpoolmanDB `prusament.json`](https://raw.githubusercontent.com/Donkie/SpoolmanDB/master/filaments/prusament.json)
-  (treated as **authoritative**, as these match Prusa's published swatches),
+  (used to fill missing values; existing local corrections are preserved),
   with [TheFilamentDB](https://thefilamentdb.issou.best/) filling any remaining
   gaps (CC-BY 4.0, attribution above).
 - **ROSA3D** — colors are taken from
@@ -44,8 +44,11 @@ the same public databases, cross-referenced by material + color name:
   entries, so they are preserved).
 
 Transparent / translucent variants (e.g. "Red Transparent", "Clear") are left
-without a solid HEX on purpose — no authoritative solid color exists — and the
-OpenSpool export falls back to `000000` for those.
+without a solid HEX on purpose — no authoritative solid color exists. Export
+requires an explicitly chosen representative HEX; it never substitutes `000000`.
+A user-provided `alpha` can express transparency. Additional colors are retained
+when explicitly provided, but reader support varies (Paxx12-24 OpenRFID does not
+use additional colors). No color or transparency is inferred from a product name.
 
 ## Factual data (Polymaker Wiki & Wholesale catalogue)
 

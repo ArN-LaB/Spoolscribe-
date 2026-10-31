@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/status-for%20fun%20%C2%B7%20free%20time-blueviolet" alt="Status: for fun">
 </p>
 
-> Write OpenSpool / NFC spool tags for the **[open-firmware Snapmaker U1](https://snapmaker.com/snapmaker-u1)**, so
+> Prepare OpenSpool / NFC spool-tag data for the **[open-firmware Snapmaker U1](https://snapmaker.com/snapmaker-u1)**, so
 > your printer auto-recognizes the filament loaded in your [PolyDryer](https://polymaker.com/product/polydryer/) + [PolyBox](https://polymaker.com/product/polybox/)
 > or AMS-style feeders.
 
@@ -34,8 +34,8 @@ project, developed when time allows. No roadmap pressure, no commercial intent.
   **Prusament** (PLA, PETG, ASA, PC Blend — spools *and* refills) and
   **ROSA3D** (PLA Starter/Silk/Pastel/HS, PETG, PCTG, ASA, ABS+, recycled R-PLA/R-PET-G) sets.
 - Real color swatches + the brand logo rendered from SVG.
-- Filament details: type/subtype, nozzle & bed temps, density (with live
-  override from official OrcaSlicer presets when available).
+- Filament details: type/subtype, nozzle & bed temps, density (validated
+  official OrcaSlicer presets; explicit override option when local values differ).
 - One-click **OpenSpool / NFC JSON** export.
 - JSON inspector before you write a tag.
 - Optional, **consent-gated** data updates from open databases.
@@ -45,16 +45,23 @@ project, developed when time allows. No roadmap pressure, no commercial intent.
 The [Snapmaker U1](https://snapmaker.com/snapmaker-u1)'s firmware was opened up (via the [paxx12 fork](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware)), exposing the
 onboard **RFID reader**. That means spools sitting in **[PolyDryer](https://polymaker.com/product/polydryer/) + [PolyBox](https://polymaker.com/product/polybox/)**
 dryers or **AMS-style** multi-material feeders can be identified automatically —
-*if* each spool carries a tag describing it. SpoolScribe produces those tags in
+*if* each spool carries a tag describing it. SpoolScribe produces the JSON data in
 the open [OpenSpool](https://github.com/spuder/OpenSpool) format. Just for fun.
 
-### Writing the tags (216-byte NFC)
+### Writing NTAG216 tags
 
 SpoolScribe generates the **data**; you write it onto the physical tag. For
-NTAG216 (888-byte / commonly "216") NFC tags, the excellent web tool
-[**SpoolFlux**](https://spoolflux.dingdongclick.de/?lang=us) works great to flash
-the payload — it's my go-to for writing 216 NFC tags. (SpoolFlux is a separate
+NTAG216 NFC tags (888 bytes user memory; 872 bytes declared for NDEF), the iPhone app
+[**SpoolFlux**](https://spoolflux.dingdongclick.de/?lang=us) can write the payload. SpoolScribe itself does not program tags or their Capability Container. (SpoolFlux is a separate
 third-party project, not affiliated with SpoolScribe.)
+
+The default NFC export is compact JSON with the same fields as before. A size
+check includes one MIME `application/json` NDEF record, Type 2 TLV length and
+terminator. Additional records added by a writer are outside this estimate.
+The JSON must be written as a MIME record, not as plain NDEF Text. The readable
+archive is available from the GUI **⋯** menu or CLI `--export-format archive`.
+An unknown HEX requires an explicitly chosen representative color; transparency
+(`alpha`) is optional and never inferred. See [the NFC guide](docs/wiki/Writing-RFID-Tags.md).
 
 ## Install (from source)
 
@@ -73,6 +80,8 @@ python convert_profile.py  # terminal app
 The same PyInstaller spec works on all three OSes (run it on the target OS):
 
 ```sh
+python -m pip install -r requirements-build.txt  # Python 3.12 build snapshot
+python -B -m unittest discover -s tests -t . -v
 pyinstaller spoolscribe.spec --noconfirm
 ```
 
@@ -80,7 +89,7 @@ Output lands in `dist/` as a **single self-contained file** (`SpoolScribe.exe`
 on Windows, `SpoolScribe.app` on macOS, a `SpoolScribe` binary on Linux) — no
 `_internal` folder, nothing to install. CI in
 [`.github/workflows/build.yml`](.github/workflows/build.yml) builds all three
-OSes automatically and attaches them (with **SHA256 checksums**) to a GitHub
+OSes after the offline tests pass, and attaches them (with **SHA256 checksums**) to a GitHub
 Release when you push a `v*` tag.
 
 ## Windows: "Unknown publisher" / SmartScreen
@@ -104,6 +113,24 @@ The executable embeds version metadata, so its **Properties → Details** and th
 prompt itself show *SpoolScribe* by *ArN-LaB* rather than a blank publisher.
 Prefer not to trust a binary? **Run from source** (see above) — the code is all
 here.
+
+## Tests and local data
+
+Run `python -B -m unittest discover -s tests -t . -v`. Core tests require only
+Python 3.10+; GUI tests run when PySide6 is installed (otherwise explicitly skipped).
+Tests use temporary databases and fake network sources, never a printer or personal
+Spoolman server. The catalogue has reviewed exceptions: 76 missing HEX values and
+two SKU references with no product; these cannot silently become valid exports.
+
+Database writes are validated and atomic. The previous good revision is kept in
+`polymaker_db.json.bak`; a full update also keeps `polymaker_db.json.pre-update.bak`.
+The CLI `--restore-db [backup-path]` asks before restoring and retains replaced bytes.
+The packaged GUI offers restoration if its database is unreadable. Ordinary updates
+preserve local values; conflicts with the bundled catalogue are listed in the stats tooltip.
+
+Export also preserves local physical values by default. Explicitly prefer a
+matching Orca profile with the GUI Settings option or CLI `--orca-overrides`;
+the JSON inspector shows the actual exported values.
 
 ## Privacy & data
 
@@ -148,7 +175,7 @@ databases. Extending it to more brands is on the
 - [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) (MIT)
 - [TheFilamentDB](https://thefilamentdb.issou.best/) (CC-BY 4.0)
 - [OpenSpool](https://github.com/spuder/OpenSpool) format
-- [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us) — web tool I use to write 216 NFC tags
+- [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us) — separate iPhone app for programming NFC tags
 - The [**paxx12**](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) Snapmaker U1 firmware fork that makes the RFID reader usable
 
 ## License

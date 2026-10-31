@@ -11,7 +11,15 @@ ideas in roughly the order they might happen — contributions welcome.
 - Keep the **core** logic UI-agnostic (shared by CLI and GUI).
 - Prefer **small, reversible** changes.
 
-## v0.2.0 — current (first curated release)
+## v0.2.2 — stabilization in preparation
+
+- [x] Compact NFC export with retained metadata, validation and capacity check.
+- [x] Explicit missing-color entry in GUI and CLI.
+- [x] Atomic database storage, backups, conservative bundled-data merge.
+- [x] Honest update status, preserved local corrections and offline tests.
+- [ ] Hardware read-back and cross-platform packaged acceptance.
+
+## v0.2.0 / v0.2.1 — released
 
 - [x] Cross-platform GUI (PySide6) + CLI sharing a pure `core`.
 - [x] Polymaker SKU lookup → OpenSpool / NFC JSON export.
@@ -24,9 +32,11 @@ ideas in roughly the order they might happen — contributions welcome.
 
 ## v0.3 — quality of life
 
-- [ ] Editable "missing hex" workflow directly in the GUI table.
+- [ ] Broader catalogue editing and improved search ergonomics.
 - [ ] Export presets / batch export of multiple SKUs.
-- [ ] Settings panel (consent, auto-update interval) in the GUI.
+- [x] Settings panel (consent revocation, auto-update interval) in the GUI.
+- [ ] Study optional Spoolman filament lookup only after a distinct user need is validated;
+      no duplication of Filament Manager/SpoolLink or UID migration in SpoolScribe.
 - [ ] Localisation (the UI currently mixes FR/EN).
 
 ## v0.4+ — toward a more universal database

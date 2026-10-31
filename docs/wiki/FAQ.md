@@ -25,8 +25,10 @@ machine.
 
 ## A SKU is missing or has no color. Can I fix it?
 
-Yes. You can add unknown SKUs and enter a hex value directly in the app; it's
-saved to your local database. Contributions back upstream are welcome — see
+The CLI can add an unknown SKU against an existing product. Both the GUI and
+CLI ask for an explicit representative HEX when exporting a reference with an
+unknown color. Skipping the color cancels export. Corrections are saved locally
+and ordinary updates preserve them. Contributions back upstream are welcome — see
 `CONTRIBUTING.md`.
 
 ## Which tag hardware do I need?

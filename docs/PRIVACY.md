@@ -14,7 +14,8 @@ No account, no telemetry, no analytics, no tracking. Ever.
 
 ## What requires the network (opt-in only)
 
-Only the **"Update database"** action makes network requests. It is:
+Only database updates make network requests. Manual updates are consent-gated;
+automatic startup updates require both saved consent and a separate opt-in. They are:
 
 1. **Disabled by default.** A fresh install never calls the network on its own.
 2. **Consent-gated.** The first time you trigger an update, the app shows you
@@ -49,3 +50,8 @@ Delete that file to reset all choices (the app will ask again next time).
 
 - **GUI:** the consent dialog reappears whenever consent is not granted.
 - **CLI:** the `U` command re-asks and lets you grant or revoke access.
+- **GUI:** Settings > **Retirer l’autorisation réseau** revokes consent and disables
+  automatic updates. A later manual update asks for consent again.
+
+Consent persists across sessions. It is not requested on every successful lookup
+or export. Tests and CI do not run real data updates.
