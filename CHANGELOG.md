@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the native `none_dealloc` crash observed on Linux with Python 3.10 (CI-01).
 - Preserve bundled catalogue, profiles and worker bytes across OS checkouts;
   verify embedded resources against Git before packaging.
+- Disable generated Python bytecode during builds to keep worker resources clean.
 - Validate OpenSpool data before preview/export: no invented black color or
   manufacturer, no null/non-finite physical values or reversed ranges.
 - Compact NFC JSON keeps the complete existing field set. Capacity checks use

@@ -79,6 +79,8 @@ jobs:
     needs: [verify, tests]
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ${{ matrix.os }}
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     strategy:
       fail-fast: false
       matrix:
@@ -116,14 +118,14 @@ jobs:
       - name: Verify bundled resources against Git
         shell: python
         run: |
-          import hashlib, os, pathlib, subprocess
+          import os, pathlib, subprocess
           from PyInstaller.archive.readers import CArchiveReader
           binary = pathlib.Path('dist') / ('SpoolScribe.exe' if os.name == 'nt' else 'SpoolScribe')
           reader = CArchiveReader(str(binary))
           names = {name.replace('\\', '/'): name for name in reader.toc}
-          expected = {p.as_posix(): subprocess.check_output(['git', 'show', 'HEAD:' + p.as_posix()])
-                      for folder in ('data', 'scripts', 'orca_profiles')
-                      for p in pathlib.Path(folder).rglob('*') if p.is_file()}
+          tracked = subprocess.check_output(['git', 'ls-files', '-z', '--', 'data', 'scripts', 'orca_profiles'])
+          expected = {name: subprocess.check_output(['git', 'show', 'HEAD:' + name])
+                      for name in tracked.decode('utf-8').split(chr(0)) if name}
           actual = {name for name in names if name.startswith(('data/', 'scripts/', 'orca_profiles/'))}
           assert actual == set(expected), 'Unexpected or missing bundled resources'
           for name, raw in expected.items():
