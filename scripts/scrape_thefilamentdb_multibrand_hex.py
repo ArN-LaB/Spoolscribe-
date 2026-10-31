@@ -201,7 +201,13 @@ def main() -> None:
     if dry_run:
         print("\n[DRY RUN] No changes written.")
     if failures:
-        raise PartialUpdate(" ; ".join(failures))
+        # A brand simply absent from the local dump (documented: ROSA3D) is not a failure.
+        blocking = [f for f in failures if "aucune couleur exploitable" not in f]
+        for warning in failures:
+            if warning not in blocking:
+                print(warning)
+        if blocking:
+            raise PartialUpdate(" ; ".join(blocking))
 
 
 if __name__ == "__main__":

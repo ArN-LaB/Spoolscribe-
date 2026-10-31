@@ -1604,7 +1604,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         core.set_network_consent(consent)
         return consent
 
-    def _start_update(self):
+    def _start_update(self, manual=False):
         if self.worker and self.worker.isRunning():
             return
         try:
@@ -1626,7 +1626,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.status.showMessage("Mise à jour en cours…")
 
         self._sync_before = self._snapshot_stats()
-        self._sync_manual = bool(self.sender() is not None and self.sender() is not self.worker)
+        self._sync_manual = bool(manual)
         self.worker = UpdateWorker()
         self.worker.progress.connect(self._on_update_progress)
         self.worker.finished_ok.connect(self._on_update_done)

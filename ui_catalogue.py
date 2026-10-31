@@ -430,7 +430,7 @@ class CatalogueUx:
             except OSError as exc:error.setText(str(exc));return
             state['download']=download;dlg.accept()
         run.clicked.connect(lambda:accept(True));save.clicked.connect(lambda:accept(False));cancel.clicked.connect(dlg.reject);lay.addWidget(buttons)
-        if dlg.exec()==QDialog.Accepted and state['download']:self._start_update()
+        if dlg.exec()==QDialog.Accepted and state['download']:self._start_update(manual=True)
 
     # ── Rapport de synchronisation ────────────────────────────────────
     def _snapshot_stats(self):

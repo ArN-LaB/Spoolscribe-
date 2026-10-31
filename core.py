@@ -457,10 +457,34 @@ def app_icon_abs_path() -> Optional[str]:
     return None
 
 
+_LOGO_MANIFEST: Optional[dict] = None
+
+
+def logo_manifest() -> dict:
+    """Logos revus embarqués, indexés par clé de marque (lus une fois).
+
+    Prend le pas sur le ``logo_path`` mémorisé dans une base : un logo
+    remplacé dans une version suivante s'affiche sans resynchroniser.
+    """
+    global _LOGO_MANIFEST
+    if _LOGO_MANIFEST is None:
+        index = {}
+        for base in (RESOURCE_DIR, DATA_HOME):
+            path = Path(base) / "data" / "brand_logos" / "manifest.json"
+            try:
+                for entry in db_io.parse_json(path.read_bytes()).values():
+                    if isinstance(entry, dict) and entry.get("name") and entry.get("path"):
+                        index[catalogue_sources.brand_key(entry["name"])] = entry["path"]
+            except (OSError, DatabaseError):
+                continue
+        _LOGO_MANIFEST = index
+    return _LOGO_MANIFEST
+
+
 def logo_abs_path(db: dict, brand: str = "Polymaker") -> Optional[str]:
     """Chemin absolu du logo de marque, ou None."""
     meta = db.get("_brands", {}).get(brand, {})
-    logo_path = meta.get("logo_path", "")
+    logo_path = logo_manifest().get(catalogue_sources.brand_key(brand or "")) or meta.get("logo_path", "")
     if not logo_path:
         # Repli : nom de fichier nu dans `logo` → cherché sous data/.
         logo = (meta.get("logo") or "").strip()
