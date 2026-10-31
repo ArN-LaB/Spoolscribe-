@@ -231,8 +231,8 @@ def main():
     parser.add_argument("--export-format", choices=("nfc", "archive"), default="nfc",
                         help="NFC compact (défaut) ou archive JSON lisible, mêmes champs")
     parser.add_argument("--tag-type", choices=tuple(core.NFC_CAPACITIES), default="NTAG216")
-    parser.add_argument("--nfc-profile", choices=("full", "essential"), default="full",
-                        help="Essentiel : omet descriptifs et logos, conserve tous les paramètres d'impression/couleur")
+    parser.add_argument("--nfc-profile", choices=("auto", "essential", "full"), default="auto",
+                        help="auto (défaut) = essentiel : tout ce que l'imprimante lit ; full ajoute descriptifs et logo")
     parser.add_argument("--reserve-bytes", type=int, default=0, help="Réserve pour les ajouts du logiciel d'écriture")
     parser.add_argument("--sources", nargs="+", choices=tuple(core.SOURCE_GROUPS), help="Sources à conserver pour les prochaines mises à jour")
     parser.add_argument("--list", action="store_true", help="Lister le catalogue filtré hors ligne, puis quitter")
@@ -249,7 +249,7 @@ def main():
                         help="Préférer explicitement les valeurs Orca aux valeurs locales à l'export")
     parser.add_argument("--restore-db", nargs="?", const=DB_PATH + ".bak", metavar="SAUVEGARDE",
                         help="Restaurer explicitement une sauvegarde (défaut : .bak)")
-    args, _ = parser.parse_known_args()
+    args = parser.parse_args()
     if args.sources is not None:
         cfg = core.load_config()
         if args.sources != cfg["selected_sources"]:
@@ -296,11 +296,14 @@ def main():
             core.restore_db(DB_PATH, args.restore_db)
         if not args.list:
             check_and_update_db()
-        db = load_db(DB_PATH)
+        db = load_db()  # Creates an empty database on first launch instead of failing.
     except (core.DatabaseError, OSError) as exc:
         print(f"[ERREUR] {exc}\nRestauration possible : --restore-db [chemin de sauvegarde]")
         return 1
     if args.list:
+        if not db.get("_skus"):
+            print("Base vide : lancez l'application sans --list pour télécharger les sources choisies (accord réseau demandé).")
+            return 0
         print_known_skus(db, limit=args.limit, **filters)
         return 0
     show_header(db)
@@ -341,7 +344,8 @@ def main():
             print_known_skus(db, limit=args.limit, **filters)
             continue
 
-        sku = cmd
+        # References are matched without regard to case, then kept as stored.
+        sku = {key.upper(): key for key in db.get("_skus", {})}.get(cmd, raw)
         products = db.get("_products", {})
 
         try:
@@ -412,10 +416,13 @@ def main():
             while True:
                 confirm = ask(f"  Exporter ({args.export_format}) ? (O/n/I/Q) : ").lower()
                 if confirm in ("", "o", "y"):
+                    chosen = core.recommended_nfc(build_openspool(dict(entry, sku=sku), view.product_data, brand_meta=view.brand_meta,
+                                                                 use_orca_overrides=args.orca_overrides), **nfc_options)
                     out = core_write_openspool(sku, entry, view.product_data,
                                                OUTPUT_DIR, brand_meta=view.brand_meta, mode=args.export_format,
-                                               **nfc_options,
+                                               **chosen,
                                                use_orca_overrides=args.orca_overrides)
+                    print(f"[OK] Profil {chosen['profile']} pour {chosen['tag_type']}.")
                     print(f"[OK] Fichier généré : {os.path.basename(out)}")
                     break
                 if confirm in ("i", "info"):
@@ -424,8 +431,10 @@ def main():
                     payload = build_openspool(preview_entry, view.product_data, brand_meta=view.brand_meta,
                                              use_orca_overrides=args.orca_overrides)
                     print("\n  -- Payload JSON --")
-                    text = core.serialize_openspool(payload, mode=args.export_format, **nfc_options)
+                    chosen = core.recommended_nfc(payload, **nfc_options)
+                    text = core.serialize_openspool(payload, mode=args.export_format, **chosen)
                     size = core.nfc_size(text, tag_type=args.tag_type, reserved_bytes=args.reserve_bytes)
+                    print(f"  Profil : {chosen['profile']}")
                     print(text)
                     print(f"JSON UTF-8 : {size.utf8_bytes} octets ; NDEF : {size.ndef_bytes} ; "
                           f"avec TLV : {size.type2_bytes}/{size.capacity_bytes} octets (un record MIME).")

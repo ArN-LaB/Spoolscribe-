@@ -106,12 +106,16 @@ class SourcePolicyTests(unittest.TestCase):
         self.assertFalse(any(p.startswith('orca_profiles/') or p.endswith('polymaker_db.json') or 'catalogue_' in p and p.startswith('data/') for p in files))
         self.assertIn('data/brand_logos/manifest.json',files)
 
-    def test_recommendation_falls_back_only_when_capacity_requires_it(self):
+    def test_recommendation_is_essential_and_full_stays_an_explicit_choice(self):
         payload=core.build_openspool(dict(entry(),color_name='x'*400),product())
-        choices=core.recommended_nfc(payload,'NTAG215')
-        self.assertEqual(choices['profile'],'essential')
-        self.assertEqual(core.recommended_nfc(payload,'NTAG216')['profile'],'full')
+        self.assertEqual(core.recommended_nfc(payload,'NTAG215')['profile'],'essential')
+        self.assertEqual(core.recommended_nfc(payload,'NTAG216')['profile'],'essential')
+        self.assertEqual(core.recommended_nfc(payload,'NTAG216',profile='full')['profile'],'full')
+        with self.assertRaises(core.NfcCapacityError):core.recommended_nfc(payload,'NTAG215',profile='full')
         with self.assertRaises(core.NfcCapacityError):core.recommended_nfc(payload,'NTAG215',reserved_bytes=490)
+        # Unknown brand metadata is never written as null bytes on the tag.
+        full=core.build_openspool(entry(),product(),{'name':'Audit'})
+        self.assertEqual(full['brand_meta'],{'name':'Audit'});self.assertNotIn('logo_url',full);self.assertNotIn('image',full)
 
     def test_settings_roundtrip_does_not_grant_network_authorization(self):
         with tempfile.TemporaryDirectory() as directory,patch('core.CONFIG_PATH',str(Path(directory)/'config.json')):

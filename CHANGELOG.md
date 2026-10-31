@@ -95,6 +95,18 @@ Synchronisation:
 - Consent dialog and `NETWORK_SOURCES` describe exactly the hosts contacted
   (wiki.polymaker.com removed; the obsolete first list is gone).
 
+NFC:
+- The recommended profile is now **essential** (material, colours, temperatures,
+  diameter, density: everything a reader uses); it fits every reference on
+  NTAG215. The full profile (descriptions, brand metadata, logo URL) is an
+  explicit choice in the advanced settings and the CLI (`--nfc-profile full`).
+- Full-profile payloads no longer write `null` brand metadata or logo keys.
+  45 of the 1,008 historical exports differ only by those omitted keys (the
+  fixture keeps the v0.2.2 digest and the verification note).
+- CLI: `--nfc-profile auto` (default), case-insensitive `--brand`/`--material`
+  and reference lookup, strict argument parsing, empty-database hint for
+  `--list` on first launch instead of a misleading restore message.
+
 ### Compatibility
 - Original catalogue bytes and all 1,008 compatible default exports are unchanged.
 - Unknown physical values remain null, source multicolors remain intact, and an

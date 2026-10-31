@@ -44,7 +44,7 @@ class GuiTests(unittest.TestCase):
         self.window._show_detail("PB05001")
         self.window._refresh_inspector()
         text = self.window.inspector.toPlainText()
-        self.assertEqual(text, core.serialize_openspool(self.window._build_payload()))
+        self.assertEqual(text, core.serialize_openspool(self.window._build_payload(), **self.window._nfc_options()))
         with patch("app_gui.QMessageBox.information"):
             self.window._generate()
             self.window._generate(mode="archive")

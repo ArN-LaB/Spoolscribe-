@@ -628,8 +628,9 @@ def query_catalogue(rows: list[dict], *, text: str = "", brand: str = "", materi
     if quality not in ("all", "ready", "incomplete"):
         raise ValueError("Filtre de qualité inconnu.")
     terms = _search_key(text).split()
-    result = [r for r in rows if (not brand or r["brand"] == brand)
-              and (not material or r["material"] == material)
+    brand_key, material_key = brand.casefold().strip(), material.casefold().strip()
+    result = [r for r in rows if (not brand_key or r["brand"].casefold() == brand_key)
+              and (not material_key or r["material"].casefold() == material_key)
               and (quality == "all" or r["ready"] == (quality == "ready"))
               and all(t in _search_key(" ".join(str(r.get(k) or "") for k in
                       ("sku", "source_id", "manufacturer_sku", "brand", "material", "product", "color_name", "hex")))
@@ -832,15 +833,18 @@ def build_openspool(entry: dict, product_data: dict, brand_meta: Optional[dict] 
     if src.get("subtype"):
         payload["subtype"] = src["subtype"]
     if brand_meta:
-        payload["brand_meta"] = {
+        # Unknown metadata is omitted rather than written as null bytes on the tag.
+        meta = {
             "name": brand_meta.get("name", src.get("brand")),
             "website": brand_meta.get("website"),
             "origin": brand_meta.get("origin"),
             "logo_url": brand_meta.get("logo_url"),
             "logo_path": brand_meta.get("logo_path"),
         }
-        payload["logo_url"] = brand_meta.get("logo_url")
-        payload["image"] = brand_meta.get("logo_url")
+        payload["brand_meta"] = {k: v for k, v in meta.items() if v is not None}
+        if brand_meta.get("logo_url"):
+            payload["logo_url"] = brand_meta.get("logo_url")
+            payload["image"] = brand_meta.get("logo_url")
     for key in ("sku", "product", "color_name"):
         payload[key] = entry.get(key)
     if src.get("display_name"):
@@ -1138,16 +1142,17 @@ def selected_pipeline(sources=None):
     return sorted(steps, key=lambda step: 0 if step[0] == "sync_polymaker_official.py" else 1)
 
 def recommended_nfc(payload, tag_type="NTAG216", profile="auto", reserved_bytes=0):
-    if profile != "auto":
-        serialize_openspool(payload, tag_type=tag_type, profile=profile, reserved_bytes=reserved_bytes)
-        return dict(tag_type=tag_type, profile=profile, reserved_bytes=reserved_bytes)
-    for candidate in ("full", "essential"):
-        try:
-            serialize_openspool(payload, tag_type=tag_type, profile=candidate, reserved_bytes=reserved_bytes)
-            return dict(tag_type=tag_type, profile=candidate, reserved_bytes=reserved_bytes)
-        except NfcCapacityError:
-            pass
-    raise NfcCapacityError("Même les données essentielles ne tiennent pas : utilisez un NTAG216 ou réduisez la réserve après vérification du logiciel d’écriture.")
+    """``auto`` recommends the essential profile: it carries everything a reader
+    uses (material, colours, temperatures, diameter, density) and fits NTAG215.
+    The full profile (descriptions, brand metadata, logo URL) is an explicit choice."""
+    chosen = "essential" if profile == "auto" else profile
+    try:
+        serialize_openspool(payload, tag_type=tag_type, profile=chosen, reserved_bytes=reserved_bytes)
+    except NfcCapacityError:
+        if chosen == "essential":
+            raise NfcCapacityError("Même les données essentielles ne tiennent pas : utilisez un NTAG216 ou réduisez la réserve après vérification du logiciel d’écriture.")
+        raise
+    return dict(tag_type=tag_type, profile=chosen, reserved_bytes=reserved_bytes)
 
 
 def export_settings(path):

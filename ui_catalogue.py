@@ -374,8 +374,8 @@ class CatalogueUx:
             if payload is None:return
             options=self._nfc_options();text=core.serialize_openspool(payload,**options)
             size=core.nfc_size(text,tag_type=options['tag_type'],reserved_bytes=options['reserved_bytes'])
-            self.nfc_note.setText('Tous les détails tiennent sur votre étiquette.' if options['profile']=='full' else
-                'Format essentiel choisi : paramètres et couleurs conservés ; descriptions et logos exclus du tag. La fiche complète reste dans la base.')
+            self.nfc_note.setText('Format complet : descriptifs et logo ajoutés au tag ; plus volumineux, sans effet sur l’impression.' if options['profile']=='full' else
+                'Format essentiel : matière, couleurs, températures, diamètre et densité — tout ce que l’imprimante lit. La fiche complète reste dans la base.')
             self.nfc_capacity.setText(f'Compatible avec votre {options["tag_type"]} · marge {size.remaining_bytes} octets. '
                 'Le logiciel d’écriture peut ajouter des données : contrôlez sa taille finale avant écriture.')
         except (ValueError,OSError) as exc:
