@@ -55,6 +55,66 @@ qui contenait le plantage des accès rapides) :
 Livraison locale, hors Git : `dist/test-audit-v0.3.0/` (archive, empreinte,
 journaux des deux suites, journal de compilation, captures).
 
+## Seconde revue sur données réelles (1er novembre 2026)
+
+Point de départ : retours de l'utilisateur sur l'application installée
+(`df2ff78`) avec sa base réelle (24 649 références). Dernier commit validé :
+`66fd347` ; binaire de test régénéré depuis ce commit.
+
+### Diagnostic sur la base réelle (copie, hors du dossier utilisateur)
+
+| Constat | Cause | Correctif |
+|---|---|---|
+| Synchro « partielle », `Polymaker officiel : 'Fiberon PPS-CF10'` | Référence historique orpheline (produit absent) rencontrée par la fusion | La fusion crée le produit manquant ; synchro Polymaker rejouée sur la copie : succès en 5 s, 20 HEX corrigés |
+| OFD et SpoolmanDB « timed out » (300 s / 90 s) | Réseau : 2 Mo en plus de 120 s depuis la liaison testée (`curl`), la fusion elle-même prend 1,3 s | Délais 900 s / 300 s ; 429/503 réessayés après `Retry-After` puis « source saturée » |
+| Trois « Polymaker PETG Teal » de teintes différentes | Les 24 649 fiches n'avaient aucune provenance (base créée par un ancien build qui embarquait le catalogue) : toutes « protégées », aucune source fabricant ne pouvait les corriger | Provenance explicite (`Utilisateur` rang 1000 jamais remplacé ; champ sans provenance corrigeable par un fabricant) ; après synchro Polymaker : PB01010/PB05009/PM70130 alignés sur `74CABF` (fabricant), PB01023 absent du catalogue grossiste reste `0091A5` et la ligne regroupée affiche la teinte de meilleure provenance avec un avertissement |
+| « PolyLite », « Panchroma », « Fiberon »… listés comme fabricants | Dossiers de lignes de produits dans OFD | Rattachement au fabricant (174 → 165 marques), ligne conservée sur le produit |
+| 58 libellés de matière (`EASYASA`, `ABS+MATTE`, `HTPLA+`…) | Libellés source hétérogènes | 33 familles pour le filtre ; valeur source et export inchangés |
+| Doublons de conditionnements | Une ligne par référence | Une ligne par filament (24 649 → 15 492), conditionnements dans la fiche |
+
+### Commits
+
+| Commit | Contenu |
+|---|---|
+| `d0178cc` | Données : provenance explicite, orphelins, 429, lignes de produits, familles, regroupement, délais |
+| `84d4866` | Imprimantes et lecteurs en données (`data/printers.json`, 16 entrées, groupes natif / lecteur externe / propriétaire / sans lecteur, firmwares) |
+| `a75d35b` | Interface : barre latérale de facettes, fiche regroupée, « Mon matériel », rapport de synchronisation |
+| `17469b4`, `5abf6a8` | CHANGELOG et documentation (README, PRIVACY, DATA_*, ROADMAP, TRADEMARKS, UX, wiki dont `Printers-and-Readers.md`) |
+| `5f6206a` | Logos : 55 fonds rendus transparents, outil d'import, test de transparence, manifeste prioritaire |
+| `dde78fb`, `7fb380a`, `3f77d0d`, `9dfcaf7` | Instantané OFD aligné, liste des imprimantes rechargée après résolution des chemins, appel obsolète au chargement des réglages (trouvé par la relecture documentaire) |
+| `ce4d854` | 58 logos officiels actuels importés avec provenance (Polymaker 2025, Bambu Lab, Prusament, Creality, eSUN, Elegoo…) ; 8 introuvables, 10 non retenus à la revue |
+| `66fd347` | Barre latérale synchronisée avec le filtre courant |
+
+### Contrôles exécutés
+
+| Contrôle | Résultat |
+|---|---|
+| Tests (Qt hors écran) | Python 3.10.20 : 164 OK ; Python 3.12.13 : 164 OK |
+| Fusion de l'instantané OFD dans la base réelle | 0,4 s ; 22 838 fiches reçoivent une provenance ; 0 HEX modifié par la source communautaire (elle ne remplace jamais une valeur existante) |
+| Worker Polymaker officiel sur la copie de la base réelle (réseau) | code 0, 5 s, 1 085 références examinées, 14 valeurs locales conservées, 20 HEX corrigés |
+| PyInstaller 6.22.3, macOS ARM64 (`66fd347`) | compilation OK ; sondes TLS et catalogue gelées OK (147 logos vérifiés par empreinte) ; archive conforme ; `codesign --verify` après extraction OK |
+| Application compilée lancée hors écran avec une copie de la base réelle | vivante après 12 s, lecture des 24 649 références et de `printers.json` |
+| Captures hors écran | clair, sombre, Bambu (export masqué), Mon matériel, rapport de synchronisation, sources |
+
+SHA-256 de `SpoolScribe-macos.zip` (`66fd347`) :
+
+```text
+7ec9110320d0fa5962071d7b84be4cad188e1306b69c7616b3b9f52626a17c9c
+```
+
+### Logos
+
+147 entrées de manifeste (115 PNG, 21 SVG revus, dont 58 logos officiels
+récupérés le 1er novembre sur les sites des fabricants ; provenance dans le
+manifeste et `.github/brand-logo-sources.json`). Fond transparent vérifié par
+test ; 3 logos pleins (Patron, RS PRO, SOVB 3D) marqués comme tels ;
+Professional LAB retiré (nom affiché). Introuvables (anti-bot ou TLS) :
+Hatchbox, Inland, AmazonBasics, Smartfil, Voxelab, Renkforce, Fiberthree ;
+Kimya a cessé son activité. Non retenus : logos blancs seuls (MatterHackers,
+Phrozen, Push Plastic, AzureFilm, IEMAI), trop petits (3D Power, nobufil),
+Artillery et GIANTARM (visuels inexploitables), SUNLU et ROSA3D (existants
+conservés).
+
 ## Non exécuté, à faire avant une publication
 
 - GitHub Actions sur ces commits (quatre configurations de tests, trois builds).
@@ -69,6 +129,12 @@ journaux des deux suites, journal de compilation, captures).
 - Décision de passer les scripts hérités (`scrape_*`, `seed_*`,
   `sync_*_assets`) dans `scripts/legacy/` et de compresser
   `data/catalogue_ofd.json` : non faits, sans impact fonctionnel.
+- Collecte réseau complète (OFD + SpoolmanDB) avec le binaire final : non
+  rejouée ici, la liaison testée étant trop lente ; la base réelle de
+  l'utilisateur sera resynchronisée à son prochain lancement (quotidien) ou
+  par « Synchroniser », et le rapport en rendra compte.
+- Le tableau des imprimantes reprend une recherche documentaire du
+  31 octobre ; ses points « non confirmés » sont listés dans `data/printers.json`.
 
 Aucun commit n'a été poussé ; aucune donnée personnelle ni application installée
 n'a été modifiée.
