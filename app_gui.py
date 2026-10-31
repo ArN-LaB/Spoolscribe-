@@ -1249,6 +1249,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self._page = index // self._page_size if index is not None else 0
         self._show_page()
         self._header_indicators()
+        self._sync_sidebar_selection()
         self._schedule_ui_preferences()
 
     def _show_page(self):
