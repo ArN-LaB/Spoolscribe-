@@ -103,6 +103,10 @@ NFC:
 - Full-profile payloads no longer write `null` brand metadata or logo keys.
   45 of the 1,008 historical exports differ only by those omitted keys (the
   fixture keeps the v0.2.2 digest and the verification note).
+- Saved NFC default: changing the tag, profile or reserve no longer rewrites
+  the default; **Définir par défaut** (next to the tag selector) stores it and
+  shows **Par défaut ✓** when the current choice is the default. The CLI reads
+  the same default and stores one with `--save-nfc-default`.
 - CLI: `--nfc-profile auto` (default), case-insensitive `--brand`/`--material`
   and reference lookup, strict argument parsing, empty-database hint for
   `--list` on first launch instead of a misleading restore message.

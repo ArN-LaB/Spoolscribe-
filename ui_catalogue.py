@@ -293,6 +293,7 @@ class CatalogueUx:
                     combo.blockSignals(True);combo.setCurrentIndex(max(0,combo.findData(cfg[key])));combo.blockSignals(False)
                 self.tag_choice.blockSignals(True);self.tag_choice.setCurrentIndex(max(0,self.tag_choice.findData(cfg['nfc_tag_type'])));self.tag_choice.blockSignals(False)
                 self.nfc_reserve.blockSignals(True);self.nfc_reserve.setMaximum(core.NFC_CAPACITIES[cfg['nfc_tag_type']]);self.nfc_reserve.setValue(cfg['nfc_reserved_bytes']);self.nfc_reserve.blockSignals(False)
+                self._refresh_nfc_default_btn()
                 self.extra_fields.setChecked(bool(cfg.get('show_extra_fields')))
                 self._printer_changed()
                 self._fill_quick_brands()
@@ -370,7 +371,8 @@ class CatalogueUx:
         layout.addWidget(self.extra_fields)
         row=QHBoxLayout();self.tag_label=QLabel('Étiquette achetée');row.addWidget(self.tag_label)
         self.tag_choice=QComboBox();self.tag_choice.addItem('NTAG216 — recommandé','NTAG216');self.tag_choice.addItem('NTAG215 — petit format','NTAG215')
-        self.tag_choice.setCurrentIndex(max(0,self.tag_choice.findData(cfg.get('nfc_tag_type','NTAG216'))));row.addWidget(self.tag_choice,1)
+        self.tag_choice.setCurrentIndex(max(0,self.tag_choice.findData(core.nfc_defaults(cfg)['tag_type'])));row.addWidget(self.tag_choice,1)
+        self.nfc_default_btn=QToolButton();self.nfc_default_btn.setAccessibleName('Définir ce choix d’étiquette par défaut');row.addWidget(self.nfc_default_btn)
         self.advanced_toggle=QToolButton();self.advanced_toggle.setText('Réglages avancés');self.advanced_toggle.setCheckable(True);row.addWidget(self.advanced_toggle);layout.addLayout(row)
 
     def _wire_export_assistant(self):
@@ -378,7 +380,36 @@ class CatalogueUx:
         self.tag_choice.currentIndexChanged.connect(lambda: self.tag_type.setCurrentIndex(self.tag_type.findData(self.tag_choice.currentData())))
         self.tag_type.currentIndexChanged.connect(lambda: self.tag_choice.setCurrentIndex(self.tag_choice.findData(self.tag_type.currentData())))
         self.printer.currentIndexChanged.connect(self._printer_changed)
+        self.nfc_default_btn.clicked.connect(self._save_nfc_default)
         self._printer_changed()
+        self._refresh_nfc_default_btn()
+
+    def _current_nfc_choice(self):
+        return dict(tag_type=self.tag_type.currentData(),profile=self.nfc_profile.currentData(),reserved_bytes=self.nfc_reserve.value())
+
+    @staticmethod
+    def _describe_nfc(choice):
+        labels={'auto':'essentiel recommandé','essential':'essentiel','full':'complet'}
+        text=f"{choice['tag_type']} · {labels[choice['profile']]}"
+        return text+(f" · réserve {choice['reserved_bytes']} o" if choice['reserved_bytes'] else '')
+
+    def _refresh_nfc_default_btn(self):
+        if not hasattr(self,'nfc_default_btn') or not hasattr(self,'nfc_reserve'):return
+        current,saved=self._current_nfc_choice(),core.nfc_defaults()
+        is_default=current==saved
+        self.nfc_default_btn.setText('Par défaut ✓' if is_default else 'Définir par défaut')
+        self.nfc_default_btn.setEnabled(not is_default)
+        self.nfc_default_btn.setToolTip(f'Choix par défaut : {self._describe_nfc(saved)}' if is_default else
+            f'Enregistrer {self._describe_nfc(current)} pour les prochains exports et lancements.\n'
+            f'Défaut actuel : {self._describe_nfc(saved)}. Sans enregistrement, ce choix ne vaut que pour cette session.')
+
+    def _save_nfc_default(self):
+        try:
+            saved=core.save_nfc_defaults(**self._current_nfc_choice())
+        except (OSError,ValueError) as exc:
+            self.status.showMessage(f'Choix par défaut non enregistré : {exc}',8000);return
+        self.status.showMessage(f'Choix NFC par défaut : {self._describe_nfc(saved)}.',6000)
+        self._refresh_nfc_default_btn()
 
     def _printer_changed(self):
         cfg=core.load_config();cfg['printer_profile']=self.printer.currentData()
@@ -425,7 +456,7 @@ class CatalogueUx:
         can=self._can_export_for_printer()
         self.printer_help.setText(PROFILES[self.printer.currentData()]['help'] + ('\n* Requis pour identifier le filament. SpoolScribe valide aussi les températures, le diamètre et la densité avant export.' if self.printer.currentData()=='u1' else ''))
         # Without an OpenSpool export, the tag controls are hidden, not merely greyed.
-        for widget in (self.tag_label,self.tag_choice,self.advanced_toggle):widget.setVisible(can)
+        for widget in (self.tag_label,self.tag_choice,self.nfc_default_btn,self.advanced_toggle):widget.setVisible(can)
         self.nfc_advanced.setVisible(can and self.advanced_toggle.isChecked())
         self.btn_generate.setEnabled(can and bool(self.current_sku) and not (self.worker and self.worker.isRunning()))
         if hasattr(self,'btn_inspect'):self.btn_inspect.setEnabled(can and bool(self.current_sku))

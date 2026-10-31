@@ -854,12 +854,13 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.tag_type = QComboBox()
         for tag, capacity in core.NFC_CAPACITIES.items():
             self.tag_type.addItem(f"{tag} · {capacity} octets", tag)
-        self.tag_type.setCurrentIndex(max(0, self.tag_type.findData(cfg.get("nfc_tag_type", "NTAG216"))))
+        defaults = core.nfc_defaults(cfg)
+        self.tag_type.setCurrentIndex(max(0, self.tag_type.findData(defaults["tag_type"])))
         self.nfc_profile = QComboBox()
         self.nfc_profile.addItem("Recommandé — essentiel (tout ce que l'imprimante lit)", "auto")
         self.nfc_profile.addItem("Essentiel", "essential")
         self.nfc_profile.addItem("Complet (descriptifs, logo ; plus volumineux)", "full")
-        self.nfc_profile.setCurrentIndex(max(0, self.nfc_profile.findData(cfg.get("nfc_profile", "auto"))))
+        self.nfc_profile.setCurrentIndex(max(0, self.nfc_profile.findData(defaults["profile"])))
         nfc_row.addWidget(self.tag_type)
         nfc_row.addWidget(self.nfc_profile, 1)
         advanced_layout.addLayout(nfc_row)
@@ -868,7 +869,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.nfc_reserve = QSpinBox()
         self.nfc_reserve.setRange(0, core.NFC_CAPACITIES[self.tag_type.currentData()])
         self.nfc_reserve.setSuffix(" octets")
-        self.nfc_reserve.setValue(int(cfg.get("nfc_reserved_bytes", 0)))
+        self.nfc_reserve.setValue(defaults["reserved_bytes"])
         self.nfc_reserve.setToolTip("Espace réservé à d'autres enregistrements NDEF ou données du logiciel d'écriture. "
                                    "À vérifier dans ce logiciel ; zéro ne prédit pas ses ajouts.")
         reserve_row.addWidget(self.nfc_reserve)
@@ -1420,13 +1421,9 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.nfc_reserve.blockSignals(True)
         self.nfc_reserve.setMaximum(core.NFC_CAPACITIES[self.tag_type.currentData()])
         self.nfc_reserve.blockSignals(False)
-        cfg = core.load_config()
-        cfg.update(nfc_tag_type=self.tag_type.currentData(), nfc_profile=self.nfc_profile.currentData(),
-                   nfc_reserved_bytes=self.nfc_reserve.value())
-        try:
-            core.save_config(cfg)
-        except OSError as exc:
-            self.status.showMessage(f"Préférence NFC non enregistrée : {exc}", 8000)
+        # Ce choix vaut pour les exports en cours ; le défaut ne change qu'avec
+        # « Définir par défaut ».
+        self._refresh_nfc_default_btn()
         self._refresh_nfc_capacity()
         if self.inspector.isVisible():
             self._refresh_inspector()

@@ -1168,6 +1168,35 @@ def recommended_nfc(payload, tag_type="NTAG216", profile="auto", reserved_bytes=
     return dict(tag_type=tag_type, profile=chosen, reserved_bytes=reserved_bytes)
 
 
+NFC_PROFILES = ("auto", "essential", "full")
+
+
+def nfc_defaults(cfg: Optional[dict] = None) -> dict:
+    """Saved default tag/profile/reserve; invalid stored values fall back safely."""
+    cfg = cfg if cfg is not None else load_config()
+    tag = cfg.get("nfc_tag_type") if cfg.get("nfc_tag_type") in NFC_CAPACITIES else DEFAULT_CONFIG["nfc_tag_type"]
+    profile = cfg.get("nfc_profile") if cfg.get("nfc_profile") in NFC_PROFILES else DEFAULT_CONFIG["nfc_profile"]
+    reserve = cfg.get("nfc_reserved_bytes")
+    if type(reserve) is not int or not 0 <= reserve <= NFC_CAPACITIES[tag]:
+        reserve = 0
+    return dict(tag_type=tag, profile=profile, reserved_bytes=reserve)
+
+
+def save_nfc_defaults(tag_type: str, profile: str, reserved_bytes: int) -> dict:
+    """Explicitly store the tag choice used for new exports (GUI button, CLI flag).
+
+    Changing the tag for one export no longer changes this default.
+    """
+    if tag_type not in NFC_CAPACITIES or profile not in NFC_PROFILES:
+        raise ValueError("Étiquette ou profil NFC invalide.")
+    if type(reserved_bytes) is not int or not 0 <= reserved_bytes <= NFC_CAPACITIES[tag_type]:
+        raise ValueError("Réserve NFC invalide pour cette étiquette.")
+    cfg = load_config()
+    cfg.update(nfc_tag_type=tag_type, nfc_profile=profile, nfc_reserved_bytes=reserved_bytes)
+    save_config(cfg)
+    return nfc_defaults(cfg)
+
+
 def export_settings(path):
     # Consent is machine-local authorization, not transferable via a settings file.
     cfg = load_config()
@@ -1191,7 +1220,7 @@ def import_settings(path):
     for key, value in incoming.items():
         if key in allowed and key not in ('network_consent', 'network_sources_revision', 'last_update'):
             cfg[key] = value
-    if cfg['printer_profile'] not in printer_profiles.PROFILES or cfg['nfc_tag_type'] not in NFC_CAPACITIES or cfg['nfc_profile'] not in ('auto','full','essential'):
+    if cfg['printer_profile'] not in printer_profiles.PROFILES or cfg['nfc_tag_type'] not in NFC_CAPACITIES or cfg['nfc_profile'] not in NFC_PROFILES:
         raise ValueError('Choix imprimante/NFC invalide')
     if type(cfg['nfc_reserved_bytes']) is not int or not 0 <= cfg['nfc_reserved_bytes'] <= NFC_CAPACITIES[cfg['nfc_tag_type']]:
         raise ValueError('Réserve NFC invalide')

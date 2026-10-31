@@ -76,7 +76,8 @@ removes their provenance and makes them yours. Historical entries without
 | `update_interval_days` | Launch refresh cadence: `0` every launch, `1` daily (default), `7` weekly, `-1` manual only |
 | `last_update_attempt`, `last_update_status` | Date and status (`complete` / `partial` / `failed`) of the last attempt, successful or not |
 | `last_update` | Legacy date kept for older settings |
-| `printer_profile`, `nfc_tag_type`, `nfc_profile` (`auto` / `essential` / `full`), `nfc_reserved_bytes`, `orca_overrides`, `show_extra_fields` | Export assistant |
+| `nfc_tag_type`, `nfc_profile` (`auto` / `essential` / `full`), `nfc_reserved_bytes` | Saved NFC default, written only by **Définir par défaut** or `--save-nfc-default`; invalid values fall back to NTAG216 / `auto` / 0 |
+| `printer_profile`, `orca_overrides`, `show_extra_fields` | Export assistant |
 | `ui` | Filters, sorting, columns, geometry, splitter, view |
 | `recent_brands` | Quick-access manufacturers |
 | `auto_update` | Legacy flag, accepted but unused; the cadence applies |

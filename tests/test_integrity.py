@@ -112,6 +112,19 @@ class PlausibilityTests(unittest.TestCase):
         self.assertIsNone(values['bed_max_temp'])
 
 
+class NfcDefaultTests(unittest.TestCase):
+    def test_defaults_are_validated_and_invalid_stored_values_fall_back(self):
+        with tempfile.TemporaryDirectory() as directory, patch('core.CONFIG_PATH', str(Path(directory) / 'config.json')):
+            self.assertEqual(core.nfc_defaults(), dict(tag_type='NTAG216', profile='auto', reserved_bytes=0))
+            core.save_nfc_defaults('NTAG215', 'full', 40)
+            self.assertEqual(core.nfc_defaults(), dict(tag_type='NTAG215', profile='full', reserved_bytes=40))
+            for bad in (('NTAG213', 'auto', 0), ('NTAG215', 'tiny', 0), ('NTAG215', 'auto', 600), ('NTAG215', 'auto', '8')):
+                with self.assertRaises(ValueError):
+                    core.save_nfc_defaults(*bad)
+            self.assertEqual(core.nfc_defaults({'nfc_tag_type': 'X', 'nfc_profile': None, 'nfc_reserved_bytes': -3}),
+                             dict(tag_type='NTAG216', profile='auto', reserved_bytes=0))
+
+
 class WorkerPathTests(unittest.TestCase):
     def test_workers_never_default_to_the_repository_fixture(self):
         with patch.dict(os.environ, {'SPOOLSCRIBE_DATA_HOME': '/tmp/spoolscribe-audit'}):

@@ -129,6 +129,24 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(chips[0], "Polymaker")
         self.assertEqual(len(chips), len(set(chips)))
 
+    def test_tag_choice_is_per_session_until_saved_as_default(self):
+        w = self.window
+        self.assertEqual(w.nfc_default_btn.text(), "Par défaut ✓")
+        self.assertFalse(w.nfc_default_btn.isEnabled())
+        before = Path(core.CONFIG_PATH).read_bytes() if Path(core.CONFIG_PATH).exists() else None
+        w.tag_choice.setCurrentIndex(w.tag_choice.findData("NTAG215"))
+        self.assertEqual(w.tag_type.currentData(), "NTAG215")
+        self.assertTrue(w.nfc_default_btn.isEnabled())
+        self.assertEqual(core.nfc_defaults()["tag_type"], "NTAG216")
+        self.assertEqual(Path(core.CONFIG_PATH).read_bytes() if Path(core.CONFIG_PATH).exists() else None, before)
+        w.nfc_default_btn.click()
+        self.assertEqual(core.nfc_defaults(), dict(tag_type="NTAG215", profile="auto", reserved_bytes=0))
+        self.assertEqual(w.nfc_default_btn.text(), "Par défaut ✓")
+        other = app_gui.MainWindow()
+        self.addCleanup(other.close)
+        self.assertEqual(other.tag_choice.currentData(), "NTAG215")
+        self.assertEqual(other.tag_type.currentData(), "NTAG215")
+
     def test_ntag215_essential_inspector_and_export_are_identical(self):
         self.window.current_sku = "PB05001"
         self.window._show_detail("PB05001")

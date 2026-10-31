@@ -139,6 +139,11 @@ choice under *Réglages avancés* (advanced settings) or with `--nfc-profile ful
 metadata is omitted, never written as `null`. Nothing is silently truncated; oversized
 exports are refused before writing.
 
+The tag, profile and reserve you pick apply to the current session. Click
+**Définir par défaut** (set as default) next to the tag selector to keep them for later
+exports and launches; the CLI uses the same saved default and stores a new one with
+`--save-nfc-default` (for example `--tag-type NTAG215 --save-nfc-default`).
+
 A byte reserve accounts for records your writer may add. SpoolScribe never programs tags
 or modifies their Capability Container; unknown colours require an explicit representative
 HEX. See [the NFC guide](docs/wiki/Writing-RFID-Tags.md).

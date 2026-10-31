@@ -230,10 +230,14 @@ def main():
     parser.add_argument("--compact", action="store_true", help="Mode compact")
     parser.add_argument("--export-format", choices=("nfc", "archive"), default="nfc",
                         help="NFC compact (défaut) ou archive JSON lisible, mêmes champs")
-    parser.add_argument("--tag-type", choices=tuple(core.NFC_CAPACITIES), default="NTAG216")
-    parser.add_argument("--nfc-profile", choices=("auto", "essential", "full"), default="auto",
-                        help="auto (défaut) = essentiel : tout ce que l'imprimante lit ; full ajoute descriptifs et logo")
-    parser.add_argument("--reserve-bytes", type=int, default=0, help="Réserve pour les ajouts du logiciel d'écriture")
+    parser.add_argument("--tag-type", choices=tuple(core.NFC_CAPACITIES),
+                        help="Étiquette ; par défaut, celle enregistrée (NTAG216 à l'origine)")
+    parser.add_argument("--nfc-profile", choices=core.NFC_PROFILES,
+                        help="auto = essentiel : tout ce que l'imprimante lit ; full ajoute descriptifs et logo. "
+                             "Par défaut, le profil enregistré (auto à l'origine)")
+    parser.add_argument("--reserve-bytes", type=int, help="Réserve pour les ajouts du logiciel d'écriture (défaut enregistré)")
+    parser.add_argument("--save-nfc-default", action="store_true",
+                        help="Enregistrer --tag-type/--nfc-profile/--reserve-bytes comme choix par défaut (GUI et CLI), puis quitter")
     parser.add_argument("--sources", nargs="+", choices=tuple(core.SOURCE_GROUPS), help="Sources à conserver pour les prochaines mises à jour")
     parser.add_argument("--list", action="store_true", help="Lister le catalogue filtré hors ligne, puis quitter")
     parser.add_argument("--search", default="")
@@ -256,8 +260,19 @@ def main():
             cfg["network_sources_revision"] = 0
         cfg["selected_sources"] = list(dict.fromkeys(args.sources))
         core.save_config(cfg)
+    saved_nfc = core.nfc_defaults()
+    args.tag_type = args.tag_type or saved_nfc["tag_type"]
+    args.nfc_profile = args.nfc_profile or saved_nfc["profile"]
+    if args.reserve_bytes is None:
+        # A saved reserve larger than a smaller tag chosen for this run is capped.
+        args.reserve_bytes = min(saved_nfc["reserved_bytes"], core.NFC_CAPACITIES[args.tag_type])
     if args.limit < 1 or not 0 <= args.reserve_bytes <= core.NFC_CAPACITIES[args.tag_type]:
         parser.error("Limite de résultats ou réserve NFC invalide.")
+    if args.save_nfc_default:
+        saved_nfc = core.save_nfc_defaults(args.tag_type, args.nfc_profile, args.reserve_bytes)
+        print(f"Choix NFC par défaut enregistré : {saved_nfc['tag_type']}, profil {saved_nfc['profile']}, "
+              f"réserve {saved_nfc['reserved_bytes']} octets.")
+        return 0
     filters = dict(text=args.search, brand=args.brand, material=args.material, quality=args.quality,
                    sort1=args.sort1, sort2=args.sort2, descending1=args.descending1, descending2=args.descending2)
     nfc_options = dict(tag_type=args.tag_type, profile=args.nfc_profile, reserved_bytes=args.reserve_bytes)

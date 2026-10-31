@@ -62,6 +62,19 @@ class CliTests(unittest.TestCase):
         self.assertNotIn("brand_meta", json.loads(target.read_text()))
         self.assertTrue(core.nfc_size(target.read_text(), tag_type="NTAG215", reserved_bytes=32).fits)
 
+    def test_saved_nfc_default_is_used_until_overridden(self):
+        before = self.db.read_bytes()
+        code, output = self.run_cli([], ["--tag-type", "NTAG215", "--reserve-bytes", "16", "--save-nfc-default"])
+        self.assertEqual(code, 0)
+        self.assertIn("NTAG215", output)
+        self.assertEqual(self.db.read_bytes(), before)  # configuration only, no database or export
+        self.assertEqual(core.nfc_defaults(), dict(tag_type="NTAG215", profile="auto", reserved_bytes=16))
+        self.run_cli(["PB05001", "o", "q"])
+        self.assertTrue(list((self.root / "output").glob("*ntag215_essential.json")))
+        self.run_cli(["PB05001", "o", "q"], ["--tag-type", "NTAG216"])
+        self.assertTrue(list((self.root / "output").glob("*ntag216_essential.json")))
+        self.assertEqual(core.nfc_defaults()["tag_type"], "NTAG215")  # an override is not a new default
+
     def test_filtered_list_exits_without_network_or_writes(self):
         before = self.db.read_bytes()
         with patch("convert_profile.check_and_update_db", side_effect=AssertionError("List must stay offline")):

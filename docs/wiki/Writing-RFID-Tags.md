@@ -84,7 +84,9 @@ diameter/density as positive numbers, HEX as six uppercase characters.
 ## Writing and diagnosis
 
 1. Choose the printer/reader, the tag (NTAG215 or NTAG216), optionally the
-   profile and the writer reserve under **Réglages avancés**.
+   profile and the writer reserve under **Réglages avancés**. These choices
+   apply to the current session; **Définir par défaut** next to the tag selector
+   keeps them for later launches (CLI: `--save-nfc-default`).
 2. Export the NFC file and check its size estimate in the card.
 3. Import it into your writer and select MIME `application/json`.
 4. Program the tag and read it back.
