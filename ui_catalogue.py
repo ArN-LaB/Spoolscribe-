@@ -1,9 +1,7 @@
 """Catalogue interaction, persistent workspace settings and guided exports."""
-import json
-from pathlib import Path
-from PySide6.QtCore import Qt, QByteArray, QThread, Signal, QUrl
-from PySide6.QtGui import QAction, QDesktopServices, QPixmap, QPainter, QColor, QImage
-from PySide6.QtWidgets import (QTableWidget, QAbstractItemView, QCompleter, QMenu, QDialog, QVBoxLayout,
+from PySide6.QtCore import Qt, QByteArray, QThread, Signal, QUrl, QTimer
+from PySide6.QtGui import QDesktopServices, QPixmap, QPainter, QColor, QImage, QKeySequence, QShortcut
+from PySide6.QtWidgets import (QTableWidget, QListWidget, QCompleter, QMenu, QDialog, QVBoxLayout,
     QHBoxLayout, QLabel, QPushButton, QToolButton, QCheckBox, QDialogButtonBox, QComboBox,
     QFileDialog, QMessageBox, QPlainTextEdit)
 import core
@@ -23,6 +21,24 @@ class ClearableTable(QTableWidget):
         if event.key() == Qt.Key_Escape:
             self.clearSelection()
             self.setCurrentCell(-1, -1)
+            return
+        super().keyPressEvent(event)
+
+
+class ClearableList(QListWidget):
+    """Grille de cartes : reclic sur la carte sélectionnée ou Échap = désélection."""
+    def mousePressEvent(self, event):
+        item = self.itemAt(event.position().toPoint())
+        if event.button() == Qt.LeftButton and (item is None or item.isSelected()):
+            self.clearSelection()
+            self.setCurrentRow(-1)
+            return
+        super().mousePressEvent(event)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.clearSelection()
+            self.setCurrentRow(-1)
             return
         super().keyPressEvent(event)
 
@@ -58,13 +74,25 @@ class CatalogueUx:
         hh.setContextMenuPolicy(Qt.CustomContextMenu)
         hh.customContextMenuRequested.connect(self._header_menu)
         hh.setSectionsMovable(True)
-        hh.sectionResized.connect(lambda *_: self._save_ui_preferences())
-        hh.sectionMoved.connect(lambda *_: self._save_ui_preferences())
-        hh.setToolTip('Clic : croissant/décroissant. Clic droit : tri principal, secondaire et colonnes.')
+        self._prefs_timer = QTimer(self)
+        self._prefs_timer.setSingleShot(True)
+        self._prefs_timer.setInterval(700)
+        self._prefs_timer.timeout.connect(self._save_ui_preferences)
+        hh.sectionResized.connect(lambda *_: self._schedule_ui_preferences())
+        hh.sectionMoved.connect(lambda *_: self._schedule_ui_preferences())
+        hh.setToolTip('Clic : tri principal, second clic : inverser. Maj + clic ou clic droit : tri secondaire et colonnes.')
         self.columns_btn.clicked.connect(self._columns_menu)
-        self.splitter.splitterMoved.connect(lambda *_: self._save_ui_preferences())
-        self.btn_view_grid.clicked.connect(self._save_ui_preferences)
-        self.btn_view_list.clicked.connect(self._save_ui_preferences)
+        self.splitter.splitterMoved.connect(lambda *_: self._schedule_ui_preferences())
+        self.btn_view_grid.clicked.connect(self._schedule_ui_preferences)
+        self.btn_view_list.clicked.connect(self._schedule_ui_preferences)
+        # Raccourcis clavier : recherche, export, mise à jour, désélection.
+        QShortcut(QKeySequence.Find, self, activated=lambda: (self.search.setFocus(), self.search.selectAll()))
+        QShortcut(QKeySequence('Ctrl+E'), self, activated=lambda: self.btn_generate.click() if self.btn_generate.isEnabled() else None)
+        QShortcut(QKeySequence('Ctrl+U'), self, activated=lambda: self.update_btn.click() if self.update_btn.isEnabled() else None)
+        QShortcut(QKeySequence(Qt.Key_Escape), self, activated=self._clear_filament)
+        self.search.setToolTip('Ctrl+F : rechercher')
+        self.btn_generate.setToolTip('Ctrl+E : exporter pour NFC')
+        self.update_btn.setToolTip('Ctrl+U : choisir les sources et mettre à jour')
         menu = self.menu_btn.menu()
         menu.addSeparator()
         menu.addAction('Sources de la base…', self._choose_sources)
@@ -73,12 +101,25 @@ class CatalogueUx:
         menu.addAction('Vérifier une mise à jour de l’application…', self._check_app_update)
 
     def _brand_typed(self, text):
-        # The completion popup handles partial names; never add arbitrary brands.
-        matches = [i for i in range(self.brand_filter.count()) if text.casefold() in self.brand_filter.itemText(i).casefold()]
-        if len(matches) == 1:
-            self.brand_filter.setCurrentIndex(matches[0])
-        elif not text:
-            self.brand_filter.setCurrentIndex(0)
+        # The completion popup proposes partial names; the field is never rewritten
+        # while typing. An exact name (any case) or an emptied field applies at once.
+        typed = text.casefold().strip()
+        names = [self.brand_filter.itemText(i).casefold() for i in range(self.brand_filter.count())]
+        exact = next((i for i, name in enumerate(names) if typed == name), None)
+        partial = [i for i, name in enumerate(names) if i and typed and typed in name]
+        if exact is not None:
+            if exact != self.brand_filter.currentIndex():
+                self.brand_filter.setCurrentIndex(exact)
+                self._remember_brand()
+        elif not typed:
+            if self.brand_filter.currentIndex() != 0:
+                self.brand_filter.setCurrentIndex(0)
+        elif len(partial) == 1 and partial[0] != self.brand_filter.currentIndex():
+            # One candidate: filter on it now, but keep the user's own text so
+            # typing and erasing are never fought by the field.
+            self.brand_filter.setCurrentIndex(partial[0])
+            edit = self.brand_filter.lineEdit()
+            edit.blockSignals(True); edit.setText(text); edit.blockSignals(False)
 
     def _fill_quick_brands(self):
         while self.quick_brands.count() > 1:
@@ -87,7 +128,9 @@ class CatalogueUx:
         names = list(dict.fromkeys(['Polymaker'] + core.load_config().get('recent_brands', []) + ['Bambu Lab', 'Prusament', 'SUNLU']))[:5]
         for name in names:
             button = QPushButton(name)
-            button.setFlat(True)
+            button.setObjectName('chip')
+            button.setCursor(Qt.PointingHandCursor)
+            button.setToolTip(f'Afficher les filaments {name}')
             button.clicked.connect(lambda checked=False, n=name: self._choose_brand(n))
             self.quick_brands.addWidget(button)
         self.quick_brands.addStretch()
@@ -120,7 +163,9 @@ class CatalogueUx:
         else:
             direction.blockSignals(True); direction.setCurrentIndex(0); direction.blockSignals(False)
             combo.setCurrentIndex(combo.findData(key))
-        if self.sort1.currentData() == self.sort2.currentData():
+        # A secondary key identical to the primary one is meaningless; any other
+        # secondary key is kept when the primary changes.
+        if self.sort2.currentData() and self.sort1.currentData() == self.sort2.currentData():
             self.sort2.setCurrentIndex(0)
         self._header_indicators()
         self._save_ui_preferences()
@@ -175,8 +220,14 @@ class CatalogueUx:
         except OSError as exc:
             self.status.showMessage(f'Réglages non enregistrés : {exc}', 10000)
 
+    def _schedule_ui_preferences(self, *_):
+        """Group bursts (typing, dragging) into one write a little later."""
+        if getattr(self, '_restoring_ui', True) or not hasattr(self, '_all_rows'): return
+        self._prefs_timer.start()
+
     def _save_ui_preferences(self, *_):
         if getattr(self, '_restoring_ui', True) or not hasattr(self, '_all_rows'): return
+        if hasattr(self, '_prefs_timer'): self._prefs_timer.stop()
         cfg = core.load_config()
         cfg['ui'] = dict(brand=self.brand_filter.currentData() or '', material=self.material_filter.currentData() or '',
             quality=self.quality_filter.currentData(), search=self.search.text(), sort1=self.sort1.currentData(), sort2=self.sort2.currentData(),
@@ -187,7 +238,8 @@ class CatalogueUx:
 
     def _restore_ui_preferences(self):
         self._restoring_ui = True
-        state = core.load_config().get('ui', {})
+        state = core.load_config().get('ui')
+        if not isinstance(state, dict): state = {}
         for combo, key, default in ((self.brand_filter,'brand','Polymaker'),(self.material_filter,'material',''),
                 (self.quality_filter,'quality','all'),(self.sort1,'sort1','product'),(self.sort2,'sort2','color_name'),
                 (self.sort1_direction,'descending1',False),(self.sort2_direction,'descending2',False)):
@@ -234,7 +286,11 @@ class CatalogueUx:
                 cfg=core.load_config()
                 for combo,key in ((self.printer,'printer_profile'),(self.tag_type,'nfc_tag_type'),(self.nfc_profile,'nfc_profile')):
                     combo.blockSignals(True);combo.setCurrentIndex(max(0,combo.findData(cfg[key])));combo.blockSignals(False)
-                self.nfc_reserve.setValue(cfg['nfc_reserved_bytes'])
+                self.tag_choice.blockSignals(True);self.tag_choice.setCurrentIndex(max(0,self.tag_choice.findData(cfg['nfc_tag_type'])));self.tag_choice.blockSignals(False)
+                self.nfc_reserve.blockSignals(True);self.nfc_reserve.setMaximum(core.NFC_CAPACITIES[cfg['nfc_tag_type']]);self.nfc_reserve.setValue(cfg['nfc_reserved_bytes']);self.nfc_reserve.blockSignals(False)
+                self.extra_fields.setChecked(bool(cfg.get('show_extra_fields')))
+                self._printer_changed()
+                self._fill_quick_brands()
                 self._refresh_nfc_capacity()
             except (OSError,ValueError) as exc: QMessageBox.warning(self,'Réglages',str(exc))
 
@@ -242,7 +298,7 @@ class CatalogueUx:
         if not hasattr(self,'database_btn'):return
         status = self.db.get('_update_status')
         suffix = {'complete':'à jour pour les sources choisies','partial':'mise à jour partielle','failed':'mise à jour échouée'}.get(status,'à synchroniser')
-        self.database_btn.setText(f'Base : {len(self.db.get("_skus",{})):,} références · {suffix} ⓘ')
+        self.database_btn.setText(f'Base : {len(self.db.get("_skus",{})):,} références · {suffix} ⓘ'.replace(',', '\u202f'))
         self.database_btn.setToolTip('État des sources, dernière synchronisation et corrections conservées')
 
     def _database_details(self):
@@ -307,7 +363,7 @@ class CatalogueUx:
         self.extra_fields.setChecked(cfg.get('show_extra_fields',False))
         self.extra_fields.toggled.connect(self._toggle_extra_fields)
         layout.addWidget(self.extra_fields)
-        row=QHBoxLayout();row.addWidget(QLabel('Étiquette achetée'))
+        row=QHBoxLayout();self.tag_label=QLabel('Étiquette achetée');row.addWidget(self.tag_label)
         self.tag_choice=QComboBox();self.tag_choice.addItem('NTAG216 — recommandé','NTAG216');self.tag_choice.addItem('NTAG215 — petit format','NTAG215')
         self.tag_choice.setCurrentIndex(max(0,self.tag_choice.findData(cfg.get('nfc_tag_type','NTAG216'))));row.addWidget(self.tag_choice,1)
         self.advanced_toggle=QToolButton();self.advanced_toggle.setText('Réglages avancés');self.advanced_toggle.setCheckable(True);row.addWidget(self.advanced_toggle);layout.addLayout(row)
@@ -363,8 +419,11 @@ class CatalogueUx:
         if not hasattr(self,'printer'):return
         can=self._can_export_for_printer()
         self.printer_help.setText(PROFILES[self.printer.currentData()]['help'] + ('\n* Requis pour identifier le filament. SpoolScribe valide aussi les températures, le diamètre et la densité avant export.' if self.printer.currentData()=='u1' else ''))
-        self.tag_choice.setEnabled(can);self.advanced_toggle.setEnabled(can)
+        # Without an OpenSpool export, the tag controls are hidden, not merely greyed.
+        for widget in (self.tag_label,self.tag_choice,self.advanced_toggle):widget.setVisible(can)
+        self.nfc_advanced.setVisible(can and self.advanced_toggle.isChecked())
         self.btn_generate.setEnabled(can and bool(self.current_sku) and not (self.worker and self.worker.isRunning()))
+        if hasattr(self,'btn_inspect'):self.btn_inspect.setEnabled(can and bool(self.current_sku))
         if not can:
             self.nfc_note.setText('Consultez la fiche pour préparer votre profil de trancheur. Aucun tag propriétaire n’est généré.')
             self.nfc_capacity.setText('Export NFC indisponible pour ce système.');return
@@ -407,10 +466,15 @@ class CatalogueUx:
         for y in range(mask.height()):
             for x in range(mask.width()):
                 c=mask.pixelColor(x,y);ink.setAlpha(round(c.alpha()*0.4));mask.setPixelColor(x,y,ink)
-        result=QPixmap(pixmap.width()+4,pixmap.height()+4);result.fill(Qt.transparent)
+        # Compose in device pixels: the images and the result share the same
+        # device pixel ratio, so a Retina logo keeps its full size.
+        dpr=pixmap.devicePixelRatio() or 1.0
+        pad=max(1,round(2*dpr))
+        image.setDevicePixelRatio(1.0);mask.setDevicePixelRatio(1.0)
+        result=QPixmap(image.width()+2*pad,image.height()+2*pad);result.fill(Qt.transparent)
         painter=QPainter(result)
-        for dx,dy in ((0,2),(4,2),(2,0),(2,4)):painter.drawImage(dx,dy,mask)
-        painter.drawImage(2,2,image);painter.end();result.setDevicePixelRatio(pixmap.devicePixelRatio());return result
+        for dx,dy in ((0,pad),(2*pad,pad),(pad,0),(pad,2*pad)):painter.drawImage(dx,dy,mask)
+        painter.drawImage(pad,pad,image);painter.end();result.setDevicePixelRatio(dpr);return result
 
     def _check_app_update(self):
         if self._release_worker and self._release_worker.isRunning():return

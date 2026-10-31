@@ -589,8 +589,11 @@ def list_skus(db: dict) -> list[dict]:
             issues.append("Caractéristiques à vérifier (" + " ; ".join(suspect_physical) + ")")
         if not p.get("brand") or not p.get("type"):
             issues.append("Marque ou matière absente")
-        out.append({
+        row = {
             "sku": sku,
+            # Human-readable reference: the manufacturer article when known,
+            # otherwise the internal identifier (OFD-…/SMDB-… are not SKUs).
+            "reference": e.get("manufacturer_sku") or sku,
             "product": p.get("display_name") or e.get("product", ""),
             "color_name": e.get("color_name", ""),
             "hex": e.get("hex"),
@@ -603,20 +606,32 @@ def list_skus(db: dict) -> list[dict]:
             "quality": " ; ".join(issues) or "Export possible",
             "source_id": e.get("source_id", ""),
             "manufacturer_sku": e.get("manufacturer_sku", ""),
-        })
+        }
+        # Normalised once here, not for every keystroke and every row.
+        row["_search"] = _search_key(" ".join(str(row.get(k) or "") for k in
+                                              ("sku", "source_id", "manufacturer_sku", "brand", "material", "product", "color_name", "hex")))
+        out.append(row)
     return out
 
 
 CATALOGUE_SORT_FIELDS = {
-    "sku": "Référence", "brand": "Fabricant", "material": "Matière",
+    "reference": "Référence", "sku": "Réf. interne", "brand": "Fabricant", "material": "Matière",
     "product": "Produit", "color_name": "Couleur", "diameter": "Diamètre",
-    "weight": "Masse", "density": "Densité", "quality": "Qualité",
+    "weight": "Masse", "density": "Densité", "quality": "État des données",
 }
 
 
 def _search_key(value) -> str:
     return "".join(c for c in unicodedata.normalize("NFKD", str(value or "")).casefold()
                    if not unicodedata.combining(c))
+
+
+def _row_search(r: dict) -> str:
+    cached = r.get("_search")
+    if cached is None:
+        cached = r["_search"] = _search_key(" ".join(str(r.get(k) or "") for k in
+                                                   ("sku", "source_id", "manufacturer_sku", "brand", "material", "product", "color_name", "hex")))
+    return cached
 
 
 def query_catalogue(rows: list[dict], *, text: str = "", brand: str = "", material: str = "",
@@ -632,9 +647,7 @@ def query_catalogue(rows: list[dict], *, text: str = "", brand: str = "", materi
     result = [r for r in rows if (not brand_key or r["brand"].casefold() == brand_key)
               and (not material_key or r["material"].casefold() == material_key)
               and (quality == "all" or r["ready"] == (quality == "ready"))
-              and all(t in _search_key(" ".join(str(r.get(k) or "") for k in
-                      ("sku", "source_id", "manufacturer_sku", "brand", "material", "product", "color_name", "hex")))
-                      for t in terms)]
+              and all(t in _row_search(r) for t in terms)]
     result.sort(key=lambda r: _search_key(r["sku"]))
     for key, reverse in ((sort2, descending2), (sort1, descending1)):
         if not key:

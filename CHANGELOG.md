@@ -107,6 +107,31 @@ NFC:
   and reference lookup, strict argument parsing, empty-database hint for
   `--list` on first launch instead of a misleading restore message.
 
+Interface:
+- Unchecked boxes are visible again (styled indicator with a check mark),
+  disabled fields look disabled, quick-access manufacturers are chips, the
+  column chooser is a labelled button, and Ctrl+F / Ctrl+E / Ctrl+U / Escape
+  shortcuts are available.
+- The **Référence** column shows the manufacturer article when known
+  (internal `OFD-…`/`SMDB-…` identifiers stay in the tooltip and in a separate
+  *Réf. interne* sort key); **Produit** stretches so the table fits 1440 px.
+- Typing in the search field and dragging columns/splitter no longer write the
+  settings file at every event: search is debounced (180 ms) and preferences
+  are written once, 700 ms after the last change. Search keys are normalised
+  once per reload instead of at every keystroke; colour swatches are cached.
+- The card is rendered once per selection (no duplicate table/grid refresh);
+  logos are cached per theme and keep their full Retina size with the outline.
+  Bitmaps under 24 px fall back to the brand name; others may be enlarged ≤ 2×.
+- No more "Polymaker" fallback for a record without brand or after an OS theme
+  change; the selected row and its page survive sorting, filtering and refreshes.
+- Tag controls are hidden (not greyed) when the chosen printer has no OpenSpool
+  export; the grid view supports Escape/re-click deselection; the manufacturer
+  field is never rewritten while typing; importing settings restores tag,
+  reserve, printer help, extra fields and shortcuts consistently.
+- Thousands use the French separator; export shows a status line instead of a
+  modal box; a corrupt `ui` setting no longer crashes startup; About text updated.
+- Dead code removed (`logo_with_contrast_plate`, `add_soft_halo`, unused imports).
+
 ### Compatibility
 - Original catalogue bytes and all 1,008 compatible default exports are unchanged.
 - Unknown physical values remain null, source multicolors remain intact, and an

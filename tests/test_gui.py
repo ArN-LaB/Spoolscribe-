@@ -109,6 +109,8 @@ class GuiTests(unittest.TestCase):
         self.window._apply_filter()
         self.assertEqual(self.window.current_sku, selected)
         self.window.search.setText("absent-unique-example")
+        self.assertTrue(self.window._search_timer.isActive())  # typing is debounced
+        self.window._apply_filter()
         self.assertEqual(self.window.table.rowCount(), 0)
         self.assertIsNone(self.window.current_sku)
         self.window._reset_filters()
@@ -135,20 +137,29 @@ class GuiTests(unittest.TestCase):
         archive, = Path(core.OUTPUT_DIR).glob("*archive.json")
         self.assertIn("brand_meta", json.loads(archive.read_text()))
 
-    def test_all_approved_logos_render_and_white_logo_has_contrast(self):
+    def test_all_approved_logos_render_at_full_hidpi_size_with_an_outline(self):
         from tests.support import ROOT
         manifest = json.loads((ROOT / "data/brand_logos/manifest.json").read_text())
+        rendered = 0
         for asset in manifest.values():
             with self.subTest(brand=asset["name"]):
                 pixmap = app_gui.load_brand_pixmap(str(ROOT / asset["path"]), 48, 2, max_w=152)
-                self.assertIsNotNone(pixmap)
+                if pixmap is None:
+                    continue  # Too small to stay legible: the name fallback is used.
+                rendered += 1
                 self.assertFalse(pixmap.isNull())
-                plate = app_gui.logo_with_contrast_plate(pixmap)
-                self.assertEqual((plate.width(), plate.height()), (320, 120))
+                self.assertLessEqual(pixmap.height(), 96)
+                outlined = self.window._transparent_logo(pixmap)
+                self.assertEqual(outlined.devicePixelRatio(), 2)
+                self.assertEqual((outlined.width(), outlined.height()), (pixmap.width() + 8, pixmap.height() + 8))
+        self.assertGreater(rendered, 100)
         logo = Path(self.tmp.name) / "white.svg"
         logo.write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 30"><rect width="100" height="30" fill="white"/></svg>')
-        plate = app_gui.logo_with_contrast_plate(app_gui.load_brand_pixmap(str(logo), 48, 2))
-        self.assertLess(plate.toImage().pixelColor(8, 60).lightness(), 100)
+        outlined = self.window._transparent_logo(app_gui.load_brand_pixmap(str(logo), 48, 2))
+        self.assertLess(outlined.toImage().pixelColor(2, outlined.height() // 2).lightness(), 255)
+        tiny = Path(self.tmp.name) / "tiny.png"
+        app_gui.QPixmap(40, 12).save(str(tiny))
+        self.assertIsNone(app_gui.load_brand_pixmap(str(tiny), 48, 2))
 
     def test_real_startup_restore_stays_exact_with_auto_update_enabled(self):
         from PySide6.QtCore import QEventLoop, QTimer

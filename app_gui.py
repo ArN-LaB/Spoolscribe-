@@ -9,13 +9,12 @@ Lancement :  python app_gui.py
 """
 from __future__ import annotations
 
-import json
 import os
 import sys
 import time
+import functools
 import threading
 import traceback
-import math
 
 from PySide6.QtCore import Qt, QThread, Signal, QSize, QTimer, QRectF, QLockFile
 from PySide6.QtGui import (
@@ -27,23 +26,24 @@ from PySide6.QtWidgets import (
     QHeaderView, QAbstractItemView, QFrame, QMessageBox, QProgressBar, QGridLayout,
     QSizePolicy, QStackedWidget, QToolButton, QMenu, QListWidget, QListWidgetItem,
     QDialog, QDialogButtonBox, QCheckBox, QSpinBox, QButtonGroup, QComboBox,
-    QGraphicsScene, QGraphicsPixmapItem, QGraphicsBlurEffect, QScrollArea,
+    QScrollArea,
 )
 
 try:
-    from PySide6.QtSvgWidgets import QSvgWidget  # noqa: F401
     from PySide6.QtSvg import QSvgRenderer
     HAS_SVG = True
 except Exception:
     HAS_SVG = False
 
 import core
-from ui_catalogue import CatalogueUx, ClearableTable
+from ui_catalogue import CatalogueUx, ClearableTable, ClearableList
 
 # Hauteur fixe de l'inspecteur JSON + espacement du layout (12 px) = delta
 # appliqué à la fenêtre lors du toggle pour éviter tout scroll parasite.
 _INSPECTOR_H = 210
 _INSPECTOR_DELTA = _INSPECTOR_H + 12
+# Coche des cases à cocher (QSS) : chemin POSIX absolu, lisible aussi en mode gelé.
+CHECK_ICON_PATH = os.path.join(core.RESOURCE_DIR, "data", "check.svg").replace(os.sep, "/")
 
 
 # ─── Logo animé : la bobine tourne, le fil reste posé ─────────────────────
@@ -148,7 +148,13 @@ class UpdateWorker(QThread):
             self.failed.emit(traceback.format_exc())
 
 
+def fmt_int(value: int) -> str:
+    """Nombre avec séparateur de milliers français (espace fine insécable)."""
+    return f"{value:,}".replace(",", "\u202f")
+
+
 # ─── Pastille couleur ─────────────────────────────────────────────────────
+@functools.lru_cache(maxsize=4096)
 def make_swatch_pixmap(hex_code: str | None, size: int = 18, dpr: float = 1.0,
                        radius: int = 4) -> QPixmap:
     px = max(1, int(round(size * dpr)))
@@ -204,6 +210,9 @@ def make_view_icon(kind: str, color: str, size: int = 18, dpr: float = 1.0) -> Q
     return QIcon(pm)
 
 
+MIN_RASTER_LOGO_PX = 24
+
+
 def load_brand_pixmap(
     abs_path: str,
     size: int,
@@ -243,101 +252,16 @@ def load_brand_pixmap(
             return pm
         if ext in (".png", ".jpg", ".jpeg", ".webp"):
             src = QPixmap(abs_path)
-            if src.isNull():
-                return None
-            # Do not upscale a small bitmap: keep its real pixels crisp at HiDPI.
-            pm = src.scaled(min(pw, src.width()), min(ph, src.height()),
+            if src.isNull() or min(src.width(), src.height()) < MIN_RASTER_LOGO_PX:
+                return None  # Too small to stay legible: the brand name is shown instead.
+            # A bitmap may be enlarged up to 2× (smooth) so HiDPI screens do not
+            # show it at half its intended size; beyond that it would blur.
+            pm = src.scaled(min(pw, src.width() * 2), min(ph, src.height() * 2),
                             Qt.KeepAspectRatio, Qt.SmoothTransformation)
             pm.setDevicePixelRatio(dpr)
             return pm
     except Exception:
         return None
-
-
-def logo_with_contrast_plate(pm: QPixmap) -> QPixmap:
-    """Keep original colors readable on both OS themes, including white logos."""
-    image = pm.toImage()
-    values = []
-    step = max(1, min(image.width(), image.height()) // 30)
-    for y in range(0, image.height(), step):
-        for x in range(0, image.width(), step):
-            color = image.pixelColor(x, y)
-            if color.alpha() >= 128:
-                values.append(.2126 * color.red() + .7152 * color.green() + .0722 * color.blue())
-    background = "#30343b" if values and sum(values) / len(values) > 160 else "#ffffff"
-    dpr = pm.devicePixelRatioF()
-    plate = QPixmap(round(160*dpr), round(60*dpr))
-    plate.setDevicePixelRatio(dpr)
-    plate.fill(Qt.transparent)
-    painter = QPainter(plate)
-    painter.setRenderHint(QPainter.Antialiasing)
-    painter.setPen(Qt.NoPen)
-    painter.setBrush(QColor(background))
-    painter.drawRoundedRect(QRectF(0, 0, 160, 60), 6, 6)
-    painter.drawPixmap(round((160-pm.width()/dpr)/2), round((60-pm.height()/dpr)/2), pm)
-    painter.end()
-    return plate
-
-
-def add_soft_halo(pm: QPixmap, radius: float = 6.0, color: str = "#ffffff",
-                  passes: int = 2) -> QPixmap:
-    """Entoure un logo d'un halo *doux* qui épouse ses courbes (fond sombre).
-
-    On isole la silhouette opaque (canal alpha → blanc), on lui applique un
-    vrai flou gaussien (QGraphicsBlurEffect) puis on repose le logo net
-    par-dessus. Le flou suit naturellement les contours, s'atténue avec la
-    distance et se fond dans le fond sombre — aucun anneau tranché. À ne pas
-    utiliser en thème clair (le halo y serait inutile et disgracieux).
-    """
-    if pm.isNull():
-        return pm
-    dpr = pm.devicePixelRatio() or 1.0
-
-    # On travaille en pixels « bruts » (dpr neutralisé), restitué à la fin.
-    base = QPixmap(pm)
-    base.setDevicePixelRatio(1.0)
-    W, H = base.width(), base.height()
-    r_px = max(1.0, radius * dpr)
-
-    # 1) Silhouette blanche = logo teinté en blanc via SourceIn.
-    sil = QPixmap(W, H)
-    sil.fill(Qt.transparent)
-    sp = QPainter(sil)
-    sp.drawPixmap(0, 0, base)
-    sp.setCompositionMode(QPainter.CompositionMode_SourceIn)
-    sp.fillRect(sil.rect(), QColor(color))
-    sp.end()
-
-    # 2) Flou gaussien de la silhouette dans une toile élargie.
-    pad = int(math.ceil(r_px)) + 2
-    ow, oh = W + pad * 2, H + pad * 2
-    scene = QGraphicsScene()
-    item = QGraphicsPixmapItem(sil)
-    blur = QGraphicsBlurEffect()
-    blur.setBlurRadius(r_px)
-    blur.setBlurHints(QGraphicsBlurEffect.QualityHint)
-    item.setGraphicsEffect(blur)
-    scene.addItem(item)
-
-    glow = QPixmap(ow, oh)
-    glow.fill(Qt.transparent)
-    gp = QPainter(glow)
-    gp.setRenderHint(QPainter.SmoothPixmapTransform, True)
-    scene.render(gp, QRectF(0, 0, ow, oh), QRectF(-pad, -pad, ow, oh))
-    gp.end()
-
-    # 3) Composition : halo (renforcé en plusieurs couches douces) + logo net.
-    out = QPixmap(ow, oh)
-    out.fill(Qt.transparent)
-    op = QPainter(out)
-    op.setRenderHint(QPainter.SmoothPixmapTransform, True)
-    for _ in range(max(1, passes)):
-        op.drawPixmap(0, 0, glow)
-    op.drawPixmap(pad, pad, base)
-    op.end()
-
-    out.setDevicePixelRatio(dpr)
-    return out
 
 
 # ─── Thème : suit automatiquement le système (clair / sombre) ─────────────
@@ -506,6 +430,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         """Le thème de l'OS a changé : on répercute clair/sombre à chaud."""
         init_theme(self.app)
         self._apply_theme()
+        self.__dict__.pop("_logo_cache", None)
         self._refresh_logo()
 
     # ── Construction UI ──────────────────────────────────────────────────
@@ -526,7 +451,11 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.search.setClearButtonEnabled(True)
         self.search.setMinimumWidth(240)
         self.search.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self.search.textChanged.connect(self._apply_filter)
+        self._search_timer = QTimer(self)
+        self._search_timer.setSingleShot(True)
+        self._search_timer.setInterval(180)
+        self._search_timer.timeout.connect(self._apply_filter)
+        self.search.textChanged.connect(lambda *_: self._search_timer.start())
         top.addWidget(self.search, 1)
 
         # Bascule de vue Liste / Grille (pilule segmentée)
@@ -638,7 +567,6 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.next_page.clicked.connect(lambda: self._change_page(1))
         pager.addWidget(self.previous_page)
         pager.addWidget(self.next_page)
-        self._pager_layout = pager
         self._page = 0
         self._page_size = 250
 
@@ -673,7 +601,7 @@ class MainWindow(CatalogueUx, QMainWindow):
 
         # Vue liste (table)
         self.table = ClearableTable(0, 9)
-        self._column_keys = ("", "sku", "product", "color_name", "brand", "material", "diameter", "weight", "quality")
+        self._column_keys = ("", "reference", "product", "color_name", "brand", "material", "diameter", "weight", "quality")
         self.table.setHorizontalHeaderLabels(["", "Référence", "Produit", "Couleur", "Fabricant", "Matière", "Ø mm", "Masse g", "État des données"])
         self.table.verticalHeader().setVisible(False)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -697,18 +625,18 @@ class MainWindow(CatalogueUx, QMainWindow):
         hh.setCascadingSectionResizes(True)
         hh.setSectionsClickable(True)
         hh.sectionClicked.connect(self._sort_column)
-        hh.setToolTip("Clic : Tri 1 ; Maj + clic : Tri 2. Second clic : inverser l'ordre.")
-        self.table.setColumnWidth(1, 104)
-        self.table.setColumnWidth(2, 240)
-        self.table.setColumnWidth(3, 150)
-        for column in range(4, 9):
+        hh.setToolTip("Clic : tri principal, second clic : inverser. Maj + clic ou clic droit : tri secondaire et colonnes.")
+        self.table.setColumnWidth(1, 118)
+        hh.setSectionResizeMode(2, QHeaderView.Stretch)   # Produit absorbe la largeur restante.
+        self.table.setColumnWidth(3, 118)
+        for column, width in ((4, 104), (5, 76), (6, 58), (7, 66), (8, 132)):
             hh.setSectionResizeMode(column, QHeaderView.Interactive)
-            self.table.setColumnWidth(column, 110 if column not in (6, 7) else 70)
+            self.table.setColumnWidth(column, width)
         self.table.itemSelectionChanged.connect(self._on_select)
         self.list_stack.addWidget(self.table)
 
         # Vue grille (cartes)
-        self.grid = QListWidget()
+        self.grid = ClearableList()
         self.grid.setObjectName("grid")
         self.grid.setViewMode(QListWidget.IconMode)
         self.grid.setResizeMode(QListWidget.Adjust)
@@ -729,8 +657,9 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.results_label = QLabel("Catalogue")
         tools.addWidget(self.results_label, 1)
         self.columns_btn = QToolButton()
-        self.columns_btn.setText("▥")
-        self.columns_btn.setToolTip("Choisir les colonnes affichées")
+        self.columns_btn.setText("Colonnes")
+        self.columns_btn.setAccessibleName("Choisir les colonnes affichées")
+        self.columns_btn.setToolTip("Choisir les colonnes affichées (aussi par clic droit sur un en-tête)")
         tools.addWidget(self.columns_btn)
         table_layout.addLayout(tools)
         table_layout.addWidget(self.list_stack, 1)
@@ -862,7 +791,6 @@ class MainWindow(CatalogueUx, QMainWindow):
         self._muted_labels.append(self.subtitle_color)
         titles.addWidget(self.subtitle_color)
         # Gardé pour compatibilité avec le reste du code (non affiché).
-        self.subtitle = self.subtitle_sku
         head.addLayout(titles, 1)
         dl.addLayout(head)
 
@@ -1102,7 +1030,18 @@ class MainWindow(CatalogueUx, QMainWindow):
             f" selection-background-color:{t['sel']}; selection-color:{t['sel_text']}; }}"
             f"QSpinBox {{ background:{t['field_bg']}; color:{t['text']};"
             f" border:1px solid {t['border']}; border-radius:6px; padding:3px 6px; }}"
-            f"QCheckBox {{ color:{t['text']}; background:transparent; }}"
+            f"QCheckBox {{ color:{t['text']}; background:transparent; spacing:6px; }}"
+            f"QCheckBox::indicator {{ width:15px; height:15px; border:1px solid {t['faint']};"
+            f" border-radius:4px; background:{t['field_bg']}; }}"
+            f"QCheckBox::indicator:checked {{ background:{accent}; border-color:{accent};"
+            f" image:url({CHECK_ICON_PATH}); }}"
+            f"QCheckBox::indicator:disabled {{ border-color:{t['border']}; background:{t['window']}; }}"
+            f"QComboBox:disabled, QSpinBox:disabled, QLineEdit:disabled {{ color:{t['faint']};"
+            f" background:{t['window']}; border-color:{t['border']}; }}"
+            f"QPushButton:disabled, QToolButton:disabled {{ color:{t['faint']}; }}"
+            f"QPushButton#chip {{ border:1px solid {t['border']}; border-radius:12px; padding:2px 11px;"
+            f" background:{t['field_bg']}; color:{t['text']}; }}"
+            f"QPushButton#chip:hover {{ border-color:{accent}; color:{accent}; }}"
             f"QProgressBar {{ background:{t['field_bg']}; color:{t['text']};"
             f" border:1px solid {t['border']}; border-radius:6px; text-align:center; }}"
             f"QProgressBar::chunk {{ background:{accent}; border-radius:5px; }}"
@@ -1170,13 +1109,18 @@ class MainWindow(CatalogueUx, QMainWindow):
         for r, e in enumerate(rows):
             sw = QTableWidgetItem()
             sw.setIcon(QIcon(make_swatch_pixmap(e.get("hex"), 18, dpr)))
+            sw.setToolTip(f"#{e['hex']}" if e.get("hex") else "Couleur à renseigner")
             self.table.setItem(r, 0, sw)
             for col, key in enumerate(self._column_keys[1:], 1):
                 value = e.get(key)
                 item = QTableWidgetItem(str(value) if value is not None else "—")
                 item.setToolTip(str(value) if value is not None else "Inconnu")
+                if col == 1:
+                    item.setData(Qt.UserRole, e["sku"])
+                    item.setToolTip(f"Référence interne : {e['sku']}" + (f"\nRéférence fabricant : {e['manufacturer_sku']}" if e.get("manufacturer_sku") else ""))
                 self.table.setItem(r, col, item)
             color_item = QTableWidgetItem(e["color_name"])
+            color_item.setToolTip(f"#{e['hex']}" if e.get("hex") else "Couleur à renseigner")
             if not e.get("hex"):
                 color_item.setForeground(QColor("#b00"))
             self.table.setItem(r, 3, color_item)
@@ -1195,8 +1139,13 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.grid.blockSignals(False)
         selected_row = next((i for i, e in enumerate(rows) if e["sku"] == selected), None)
         if selected_row is not None:
+            # The card already shows this reference: re-select silently in both views.
+            self.table.blockSignals(True)
+            self.grid.blockSignals(True)
             self.table.selectRow(selected_row)
             self.grid.setCurrentRow(selected_row)
+            self.table.blockSignals(False)
+            self.grid.blockSignals(False)
         elif hasattr(self, "stack"):
             self.current_sku = None
             self._show_empty()
@@ -1215,7 +1164,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             else:
                 for r in range(self.table.rowCount()):
                     it = self.table.item(r, 1)
-                    if it and it.text() == self.current_sku:
+                    if it and it.data(Qt.UserRole) == self.current_sku:
                         self.table.selectRow(r)
                         break
 
@@ -1247,18 +1196,19 @@ class MainWindow(CatalogueUx, QMainWindow):
             material=self.material_filter.currentData() or "", quality=self.quality_filter.currentData(),
             sort1=self.sort1.currentData(), sort2=self.sort2.currentData(),
             descending1=self.sort1_direction.currentData(), descending2=self.sort2_direction.currentData())
-        self._page = 0
+        index = next((i for i, r in enumerate(self._filtered_rows) if r["sku"] == self.current_sku), None) if self.current_sku else None
+        self._page = index // self._page_size if index is not None else 0
         self._show_page()
         self._header_indicators()
-        self._save_ui_preferences()
+        self._schedule_ui_preferences()
 
     def _show_page(self):
         total = len(self._filtered_rows)
         start = self._page * self._page_size
         end = min(total, start + self._page_size)
         self._populate(self._filtered_rows[start:end])
-        self.page_label.setText(f"{start + 1 if total else 0}–{end} sur {total:,}")
-        self.results_label.setText(f"{total:,} filaments trouvés")
+        self.page_label.setText(f"{fmt_int(start + 1) if total else 0}–{fmt_int(end)} sur {fmt_int(total)}")
+        self.results_label.setText(f"{fmt_int(total)} filaments trouvés")
         self.previous_page.setEnabled(self._page > 0)
         self.next_page.setEnabled(end < total)
 
@@ -1268,10 +1218,14 @@ class MainWindow(CatalogueUx, QMainWindow):
         self._show_page()
 
     def _reset_filters(self):
+        for widget in (self.search, self.brand_filter, self.material_filter, self.quality_filter):
+            widget.blockSignals(True)
         self.search.clear()
         self.brand_filter.setCurrentIndex(max(0, self.brand_filter.findData("Polymaker")))
         self.material_filter.setCurrentIndex(0)
         self.quality_filter.setCurrentIndex(0)
+        for widget in (self.search, self.brand_filter, self.material_filter, self.quality_filter):
+            widget.blockSignals(False)
         self._apply_filter()
 
     def _update_stats(self):
@@ -1294,20 +1248,25 @@ class MainWindow(CatalogueUx, QMainWindow):
                                    + (f"\n… et {len(conflicts)-100} autres." if len(conflicts) > 100 else "")
                                    if conflicts else "")
 
-    def _refresh_logo(self, brand: str = "Polymaker"):
+    def _refresh_logo(self, brand: str | None = None):
+        """Logo de la marque affichée ; sans argument, celle de la fiche courante."""
+        if brand is None:
+            view = core.get_sku_view(self.db, self.current_sku) if self.current_sku else None
+            brand = (view.product_data.get("brand") if view else "") or ""
         self.logo.setTextFormat(Qt.PlainText)
-        abs_path = core.logo_abs_path(self.db, brand)
+        abs_path = core.logo_abs_path(self.db, brand) if brand else None
         dark = bool(getattr(self, "_tok", {}).get("dark"))
-        # Hauteur max = 52 px, largeur max = 160 px (widget du logo).
-        # load_brand_pixmap respecte l'aspect-ratio : les logos carrés (Polymaker,
-        # Prusament) tiennent en 52×52, les wordmarks larges (ROSA3D 334×94)
-        # s'étendent jusqu'à 160 px de large sans être écrasés.
-        pm = (
-            load_brand_pixmap(abs_path, 48, self.devicePixelRatioF(), max_w=152)
-            if abs_path else None
-        )
-        if pm and not pm.isNull():
-            self.logo.setPixmap(self._transparent_logo(pm))
+        dpr = self.devicePixelRatioF()
+        key = (abs_path, dark, dpr)
+        cache = self.__dict__.setdefault("_logo_cache", {})
+        if key not in cache:
+            # Hauteur max = 48 px, largeur max = 152 px (widget du logo), aspect conservé.
+            pm = load_brand_pixmap(abs_path, 48, dpr, max_w=152) if abs_path else None
+            cache[key] = self._transparent_logo(pm) if pm and not pm.isNull() else None
+            if len(cache) > 64:
+                cache.pop(next(iter(cache)))
+        if cache[key] is not None:
+            self.logo.setPixmap(cache[key])
             self.logo.setVisible(True)
             return
         # A readable brand name is preferable to a missing, tiny or incorrect logo.
@@ -1326,7 +1285,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         sku_item = self.table.item(row, 1)
         if not sku_item:
             return
-        self.current_sku = sku_item.text()
+        self.current_sku = sku_item.data(Qt.UserRole) or sku_item.text()
         self._show_detail(self.current_sku)
 
     def _paint_swatch(self):
@@ -1374,7 +1333,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self._field_widgets["Bed"].setText(view.bed_str)
         self._field_widgets["Densité"].setText(view.density_str)
         self._field_widgets["Diamètre"].setText(view.diameter_str)
-        self._field_widgets["Marque"].setText(view.product_data.get("brand", "Polymaker"))
+        self._field_widgets["Marque"].setText(view.product_data.get("brand") or "Non renseignée")
         entry = self.db["_skus"][sku]
         source_names = {entry.get("source", "Catalogue historique")}
         source_names.update(info["source"] for info in view.product_data.get("_field_sources", {}).values() if info.get("source") and info.get("value") is not None)
@@ -1383,7 +1342,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self._field_widgets["SKU fabricant"].setText(entry.get("manufacturer_sku") or "Non fourni")
         self._field_widgets["Masse"].setText(f"{entry['weight']} g" if entry.get("weight") else "Non fournie")
 
-        self._refresh_logo(view.product_data.get("brand", "Polymaker"))
+        self._refresh_logo(view.product_data.get("brand") or "")
 
         self._cur_hex = view.hex
         self._paint_swatch()
@@ -1525,9 +1484,7 @@ class MainWindow(CatalogueUx, QMainWindow):
                                        brand_meta=view.brand_meta, mode=mode,
                                        **export_options,
                                        use_orca_overrides=core.load_config().get("orca_overrides") is True)
-            self.status.showMessage(f"Généré : {out}", 8000)
-            QMessageBox.information(self, "Export OpenSpool",
-                                    f"Fichier généré :\n{out}")
+            self.status.showMessage(f"Fichier généré : {out} — « Dossier d'export » l'ouvre.", 12000)
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Échec de l'export :\n{e}")
 
@@ -1804,13 +1761,16 @@ class MainWindow(CatalogueUx, QMainWindow):
         lay.addLayout(head)
 
         desc = QLabel(
-            "Écrit des tags OpenSpool / NFC pour le Snapmaker U1 à firmware "
-            "ouvert. Recherche un filament (Polymaker, Prusament, ROSA3D), "
-            "affiche sa couleur et ses températures, et génère le payload JSON.\n\n"
-            "Projet hobby, non affilié à Polymaker, Prusa Research, ROSA3D ou "
-            "Snapmaker. Licence MIT.\n\n"
-            "Couleurs : SpoolmanDB (MIT) · TheFilamentDB (CC-BY 4.0). "
-            "Logos de marque : Open Filament Database (MIT)."
+            "Prépare des données OpenSpool / NFC pour le Snapmaker U1 à firmware "
+            "ouvert et d'autres lecteurs OpenSpool. Catalogue multi-fabricants "
+            "téléchargé depuis des sources publiques, couleur, températures et "
+            "densité, puis payload JSON à écrire sur une étiquette NTAG215/216.\n\n"
+            "Projet hobby, non affilié aux fabricants de filaments ni à Snapmaker. "
+            "Code sous licence MIT.\n\n"
+            "Données : Open Filament Database (MIT) · SpoolmanDB (MIT) · "
+            "TheFilamentDB (CC-BY 4.0) · pages publiques des fabricants.\n"
+            "Les logos restent la propriété de leurs marques respectives ; ils sont "
+            "affichés à titre d'identification seulement (voir docs/TRADEMARKS.md)."
         )
         desc.setWordWrap(True)
         desc.setTextInteractionFlags(Qt.TextSelectableByMouse)
