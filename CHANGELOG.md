@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] — Unreleased
 
+### Export and personal copies (1 November 2026, local)
+
+- Pick and remember the export directory, confirm successful writes, and keep JSON inspection within the existing window.
+- Save independent `@suffix` filament copies; preserve source references, freeze personal values and exclude them from source matching. Update an existing origin/suffix copy instead of duplicating it.
+- Align reset with filament favorites, pair GitHub/support actions and clear completed release-check messages.
+- Document OpenSpool, OpenTag3D and OpenPrintTag distinctions without changing the OpenSpool 1.0 encoder.
+
+### Final interface polish (1 November 2026, local)
+
+- Add printer compatibility-category filters without changing firmware or RFID support.
+- Add native-transparent Kobra S1 artwork and improve X1 Carbon thumbnail resolution from official manufacturer repositories.
+- Remove the native tab baseline and unify secondary-button padding.
+- Add a click-only Buy Me a Coffee support action in About, matching the public FUNDING.yml.
+
 ### Expanded-state corrections (1 November 2026, local)
 
 - Bound catalogue storage details to a scrollable alternate view; keep the dialog and close button on screen.

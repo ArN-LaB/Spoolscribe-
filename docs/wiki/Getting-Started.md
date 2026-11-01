@@ -85,3 +85,5 @@ The current development interface uses spool cards and parameter tiles. Favorite
 stars work on manufacturers, filament cards and the detail header. Configure a
 preferred packaging in **Paramètres → Bobines**, and sources in **Paramètres →
 Catalogue**. **Synchroniser** then uses those saved sources directly. **Voir le JSON** and **Dossier d’export** remain directly visible below NFC export.
+
+Exports now ask for the destination directory and confirm the completed write. Canceling creates no file. **Modifier…** proposes an independent `@Personal` copy rather than changing all source references. JSON inspection keeps the window size.

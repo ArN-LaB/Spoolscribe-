@@ -157,7 +157,7 @@ A manual packaging choice wins for that group during the session.
 **Synchroniser** uses saved sources after consent. **Paramètres → Catalogue**
 contains source selection and refresh cadence. Source details expand on demand.
 **Mon matériel** offers searchable printer names, concise documented descriptions
-and reviewed manufacturer images for U1, X1 Carbon and QIDI Plus4; other entries
+and native-transparent manufacturer images for U1, X1 Carbon, QIDI Plus4 and Kobra S1; other entries
 stay textual. Compatibility checks and firmware questions remain mandatory.
 See the [French UX guide](docs/UX-v0.3.0.md) and
 [printer visual sources](docs/PRINTER_VISUALS.md).
@@ -304,3 +304,9 @@ offers restoration when its database is unreadable. See
 Source code: **MIT** — see [LICENSE](LICENSE). Datasets and brand assets keep their own
 licences and trademark rights (see [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) and
 [docs/TRADEMARKS.md](docs/TRADEMARKS.md)).
+
+The printer browser filters **SpoolScribe-compatible OpenSpool configurations**, **RFID/NFC formats not supported by SpoolScribe**, and configurations without an OpenSpool reader. Firmware and external-reader requirements still apply.
+
+**About → Support the project** opens [Buy Me a Coffee](https://buymeacoffee.com/arn_lab) only when clicked, matching [.github/FUNDING.yml](.github/FUNDING.yml).
+
+**Export:** choose a destination folder for each export; the last folder is remembered and successful writes show a confirmation. JSON inspection does not resize the window. **Modifier…** saves an independent `Product @Personal` copy with an editable suffix, retaining the source; repeated saves of that suffix update the same personal copy. See [NFC format compatibility](docs/FORMATS-NFC.md).

@@ -175,3 +175,7 @@ SUNLU page) that only add facts to families the catalogues already contain.
 - [ ] Human acceptance of this local follow-up package; cross-platform CI and physical NFC remain separate.
 
 - [x] Expanded-state UX correction: bounded storage details, stable printer-card resize, aligned local correction form and provenance (local sixth pass, human acceptance pending).
+
+- [x] Printer compatibility filters, native transparent photos, aligned secondary controls and About support link (local seventh pass; human acceptance pending).
+
+- [x] Export destination/confirmation, fixed-size JSON inspection, isolated @suffix personal copies and sourced NFC format explanation (local eighth pass; human acceptance pending).

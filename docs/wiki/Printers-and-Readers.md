@@ -80,3 +80,7 @@ on the published `main` branch. In this case, updating the list retains the
 bundled catalogue and displays “Aucune nouvelle liste publiée”. Other network
 errors are displayed inline and retain the current catalogue too. No fallback
 to an unreviewed development branch is performed.
+
+## Other formats exist
+
+The table describes the OpenSpool export implemented by SpoolScribe, not every tag format a reader could support. See [NFC formats and current-source verification](../FORMATS-NFC.md): OpenSpool 1.0, OpenTag3D and OpenPrintTag use different encodings. The extended U1 develop documentation also describes additional readers/formats; verify the installed firmware and detection system. No new encoder or hardware validation is implied.

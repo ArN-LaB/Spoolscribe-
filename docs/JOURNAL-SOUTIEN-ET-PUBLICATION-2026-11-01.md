@@ -1,0 +1,193 @@
+# Journal des ajustements — soutien Buy Me a Coffee, licences, profil et publication v0.3.0
+
+Session du 1er novembre 2026. Compte GitHub : `ArN-LaB`. Lien de soutien :
+<https://buymeacoffee.com/arn_lab>.
+
+Les heures sont en UTC lorsqu'elles proviennent de GitHub.
+
+## Synthèse
+
+| Périmètre | Modification | Commits / référence | État |
+|---|---|---|---|
+| SpoolScribe `main` | FUNDING.yml, badge, section *Support* | `35095f1` | Publié (PR #4 fusionnée) |
+| SpoolScribe `main` | LICENSE MIT standard, `NOTICE`, CHANGELOG `[Unreleased]` | `e82d43f` | Publié (PR #4 fusionnée) |
+| Zenith `main` | FUNDING.yml, badge | `e9143bf` | Publié (PR #1 fusionnée) |
+| Zenith `main` | LICENSE MIT standard, `NOTICE`, renvoi README, CHANGELOG `[Unreleased]` | `3763586` | Publié (PR #1 fusionnée) |
+| SpoolScribe et Zenith | Bouton « Sponsor » (Sponsorships) activé | Réglage du dépôt | Actif |
+| Profil GitHub | Bio et lien social Buy Me a Coffee | Réglage du compte | Actif |
+| GitHub CLI | Reconnexion `ArN-LaB`, droit `user`, protocole SSH | Configuration locale | Fait |
+| SpoolScribe v0.3.0 | 4 commits par lot, premier push de la branche | `24bb467` → `1e9dc16` | Publié, CI Windows en échec |
+| SpoolScribe v0.3.0 | Fusion de `main` dans la branche | — | **Non exécuté** |
+
+## 1. Audit initial
+
+Dépôts publics du compte : `Spoolscribe-`, `Zenith`, `vpn-tools` (fork),
+`homebrew-tap`, `lfipekin-cdn`. Aucun dépôt privé, pas de dépôt de profil.
+
+- Aucun `FUNDING.yml` et aucun lien de soutien existant : pas de doublon ni de
+  lien obsolète.
+- Licences de SpoolScribe et Zenith détectées `NOASSERTION` par GitHub, à cause
+  des notes ajoutées après le texte MIT.
+- Liens vérifiés : page Buy Me a Coffee et image du badge en HTTP 200.
+
+Décisions :
+
+- **Retenus** : SpoolScribe et Zenith (projets originaux, MIT, destinés au public).
+- **Exclus** : `vpn-tools` (fork d'un projet tiers encore actif),
+  `homebrew-tap` (distribution), `lfipekin-cdn` (dépôt d'images). Vous avez
+  ensuite confirmé de laisser ces dépôts de côté.
+
+## 2. SpoolScribe — branche `main`
+
+PR [#4](https://github.com/ArN-LaB/Spoolscribe-/pull/4), fusionnée le
+2026-11-01 à 03:15:22 UTC par avance rapide de `main`. L'historique reste
+linéaire et les commits gardent leur signature.
+
+### Commit `35095f1` — docs: lien de soutien Buy Me a Coffee facultatif
+
+- **Créé** `.github/FUNDING.yml` :
+
+  ```yaml
+  buy_me_a_coffee: arn_lab
+  ```
+
+- **Modifié** `README.md` :
+  - badge Buy Me a Coffee à la fin de la rangée de badges HTML existante ;
+  - section **Support** placée avant **License** : projet gratuit, open source,
+    développé sur du temps libre, sans version payante ni contrepartie, soutien
+    entièrement facultatif.
+- Le paragraphe « Made by » et la section « License » sont inchangés : ils ont
+  été réécrits sur la branche v0.3.0 et y toucher aurait créé des conflits.
+
+### Commit `e82d43f` — docs: licence MIT standard reconnue par GitHub, note de portée dans NOTICE
+
+- **Modifié** `LICENSE` : seul le texte MIT reste, sans changement. Titulaire
+  conservé : « SpoolScribe contributors ».
+- **Créé** `NOTICE` : note de portée déplacée sans modification (jeux de
+  données tiers, marques, renvois vers `docs/DATA_SOURCES.md` et
+  `docs/TRADEMARKS.md`).
+- **Modifié** `CHANGELOG.md` : section `[Unreleased]` → *Documentation*.
+- Effet : GitHub détecte maintenant **MIT**. `LICENSE` n'est lu ni par le
+  packaging ni par la CI, donc la distribution ne change pas.
+
+### Vérifications
+
+- CI de la PR : 13 succès, 4 jobs de release ignorés. CI sur `main` : succès.
+- Branche `docs/buy-me-a-coffee` supprimée après fusion.
+
+## 3. Zenith — branche `main`
+
+PR [#1](https://github.com/ArN-LaB/Zenith/pull/1), fusionnée le 2026-11-01 à
+03:15:40 UTC par avance rapide de `main`.
+
+### Commit `e9143bf` — docs: lien de soutien Buy Me a Coffee facultatif
+
+- **Créé** `.github/FUNDING.yml` (`buy_me_a_coffee: arn_lab`).
+- **Modifié** `README.md` : badge Buy Me a Coffee ajouté après le badge de licence.
+
+### Commit `3763586` — docs: licence MIT standard reconnue par GitHub, attribution dans NOTICE
+
+- **Modifié** `LICENSE` : seul le texte MIT reste (« Copyright (c) 2026 ArN-LaB »).
+- **Créé** `NOTICE` : attribution vpn-tools (MIT © 2025 Valera) déplacée sans
+  modification.
+- **Modifié** `README.md` : « See [NOTICE](NOTICE). » ajouté à la section License.
+- **Modifié** `CHANGELOG.md` : section `[Unreleased]` → *Documentation*.
+- Effet : GitHub détecte maintenant **MIT**.
+
+### Vérifications
+
+- CI de la PR : 5 succès, dont CodeQL Swift. Build sur `main` : succès.
+- Branche `docs/buy-me-a-coffee` supprimée après fusion.
+
+## 4. Réglages GitHub
+
+- **Sponsorships** activés sur `Spoolscribe-` et `Zenith` (GraphQL
+  `updateRepository`, `hasSponsorshipsEnabled: true`). GitHub lit bien le lien
+  `BUY_ME_A_COFFEE → https://buymeacoffee.com/arn_lab`.
+- **Profil `ArN-LaB`** :
+  - bio : « Free-time, open-source hobby projects — SpoolScribe · Zenith » ;
+  - lien social : <https://buymeacoffee.com/arn_lab>.
+- Pas de README de profil, jugé inutile.
+
+## 5. Environnement local
+
+- **GitHub CLI** :
+  - protocole Git passé de `https` à `ssh` ;
+  - reconnexion faite par vous : compte `ArN-LaB` à la place de l'ancien nom
+    `ArN-Ld`, droit `user` ajouté.
+- **SSH** : le port 22 coupe à cause du VPN. Les opérations Git passent par SSH
+  sur le port 443, avec vérification par la clé d'hôte github.com déjà connue :
+
+  ```sh
+  GIT_SSH_COMMAND="ssh -o HostName=ssh.github.com -o Port=443 -o HostKeyAlias=github.com"
+  ```
+
+  `~/.ssh/config`, `known_hosts` et les clés sont inchangés.
+- **Agent 1Password** : un refus de signature passager a bloqué un fetch,
+  puis tout est rentré dans l'ordre sans intervention.
+- **Mémoire Claude** : ajout de la fiche `github-access` (accès SSH sur 443,
+  droits de gh, fusion par avance rapide, branche v0.3 qui n'était qu'en local).
+
+## 6. SpoolScribe v0.3.0 — branche `feature/universal-catalogue`
+
+### Précautions
+
+- Une autre session modifiait l'arbre de travail. Je n'ai committé qu'après
+  5 minutes sans aucune modification, puis j'ai revérifié chaque fichier de
+  code par rapport à l'état testé.
+- Les états cumulés des lots ont été reconstitués et testés dans un clone
+  jetable : l'historique n'a jamais été réécrit.
+
+### Commits par lot (tous signés)
+
+| Commit | Lot | Fichiers |
+|---|---|---|
+| `24bb467` | fix(data): regroupements d'affichage et fusion des sources sans perte | `core.py`, `scripts/catalogue_merge.py`, `scripts/catalogue_sources.py`, `tests/test_regressions_v022.py` |
+| `bbca7f2` | feat(imprimantes): fiches documentées, visuels fabricant et repli 404 | `printer_profiles.py`, `printer_presentations.py`, `data/printer_photos/` (3 images + `manifest.json`), `packaging_rules.py`, `.github/scripts/probe_frozen_catalogue.py`, `docs/PRINTER_VISUALS.md`, `docs/TRADEMARKS.md` |
+| `e846add` | feat(ui): espace de travail visuel, favoris explicites et ergonomie | `ui_widgets.py`, `ui_catalogue.py`, `app_gui.py`, `data/chevron-down.svg`, `tests/test_gui.py`, `tests/test_ux.py`, `tests/test_alignment.py`, `tests/test_ergonomics.py`, `tests/test_feedback.py`, `tests/test_feedback_polish.py`, `tests/test_visual_workspace.py`, `tests/test_expanded_layout.py` |
+| `1e9dc16` | docs: retours d'écran v0.3.0 (passes 1 à 6) et documentation alignée | `CHANGELOG.md`, `README.md`, `docs/DATA_FORMAT.md`, `docs/DATA_SOURCES.md`, `docs/ROADMAP.md`, `docs/UX-v0.3.0.md`, `docs/VALIDATION-AUDIT-v0.3.0.md`, `docs/VALIDATION-RETOURS-v0.3.0.md`, `docs/VALIDATION-UX-RETOURS-2…6-v0.3.0.md`, `docs/wiki/Getting-Started.md`, `docs/wiki/Printers-and-Readers.md` |
+
+### Tests locaux
+
+- État final (`e846add`, identique pour le code à `1e9dc16`) : **217 tests OK**
+  en Python 3.10 et en Python 3.12, en mode offscreen.
+- États intermédiaires (`24bb467`, `bbca7f2`) : les tests GUI se bloquent,
+  comme à l'état d'origine `fba000b`. Le défaut d'isolation des tests (verrou
+  d'instance, réglages réels de l'utilisateur) est corrigé dans `e846add`.
+
+### Publication
+
+- Premier push de `feature/universal-catalogue` vers `origin` : la branche
+  pointe sur `1e9dc16` et contient 29 commits de plus que `main`.
+- CI (run `41272173901`) :
+  - **en succès** : Ubuntu 3.10, Ubuntu 3.12, macOS 3.12 ;
+  - **en échec** : Windows 3.12, avec 2 échecs et 1 erreur :
+    - `test_ergonomics.test_characteristic_actions_are_equal_and_grouped_below_tiles`
+      (largeur 164 au lieu de 210) ;
+    - `test_expanded_layout.test_printer_rows_do_not_grow_after_narrow_wide_narrow_sequence`
+      (hauteur des lignes hors de la plage 80–160) ;
+    - `test_sync.LockTests.test_a_lock_left_by_a_dead_process_is_recovered`
+      (verrou non récupéré sous Windows ; code des verrous issu de `c191161`).
+- `main` passe sous Windows : ces problèmes sont propres à la v0.3.0, qui
+  n'avait jamais tourné sur la CI.
+
+### Point de vigilance
+
+`data/printer_photos/` contient des visuels de fabricants (Snapmaker, Bambu Lab,
+QIDI) sans licence libre. Ils sont documentés dans `docs/PRINTER_VISUALS.md` et
+sont désormais publics. L'image Bambu provient du dépôt Bambu Studio, publié
+sous AGPL.
+
+## 7. Opérations non exécutées
+
+| Opération | Cause | Suite |
+|---|---|---|
+| Fusion de `origin/main` dans `feature/universal-catalogue` | Une autre session modifiait encore l'arbre (passe « Final interface polish »), et son `.github/FUNDING.yml` non suivi bloquait la fusion. Git l'a annulée sans rien modifier. | Une fois cette passe committée : supprimer le `FUNDING.yml` local (identique à celui de `main`), fusionner, déplacer les lignes `[Unreleased]` du CHANGELOG dans `[0.3.0] — Unreleased`. |
+| Correction des 3 tests Windows | Code en cours de modification par une autre session. | À traiter dans la v0.3.0. |
+| Vérification des doublons dans le README après fusion | La fusion n'a pas eu lieu. | Badge et section *Support* (venant de `main`) d'un côté, phrase « About → Support the project » (passe en cours) de l'autre : à harmoniser. |
+
+## 8. Hors périmètre, inchangé
+
+Code de Zenith, dépendances, workflows CI/CD, cask Homebrew, processus de
+distribution, `~/.ssh/config`. Dépôts `vpn-tools`, `homebrew-tap` et
+`lfipekin-cdn` non modifiés.
