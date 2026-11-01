@@ -52,6 +52,9 @@ jobs:
         run: |
           python -m pip install -c requirements-build.txt "PySide6>=6.6,<6.12" "certifi>=2026.10.23" "Pillow>=10.0"
           python -c "import sys, PySide6, shiboken6; print(sys.version); print('PySide6', PySide6.__version__, 'Shiboken6', shiboken6.__version__)"
+      - name: Record native Qt font metrics
+        run: |
+          python -c "from PySide6.QtWidgets import QApplication; from PySide6.QtGui import QFontInfo, QFontMetrics; from app_gui import configure_application; a=QApplication([]); print('Before:', a.font().toString(), QFontInfo(a.font()).family()); configure_application(a); f=a.font(); f.setPixelSize(13); print('Configured:', f.toString(), QFontInfo(f).family(), 'Fabricants:', QFontMetrics(f).horizontalAdvance('Fabricants'), 'DPI:', a.primaryScreen().logicalDotsPerInch(), 'DPR:', a.primaryScreen().devicePixelRatio())"
       - name: Offline business and GUI tests
         run: python -B -m unittest discover -s tests -t . -v
       - name: Check version metadata

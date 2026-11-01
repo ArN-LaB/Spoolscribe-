@@ -322,7 +322,12 @@ def configure_application(app: QApplication) -> None:
     """Shared startup configuration for the app and its visual checks."""
     app.setApplicationName('SpoolScribe')
     if not app.property('spoolscribe_configured'):
-        font=app.font();font.setPointSizeF(font.pointSizeF()+0.5);app.setFont(font)
+        font=app.font()
+        # The Windows offscreen backend may choose the bitmap 'System' font;
+        # its fixed strikes do not honor compact pixel sizes. Use the native
+        # scalable UI family, also available in normal desktop sessions.
+        if os.name == 'nt':font.setFamily('Segoe UI')
+        font.setPointSizeF(font.pointSizeF()+0.5);app.setFont(font)
         app.setProperty('spoolscribe_configured',True)
     init_theme(app)
     icon_path=core.app_icon_abs_path()
