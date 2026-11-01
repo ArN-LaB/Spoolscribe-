@@ -54,3 +54,11 @@ asset will be removed from the repository and the next build, and its brand
 will fall back to a text label. Remove `data/brand_logos/<file>` and its
 `manifest.json` entry (or add the brand to the exclusion file) to build your
 own copy without it.
+
+
+## Printer product images
+
+Reviewed manufacturer product images identify the illustrated machine and are
+bundled with their original bytes and source hashes. They retain their owners'
+rights and are not relicensed under the MIT licence of SpoolScribe. See
+[PRINTER_VISUALS.md](PRINTER_VISUALS.md) and the photo manifest for provenance.

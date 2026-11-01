@@ -7,6 +7,7 @@ def include_resource(name):
     if '__pycache__' in path.parts:return False
     if path.parts[0]=='scripts':return path.suffix=='.py'
     if path.parts[0]!='data':return False
+    if path.parts[:2]==('data','printer_photos'):return path.suffix.lower() in {'.png','.jpg','.webp'} or path.name=='manifest.json'
     return path.suffix.lower() in {'.svg','.png','.ico','.icns'} or name in {
         'data/brand_logos/manifest.json','data/brand_logos/OFD-LICENSE.txt','data/SpoolmanDB-LICENSE.txt',
         'data/TheFilamentDB-ATTRIBUTION.txt','data/printers.json'}

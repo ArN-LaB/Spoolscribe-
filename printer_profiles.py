@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+from urllib.error import HTTPError
 
 GROUP_ORDER = ("native", "external", "incompatible", "none")
 _LEGACY_IDS = {"u1_stock": ("u1", "stock")}
@@ -133,3 +134,17 @@ def install_catalogue(raw: bytes) -> dict:
     os.replace(tmp, target)
     reload()
     return candidate
+
+
+def refresh_catalogue(fetch) -> dict | None:
+    """A development list may not exist on main yet; keep the bundled one.
+
+    Other HTTP/network errors remain errors, and no invalid response is installed.
+    """
+    try:
+        raw = fetch(PRINTERS_URL, 512 * 1024)
+    except HTTPError as exc:
+        if exc.code == 404:
+            return None
+        raise
+    return install_catalogue(raw)

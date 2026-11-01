@@ -1,0 +1,29 @@
+{
+  "u1": {
+    "url": "https://cdn.snapmaker.com/assets/20260526/header/header-u1-v2.webp",
+    "file": "u1.webp",
+    "sha256": "388c5fad61d58842adfeb6a27517612d2d8f3f3f9fdb8d23a9d1a29e2c40802e",
+    "bytes": 23892,
+    "caption": "Snapmaker U1",
+    "checked": "2026-11-01",
+    "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation."
+  },
+  "bambu": {
+    "url": "https://raw.githubusercontent.com/bambulab/BambuStudio/master/resources/profiles/BBL/Bambu%20Lab%20X1%20Carbon_cover.png",
+    "file": "bambu-cover.png",
+    "sha256": "1e7b4cb8f1b3e46de805d242e5aa1345cd63f253e5b06a95cc02cc062b9fd788",
+    "bytes": 16719,
+    "caption": "Exemple : X1 Carbon",
+    "checked": "2026-11-01",
+    "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation."
+  },
+  "qidi_box": {
+    "url": "https://qidi3d.com/cdn/shop/files/PLUS4_a838191a-7fc5-49d6-a245-4fb88c793490.png?v=1773372605",
+    "file": "qidi.png",
+    "sha256": "10e5976f1168fbc7f4cdb69bf28e3aa628cadc619b2aa61870a970e0a332baf4",
+    "bytes": 529859,
+    "caption": "Exemple : QIDI Plus4",
+    "checked": "2026-11-01",
+    "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation."
+  }
+}
