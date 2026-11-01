@@ -70,3 +70,42 @@ dossier temporaire non synchronisé passe le contrôle, sans désactiver Gatekee
 effacer globalement des attributs ou modifier les sources du catalogue.
 Cette vérification locale ne vaut pas exécution des builds Windows/Linux : leurs
 résultats doivent être lus dans les contrôles GitHub Actions de la PR de maintenance.
+
+## Validation distante de la structure
+
+[Validation complète GitHub Actions](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41298696746),
+commit `b14f9067ef58b89e39bf6c67b6ae8f97cc6a61df`, [PR #8](https://github.com/ArN-LaB/Spoolscribe-/pull/8) :
+
+| Configuration | Tests exécutés | Résultat |
+| --- | ---: | --- |
+| Linux / Python 3.10 | 269 | Réussite |
+| Linux / Python 3.12 | 269 | Réussite |
+| Windows / Python 3.12 | 269 | Réussite |
+| macOS / Python 3.12 | 269 | Réussite |
+
+Les trois builds natifs ont réellement réussi après les tests. Leurs sondes
+exécutent TLS strict, la fenêtre gelée dans les quatre langues et les exports
+NTAG215/216 sur des fixtures temporaires, sans réseau. Les 193 ressources sont
+comparées aux blobs Git dans chaque build.
+
+Les six fichiers CI ont été téléchargés : empreintes, architectures, structure
+et ressources recontrôlées ; signature stricte macOS valide. Les binaires
+Windows/Linux ne sont pas exécutés sur le Mac : leurs sondes tournent sur les
+runners natifs. Les ZIP de contrôle contiennent uniquement l’exécutable natif
+ou le bundle `.app`, sans double exécutable macOS.
+
+| Archive CI | SHA-256 |
+| --- | --- |
+| SpoolScribe-windows.zip | `fa77142ca539fa34d87ff7d0dbbdbbef91908cf3d7951725e0f3dbb643bd533f` |
+| SpoolScribe-macos.zip | `27ada9c3483069df0ef2dd38f5545b15dfdd5d9ad6d6e366508c2fd1fb6f1bdf` |
+| SpoolScribe-linux.zip | `0ccad99211235ff10913a6d77e8fc6960dc5207c87850994f7dcfbc8cfa8b06e` |
+
+Il s’agit d’artefacts CI de maintenance (soumis à la rétention GitHub), pas de
+nouveaux assets de la release. La publication est ignorée sur cette branche ;
+elle n’est pas présentée comme une étape réussie. Les derniers changements de
+guides et ce relevé de preuves ne modifient pas le code applicatif validé.
+Les contrôles requis sont relancés sur le dernier commit avant fusion.
+
+Les 52 Markdown sont accessibles depuis les index, les guides ou les entrées
+GitHub automatiques ; aucun document orphelin n’a été trouvé. Les essais NFC
+physiques et la recette humaine exhaustive demeurent à réaliser.

@@ -88,8 +88,7 @@ filament's quality, nor that every printer recognizes the tag.
 ## Which tag and which profile?
 
 NTAG215 (504 bytes) or NTAG216 (888 bytes). The recommended *essential* profile
-(material, colours, temperatures, diameter, density) fits every reference on
-both. The *full* profile adds names and brand metadata and is an explicit choice.
+(material, colours, temperatures, diameter, density) is the compact choice. The app checks the actual payload against your tag and reserve before export. The *full* profile adds names and brand metadata and is an explicit choice.
 See [Writing RFID Tags](Writing-RFID-Tags.md).
 
 ## Which tag hardware do I need?

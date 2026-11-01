@@ -19,10 +19,10 @@ memory pages, change a Capability Container (CC) or associate a hardware UID.
 - **Essential** — the recommended profile and the default (`auto`): protocol and
   version, material type and subtype, brand, representative HEX, explicit alpha
   and additional colours, nozzle and bed ranges, diameter and density. This is
-  everything a reader uses, and it fits every catalogue reference on an NTAG215.
+  the compact set supplied to compatible readers. SpoolScribe checks the actual payload against the selected tag and writing reserve before export.
 - **Full** — an explicit choice under **Mon matériel → Réglages avancés** (or
   `--nfc-profile full`): the essential fields plus the reference, product and colour names and
-  brand metadata (website, logo URL). Larger, with no effect on printing.
+  brand metadata (website, logo URL). Larger; extra names/branding do not replace the slicer profile.
   Unknown metadata is omitted, never written as `null`.
 - **Readable archive** (**⚙ → Exporter la sélection en archive JSON…**): all
   full-profile fields, indented, under an `_archive.json` filename. It may
