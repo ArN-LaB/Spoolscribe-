@@ -1,6 +1,8 @@
-# Structure du dépôt — SpoolScribe v0.3.5
+# Structure du dépôt — SpoolScribe
 
 [Documentation](README.md) · [Ressources](../data/README.md) · [Fixtures](../tests/fixtures/README.md) · [Développement](DEVELOPMENT.md)
+
+**Développement v0.4.0 :** l’[encodeur OpenTag3D](OPENTAG3D.md) est ajouté sous `src/spoolscribe/opentag3d.py`. Les preuves ci-dessous décrivent la passe de structure v0.3.5 ; les nouveaux contrôles sont consignés [séparément](validation/v0.4.0.md).
 
 ## Organisation actuelle
 

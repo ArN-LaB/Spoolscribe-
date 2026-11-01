@@ -1,4 +1,4 @@
-# Develop and build SpoolScribe v0.3.5
+# Develop and build SpoolScribe v0.4.0 (unreleased)
 
 [Documentation](README.md) · [Contributing](../.github/CONTRIBUTING.md) · [Repository layout](REPOSITORY.md)
 
@@ -54,7 +54,7 @@ Output stays `dist/SpoolScribe.exe` (Windows), `dist/SpoolScribe` (Linux) and
 
 The [workflow](../.github/workflows/build.yml) runs four test configurations before
 three builds, then checks TLS, the frozen UI in four languages, resource integrity
-and NTAG215/216 exports offline. Only a version tag can publish a release, after
+and NTAG215/216 exports offline, including all three OpenTag3D containers. Only a version tag can publish a release, after
 all six assets are verified. The existing `v0.3.5` tag identifies the published
 binaries: maintenance on `main` does not silently replace them or move the tag.
 

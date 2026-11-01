@@ -84,3 +84,7 @@ automatic refreshes for the rest of that session.
 ## Interface language
 
 The four interface languages (English, French, Spanish, Simplified Chinese) are bundled locally. System-language detection and restarting after a language change do not contact a server or change consent.
+
+## OpenTag3D (v0.4.0 en développement)
+
+La génération du payload, des profils NFC Tools et du message NDEF est entièrement locale. Les paramètres explicites sont enregistrés par référence dans les réglages utilisateur ; ils ne sont pas envoyés aux sources du catalogue. Aucun schéma ou service OpenTag3D n’est téléchargé par l’application.

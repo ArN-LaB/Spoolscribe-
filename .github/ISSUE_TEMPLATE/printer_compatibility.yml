@@ -1,0 +1,58 @@
+name: Printer / reader compatibility
+description: Share a successful hardware test or report a printer, reader or NFC problem
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve SpoolScribe. The compatibility list describes documented setups; not every printer/reader/firmware combination has been physically tested. Successful tests and problems are both useful. Do not include credentials, private network addresses or personal catalogue files.
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Result
+      options:
+        - Successful hardware test
+        - Problem or unexpected result
+        - Documentation / compatibility correction
+    validations:
+      required: true
+  - type: input
+    id: app-version
+    attributes:
+      label: SpoolScribe version / commit and operating system
+      placeholder: Version from About, or commit hash; Windows / macOS / Linux
+    validations:
+      required: true
+  - type: input
+    id: printer
+    attributes:
+      label: Exact printer model
+      placeholder: Include the model variant, or say standalone reader
+    validations:
+      required: true
+  - type: textarea
+    id: reader-software
+    attributes:
+      label: Reader, connection and software
+      description: Name the reader, built-in / USB / network / other connection, printer firmware version, detection mode and any plugin or scanner software version. Unknown values can be marked unknown.
+    validations:
+      required: true
+  - type: textarea
+    id: tag-export
+    attributes:
+      label: Tag, export format and writing app
+      placeholder: NTAG215 / NTAG216; OpenSpool / OpenTag3D; mobile / Desktop NFC Tools profile / raw NDEF; writing app and version
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Steps and observed result
+      description: Explain what was tested. Separate file import, tag writing, read-back and recognition by the printer or external inventory. State what was expected if something failed.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Optional screenshots, logs or source links
+      description: Remove private information before sharing. A successful test applies to the reported setup, not automatically to every model in its family.

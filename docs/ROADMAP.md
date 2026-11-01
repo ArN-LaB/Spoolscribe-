@@ -46,3 +46,14 @@ Do not duplicate Spoolman, migrate RFID associations or change printer firmware.
 
 The [previous detailed roadmap](https://github.com/ArN-LaB/Spoolscribe-/blob/5d652232e5b989028f13704ad6ca13b65724332b/docs/archive/v0.3.0/ROADMAP-before-v0.3.5.md) preserves
 the v0.2.x/v0.3.0 history and screen-feedback campaigns.
+
+## v0.4.0 — OpenTag3D en préparation
+
+- Encodeur 2.004, sorties NFC Tools et NDEF, choix par lecteur : implémentés sur la branche de développement.
+- Contrôles hors réseau, conservation des exports OpenSpool et réglages : [validation](validation/v0.4.0.md).
+- Recette des imports NFC Tools et lecture sur matériel réel : non exécutée.
+- OpenPrintTag : hors de cette étape.
+
+La passe v0.4.0 précise également les [installations de lecture](PRINTER-CONFIGURATIONS.md) :
+connexion, logiciel nécessaire et effet réel, sans assimiler inventaire externe et
+reconnaissance par le firmware. La validation matérielle reste à effectuer.
