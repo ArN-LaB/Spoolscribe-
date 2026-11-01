@@ -1,50 +1,17 @@
 # Contributing to SpoolScribe
 
-Thanks for your interest! SpoolScribe is a small, for-fun project, so contributing
-is meant to be low-friction.
+Small contributions are welcome: a reproducible bug, a clearer instruction or a
+well-sourced filament correction can be useful without writing application code.
 
-## Ground rules
+| You want to… | Start here |
+|---|---|
+| Report a bug | [Bug report](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=bug_report.yml) — app version, OS and steps; Python only if running from source. |
+| Suggest an improvement | [Feature request](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=feature_request.yml) — explain the problem you want to solve. |
+| Improve a source or translation | Open a focused PR and include the source/evidence. See the requirements below. |
+| Report a vulnerability | Use the [private security channel](SECURITY.md). |
 
-- Be respectful — see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
-- Keep the project **honest about licensing**. Any new data source **must**:
-  - have a clearly compatible licence (MIT / CC-BY / public-domain facts),
-  - be added as a group in `core.SOURCE_GROUPS` (name, hosts, worker scripts),
-    which feeds the consent dialog and `core.NETWORK_SOURCES`, and
-  - be documented in [DATA_SOURCES.md](../docs/DATA_SOURCES.md) and
-    [PRIVACY.md](../docs/PRIVACY.md); bump `core.NETWORK_SOURCES_REVISION` so
-    existing users are asked again.
-- Never add silent network calls. **All** network access stays behind the
-  explicit consent gate, goes through a bounded same-host fetcher
-  (`scripts/official_sources.fetch` or an equivalent with size limit, declared
-  User-Agent and redirect check), and sends `If-None-Match` when the server
-  supports it.
-- Don't bundle new trademarked assets without noting them in
-  [TRADEMARKS.md](../docs/TRADEMARKS.md).
-- Never guess a value: unknown stays `null`, user corrections (provenance
-  `Utilisateur`) are never overwritten, identities are never merged on
-  material/colour alone. A manufacturer source may correct fields of unknown
-  provenance; a community source may only complete them.
-- A new manufacturer logo needs a transparent background and a recorded origin:
-  add it through `.github/scripts/import_brand_logos.py` (review file + files),
-  never by copying an image into `data/brand_logos/`; `tests/test_logos.py`
-  checks the result. Note the mark in [TRADEMARKS.md](../docs/TRADEMARKS.md).
-- A new printer or reader is a `data/printers.json` entry (group, reader,
-  firmwares with the `openspool` flag, help), not code; cite a primary source
-  and list what is unverified.
-
-## Architecture
-
-- `core.py` — **pure logic, no `print`/`input`**. Put business logic here.
-- `app_gui.py`, `ui_catalogue.py` — Qt UI only (sidebar, card, **Mon matériel**,
-  sources and report dialogs).
-- `printer_profiles.py` + `data/printers.json` — printers/readers catalogue.
-- `convert_profile.py` — terminal UI only.
-- `scripts/` — source adapters (`catalogue_sources.py`, `official_sources.py`,
-  `catalogue_merge.py`), update workers (`sync_*.py`, standard library only)
-  and legacy scrapers kept for reference.
-
-If you add a feature, prefer putting the logic in `core.py` so both the CLI and
-GUI benefit.
+Please follow the [code of conduct](CODE_OF_CONDUCT.md).
+For source setup, CLI examples and packaging, see [development](../docs/DEVELOPMENT.md).
 
 ## Dev setup
 
@@ -91,6 +58,55 @@ the workers write to the user data folder, never to the repository fixture.
 
 Use the issue templates under **New issue**. Include your OS, Python version,
 and steps to reproduce. See also [SECURITY.md](SECURITY.md) for private reports.
+
+<details>
+<summary><strong>Requirements for catalogue, network, logo and printer changes</strong></summary>
+
+## Data and network requirements
+
+- Be respectful — see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+- Keep the project **honest about licensing**. Any new data source **must**:
+  - have a clearly compatible licence (MIT / CC-BY / public-domain facts),
+  - be added as a group in `core.SOURCE_GROUPS` (name, hosts, worker scripts),
+    which feeds the consent dialog and `core.NETWORK_SOURCES`, and
+  - be documented in [DATA_SOURCES.md](../docs/DATA_SOURCES.md) and
+    [PRIVACY.md](../docs/PRIVACY.md); bump `core.NETWORK_SOURCES_REVISION` so
+    existing users are asked again.
+- Never add silent network calls. **All** network access stays behind the
+  explicit consent gate, goes through a bounded same-host fetcher
+  (`scripts/official_sources.fetch` or an equivalent with size limit, declared
+  User-Agent and redirect check), and sends `If-None-Match` when the server
+  supports it.
+- Don't bundle new trademarked assets without noting them in
+  [TRADEMARKS.md](../docs/TRADEMARKS.md).
+- Never guess a value: unknown stays `null`, user corrections (provenance
+  `Utilisateur`) are never overwritten, identities are never merged on
+  material/colour alone. A manufacturer source may correct fields of unknown
+  provenance; a community source may only complete them.
+- A new manufacturer logo needs a transparent background and a recorded origin:
+  add it through `.github/scripts/import_brand_logos.py` (review file + files),
+  never by copying an image into `data/brand_logos/`; `tests/test_logos.py`
+  checks the result. Note the mark in [TRADEMARKS.md](../docs/TRADEMARKS.md).
+- A new printer or reader is a `data/printers.json` entry (group, reader,
+  firmwares with the `openspool` flag, help), not code; cite a primary source
+  and list what is unverified.
+
+
+</details>
+
+## Architecture
+
+- `core.py` — **pure logic, no `print`/`input`**. Put business logic here.
+- `app_gui.py`, `ui_catalogue.py` — Qt UI only (sidebar, card, **Mon matériel**,
+  sources and report dialogs).
+- `printer_profiles.py` + `data/printers.json` — printers/readers catalogue.
+- `convert_profile.py` — terminal UI only.
+- `scripts/` — source adapters (`catalogue_sources.py`, `official_sources.py`,
+  `catalogue_merge.py`), update workers (`sync_*.py`, standard library only)
+  and legacy scrapers kept for reference.
+
+If you add a feature, prefer putting the logic in `core.py` so both the CLI and
+GUI benefit.
 
 ## Universal catalogue changes
 
