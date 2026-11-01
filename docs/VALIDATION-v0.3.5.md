@@ -183,3 +183,19 @@ supprimé ou désactivé ; aucun changement de code applicatif ni de données.
 Le défaut cp1252 a été reproduit localement et l’analyse AST avec lecture UTF-8
 réussit. Suite locale Python 3.12 après correction : 267/267 tests réussis.
 Les résultats distants du correctif seront consignés dans le rapport CI séparé.
+
+
+## Contrôle complémentaire des traductions embarquées
+
+La première validation complète du correctif (`41294045043`, commit `22ddaf1`)
+a réussi : 267 tests sur chacune des quatre configurations, trois builds exécutés
+et réussis, six fichiers d’artefacts présents. Le contrôle complémentaire des
+archives téléchargées a trouvé sous Windows 2 482 fins de ligne CRLF dans
+`translations/messages.json`, contre LF dans Git. Le JSON décodé était identique.
+Les règles existantes `-text` couvraient `data/`, `scripts/` et `orca_profiles/`,
+mais pas le nouveau dossier de traductions.
+
+Le dossier `translations/` reçoit la même règle `-text` ; le workflow inclut
+maintenant ce dossier dans la comparaison octet par octet des ressources
+embarquées avec Git. Ce renforcement doit être vérifié par de nouveaux builds
+sur les trois plateformes avant de retenir les archives définitives.
