@@ -1,6 +1,6 @@
 import unittest
 
-import core
+from spoolscribe import core
 
 
 def encode_mime(text):

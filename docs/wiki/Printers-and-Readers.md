@@ -68,7 +68,7 @@ technology, the firmware and a link to its documentation; the list is data, not
 code, and can be refreshed without a new release.
 
 
-## Development build and list updates
+## Printer list and images in v0.3.5
 
 The printer picker includes documented product summaries and an explicit OpenSpool
 status. Reviewed manufacturer images are used for U1, X1 Carbon and QIDI Plus4;
@@ -83,4 +83,4 @@ to an unreviewed development branch is performed.
 
 ## Other formats exist
 
-The table describes the OpenSpool export implemented by SpoolScribe, not every tag format a reader could support. See [NFC formats and current-source verification](../FORMATS-NFC.md): OpenSpool 1.0, OpenTag3D and OpenPrintTag use different encodings. The extended U1 develop documentation also describes additional readers/formats; verify the installed firmware and detection system. No new encoder or hardware validation is implied.
+The table describes the OpenSpool export implemented by SpoolScribe, not every tag format a reader could support. See [NFC formats and current-source verification](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/FORMATS-NFC.md): OpenSpool 1.0, OpenTag3D and OpenPrintTag use different encodings. The extended U1 develop documentation also describes additional readers/formats; verify the installed firmware and detection system. No new encoder or hardware validation is implied.

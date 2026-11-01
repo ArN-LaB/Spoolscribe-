@@ -6,7 +6,7 @@
     "{python}",
     "-m",
     "PyInstaller",
-    "spoolscribe.spec",
+    "packaging/spoolscribe.spec",
     "--noconfirm"
   ],
   "output": "dist/SpoolScribe.app",

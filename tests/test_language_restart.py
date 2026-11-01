@@ -8,8 +8,8 @@ import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
-import core
-import i18n
+from spoolscribe import core
+from spoolscribe import i18n
 from tests import test_gui as fixture
 
 
@@ -21,20 +21,20 @@ class SystemLanguageTests(unittest.TestCase):
     def test_macos_preferred_languages_override_a_c_or_english_qt_locale(self):
         from PySide6.QtCore import QLocale
         for qt in (['C'],['en-US']):
-            with patch.object(i18n.sys,'platform','darwin'), patch('i18n._macos_preferred_languages',return_value=['fr-FR']),patch.object(QLocale,'system') as system:
+            with patch.object(i18n.sys,'platform','darwin'), patch('spoolscribe.i18n._macos_preferred_languages',return_value=['fr-FR']),patch.object(QLocale,'system') as system:
                 system.return_value.uiLanguages.return_value=qt
                 self.assertEqual(i18n.system_ui_languages(),['fr-FR'])
                 self.assertEqual(i18n.resolve_language('auto',i18n.system_ui_languages()),'fr')
 
     def test_macos_missing_preferences_falls_back_to_qt(self):
         from PySide6.QtCore import QLocale
-        with patch.object(i18n.sys,'platform','darwin'),patch('i18n._macos_preferred_languages',return_value=[]),patch.object(QLocale,'system') as system:
+        with patch.object(i18n.sys,'platform','darwin'),patch('spoolscribe.i18n._macos_preferred_languages',return_value=[]),patch.object(QLocale,'system') as system:
             system.return_value.uiLanguages.return_value=['es-MX']
             self.assertEqual(i18n.system_ui_languages(),['es-MX'])
 
     def test_valid_unsupported_native_language_keeps_english_fallback(self):
         from PySide6.QtCore import QLocale
-        with patch.object(i18n.sys,'platform','darwin'),patch('i18n._macos_preferred_languages',return_value=['de-DE']),patch.object(QLocale,'system') as system:
+        with patch.object(i18n.sys,'platform','darwin'),patch('spoolscribe.i18n._macos_preferred_languages',return_value=['de-DE']),patch.object(QLocale,'system') as system:
             system.return_value.uiLanguages.return_value=['fr-FR']
             self.assertEqual(i18n.resolve_language('auto',i18n.system_ui_languages()),'en')
             self.assertEqual(i18n.resolve_language('zh_CN',i18n.system_ui_languages()),'zh_CN')
@@ -42,7 +42,7 @@ class SystemLanguageTests(unittest.TestCase):
     def test_other_platforms_use_qt_without_loading_corefoundation(self):
         from PySide6.QtCore import QLocale
         for platform in ('win32','linux'):
-            with patch.object(i18n.sys,'platform',platform),patch('i18n._macos_preferred_languages') as native,patch.object(QLocale,'system') as system:
+            with patch.object(i18n.sys,'platform',platform),patch('spoolscribe.i18n._macos_preferred_languages') as native,patch.object(QLocale,'system') as system:
                 system.return_value.uiLanguages.return_value=['es-ES']
                 self.assertEqual(i18n.system_ui_languages(),['es-ES']);native.assert_not_called()
 
@@ -55,7 +55,7 @@ class RestartInterfaceTests(unittest.TestCase):
     setUpClass=classmethod(fixture.GuiTests.setUpClass.__func__)
 
     def setUp(self):
-        timer=patch('app_gui.QTimer.singleShot');timer.start();self.addCleanup(timer.stop)
+        timer=patch('spoolscribe.app_gui.QTimer.singleShot');timer.start();self.addCleanup(timer.stop)
         fixture.GuiTests.setUp(self)
         self.addCleanup(i18n.set_language,'fr')
 
@@ -80,7 +80,7 @@ class RestartInterfaceTests(unittest.TestCase):
         with patch.object(w,'_offer_language_restart') as prompt:
             with patch.object(QDialog,'exec',return_value=QDialog.Rejected):w._open_settings()
             with patch.object(QDialog,'exec',return_value=QDialog.Accepted):w._open_settings()
-            with patch.object(QDialog,'exec',self.select_spanish),patch.object(core,'save_config',side_effect=OSError('fixture')),patch('app_gui.QMessageBox.critical'):
+            with patch.object(QDialog,'exec',self.select_spanish),patch.object(core,'save_config',side_effect=OSError('fixture')),patch('spoolscribe.app_gui.QMessageBox.critical'):
                 w._open_settings()
             prompt.assert_not_called()
 
@@ -108,29 +108,29 @@ class RestartInterfaceTests(unittest.TestCase):
         worker.cancel.set.assert_not_called();w.worker=None
 
     def test_now_requests_clean_shutdown_and_preserves_preferences(self):
-        import app_gui
+        from spoolscribe import app_gui
         w=self.window
         with patch.object(w,'close',return_value=True) as close,patch.object(w.app,'exit') as exit_app:
             w._request_language_restart();close.assert_called_once();exit_app.assert_called_once_with(app_gui.RESTART_EXIT_CODE)
         self.assertTrue(w._restart_requested)
 
     def test_relaunch_happens_after_unlock_and_launch_error_keeps_app_available(self):
-        import app_gui
+        from spoolscribe import app_gui
         app=Mock();window=Mock();window._restart_requested=True;lock=Mock()
         app.exec.side_effect=[app_gui.RESTART_EXIT_CODE,0];lock.tryLock.return_value=True
         def launch(entry):
             lock.unlock.assert_called_once()
             raise OSError('cannot start fixture')
-        with patch('app_gui.launch_replacement',side_effect=launch),patch('app_gui.QMessageBox.warning') as warning:
+        with patch('spoolscribe.app_gui.launch_replacement',side_effect=launch),patch('spoolscribe.app_gui.QMessageBox.warning') as warning:
             self.assertEqual(app_gui.run_application(app,window,lock),0)
         lock.tryLock.assert_called_once_with(200);window.show.assert_called_once();warning.assert_called_once()
         self.assertFalse(window._restart_requested)
 
     def test_successful_restart_spawns_once_after_unlock(self):
-        import app_gui
+        from spoolscribe import app_gui
         app=Mock();app.exec.return_value=app_gui.RESTART_EXIT_CODE
         window=Mock();window._restart_requested=True;lock=Mock()
-        with patch('app_gui.launch_replacement',side_effect=lambda entry:lock.unlock.assert_called_once()) as launch:
+        with patch('spoolscribe.app_gui.launch_replacement',side_effect=lambda entry:lock.unlock.assert_called_once()) as launch:
             self.assertEqual(app_gui.run_application(app,window,lock),0)
         launch.assert_called_once();app.exec.assert_called_once();lock.tryLock.assert_not_called()
 
@@ -147,17 +147,17 @@ class RestartInterfaceTests(unittest.TestCase):
         self.assertEqual(i18n.language(),'fr')
 
     def test_relaunch_error_does_not_reopen_without_the_data_lock(self):
-        import app_gui
+        from spoolscribe import app_gui
         app=Mock();app.exec.return_value=app_gui.RESTART_EXIT_CODE
         window=Mock();window._restart_requested=True;lock=Mock();lock.tryLock.return_value=False
-        with patch('app_gui.launch_replacement',side_effect=OSError('fixture')),patch('app_gui.QMessageBox.critical') as critical:
+        with patch('spoolscribe.app_gui.launch_replacement',side_effect=OSError('fixture')),patch('spoolscribe.app_gui.QMessageBox.critical') as critical:
             self.assertEqual(app_gui.run_application(app,window,lock),1)
         window.show.assert_not_called();critical.assert_called_once()
 
 
 class RelaunchCommandTests(unittest.TestCase):
     def test_frozen_process_uses_the_same_binary_with_reset_environment(self):
-        import app_lifecycle
+        from spoolscribe import app_lifecycle
         with patch.object(app_lifecycle.sys,'frozen',True,create=True),patch.object(app_lifecycle.sys,'executable','/tmp/SpoolScribe.app/Contents/MacOS/SpoolScribe'),patch.object(app_lifecycle.subprocess,'Popen') as spawn:
             app_lifecycle.launch_replacement('/untrusted/entry.py')
         args,kwargs=spawn.call_args
@@ -166,7 +166,7 @@ class RelaunchCommandTests(unittest.TestCase):
         self.assertNotIn('shell',kwargs)
 
     def test_source_process_uses_absolute_entry_and_same_interpreter(self):
-        import app_lifecycle
+        from spoolscribe import app_lifecycle
         with patch.object(app_lifecycle.sys,'frozen',False,create=True),patch.object(app_lifecycle.subprocess,'Popen') as spawn:
             app_lifecycle.launch_replacement('app_gui.py')
         self.assertEqual(spawn.call_args.args[0],[sys.executable,str(Path('app_gui.py').resolve())])
@@ -183,7 +183,7 @@ class RelaunchCommandTests(unittest.TestCase):
                 import json, os
                 from pathlib import Path
                 from unittest.mock import patch
-                import app_gui, core, i18n
+                from spoolscribe import app_gui, core, i18n
                 from PySide6.QtCore import QTimer
                 from PySide6.QtWidgets import QComboBox, QDialog, QMessageBox
                 root=Path(os.environ['SPOOLSCRIBE_DATA_HOME'])
@@ -225,7 +225,7 @@ class RelaunchCommandTests(unittest.TestCase):
                 app_gui.__file__=__file__
                 raise SystemExit(app_gui.main())
             '''),encoding='utf-8')
-            env=dict(os.environ,QT_QPA_PLATFORM='offscreen',PYTHONPATH=str(ROOT),
+            env=dict(os.environ,QT_QPA_PLATFORM='offscreen',PYTHONPATH=os.pathsep.join((str(ROOT/'src'),str(ROOT))),
                      SPOOLSCRIBE_DATA_HOME=tmp,SPOOLSCRIBE_CONFIG_PATH=str(directory/'config.json'))
             process=subprocess.run([sys.executable,str(wrapper)],env=env,capture_output=True,text=True,timeout=20)
             self.assertEqual(process.returncode,0,process.stderr)

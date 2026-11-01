@@ -1,7 +1,7 @@
 [project]
 name = "spoolscribe"
 version = "0.3.5"
-description = "Prepare OpenSpool / NFC spool-tag data for the open-firmware Snapmaker U1."
+description = "Desktop filament catalogue with multilingual UI and OpenSpool / NFC exports."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -22,12 +22,16 @@ Issues = "https://github.com/ArN-LaB/Spoolscribe-/issues"
 Changelog = "https://github.com/ArN-LaB/Spoolscribe-/blob/main/CHANGELOG.md"
 
 [project.scripts]
-spoolscribe-cli = "convert_profile:main"
+spoolscribe-cli = "spoolscribe.convert_profile:main"
 
 [project.gui-scripts]
-spoolscribe = "app_gui:main"
+spoolscribe = "spoolscribe.app_gui:main"
 
-# Petit projet "pour le fun" : pas de système de build packagé (pas de wheel
-# publiée). La version ci-dessus DOIT rester alignée sur core.APP_VERSION, qui
-# est la source unique de vérité (le .spec la lit directement depuis core.py).
-# Voir CHANGELOG.md pour le suivi des versions.
+# Source installations are editable checkouts; standalone apps use PyInstaller.
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["spoolscribe", "scripts"]
+package-dir = {spoolscribe = "src/spoolscribe", scripts = "scripts"}

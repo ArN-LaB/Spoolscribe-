@@ -13,7 +13,7 @@ def offline(event, args):
 
 sys.addaudithook(offline)
 assert getattr(sys, "frozen", False)
-import core
+from spoolscribe import core
 from scripts import catalogue_sources, db_io
 
 db = core.load_db()
@@ -64,15 +64,15 @@ for brand in ('Polymaker', 'Prusament', 'ROSA3D'):
     assert any(pixmap.toImage().pixelColor(x,y).alpha() for x in range(pixmap.width()) for y in range(pixmap.height())), brand
     assert pixmap.deviceIndependentSize().width() <= 108
     rendered.append(brand)
-from printer_presentations import presentation
-import printer_profiles
+from spoolscribe.printer_presentations import presentation
+from spoolscribe import printer_profiles
 photo_manifest=json.loads((Path(core.RESOURCE_DIR)/'data/printer_photos/manifest.json').read_text())
 for key,info in photo_manifest.items():
     path=Path(core.RESOURCE_DIR)/'data/printer_photos'/info['file']
     assert hashlib.sha256(path.read_bytes()).hexdigest()==info['sha256']
     assert not QPixmap(str(path)).isNull(), f'Printer photo not decoded: {key}'
     assert presentation(printer_profiles.PROFILES[key]).get('photo')
-from ui_widgets import spool_icon
+from spoolscribe.ui_widgets import spool_icon
 assert not spool_icon('008899',112,2).isNull()
 assert not spool_icon(None,112,2).isNull()
 # Construct the actual UI from the frozen imports, with synthetic data only.
@@ -87,7 +87,7 @@ assert entry_frame is not None, 'Frozen entry point not found'
 entry_frame.f_globals['configure_application'](app)
 window_class = entry_frame.f_globals['MainWindow']
 del entry_frame
-import i18n
+from spoolscribe import i18n
 languages=[]
 for code in ('auto',*i18n.LANGUAGES):
     settings=core.load_config();settings['language']=code;core.save_config(settings)

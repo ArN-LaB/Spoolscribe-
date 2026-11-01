@@ -9,8 +9,8 @@ import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
-import core
-import convert_profile
+from spoolscribe import core
+from spoolscribe import convert_profile
 from scripts import db_io, scrape_spoolman_hex, scrape_spoolman_multibrand_hex, scrape_wholesale
 from tests.support import ROOT, small_db
 
@@ -36,7 +36,7 @@ class UpdateTests(unittest.TestCase):
 
     def test_no_consent_runs_no_worker_and_makes_no_backup(self):
         before = self.db_path.read_bytes()
-        with patch("core.has_network_consent", return_value=False), patch("core._run_step_process") as run:
+        with patch("spoolscribe.core.has_network_consent", return_value=False), patch("spoolscribe.core._run_step_process") as run:
             results = core.run_update_pipeline()
         run.assert_not_called()
         self.assertEqual(core.update_status(results), "failed")
@@ -47,7 +47,7 @@ class UpdateTests(unittest.TestCase):
         count = len(core.UPDATE_PIPELINE)
         responses = [result("changed")] + [result("unavailable", 2)] * (count - 1)
         before = self.db_path.read_bytes()
-        with patch("core._run_step_process", side_effect=responses), patch("core.mark_updated") as mark:
+        with patch("spoolscribe.core._run_step_process", side_effect=responses), patch("spoolscribe.core.mark_updated") as mark:
             results = core.run_update_pipeline(consent=True)
         self.assertEqual(core.update_status(results), "partial")
         mark.assert_not_called()
@@ -57,7 +57,7 @@ class UpdateTests(unittest.TestCase):
         self.assertEqual(Path(str(self.db_path) + ".pre-update.bak").read_bytes(), before)
 
     def test_full_verified_check_updates_date_even_without_data_changes(self):
-        with patch("core._run_step_process", return_value=result()) as run, patch("core.mark_updated") as mark:
+        with patch("spoolscribe.core._run_step_process", return_value=result()) as run, patch("spoolscribe.core.mark_updated") as mark:
             results = core.run_update_pipeline(consent=True)
         self.assertEqual(core.update_status(results), "complete")
         mark.assert_not_called()
@@ -67,23 +67,23 @@ class UpdateTests(unittest.TestCase):
 
     def test_zero_success_or_missing_worker_status_is_not_complete(self):
         for response in (result("error", 1), subprocess.CompletedProcess([], 0, stdout="", stderr="")):
-            with self.subTest(response=response), patch("core._run_step_process", return_value=response), patch("core.mark_updated") as mark:
+            with self.subTest(response=response), patch("spoolscribe.core._run_step_process", return_value=response), patch("spoolscribe.core.mark_updated") as mark:
                 results = core.run_update_pipeline(consent=True)
                 self.assertEqual(core.update_status(results), "failed")
                 mark.assert_not_called()
 
     def test_corrupt_database_prevents_all_workers(self):
         self.db_path.write_text("corrupt")
-        with patch("core._run_step_process") as run:
+        with patch("spoolscribe.core._run_step_process") as run:
             results = core.run_update_pipeline(consent=True)
         run.assert_not_called()
         self.assertEqual(core.update_status(results), "failed")
         self.assertEqual(self.db_path.read_text(), "corrupt")
 
     def test_timeout_and_missing_script_are_explicit(self):
-        with patch("core._run_step_process", side_effect=subprocess.TimeoutExpired("audit", 1)):
+        with patch("spoolscribe.core._run_step_process", side_effect=subprocess.TimeoutExpired("audit", 1)):
             self.assertEqual(core.update_status(core.run_update_pipeline(consent=True)), "failed")
-        with patch("core.os.path.isfile", return_value=False), patch("core._run_step_process") as run:
+        with patch("spoolscribe.core.os.path.isfile", return_value=False), patch("spoolscribe.core._run_step_process") as run:
             self.assertEqual(core.update_status(core.run_update_pipeline(consent=True)), "failed")
             run.assert_not_called()
 
@@ -157,15 +157,15 @@ class UpdateTests(unittest.TestCase):
             path = Path(kwargs["env"]["SPOOLSCRIBE_STEP_RESULT_PATH"])
             path.write_text(json.dumps({"status": "unchanged", "message": ""}))
             return subprocess.CompletedProcess(command, 0, stdout=None, stderr=None)
-        with patch("core._run_step_process", side_effect=worker):
+        with patch("spoolscribe.core._run_step_process", side_effect=worker):
             results = core.run_update_pipeline(consent=True)
         self.assertEqual(core.update_status(results), "complete")
 
     def test_cli_manual_update_can_reconsider_refusal_or_revoke_permission(self):
         for old, answer, expected in ((False, "o", True), (True, "n", False)):
-            with self.subTest(old=old), patch("core.consent_was_asked", return_value=True), \
-                 patch("core.has_network_consent", return_value=old), \
-                 patch("builtins.input", side_effect=[answer, "n"]), patch("core.set_network_consent") as save, \
+            with self.subTest(old=old), patch("spoolscribe.core.consent_was_asked", return_value=True), \
+                 patch("spoolscribe.core.has_network_consent", return_value=old), \
+                 patch("builtins.input", side_effect=[answer, "n"]), patch("spoolscribe.core.set_network_consent") as save, \
                  contextlib.redirect_stdout(io.StringIO()):
                 self.assertEqual(convert_profile.ensure_consent_interactive(force=True), expected)
                 save.assert_called_once_with(expected, auto_update=False)

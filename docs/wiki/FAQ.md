@@ -12,7 +12,7 @@ Research, SUNLU, eSUN…) or to Snapmaker. See
 No. There is **no telemetry, no tracking, no account**. The network is used for
 four things only, all listed before you agree: the first download of the
 catalogue, the refresh of the sources you selected (at the cadence you choose,
-daily by default, or when you click **Synchroniser**), the printer list refresh
+daily by default, or when you click **Refresh catalogue**), the printer list refresh
 when you click **Mon matériel → Mettre à jour la liste des imprimantes…**, and
 the release check when you click **⚙ → Vérifier une mise à jour de
 l'application**. Servers see
@@ -22,7 +22,7 @@ your IP and the User-Agent, nothing about your catalogue or printer. See
 ## Why is the app empty after installation?
 
 The installer contains no catalogue. Choose your sources in the first dialog
-and click **Synchroniser maintenant**. Offline, nothing can be shown until a
+and click **Refresh now**. Offline, nothing can be shown until a
 first download has succeeded; afterwards the cached catalogue works offline.
 
 ## Is the data free to use?
@@ -44,7 +44,7 @@ Hyper under Creality, Extrafill under Fillamentum); the card shows
 
 A row is a filament: manufacturer, product and colour. Its 1 kg, 3 kg, refill
 or 2.85 mm references are grouped and listed in the card (**Références**),
-each with its state. The OpenSpool tag does not depend on the spool size. When
+each with its state. Choose your actual packaging before export; the OpenSpool fields depend on the selected export profile. When
 the sources disagree on the hue, the best-documented HEX (yours, then the
 manufacturer's, then the community's) is shown and the card says so.
 
@@ -53,7 +53,7 @@ manufacturer's, then the community's) is shown and the card says so.
 **⚙ → Mon matériel → Mettre à jour la liste des imprimantes…** downloads the
 current `data/printers.json` from the repository (network authorization
 required). If your machine is still missing, open an issue with the reader
-technology and firmware; see [[Printers and Readers|Printers-and-Readers]].
+technology and firmware; see [Printers and Readers](Printers-and-Readers.md).
 
 ## Do I need the paxx12 firmware?
 
@@ -67,8 +67,8 @@ works on any machine. Other OpenSpool-capable readers can use the same files.
 
 - **Missing colour**: the GUI and the CLI ask for an explicit representative HEX
   at export time; cancelling the colour cancels the export.
-- **Missing temperatures / density / diameter**: use **Corriger…** in the
-  card; the values apply to every reference of that product.
+- **Missing temperatures / density / diameter**: use **Modify…** in the
+  card; save a personal copy with an editable `@suffix`; the source stays intact.
 - **« À vérifier »**: the source published a value that contradicts itself
   (for example a black HEX for a "White" filament, or a density of 7 g/cm³).
   Open the card, correct the value explicitly, and the record becomes exportable.
@@ -88,14 +88,13 @@ filament's quality, nor that every printer recognizes the tag.
 ## Which tag and which profile?
 
 NTAG215 (504 bytes) or NTAG216 (888 bytes). The recommended *essential* profile
-(material, colours, temperatures, diameter, density) fits every reference on
-both. The *full* profile adds names and brand metadata and is an explicit choice.
-See [[Writing RFID Tags|Writing-RFID-Tags]].
+(material, colours, temperatures, diameter, density) is the compact choice. The app checks the actual payload against your tag and reserve before export. The *full* profile adds names and brand metadata and is an explicit choice.
+See [Writing RFID Tags](Writing-RFID-Tags.md).
 
 ## Which tag hardware do I need?
 
 Any NFC writer able to write an NDEF MIME `application/json` record, for example
-SpoolFlux on iPhone. See [[Writing RFID Tags|Writing-RFID-Tags]].
+SpoolFlux on iPhone. See [Writing RFID Tags](Writing-RFID-Tags.md).
 
 ## Can I remove a manufacturer logo?
 
@@ -113,3 +112,7 @@ Database, settings and exports are in your user folder, never next to the
 application: `%APPDATA%\SpoolScribe` (Windows), `~/Library/Application
 Support/SpoolScribe` (macOS), `~/.config/SpoolScribe` (Linux). Backups
 (`polymaker_db.json.bak`, `.pre-update.bak`) sit next to the database.
+
+## How do I change the interface language?
+
+Open **Settings → Interface**. Choose the system language or English, French, Spanish or Simplified Chinese. Save, then restart now or later. Your data and favourites remain intact.

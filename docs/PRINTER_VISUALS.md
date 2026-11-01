@@ -1,6 +1,6 @@
 # Visuels et descriptions des imprimantes
 
-Version de développement 0.3.0, vérification du 1er novembre 2026.
+SpoolScribe v0.3.5 stable. Provenance vérifiée le 1er novembre 2026.
 
 Les images sont des fichiers originaux provenant du fabricant, sans retouche.
 Leur affichage les redimensionne en conservant les proportions. Elles sont
@@ -19,7 +19,7 @@ Les marques et visuels restent la propriété de leurs ayants droit ; leur prés
 sert à identifier les machines et ne signifie aucune affiliation. La licence du
 code de SpoolScribe ne transforme pas ces visuels en créations sous licence MIT.
 
-Les quatre visuels actuellement référencés disposent d’un canal alpha natif, vérifié sur les fichiers. Le PNG X1 Carbon de 320 × 320 remplace une miniature de 181 × 180 dans le manifeste ; l’ancien fichier est conservé. Le PNG Anycubic de 180 × 180 est ajouté sans retouche ni suppression de fond.
+Les quatre visuels actuellement référencés disposent d’un canal alpha natif, vérifié sur les fichiers. Le PNG X1 Carbon de 320 × 320 remplace une miniature de 181 × 180 dans le manifeste ; l’ancienne miniature non référencée a été supprimée lors du nettoyage v0.3.5 ; elle reste accessible dans l’historique Git. Le PNG Anycubic de 180 × 180 est ajouté sans retouche ni suppression de fond.
 
 Les autres entrées restent textuelles tant qu’un visuel adapté n’a pas été revu. Les images promotionnelles Prusa et Anycubic des passes antérieures avaient été écartées. La nouvelle recherche Prusa, sur sa page officielle de ressources médias, a fourni des photographies JPEG opaques ; elles ne sont pas présentées comme des détourages transparents. Le dessin générique de l’ancienne
 passe a été retiré.
@@ -32,7 +32,7 @@ Pour Kobra S1, le volume cité est limité à ce modèle selon
 Les autres résumés reprennent le périmètre fonctionnel déjà décrit par le catalogue
 matériel et évitent d’inventer des caractéristiques communes à plusieurs modèles.
 
-`printer_presentations.py` ne modifie aucun drapeau de compatibilité : les données
+`src/spoolscribe/printer_presentations.py` ne modifie aucun drapeau de compatibilité : les données
 sur les firmwares et les formats lisibles restent dans `data/printers.json`.
 Une photo ou un résumé ne vaut pas validation physique du lecteur.
 

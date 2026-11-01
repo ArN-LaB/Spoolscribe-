@@ -17,7 +17,7 @@ No more manually selecting the filament for each slot.
 
 1. **SpoolScribe** generates an OpenSpool payload for a given SKU.
 2. You **write** that payload onto an NFC/RFID tag (see
-   [[Writing RFID Tags|Writing-RFID-Tags]]).
+   [Writing RFID Tags](Writing-RFID-Tags.md)).
 3. You stick the tag on the spool / spool holder.
 4. The **U1 ([paxx12 firmware](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware))** reads it and auto-configures the filament.
 

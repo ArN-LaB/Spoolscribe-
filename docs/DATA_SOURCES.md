@@ -230,7 +230,7 @@ manufacturers, so the no-deletion storage guard remains active. Partial enrichme
 that would invert a temperature range keeps the previous pair and records a conflict.
 Presentation grouping keeps diameter/grade/transparency distinctions; a normalized
 colour label is not permission to overwrite differing source HEX values. See
-[the corrective validation](VALIDATION-RETOURS-v0.3.0.md) for measurements and remaining gaps.
+[the corrective validation](archive/v0.3.0/VALIDATION-RETOURS-v0.3.0.md) for measurements and remaining gaps.
 
 
 ### Coverage shown in the application

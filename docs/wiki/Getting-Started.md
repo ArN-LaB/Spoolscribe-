@@ -1,89 +1,66 @@
-# Getting Started
+# Getting started with SpoolScribe v0.3.5
 
-Four steps: install, download the catalogue, describe your hardware, export a tag.
+[Wiki home](Home.md) · [FAQ](FAQ.md)
 
-## 1. Install
+## 1. Download and open
 
-### Option A — standalone app (no Python)
+Download the archive and companion SHA-256 from
+[the v0.3.5 release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
 
-Download the archive for your system from the
-**[Releases](https://github.com/ArN-LaB/Spoolscribe-/releases)** page and unzip it:
-`SpoolScribe.exe` (Windows), `SpoolScribe.app` (macOS, Apple Silicon only) or the
-`SpoolScribe` binary (Linux, recent glibc). Each archive has a `.sha256` file to
-verify the download.
+| Platform | Contents |
+| --- | --- |
+| Windows x64 | One `SpoolScribe.exe` |
+| macOS Apple Silicon | One `SpoolScribe.app` |
+| Linux x64 | One `SpoolScribe` executable; recent glibc and Qt runtime libraries required |
 
-The binaries are not code-signed:
+Verify origin and checksum before opening. Windows has no commercial signing
+certificate. The macOS bundle is ad hoc signed, without Apple notarisation:
+use the system’s per-application Open option after verification. Do not disable
+Gatekeeper globally. For personal source builds, use the
+[local installation guide](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/LOCAL_MACOS_INSTALL.md).
 
-- **Windows** — SmartScreen shows *"Windows protected your PC"*: click **More
-  info** → **Run anyway**.
-- **macOS** — Gatekeeper blocks the first launch: right-click the app → **Open**
-  → **Open**, or run `xattr -dr com.apple.quarantine SpoolScribe.app` once.
+For Python source use and compilation, see
+[Development](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DEVELOPMENT.md).
 
-### Option B — from source
+## 2. Choose the language and download the catalogue
 
-```sh
-python -m venv .venv
-# Windows:        .venv\Scripts\activate
-# macOS / Linux:  source .venv/bin/activate
-pip install -r requirements.txt
-python app_gui.py
-```
+The app follows supported system languages and otherwise uses English.
+**Settings → Interface** lets you choose English, Français, Español or 简体中文.
+After saving, choose **Restart now** or **Later**. No data or favourites are lost.
 
-## 2. First run: download the catalogue
+The first launch starts empty. Choose sources, give network consent and refresh.
+Later launches use the saved cadence; **Refresh catalogue** forces a refresh.
+Offline, the last downloaded catalogue remains usable.
+[Source and backup details](Updating-the-Database.md).
 
-The app starts empty. The **Sources du catalogue** dialog lists the sources and
-the hosts they use; tick the ones you want and click **Synchroniser maintenant**.
-This records your consent and downloads the data into your user folder
-(`%APPDATA%\SpoolScribe`, `~/Library/Application Support/SpoolScribe` or
-`~/.config/SpoolScribe`). A report window then summarises what was added.
+## 3. Find your filament
 
-Later launches refresh the selected sources once a day by default (change the
-cadence in **⚙ → Paramètres**); **Synchroniser** (Ctrl+U) forces a refresh at
-any time, and **Annuler** stops one. Offline, the cached catalogue stays usable.
-See [[Updating the Database|Updating-the-Database]].
+Search across products, colours and references. Selecting a manufacturer limits
+materials to those available; selecting a material also narrows manufacturers.
+Filter by favourites or data state. Resetting filters keeps saved favourites.
 
-Then browse: the sidebar lists manufacturers (explicit favorites pinned at the top; a
-field filters the list), material families and data states; the search box
-(Ctrl+F) matches product, colour, reference, manufacturer and material; a column
-header click sorts (second click reverses, Shift-click or right-click adds a
-secondary sort). Each row is one filament; its spool sizes are listed in the
-card. Select a row to open its card.
+Click a column header to sort, click again to reverse; its context menu selects
+primary/secondary sort or visible columns. Choose a row or grid card to inspect
+a filament. Its actual packaging references are grouped in the detail card.
+Choose the correct shade if sources disagree, then the available spool size.
+Set a preferred packaging in **Settings → Spools**.
 
-## 3. Describe your hardware, once
+**Modify** creates an independent personal copy with an editable `@suffix`.
+The source record stays intact and refreshes preserve the copy.
 
-**⚙ → Mon matériel** (or **Modifier…** in the card) asks for the printer or
-reader that will read the tag, its firmware when several exist, and the tag you
-bought (**Étiquette achetée**: NTAG216 or NTAG215). The list says, per
-firmware, whether the machine reads an OpenSpool tag at all — a Snapmaker U1
-does so with the paxx12 firmware, not with the stock one; Bambu AMS, Prusa
-OpenPrintTag, Creality CFS and the like never do (see
-[[Printers and Readers|Printers-and-Readers]]). The recommended *essential*
-profile fits every reference on both chips; the *full* profile and the writer
-reserve are under **Réglages avancés**. **Définir par défaut** keeps the tag
-choice for later launches. The card then shows a one-line summary
-(*Pour : …*).
+## 4. Configure your reader and export
 
-## 4. Export a tag payload
+In **⚙ → My hardware**, choose printer/reader and installed software. Only a
+compatible OpenSpool configuration enables NFC export; other setups provide
+a reference sheet. [Check compatibility](Printers-and-Readers.md).
 
-1. Select a filament. The card shows its colour, temperatures, diameter,
-   density, the references of every packaging and the data state. Fill in
-   missing values with **Corriger…** if needed; values flagged *À vérifier* must
-   be confirmed before export.
-2. (Optional) **Inspecter le JSON** shows the exact bytes that will be exported.
-3. Click **Exporter pour NFC** (Ctrl+E). If the colour is unknown, enter a
-   representative HEX or cancel. **Dossier d'export** opens the output folder.
-4. Write the JSON onto the tag with a separate writer (for example SpoolFlux),
-   read the tag back, and check what the printer reports. SpoolScribe never
-   writes a tag itself. See [[Writing RFID Tags|Writing-RFID-Tags]].
+Choose the NTAG215 or NTAG216 you bought. Advanced profile/reserve options remain
+optional. Then:
 
-When the chosen hardware cannot read an OpenSpool tag, the tag controls are
-hidden and the card is a reference sheet for your slicer profile; no proprietary
-RFID tag or OpenPrintTag is generated.
+1. Inspect the JSON if desired; the window size stays unchanged.
+2. Click **Export for NFC** and choose a destination folder.
+3. Wait for the saved-file confirmation. Cancelling creates no file.
+4. Use a separate NFC writing app, read the tag back and test the reader.
 
-
-The current development interface uses spool cards and parameter tiles. Favorite
-stars work on manufacturers, filament cards and the detail header. Configure a
-preferred packaging in **Paramètres → Bobines**, and sources in **Paramètres →
-Catalogue**. **Synchroniser** then uses those saved sources directly. **Voir le JSON** and **Dossier d’export** remain directly visible below NFC export.
-
-Exports now ask for the destination directory and confirm the completed write. Canceling creates no file. **Modifier…** proposes an independent `@Personal` copy rather than changing all source references. JSON inspection keeps the window size.
+SpoolScribe prepares the payload; it does not write the tag or replace the
+slicer profile. [Writing guide](Writing-RFID-Tags.md).

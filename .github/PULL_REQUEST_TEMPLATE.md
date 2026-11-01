@@ -11,7 +11,7 @@
 
 ## Checklist
 
-- [ ] Logic lives in `core.py` where it can be shared by CLI and GUI.
+- [ ] Logic lives in `src/spoolscribe/core.py` where it can be shared by CLI and GUI.
 - [ ] No new **un-consented** network access was introduced
       (all network stays behind the consent gate — see ../docs/PRIVACY.md).
 - [ ] Any new data source is documented in `docs/DATA_SOURCES.md` **and** added to

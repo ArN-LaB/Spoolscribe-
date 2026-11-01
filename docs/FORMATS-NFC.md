@@ -2,7 +2,7 @@
 
 **Non.** OpenSpool est un format de données parmi plusieurs. Une puce NFC,
 un encodage et un logiciel de lecteur compatibles sont trois conditions distinctes.
-SpoolScribe 0.3.0 prépare actuellement **OpenSpool 1.0** uniquement ; il n’écrit pas
+SpoolScribe 0.3.5 prépare actuellement **OpenSpool 1.0** uniquement ; il n’écrit pas
 physiquement le tag. Vérification documentaire : 1er novembre 2026.
 
 | Format | Encodage et support documentés | Export dans SpoolScribe |

@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import core
+from spoolscribe import core
 from tests import test_gui as fixture
 from tests.support import small_db
 
@@ -71,7 +71,7 @@ class VisualWorkspaceTests(unittest.TestCase):
 
     def test_sync_uses_saved_sources_without_opening_source_preferences(self):
         w=self.window
-        with patch('core.has_network_consent',return_value=True),patch.object(w,'_start_update') as start,patch.object(w,'_choose_sources') as choose:
+        with patch('spoolscribe.core.has_network_consent',return_value=True),patch.object(w,'_start_update') as start,patch.object(w,'_choose_sources') as choose:
             w.update_btn.click();start.assert_called_once_with(manual=True);choose.assert_not_called()
 
     def test_characteristics_are_tiles_and_grid_names_the_product(self):

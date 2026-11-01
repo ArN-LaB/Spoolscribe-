@@ -7,9 +7,9 @@ cached data remain usable offline.
 
 ## Sources and consent
 
-**Synchroniser** (Ctrl+U) opens the **Sources du catalogue** dialog. Each source
+**Refresh catalogue** (Ctrl+U) opens the **Sources du catalogue** dialog. Each source
 shows the host it contacts and the result of its last run (updated, unchanged,
-unreachable, partial, error). **Synchroniser maintenant** saves the choice and
+unreachable, partial, error). **Refresh now** saves the choice and
 starts a refresh; **Enregistrer seulement** saves it for the next launch; **Voir
 le rapport de la dernière synchronisation** reopens the last report.
 Deselecting a source prevents future requests to it; existing records are kept.
@@ -25,7 +25,7 @@ Sources, hosts and licences:
 
 **⚙ → Paramètres → Actualisation au lancement** sets when the app refreshes by
 itself: at every launch, once a day (default), once a week, or manually only.
-An empty database always triggers the first download. **Synchroniser** forces a
+An empty database always triggers the first download. **Refresh catalogue** forces a
 refresh regardless of the cadence.
 
 Open Filament Database, SpoolmanDB and the Bambu profile index are fetched
@@ -76,8 +76,8 @@ also keeps `polymaker_db.json.pre-update.bak`. The GUI offers restoration of
 `.bak` when the database is unreadable. From source:
 
 ```sh
-python convert_profile.py --restore-db
-python convert_profile.py --restore-db "/path/to/polymaker_db.json.pre-update.bak"
+python -m spoolscribe.convert_profile --restore-db
+python -m spoolscribe.convert_profile --restore-db "/path/to/polymaker_db.json.pre-update.bak"
 ```
 
 The replaced file is kept as `polymaker_db.json.before-restore-*`. After a

@@ -26,7 +26,7 @@ class AlignmentTests(unittest.TestCase):
     def test_brand_stars_are_not_repeated_in_every_name_and_name_click_selects(self):
         from PySide6.QtCore import Qt,QPoint
         from PySide6.QtTest import QTest
-        import core
+        from spoolscribe import core
         w=self.window;w.show();w.app.processEvents()
         self.assertTrue(all('☆' not in w.brand_list.item(i).text() for i in range(w.brand_list.count())))
         target=next(w.brand_list.item(i) for i in range(w.brand_list.count()) if w.brand_list.item(i).data(Qt.UserRole)=='Polymaker')
@@ -57,7 +57,7 @@ class AlignmentTests(unittest.TestCase):
         with patch.object(QDialog,'exec',inspect):w._open_settings()
 
     def test_startup_configuration_matches_the_app_without_growing_the_font(self):
-        import app_gui
+        from spoolscribe import app_gui
         app=self.window.app;size=app.font().pointSizeF()
         app_gui.configure_application(app);app_gui.configure_application(app)
         self.assertEqual(app.style().objectName().lower(),'fusion')
@@ -73,7 +73,7 @@ class AlignmentTests(unittest.TestCase):
         self.assertEqual(result.pixelColor(2+6,2+12).name(),'#cf2211')
 
     def test_duplicate_manufacturer_name_is_only_cleaned_for_display(self):
-        from ui_widgets import product_label
+        from spoolscribe.ui_widgets import product_label
         text='Artillery Artillery Basic PLA'
         self.assertEqual(product_label(text,'Artillery'),'Artillery Basic PLA')
         self.assertEqual(text,'Artillery Artillery Basic PLA')

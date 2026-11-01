@@ -1,39 +1,35 @@
-# Documentation SpoolScribe
+# Documentation SpoolScribe v0.3.5
 
-Version source : **0.3.5**. Les téléchargements stables suivent la
-[dernière release publiée](https://github.com/ArN-LaB/Spoolscribe-/releases/latest).
-Les [releases](https://github.com/ArN-LaB/Spoolscribe-/releases) contiennent les
-archives Windows x64, macOS Apple Silicon et Linux x64 et leurs SHA-256.
+**[Télécharger la version stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)** · [Présentation](../README.md) · [Wiki](wiki/Home.md)
 
-## Références actuelles
+## Utiliser l’application
 
-- [Guide et installation](../README.md) ; [changelog](../CHANGELOG.md).
-- [Développement, ligne de commande et packaging](DEVELOPMENT.md).
-- [Présentation et règles du dépôt](REPOSITORY-MAINTENANCE.md).
-- [Formats et compatibilité NFC](FORMATS-NFC.md) ; [format des données](DATA_FORMAT.md).
-- [Sources et couverture du catalogue](DATA_SOURCES.md) ; [confidentialité](PRIVACY.md).
-- [Imprimantes et lecteurs](wiki/Printers-and-Readers.md) ; [visuels et provenance](PRINTER_VISUALS.md).
-- [Mise à jour du catalogue](wiki/Updating-the-Database.md).
-- [Validation automatique et limites](VALIDATION-CI-v0.3.0.md).
-- [Roadmap et validations restantes](ROADMAP.md).
-- [Marques et logos](TRADEMARKS.md) ; [licence](../LICENSE) ; [attributions](../NOTICE).
+| Besoin | Guide |
+| --- | --- |
+| Installer et préparer une première étiquette | [Démarrage](wiki/Getting-Started.md) |
+| Langue, filtres croisés, favoris, bobines et copies personnelles | [Guide de l’interface](USER_GUIDE.md) |
+| Choisir une imprimante ou un lecteur | [Compatibilité](wiki/Printers-and-Readers.md) |
+| Écrire et relire une étiquette | [Guide NFC](wiki/Writing-RFID-Tags.md) · [Formats](FORMATS-NFC.md) |
+| Actualiser le catalogue et comprendre ses limites | [Actualisation](wiki/Updating-the-Database.md) · [Sources](DATA_SOURCES.md) |
+| Résoudre un problème | [FAQ](wiki/FAQ.md) |
+
+## Comprendre et contribuer
+
+- [Développement, commandes et compilation](DEVELOPMENT.md).
+- [Structure du dépôt et maintenance](REPOSITORY.md).
+- [Contrat des données et de l’export](DATA_FORMAT.md).
+- [Langues de l’interface](../translations/README.md).
+- [Captures et logo animé : provenance et régénération](images/README.md).
+- [Validation de v0.3.5 et publication](validation/v0.3.5.md).
+- [Installation personnelle macOS](LOCAL_MACOS_INSTALL.md).
+- [Roadmap](ROADMAP.md) · [Changelog](../CHANGELOG.md) · [Contribuer](../.github/CONTRIBUTING.md).
+- [Confidentialité](PRIVACY.md) · [Marques](TRADEMARKS.md) · [Visuels des imprimantes](PRINTER_VISUALS.md) · [Licence](../LICENSE) · [Attributions](../NOTICE).
 
 ## Historique
 
-Les rapports d’audit et les huit rapports de retours UX décrivent chacun un
-commit ou un paquet daté. Leurs anciens nombres de tests et mentions « non testé »
-sont des constats historiques ; le rapport CI ci-dessus donne les validations
-ultérieures. Ils ne constituent pas des copies divergentes de la documentation.
+Les [archives](archive/README.md) conservent les audits, retours UX et journaux des
+versions précédentes. Leurs nombres de tests et états de publication sont datés ;
+ils ne décrivent pas la version actuelle.
 
-- [Audit v0.3.0](VALIDATION-AUDIT-v0.3.0.md).
-- [Retours et première intégration](VALIDATION-RETOURS-v0.3.0.md).
-- [Derniers retours UX et copies personnelles](VALIDATION-UX-RETOURS-8-v0.3.0.md).
-- [Journal de soutien, licence, intégration et publication](JOURNAL-SOUTIEN-ET-PUBLICATION-2026-11-01.md).
-- [Archives des validations antérieures](archive/README.md).
-
-Les tests hors écran et les sondes des exécutables ne remplacent pas une recette
-visuelle humaine ni l’écriture/relecture d’une étiquette NFC sur une imprimante réelle.
-
-## v0.3.5
-
-[Validation and limits](VALIDATION-v0.3.5.md) · [Interface languages](../translations/README.md). See the [four configurations and three builds](VALIDATION-CI-v0.3.5.md) and [PR #7](https://github.com/ArN-LaB/Spoolscribe-/pull/7) for the integration and publication state.
+Les tests automatisés et les sondes des exécutables ne remplacent pas une recette
+visuelle humaine ni une écriture/relecture NFC sur une imprimante réelle.

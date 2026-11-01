@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import core
+from spoolscribe import core
 from tests.support import product, entry
 
 
@@ -77,17 +77,17 @@ class OpenSpoolTests(unittest.TestCase):
             self.assertNotIn("..", Path(out).name)
 
     def test_bad_orca_is_not_silently_ignored(self):
-        with patch("core.find_orca_profile", return_value="bad"), patch("core.load_orca_temps", side_effect=ValueError("bad profile")):
+        with patch("spoolscribe.core.find_orca_profile", return_value="bad"), patch("spoolscribe.core.load_orca_temps", side_effect=ValueError("bad profile")):
             with self.assertRaisesRegex(core.ExportValidationError, "Orca"):
                 core.build_openspool(entry(), product())
 
     def test_existing_orca_overrides_are_applied(self):
-        with patch("core.find_orca_profile", return_value="profile"), patch("core.load_orca_temps", return_value={"min_temp": 200, "density": 1.3}):
+        with patch("spoolscribe.core.find_orca_profile", return_value="profile"), patch("spoolscribe.core.load_orca_temps", return_value={"min_temp": 200, "density": 1.3}):
             p = core.build_openspool(entry(), product(), use_orca_overrides=True)
             self.assertEqual((p["min_temp"], p["density"]), (200, 1.3))
 
     def test_orca_cannot_silently_replace_a_local_correction(self):
-        with patch("core.find_orca_profile", return_value="profile"), patch("core.load_orca_temps", return_value={"min_temp": 200, "density": 1.3}):
+        with patch("spoolscribe.core.find_orca_profile", return_value="profile"), patch("spoolscribe.core.load_orca_temps", return_value={"min_temp": 200, "density": 1.3}):
             p = core.build_openspool(entry(), product())
             self.assertEqual((p["min_temp"], p["density"]), (190, 1.24))
             missing = dict(product(), min_temp=None)

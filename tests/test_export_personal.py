@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-import core
+from spoolscribe import core
 from scripts import db_io, catalogue_merge
 from tests.support import small_db
 from tests import test_gui as fixture
@@ -36,7 +36,7 @@ class PersonalCopyTests(unittest.TestCase):
             self.assertEqual(len(db['_skus']),2)
             self.assertEqual(core.save_personal_filament(db,sku,{'min_temp':206},'Personnel',path=str(path)),sku)
             before=copy.deepcopy(db);raw=path.read_bytes()
-            with patch('core.save_db',side_effect=OSError('fixture')):
+            with patch('spoolscribe.core.save_db',side_effect=OSError('fixture')):
                 with self.assertRaises(OSError):core.save_personal_filament(db,sku,{'min_temp':207},'U1',path=str(path))
             self.assertEqual(db,before);self.assertEqual(path.read_bytes(),raw)
 
@@ -70,7 +70,7 @@ class ExportPersonalUiTests(unittest.TestCase):
 
     def test_export_chooses_folder_persists_it_and_confirms_only_after_write(self):
         w=self.window;w._show_detail('PB05001');folder=Path(self.tmp.name)/'chosen';folder.mkdir()
-        with patch('app_gui.QFileDialog.getExistingDirectory',return_value=str(folder)),patch('app_gui.QMessageBox.information') as message:
+        with patch('spoolscribe.app_gui.QFileDialog.getExistingDirectory',return_value=str(folder)),patch('spoolscribe.app_gui.QMessageBox.information') as message:
             w._generate();files=list(folder.glob('*.json'));self.assertEqual(len(files),1)
             self.assertEqual(core.load_config()['export_directory'],str(folder))
             self.assertEqual(message.call_args.args[1],'Export terminé');self.assertEqual(Path(message.call_args.args[2].split('\n',1)[1]).resolve(),files[0].resolve())
@@ -78,7 +78,7 @@ class ExportPersonalUiTests(unittest.TestCase):
 
     def test_export_folder_cancellation_creates_nothing_and_does_not_confirm(self):
         w=self.window;w._show_detail('PB05001')
-        with patch('app_gui.QFileDialog.getExistingDirectory',return_value=''),patch('app_gui.QMessageBox.information') as message:
+        with patch('spoolscribe.app_gui.QFileDialog.getExistingDirectory',return_value=''),patch('spoolscribe.app_gui.QMessageBox.information') as message:
             w._generate();message.assert_not_called();self.assertFalse(Path(core.OUTPUT_DIR).exists())
 
     def test_gui_saves_a_personal_copy_and_selects_it_without_changing_source(self):
@@ -100,7 +100,7 @@ class ExportPersonalUiTests(unittest.TestCase):
         w=self.window
         for result in ({'newer':False,'version':'0.2.2'},{'error':'offline'}):
             w.status.showMessage('Vérification de la version publiée sur GitHub…')
-            with patch('ui_catalogue.QMessageBox.information'),patch('ui_catalogue.QMessageBox.warning'):w._release_result(result)
+            with patch('spoolscribe.ui_catalogue.QMessageBox.information'),patch('spoolscribe.ui_catalogue.QMessageBox.warning'):w._release_result(result)
             self.assertNotIn('Vérification',w.status.currentMessage())
 
     def test_reset_has_same_width_and_right_edge_as_filament_favorites(self):

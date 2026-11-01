@@ -2,9 +2,9 @@
 # Docs : https://docs.github.com/code-security/dependabot/dependabot-version-updates
 version: 2
 updates:
-  # Dépendances Python (PySide6, PyInstaller…) déclarées dans requirements.txt.
+  # Dépendances Python (PySide6, PyInstaller…) déclarées dans requirements/requirements.txt.
   - package-ecosystem: "pip"
-    directory: "/"
+    directories: ["/", "/requirements"]
     schedule:
       interval: "weekly"
       day: "monday"
@@ -17,8 +17,7 @@ updates:
     commit-message:
       prefix: "deps"
     ignore:
-      # PyInstaller 7 refuse l'association onefile + BUNDLE encore utilisée
-      # sous Windows/Linux ; migration à faire explicitement, pas par un bot.
+      # Révision explicite du prochain format de packaging PyInstaller 7.
       - dependency-name: "pyinstaller"
         versions: [">=7.0"]
       # PySide6/Shiboken 6.12 plantent sous Linux/Python 3.10 (CI-01).

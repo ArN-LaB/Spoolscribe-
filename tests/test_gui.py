@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import core
+from spoolscribe import core
 from tests.support import catalogue
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -14,7 +14,7 @@ HAS_QT = importlib.util.find_spec("PySide6") is not None
 if HAS_QT:
     from PySide6.QtCore import Qt
     from PySide6.QtWidgets import QApplication, QDialog, QLineEdit
-    import app_gui
+    from spoolscribe import app_gui
 
 
 @unittest.skipUnless(HAS_QT, "PySide6 non installé : contrôles GUI non mesurés")
@@ -38,13 +38,13 @@ class GuiTests(unittest.TestCase):
         # open the first-run consent dialog during another widget interaction.
         # The real restore/startup test below still exercises the actual timer.
         core.save_config(dict(core.DEFAULT_CONFIG, language='fr', printer_firmware="paxx12", network_consent=False))
-        errors = patch("app_gui.QMessageBox.critical", side_effect=lambda *args, **kwargs:
+        errors = patch("spoolscribe.app_gui.QMessageBox.critical", side_effect=lambda *args, **kwargs:
                        self.fail(f"Dialogue d'erreur inattendu : {args[-1]}"))
         errors.start()
         self.addCleanup(errors.stop)
         self.window = app_gui.MainWindow()
         self.addCleanup(self.window.close)
-        picker=patch('app_gui.QFileDialog.getExistingDirectory',side_effect=lambda *a,**k:core.OUTPUT_DIR)
+        picker=patch('spoolscribe.app_gui.QFileDialog.getExistingDirectory',side_effect=lambda *a,**k:core.OUTPUT_DIR)
         picker.start();self.addCleanup(picker.stop)
 
     def test_startup_and_inspection_are_offline_and_identical_to_export(self):
@@ -53,7 +53,7 @@ class GuiTests(unittest.TestCase):
         self.window._refresh_inspector()
         text = self.window.inspector.toPlainText()
         self.assertEqual(text, core.serialize_openspool(self.window._build_payload(), **self.window._nfc_options()))
-        with patch("app_gui.QMessageBox.information"):
+        with patch("spoolscribe.app_gui.QMessageBox.information"):
             self.window._generate()
             self.window._generate(mode="archive")
         files = list(Path(core.OUTPUT_DIR).glob("*.json"))
@@ -75,7 +75,7 @@ class GuiTests(unittest.TestCase):
             inputs[0].setText("abcdef")
             inputs[1].setText("00")
             return QDialog.Accepted
-        with patch.object(QDialog, "exec", fill_dialog), patch("app_gui.QMessageBox.information"):
+        with patch.object(QDialog, "exec", fill_dialog), patch("spoolscribe.app_gui.QMessageBox.information"):
             self.window._generate()
         stored = core.load_db()["_skus"]["FB04001"]
         self.assertEqual((stored["hex"], stored["alpha"]), ("ABCDEF", "00"))
@@ -165,7 +165,7 @@ class GuiTests(unittest.TestCase):
         core.export_settings(str(exported))
         w._choose_brand("Polymaker")
         w.tag_choice.setCurrentIndex(w.tag_choice.findData("NTAG216"))
-        with patch("ui_catalogue.QFileDialog.getOpenFileName", return_value=(str(exported), "JSON (*.json)")):
+        with patch("spoolscribe.ui_catalogue.QFileDialog.getOpenFileName", return_value=(str(exported), "JSON (*.json)")):
             w._import_settings()
         self.assertEqual(w.brand_filter.currentData(), "Prusament")
         self.assertEqual(w.tag_choice.currentData(), "NTAG215")
@@ -200,7 +200,7 @@ class GuiTests(unittest.TestCase):
         expected = self.window.inspector.toPlainText()
         self.assertNotIn("brand_meta", json.loads(expected))
         self.assertIn("Espace restant", self.window.nfc_capacity.toolTip())
-        with patch("app_gui.QMessageBox.information"):
+        with patch("spoolscribe.app_gui.QMessageBox.information"):
             self.window._generate()
             self.window._generate(mode="archive")
         files = list(Path(core.OUTPUT_DIR).glob("*ntag215_essential.json"))
@@ -262,9 +262,9 @@ class GuiTests(unittest.TestCase):
                 with patch.multiple(core, _FROZEN=frozen, DB_PATH=str(db_path), DATA_HOME=str(root / "user"),
                                     CONFIG_PATH=str(root / "config.json"), RESOURCE_DIR=str(root / "bundle"),
                                     DATA_DIR=str(db_path.parent), ORCA_DIR=str(root / "user/orca_profiles")), \
-                     patch("app_gui.QApplication", return_value=self.app) as application, \
+                     patch("spoolscribe.app_gui.QApplication", return_value=self.app) as application, \
                      patch.object(self.app, "exec", side_effect=event_loop), \
-                     patch("app_gui.QMessageBox.question", return_value=app_gui.QMessageBox.Yes), \
+                     patch("spoolscribe.app_gui.QMessageBox.question", return_value=app_gui.QMessageBox.Yes), \
                      patch.object(app_gui.MainWindow, "_start_update") as update, \
                      patch("sys.argv", ["SpoolScribe"]):
                     application.instance.return_value = self.app
