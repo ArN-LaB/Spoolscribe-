@@ -9,9 +9,8 @@ pas le parcours des téléchargements publics. Gatekeeper reste actif.
 - macOS, Git, Python 3.12 et les dépendances de `requirements-build.txt` installées
   dans l'environnement Python choisi (voir [DEVELOPMENT.md](DEVELOPMENT.md)).
 - Une copie examinée de `ArN-LaB/homebrew-tap`, contenant
-  `developer-tools/macos-local-installer`, version **0.1.1**. La référence prévue
-  `local-installer-v0.1.1` attend la validation humaine et n'est pas encore publiée.
-  Pendant la revue, utiliser la copie locale du composant. La référence partagée doit être publiée avant cette intégration.
+  `developer-tools/macos-local-installer`, version **0.1.1**, référence publiée `local-installer-v0.1.1`.
+  Dans ce checkout du composant : `git checkout local-installer-v0.1.1`.
 - Sources SpoolScribe propres : préserver puis commiter ses changements avant le build.
 
 ```sh
@@ -63,7 +62,7 @@ les supprimer. Aucune purge automatique : les examiner avant un nettoyage manuel
 Pas d'élévation de privilèges ni de lancement automatique de SpoolScribe.
 
 Voir le [contrat et les limites du composant commun](https://github.com/ArN-LaB/homebrew-tap/tree/main/developer-tools/macos-local-installer).
-Le guide sera accessible sur `main` après l'intégration du composant ; le manifeste
-reste épinglé sur sa version et son SHA-256, jamais sur une branche mouvante.
+Le guide est disponible sur `main` ; le manifeste reste épinglé sur la version
+et le SHA-256 du moteur, jamais sur une branche mouvante.
 La signature ad hoc d'un build personnel ne vaut pas notarisation ; le lancement
 réel et les politiques d'administration de ce Mac restent à contrôler après validation.
