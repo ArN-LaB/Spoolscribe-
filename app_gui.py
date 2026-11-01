@@ -1012,7 +1012,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         )
         ghost_qss = (
             f"QToolButton {{ background:transparent; color:{t['text']}; border:1px solid {t['border']};"
-            f" border-radius:7px; min-height:18px; padding:6px 8px; }}"
+            f" border-radius:7px; min-height:18px; padding:6px 8px; font-size:13px; }}"
             f"QToolButton:hover {{ background:{t['sec_hover']}; border-color:{accent}; }}"
             f"QToolButton:checked {{ background:{t['sec_bg']}; border-color:{accent}; color:{accent}; }}"
             f"QToolButton#shadeOption {{ background:{t['card']}; padding:7px; border-radius:9px; }}"

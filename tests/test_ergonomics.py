@@ -76,6 +76,15 @@ class ErgonomicsTests(unittest.TestCase):
         self.assertEqual(a.mapTo(w,QPoint()).y(),b.mapTo(w,QPoint()).y())
         self.assertGreater(a.mapTo(w,QPoint()).y(),w.card.mapTo(w,QPoint()).y()+w.card.height())
 
+    def test_native_font_metrics_do_not_expand_compact_action_columns(self):
+        w=self.window
+        font=w.font();font.setPointSize(20)
+        for button in (w.reset_filters,w.favorites_only,w.brand_favorites_only,w.btn_edit_physical,w.provenance_toggle):button.setFont(font)
+        w._apply_theme();w.show();w.app.processEvents()
+        self.assertLessEqual(w.sidebar.width(),280)
+        self.assertEqual(w.reset_filters.width(),w.favorites_only.width())
+        self.assertEqual(w.btn_edit_physical.width(),w.provenance_toggle.width())
+
     def test_settings_separate_spool_preferences_from_export_options(self):
         from PySide6.QtWidgets import QDialog,QTabWidget
         def inspect(dlg):
