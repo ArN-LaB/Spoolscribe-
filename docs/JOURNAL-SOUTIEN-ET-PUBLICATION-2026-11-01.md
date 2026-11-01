@@ -191,3 +191,33 @@ sous AGPL.
 Code de Zenith, dépendances, workflows CI/CD, cask Homebrew, processus de
 distribution, `~/.ssh/config`. Dépôts `vpn-tools`, `homebrew-tap` et
 `lfipekin-cdn` non modifiés.
+
+
+## 9. Complément — validation multiplateforme et intégration autorisée
+
+Les sections précédentes conservent les constats de la session parallèle. Le
+travail a ensuite été committé, puis l’utilisateur a autorisé le push vers `main`
+et la remise en fonctionnement des trois distributions.
+
+- `origin/main` (`e82d43f`) a été intégré à la branche de travail ; `LICENSE`,
+  `NOTICE`, le financement et les ajouts README sont conservés. Le conflit du
+  changelog a été résolu en gardant les deux ensembles de notes ; aucun fichier
+  de soutien n’a été supprimé.
+- Les échecs Windows sont corrigés : verrou de processus abandonné, police Qt
+  absente du backend hors écran, dimensions des actions, repli des cartes et
+  comparaison des chemins Windows courts/longs. Les contrôles de ressources CI
+  ont également été corrigés pour les scripts temporaires et les liens macOS.
+- Code validé : `2338be17f22f541375b02141c27664e52f5f81e8`.
+  [CI complète](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41277583138) :
+  quatre configurations à 237 tests chacune, aucun ignoré ; trois builds réussis ;
+  trois ZIP et trois SHA-256 téléchargés et vérifiés.
+- `main` local a été avancé sans réécriture d’historique vers ce code validé ;
+  cette documentation accompagne l’intégration distante autorisée.
+- Voir [le rapport CI](VALIDATION-CI-v0.3.0.md) pour les empreintes, les contrôles
+  réellement exécutés et les limites. Les données et les 48 profils Orca sont
+  inchangés par cette passe. Pas de nouveau tag ou release ; recette physique
+  NFC et acceptation visuelle humaine encore distinctes de la CI.
+- Incident d’authentification : GitHub acceptait la clé publique SSH, mais
+  l’agent 1Password échouait pendant la signature avec « communication with
+  agent failed ». Les pushes autorisés ont abouti avec l’authentification GitHub
+  CLI disponible, sans modification de `~/.ssh/config` ni export de clé privée.

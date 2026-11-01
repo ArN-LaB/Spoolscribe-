@@ -97,7 +97,8 @@ by an earlier preview build, without provenance). Six remarks, all addressed:
 - [ ] Finish re-sourcing official manufacturer logos through
       `.github/scripts/import_brand_logos.py` (the review file is being built).
 
-- [ ] Run the revision through the remote four-configuration CI and the three builds.
+- [x] Run the revision through the remote four-configuration CI and the three builds
+      (237 tests per configuration; see [CI validation](VALIDATION-CI-v0.3.0.md)).
 - [ ] Human acceptance on macOS, Windows and Linux (first launch, download, export).
 - [ ] Physical NTAG215/NTAG216 write and read-back with a real printer.
 - [ ] Optionally move the legacy scrapers (`scripts/scrape_*`, `seed_*`,
