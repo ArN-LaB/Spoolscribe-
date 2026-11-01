@@ -24,6 +24,7 @@ from scripts.db_io import (
     load_db, save_db, atomic_write, run_step, PartialUpdate, SourceUnavailable
 )
 from scripts.resource_paths import user_data_home
+from scripts.resource_paths import canonical_resource_path
 _DATA_HOME = user_data_home()
 DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
@@ -81,6 +82,12 @@ def main() -> None:
 
         checked += 1
         logo_ok = os.path.exists(logo_file)
+        if curated and not logo_ok:
+            # Curated artwork remains in read-only resources, not the user database.
+            relative = canonical_resource_path(logo_path)
+            bundled = os.path.join(_RESOURCE, relative)
+            if os.path.isfile(bundled):
+                logo_file, logo_path, logo_ok = bundled, relative, True
         if curated:
             # Asset soigné fourni avec le dépôt : pas de téléchargement.
             if not logo_ok:

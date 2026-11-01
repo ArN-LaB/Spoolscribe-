@@ -55,10 +55,11 @@ de toutes les entrées partageant l’image retraitée. Dependabot suit `/` et
 
 ## Vérification de cette passe
 
-La suite comprend les 269 tests précédents et huit cas supplémentaires : identité
+La suite comprend les 269 tests précédents et neuf cas supplémentaires : identité
 des 54 fixtures, anciens chemins et logos utilisateur, exclusion d’images non
 déclarées, instantané optionnel, endpoint imprimantes cohérence des images
-partagées retraitées et stockage utilisateur par défaut des 13 workers autonomes. Les essais locaux sont hors réseau et isolés.
+partagées retraitées et stockage utilisateur par défaut des 13 workers autonomes et
+  repli sur l’image ROSA3D déclarée, sans copie dans les données utilisateur. Les essais locaux sont hors réseau et isolés.
 
 Le build macOS utilise un dossier temporaire non synchronisé : quatre langues,
 TLS strict, NTAG215/216, **186 ressources** et signature stricte contrôlés.

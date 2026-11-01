@@ -112,3 +112,20 @@ print('13 workers use user storage; no repository write')
                                   capture_output=True,text=True,timeout=20)
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertFalse(list(Path(directory).rglob('*.json')))
+
+    def test_curated_legacy_sync_reads_relocated_artwork_without_copying_it_into_user_data(self):
+        from scripts import sync_multibrand_assets, db_io
+        from tests.support import small_db
+        import sys
+        with tempfile.TemporaryDirectory() as directory:
+            data=Path(directory)/'data';database=data/'polymaker_db.json'
+            db_io.save_db(small_db(),database)
+            with patch.multiple(sync_multibrand_assets,DATA_DIR=str(data),DB_FILE=str(database),
+                                BRANDS=[('ROSA3D','rosa3d','rosa3d_logo.png',True)]), \
+                    patch.object(sync_multibrand_assets,'_fetch_json',return_value={'id':'rosa3d','name':'ROSA3D'}), \
+                    patch.object(sync_multibrand_assets,'_fetch_bytes',side_effect=AssertionError('Unexpected download')), \
+                    patch.object(sys,'argv',['worker']):
+                sync_multibrand_assets.main()
+            self.assertEqual(db_io.load_db(database)['_brands']['ROSA3D']['logo_path'],
+                             'data/brands/logos/rosa3d.png')
+            self.assertFalse((data/'rosa3d_logo.png').exists())
