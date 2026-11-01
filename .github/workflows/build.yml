@@ -145,8 +145,9 @@ jobs:
           expected = {name: subprocess.check_output(['git', 'show', 'HEAD:' + name])
                       for name in tracked.decode('utf-8').split(chr(0)) if name and include_resource(name)}
           if sys.platform == 'darwin':
-              # macOS .app (onedir) : les ressources sont des fichiers sous Contents/Frameworks.
-              base = pathlib.Path('dist/SpoolScribe.app/Contents/Frameworks')
+              # macOS onedir: DATA lives in Resources; Frameworks links to it.
+              # rglob on Frameworks does not descend through those symlinks.
+              base = pathlib.Path('dist/SpoolScribe.app/Contents/Resources')
               actual = {p.relative_to(base).as_posix() for p in base.rglob('*') if p.is_file()
                         and p.relative_to(base).parts[0] in ('data', 'scripts', 'orca_profiles')}
               read = lambda name: (base / name).read_bytes()
