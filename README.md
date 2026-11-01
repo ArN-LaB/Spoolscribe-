@@ -8,6 +8,7 @@
   <a href="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml"><img src="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml/badge.svg" alt="Build multiplatform"></a>
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT">
   <img src="https://img.shields.io/badge/status-for%20fun%20%C2%B7%20free%20time-blueviolet" alt="Status: for fun">
+  <a href="https://buymeacoffee.com/arn_lab"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
 </p>
 
 > Prepare [OpenSpool](https://github.com/spuder/OpenSpool) data for NFC spool tags, so a printer with an
@@ -298,6 +299,13 @@ offers restoration when its database is unreadable. See
 - [OpenSpool](https://github.com/spuder/OpenSpool) format
 - [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us) — separate iPhone app for programming NFC tags
 - The [**paxx12**](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) Snapmaker U1 firmware fork that makes the RFID reader usable
+
+## Support
+
+SpoolScribe is free and open source, built in my free time, and it stays that way:
+no paid version, no locked features, nothing expected in return. If it saved you
+some time and you feel like it, you can [buy me a coffee](https://buymeacoffee.com/arn_lab)
+— entirely optional. Bug reports, feedback and contributions help just as much.
 
 ## License
 

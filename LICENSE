@@ -19,19 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
---------------------------------------------------------------------------------
-
-NOTE ON SCOPE OF THIS LICENSE
-
-This MIT license covers ONLY the source code of SpoolScribe (the application,
-its scripts and its UI).
-
-It does NOT cover, and cannot grant rights over:
-
-  - Third-party datasets consumed by the app. Each has its own license — see
-    docs/DATA_SOURCES.md.
-  - Trademarks and brand assets (logos, brand names such as Polymaker®,
-    Panchroma™, PolyTerra™, PolyLite™, Snapmaker®). See docs/TRADEMARKS.md.
-
-See docs/DATA_SOURCES.md and docs/TRADEMARKS.md for the full picture.

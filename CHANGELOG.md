@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] — Unreleased
 
+### Documentation
+
+- Add an optional Buy Me a Coffee link: `.github/FUNDING.yml` (GitHub "Sponsor"
+  button), a badge and a short *Support* section in the README. SpoolScribe stays
+  free and open source; support never conditions access to the software.
+- `LICENSE` now holds the standard MIT text only, so GitHub detects the licence;
+  the scope note (third-party datasets, trademarks) moves unchanged to `NOTICE`.
+
+### Cross-platform integration
+
+- Recover abandoned writer locks on Windows without signalling processes; retain live or inaccessible writers.
+- Keep paired controls aligned using native minimum sizes; test reflow independently of platform fonts and normalize Windows export paths in assertions.
+
 ### Export and personal copies (1 November 2026, local)
 
 - Pick and remember the export directory, confirm successful writes, and keep JSON inspection within the existing window.
