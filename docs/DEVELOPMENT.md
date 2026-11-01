@@ -35,6 +35,10 @@ them with SHA-256 checksums to a GitHub Release when a `v*` tag is pushed.
 
 ## Tests and local data
 
+For a personal macOS installation with provenance checks, backups and an interactive
+approval, use [the shared local installer](LOCAL_MACOS_INSTALL.md). It is developer
+tooling, excluded from the distributed app, and leaves Gatekeeper enabled.
+
 ```sh
 python -B -m unittest discover -s tests -t . -v
 ```
