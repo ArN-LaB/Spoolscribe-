@@ -139,6 +139,7 @@ jobs:
         shell: python
         run: |
           import os, pathlib, subprocess, sys
+          sys.path.insert(0, str(pathlib.Path.cwd()))  # shell: python runs a script in RUNNER_TEMP
           from packaging_rules import include_resource
           tracked = subprocess.check_output(['git', 'ls-files', '-z', '--', 'data', 'scripts', 'orca_profiles'])
           expected = {name: subprocess.check_output(['git', 'show', 'HEAD:' + name])
