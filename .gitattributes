@@ -2,3 +2,4 @@
 data/** -text
 orca_profiles/** -text
 scripts/** -text
+translations/** -text

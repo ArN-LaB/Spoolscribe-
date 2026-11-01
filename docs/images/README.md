@@ -16,3 +16,7 @@ The screen shows an offline demonstration, not a successful live refresh or a
 physical NFC test. Source and brand credits remain in
 [DATA_SOURCES](../DATA_SOURCES.md) and [TRADEMARKS](../TRADEMARKS.md).
 Documentation images are excluded from application bundles.
+
+## Animated logo
+
+`spoolscribe-animated.gif` restores the animated spool in the README. It is a deterministic export of `data/spoolscribe_logo_animated.svg`, not a screenshot or new logo. Regenerate with `python .github/scripts/render_readme_logo.py` (development dependencies). 75 frames, 3-second loop; no remote image dependency.

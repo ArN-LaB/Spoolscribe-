@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="data/app.png" alt="SpoolScribe app icon" width="96" height="96">
+  <img src="docs/images/spoolscribe-animated.gif" alt="SpoolScribe — animated spool logo" width="128" height="128">
 </p>
 
 <h1 align="center">SpoolScribe</h1>
@@ -14,11 +14,13 @@
 <p align="center"><a href="#download">Download</a> · <a href="#your-first-tag">Your first tag</a> · <a href="#will-it-work-with-my-printer">Compatibility</a> · <a href="docs/README.md">Documentation</a></p>
 
 [![SpoolScribe catalogue: searchable manufacturers, filament colours and NFC export](docs/images/catalogue.png)](docs/images/catalogue.png)
-<p align="center"><sub>Actual v0.3.0 interface, shown with public catalogue data and temporary demo settings. The interface is currently in French.</sub></p>
+<p align="center"><sub>Actual v0.3.0 interface, shown with public catalogue data and temporary demo settings. This screenshot shows the French interface in v0.3.0. Version 0.3.5 adds English, French, Spanish and Simplified Chinese.</sub></p>
 
 **SpoolScribe prepares the JSON file.** A separate NFC writing app, such as
 [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us), writes it to your NTAG215 or
 NTAG216. Your printer or external reader needs to support **OpenSpool**.
+
+**Interface languages:** English · Français · Español · 简体中文. The app follows your computer’s language, with English as the fallback. Override it in **Settings → Interface**. The app offers **Restart now** or **Later** after saving.
 
 ## Download
 
@@ -63,12 +65,12 @@ The `.zip.sha256` file contains the expected hash. Compare it with `sha256sum`
 ## Your first tag
 
 1. **Choose your sources.** On the first run, select the catalogue sources and click
-   **Synchroniser maintenant**. The app downloads its database after your consent.
-2. **Find your filament.** Search or filter, then select the colour and the actual
+   **Refresh now** (*Actualiser maintenant* in French). The app downloads its database after your consent.
+2. **Find your filament.** Manufacturer and material filters narrow each other’s available choices. Search or filter, then select the colour and the actual
    spool size. Save a favourite if you use it often.
-3. **Set up your hardware.** Open **⚙ → Mon matériel** and choose your printer or
+3. **Set up your hardware.** Open **⚙ → My hardware** and choose your printer or
    reader, the installed firmware when relevant, and the tag you bought.
-4. **Export and write.** Click **Exporter pour NFC**, choose a folder, then use your
+4. **Export and write.** Click **Export for NFC**, choose a folder, then use your
    NFC writer to write the file. Read the tag back and check it on your reader.
 
 Your catalogue stays available offline after its first download. You can choose
@@ -78,7 +80,7 @@ stay in your user folder.
 ## Will it work with my printer?
 
 **An RFID/NFC reader does not by itself mean OpenSpool compatibility.** The app's
-**Mon matériel** selector explains what your setup can read.
+**My hardware** selector explains what your setup can read.
 
 | Your setup | What SpoolScribe provides |
 |---|---|
@@ -110,9 +112,9 @@ The app uses Python and PySide6, with a shared core for the desktop and command-
 interfaces. See [development and CLI use](docs/DEVELOPMENT.md) and
 [how to contribute](.github/CONTRIBUTING.md).
 
-v0.3.0 passed **237 offline tests per configuration** on Linux/Python 3.10 and 3.12,
+v0.3.5 passed **267 offline tests per configuration** on Linux/Python 3.10 and 3.12,
 Windows/Python 3.12 and macOS/Python 3.12. All three native builds passed frozen-app,
-resource, TLS and export checks. See the [validation record](docs/VALIDATION-CI-v0.3.0.md).
+resource, TLS and export checks. See the [validation record](docs/VALIDATION-CI-v0.3.5.md).
 These automated checks do not replace human desktop acceptance or physical NFC read-back.
 
 </details>

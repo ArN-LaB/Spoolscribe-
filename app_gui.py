@@ -36,8 +36,10 @@ except Exception:
     HAS_SVG = False
 
 import core
+from i18n import tr, configure_language, LANGUAGES, display_quality
+from app_lifecycle import RESTART_EXIT_CODE, launch_replacement
 from ui_catalogue import CatalogueUx, ClearableTable, ClearableList
-from ui_widgets import SpoolPreview, MetricGrid, WrapLabel, FilamentDelegate, spool_icon, product_label, DetailScrollArea, CONTROL_HEIGHT
+from ui_widgets import SearchField, SpoolPreview, MetricGrid, WrapLabel, FilamentDelegate, spool_icon, product_label, DetailScrollArea, CONTROL_HEIGHT
 
 # The inspector lives inside the scroll area; toggling never changes the window.
 _INSPECTOR_H = 210
@@ -428,6 +430,7 @@ class MainWindow(CatalogueUx, QMainWindow):
     def __init__(self):
         super().__init__()
         self.app = QApplication.instance()
+        configure_language(self.app, core.load_config().get("language", "auto"))
         self.setWindowTitle(f"SpoolScribe {core.APP_VERSION} — OpenSpool / NFC")
         self.resize(1280, 800)
         self.setMinimumSize(860, 560)
@@ -437,6 +440,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             self.setWindowIcon(QIcon(icon_path))
 
         self.db = core.load_db()
+        self._restart_requested = False
         self._default_brand_pending = not self.db.get("_skus")
         self.current_sku: str | None = None
         self.worker: UpdateWorker | None = None
@@ -451,6 +455,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self._update_stats()
         self._show_empty()
         self._restore_ui_preferences()
+        self._fit_translated_headers()
 
         # Réagit aux changements de thème de l'OS à chaud (Qt 6.5+).
         try:
@@ -480,9 +485,9 @@ class MainWindow(CatalogueUx, QMainWindow):
         top = QHBoxLayout()
         top.setSpacing(8)
 
-        self.search = QLineEdit()
+        self.search = SearchField()
         self.search.setObjectName("search")
-        self.search.setPlaceholderText("Rechercher : fabricant, matière, référence, couleur…")
+        self.search.setPlaceholderText(tr('Rechercher : fabricant, matière, référence, couleur…'))
         self.search.setClearButtonEnabled(True)
         self.search.setFixedHeight(32)
         self.search.setMinimumWidth(240)
@@ -506,7 +511,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.btn_view_list.setObjectName("seg")
         self.btn_view_list.setIcon(make_view_icon("list", "#888", 18, dpr))
         self.btn_view_list.setIconSize(QSize(18, 18))
-        self.btn_view_list.setToolTip("Vue liste")
+        self.btn_view_list.setToolTip(tr('Vue liste'))
         self.btn_view_list.setCheckable(True)
         self.btn_view_list.setChecked(True)
         self.btn_view_list.setCursor(Qt.PointingHandCursor)
@@ -514,7 +519,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.btn_view_grid.setObjectName("seg")
         self.btn_view_grid.setIcon(make_view_icon("grid", "#888", 18, dpr))
         self.btn_view_grid.setIconSize(QSize(18, 18))
-        self.btn_view_grid.setToolTip("Vue grille")
+        self.btn_view_grid.setToolTip(tr('Vue grille'))
         self.btn_view_grid.setCheckable(True)
         self.btn_view_grid.setCursor(Qt.PointingHandCursor)
         view_group = QButtonGroup(self)
@@ -528,11 +533,11 @@ class MainWindow(CatalogueUx, QMainWindow):
         seg.addWidget(self.btn_view_grid)
         # View controls sit with the catalogue, below the global search.
 
-        self.update_btn = QPushButton("Synchroniser")
+        self.update_btn = QPushButton(tr('Actualiser le catalogue'))
         self.update_btn.setObjectName("primary")
         self.update_btn.setFixedHeight(32)
         self.update_btn.setCursor(Qt.PointingHandCursor)
-        self.update_btn.setToolTip("Choisir les sources et actualiser la base")
+        self.update_btn.setToolTip(tr('Choisir les sources et actualiser la base'))
         self.update_btn.clicked.connect(self._sync_catalogue)
         top.addWidget(self.update_btn)
 
@@ -541,23 +546,23 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.menu_btn.setObjectName("ghost")
         self.menu_btn.setFixedSize(38,32)
         self.menu_btn.setText("⚙")
-        self.menu_btn.setToolTip("Réglages")
-        self.menu_btn.setAccessibleName("Réglages")
+        self.menu_btn.setToolTip(tr('Réglages'))
+        self.menu_btn.setAccessibleName(tr('Réglages'))
         self.menu_btn.setCursor(Qt.PointingHandCursor)
         self.menu_btn.setPopupMode(QToolButton.InstantPopup)
         menu = QMenu(self.menu_btn)
-        act_hardware = QAction("Mon matériel…", self)
+        act_hardware = QAction(tr('Mon matériel…'), self)
         act_hardware.triggered.connect(self._open_hardware)
         menu.addAction(act_hardware)
-        act_settings = QAction("Paramètres…", self)
+        act_settings = QAction(tr('Paramètres…'), self)
         act_settings.triggered.connect(self._open_settings)
         menu.addAction(act_settings)
         menu.addSeparator()
-        self.act_archive = QAction("Exporter une archive JSON…", self)
+        self.act_archive = QAction(tr('Exporter une archive JSON…'), self)
         self.act_archive.triggered.connect(lambda: self._generate(mode="archive"))
         menu.addAction(self.act_archive)
         menu.addSeparator()
-        act_about = QAction("À propos de SpoolScribe", self)
+        act_about = QAction(tr('À propos de SpoolScribe'), self)
         act_about.triggered.connect(self._open_about)
         self._about_action=act_about
         self.menu_btn.setMenu(menu)
@@ -567,12 +572,12 @@ class MainWindow(CatalogueUx, QMainWindow):
         # Filtres : le modèle reste dans trois listes déroulantes cachées ;
         # la barre latérale (fabricants, matières, état) les pilote.
         self.brand_filter = QComboBox()
-        self.brand_filter.setAccessibleName("Filtrer par fabricant")
+        self.brand_filter.setAccessibleName(tr('Filtrer par fabricant'))
         self.material_filter = QComboBox()
-        self.material_filter.setAccessibleName("Filtrer par matière")
+        self.material_filter.setAccessibleName(tr('Filtrer par matière'))
         self.quality_filter = QComboBox()
-        for label, key in (("Toutes les fiches", "all"), ("Prêtes à exporter", "ready"),
-                           ("À compléter", "incomplete"), ("À vérifier", "suspect")):
+        for label, key in ((tr('Toutes les fiches'), "all"), (tr('Prêtes à exporter'), "ready"),
+                           (tr('À compléter'), "incomplete"), (tr('À vérifier'), "suspect")):
             self.quality_filter.addItem(label, key)
         for combo in (self.brand_filter, self.material_filter, self.quality_filter):
             combo.setParent(self)
@@ -581,16 +586,16 @@ class MainWindow(CatalogueUx, QMainWindow):
 
         sorting = QHBoxLayout()
         self.sort1, self.sort2 = QComboBox(), QComboBox()
-        self.sort2.addItem("Aucun", "")
+        self.sort2.addItem(tr('Aucun'), "")
         for key, label in core.CATALOGUE_SORT_FIELDS.items():
-            self.sort1.addItem(label, key)
-            self.sort2.addItem(label, key)
+            self.sort1.addItem(tr(label), key)
+            self.sort2.addItem(tr(label), key)
         self.sort1.setCurrentIndex(self.sort1.findData("brand"))
         self.sort2.setCurrentIndex(self.sort2.findData("product"))
         self.sort1_direction, self.sort2_direction = QComboBox(), QComboBox()
         for direction in (self.sort1_direction, self.sort2_direction):
-            direction.addItem("Croissant ↑", False)
-            direction.addItem("Décroissant ↓", True)
+            direction.addItem(tr('Croissant ↑'), False)
+            direction.addItem(tr('Décroissant ↓'), True)
         # Sorting is controlled only by column headers. These hidden state
         # controls retain the shared sorting model used by list and grid views.
         for combo in (self.sort1, self.sort2, self.sort1_direction, self.sort2_direction):
@@ -602,8 +607,8 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.page_label = QLabel()
         self.page_label.setWordWrap(False)
         pager.addWidget(self.page_label, 1)
-        self.previous_page = QPushButton("← Précédent")
-        self.next_page = QPushButton("Suivant →")
+        self.previous_page = QPushButton(tr('← Précédent'))
+        self.next_page = QPushButton(tr('Suivant →'))
         self.previous_page.clicked.connect(lambda: self._change_page(-1))
         self.next_page.clicked.connect(lambda: self._change_page(1))
         pager.addWidget(self.previous_page)
@@ -629,9 +634,9 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.progress.setTextVisible(False)
         self.progress.setFixedHeight(8)
         progress_row.addWidget(self.progress, 1)
-        self.cancel_update_btn = QPushButton("Annuler")
+        self.cancel_update_btn = QPushButton(tr('Annuler'))
         self.cancel_update_btn.setVisible(False)
-        self.cancel_update_btn.setToolTip("Interrompt la synchronisation ; la base locale reste celle d'avant.")
+        self.cancel_update_btn.setToolTip(tr("Interrompt la synchronisation ; la base locale reste celle d'avant."))
         self.cancel_update_btn.clicked.connect(self._cancel_update)
         progress_row.addWidget(self.cancel_update_btn)
         root.addLayout(progress_row)
@@ -649,7 +654,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         # Vue liste (table)
         self.table = ClearableTable(0, 9)
         self._column_keys = ("", "reference", "product", "color_name", "brand", "material", "diameter", "weight", "quality")
-        self.table.setHorizontalHeaderLabels(["", "Référence", "Produit", "Couleur", "Fabricant", "Matière", "Ø mm", "Masse g", "État des données"])
+        self.table.setHorizontalHeaderLabels(["", tr('Référence'), tr('Produit'), tr('Couleur'), tr('Fabricant'), tr('Matière'), "Ø mm", tr('Masse g'), tr('État des données')])
         self.table.verticalHeader().setVisible(False)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -672,7 +677,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         hh.setCascadingSectionResizes(True)
         hh.setSectionsClickable(True)
         hh.sectionClicked.connect(self._sort_column)
-        hh.setToolTip("Clic : tri principal, second clic : inverser. Maj + clic ou clic droit : tri secondaire et colonnes.")
+        hh.setToolTip(tr('Clic : tri principal, second clic : inverser. Maj + clic ou clic droit : tri secondaire et colonnes.'))
         self.table.setColumnWidth(1, 110)
         hh.setSectionResizeMode(2, QHeaderView.Stretch)   # Produit absorbe la largeur restante.
         self.table.setColumnWidth(3, 112)
@@ -708,13 +713,13 @@ class MainWindow(CatalogueUx, QMainWindow):
         table_layout = QVBoxLayout(table_panel)
         table_layout.setContentsMargins(0, 0, 0, 0)
         tools = QHBoxLayout()
-        self.results_label = QLabel("Catalogue")
+        self.results_label = QLabel(tr('Catalogue'))
         tools.addWidget(self.results_label, 1)
         self.columns_btn = QToolButton()
-        self.columns_btn.setText("Colonnes")
+        self.columns_btn.setText(tr('Colonnes'))
         self.columns_btn.setFixedHeight(32)
-        self.columns_btn.setAccessibleName("Choisir les colonnes affichées")
-        self.columns_btn.setToolTip("Choisir les colonnes affichées (aussi par clic droit sur un en-tête)")
+        self.columns_btn.setAccessibleName(tr('Choisir les colonnes affichées'))
+        self.columns_btn.setToolTip(tr('Choisir les colonnes affichées (aussi par clic droit sur un en-tête)'))
         tools.addWidget(self.segwrap)
         tools.addWidget(self.columns_btn)
         table_layout.addLayout(tools)
@@ -765,7 +770,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.database_btn.setObjectName("statusControl");self.database_btn.setFixedHeight(24)
         self.status.addPermanentWidget(self.database_btn)
         self.database_btn.clicked.connect(self._database_details)
-        self.status.showMessage("Choisissez un filament.")
+        self.status.showMessage(tr('Choisissez un filament.'))
 
     # ── Page « aucun filament sélectionné » ──────────────────────────────
     def _build_empty_page(self) -> QWidget:
@@ -797,7 +802,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         lay.addSpacing(20)
 
         # ── Titre ────────────────────────────────────────────────────────
-        title = QLabel("Aucun filament sélectionné")
+        title = QLabel(tr('Aucun filament sélectionné'))
         tf = QFont()
         tf.setPointSize(17)
         tf.setWeight(QFont.DemiBold)
@@ -809,9 +814,9 @@ class MainWindow(CatalogueUx, QMainWindow):
 
         # ── Sous-texte : trois lignes séparées, chacune centrée ──────────
         lines = [
-            "Choisissez une référence dans la liste",
-            "ou utilisez la barre de recherche.",
-            "Basculez entre vue liste et grille en haut à droite.",
+            tr('Choisissez une référence dans la liste'),
+            tr('ou utilisez la barre de recherche.'),
+            tr('Basculez entre vue liste et grille en haut à droite.'),
         ]
         for i, txt in enumerate(lines):
             lbl = QLabel(txt)
@@ -841,7 +846,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         head = QHBoxLayout()
         self.logo = QLabel();self.logo.setFixedSize(100,30);self.logo.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
         head.addWidget(self.logo);head.addStretch(1)
-        self.favorite_btn=QToolButton();self.favorite_btn.setText('☆ Favori');self.favorite_btn.setCheckable(True)
+        self.favorite_btn=QToolButton();self.favorite_btn.setText(tr('☆ Favori'));self.favorite_btn.setCheckable(True)
         self.favorite_btn.setFixedHeight(CONTROL_HEIGHT);self.favorite_btn.clicked.connect(self._toggle_filament_favorite);head.addWidget(self.favorite_btn)
         hero_layout.addLayout(head)
         body=QHBoxLayout();body.setSpacing(10)
@@ -854,8 +859,8 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.filament_meta=WrapLabel();self.filament_meta.setObjectName('fieldvalue');titles.addWidget(self.filament_meta)
         self.swatch=QLabel('—');self.swatch.setObjectName('swatch');self.swatch.setMaximumHeight(28);self.swatch.setTextInteractionFlags(Qt.TextSelectableByMouse)
         titles.addWidget(self.swatch);titles.addStretch(1);body.addLayout(titles,1);hero_layout.addLayout(body)
-        self.color_caption=QLabel('Couleur');self.color_caption.hide()
-        self.variant_label=QLabel('Bobine')
+        self.color_caption=QLabel(tr('Couleur'));self.color_caption.hide()
+        self.variant_label=QLabel(tr('Bobine'))
         self.variant_choice=QComboBox();self.variant_choice.setMinimumWidth(0)
         self.variant_choice.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon);self.variant_choice.setMinimumContentsLength(8)
         self.variant_choice.currentIndexChanged.connect(self._variant_changed)
@@ -863,15 +868,15 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.package_hint=WrapLabel();self.package_hint.setObjectName('packageHint');self.package_hint.hide();hero_layout.addWidget(self.package_hint)
         dl.addWidget(self.hero)
         self.shade_panel=QWidget();self.shade_layout=QVBoxLayout(self.shade_panel);self.shade_layout.setContentsMargins(0,0,0,0)
-        self.shade_hint=WrapLabel('Quelle teinte correspond à votre bobine ?');self.shade_layout.addWidget(self.shade_hint)
+        self.shade_hint=WrapLabel(tr('Quelle teinte correspond à votre bobine ?'));self.shade_layout.addWidget(self.shade_hint)
         self.shade_row=QGridLayout();self.shade_layout.addLayout(self.shade_row);self.shade_buttons=[];dl.addWidget(self.shade_panel)
         # Four scannable tiles replace the label/value inventory.
-        caption=QLabel('CARACTÉRISTIQUES');caption.setObjectName('caption');self._muted_labels.append(caption);dl.addWidget(caption)
-        self.btn_edit_physical=QToolButton();self.btn_edit_physical.setText('Modifier…');self.btn_edit_physical.clicked.connect(self._edit_physical)
+        caption=QLabel(tr('CARACTÉRISTIQUES'));caption.setObjectName('caption');self._muted_labels.append(caption);dl.addWidget(caption)
+        self.btn_edit_physical=QToolButton();self.btn_edit_physical.setText(tr('Modifier…'));self.btn_edit_physical.clicked.connect(self._edit_physical)
         self.card=QFrame();self.card.setObjectName('physicalCard');card_layout=QVBoxLayout(self.card);card_layout.setContentsMargins(0,0,0,0)
         self.characteristics=MetricGrid();card_layout.addWidget(self.characteristics);self._field_widgets=dict(self.characteristics.values)
         dl.addWidget(self.card)
-        self.provenance_toggle=QToolButton();self.provenance_toggle.setText('Détails et sources');self.provenance_toggle.setCheckable(True);self.provenance_toggle.toggled.connect(self._toggle_provenance)
+        self.provenance_toggle=QToolButton();self.provenance_toggle.setText(tr('Détails et sources'));self.provenance_toggle.setCheckable(True);self.provenance_toggle.toggled.connect(self._toggle_provenance)
         self.characteristic_actions=QHBoxLayout();self.characteristic_actions.setSpacing(8)
         for button in (self.btn_edit_physical,self.provenance_toggle):
             button.setFixedHeight(CONTROL_HEIGHT);button.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
@@ -880,7 +885,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.provenance_box=QFrame();self.provenance_box.setObjectName('provenanceCard')
         self.fields=QGridLayout(self.provenance_box);self.fields.setContentsMargins(12,10,12,10);self.fields.setHorizontalSpacing(12);self.fields.setVerticalSpacing(8)
         for i,name in enumerate(('Références','Source')):
-            label=QLabel(name);label.setProperty('field_key',name);value=WrapLabel('—');value.setTextInteractionFlags(Qt.TextSelectableByMouse)
+            label=QLabel(tr(name));label.setProperty('field_key',name);value=WrapLabel('—');value.setTextInteractionFlags(Qt.TextSelectableByMouse)
             value.setAlignment(Qt.AlignTop|Qt.AlignLeft)
             self.fields.addWidget(label,i,0,Qt.AlignTop);self.fields.addWidget(value,i,1,Qt.AlignTop);self._field_widgets[name]=value
         self.fields.setColumnStretch(1,1)
@@ -888,7 +893,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             value=QLabel('—');value.hide();self._field_widgets[name]=value
         dl.addWidget(self.provenance_box);self._toggle_provenance(False)
         self.hardware_summary=WrapLabel();self.hardware_summary.setObjectName('hardwareSummary')
-        self.btn_hardware=QToolButton();self.btn_hardware.setText('Mon matériel…');self.btn_hardware.clicked.connect(self._open_hardware);self.btn_hardware.hide()
+        self.btn_hardware=QToolButton();self.btn_hardware.setText(tr('Mon matériel…'));self.btn_hardware.clicked.connect(self._open_hardware);self.btn_hardware.hide()
 
         cfg = core.load_config()
         self.hardware_page = QWidget()
@@ -904,22 +909,21 @@ class MainWindow(CatalogueUx, QMainWindow):
         defaults = core.nfc_defaults(cfg)
         self.tag_type.setCurrentIndex(max(0, self.tag_type.findData(defaults["tag_type"])))
         self.nfc_profile = QComboBox()
-        self.nfc_profile.addItem("Automatique — format compact", "auto")
-        self.nfc_profile.addItem("Essentiel", "essential")
-        self.nfc_profile.addItem("Avec les descriptifs et le logo", "full")
+        self.nfc_profile.addItem(tr('Automatique — format compact'), "auto")
+        self.nfc_profile.addItem(tr('Essentiel'), "essential")
+        self.nfc_profile.addItem(tr('Avec les descriptifs et le logo'), "full")
         self.nfc_profile.setCurrentIndex(max(0, self.nfc_profile.findData(defaults["profile"])))
         self.tag_type.setParent(self.nfc_advanced)
         self.tag_type.hide()
         nfc_row.addWidget(self.nfc_profile, 1)
         advanced_layout.addLayout(nfc_row)
         reserve_row = QHBoxLayout()
-        reserve_row.addWidget(QLabel("Réserve pour l'application d'écriture"))
+        reserve_row.addWidget(QLabel(tr("Réserve pour l'application d'écriture")))
         self.nfc_reserve = QSpinBox()
         self.nfc_reserve.setRange(0, core.NFC_CAPACITIES[self.tag_type.currentData()])
-        self.nfc_reserve.setSuffix(" octets")
+        self.nfc_reserve.setSuffix(tr(' octets'))
         self.nfc_reserve.setValue(defaults["reserved_bytes"])
-        self.nfc_reserve.setToolTip("Espace réservé à d'autres enregistrements NDEF ou données du logiciel d'écriture. "
-                                   "À vérifier dans ce logiciel ; zéro ne prédit pas ses ajouts.")
+        self.nfc_reserve.setToolTip(tr("Espace réservé à d'autres enregistrements NDEF ou données du logiciel d'écriture. À vérifier dans ce logiciel ; zéro ne prédit pas ses ajouts."))
         reserve_row.addWidget(self.nfc_reserve)
         advanced_layout.addLayout(reserve_row)
         hardware_layout.addWidget(self.nfc_advanced)
@@ -929,7 +933,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.nfc_note.setWordWrap(True)
         self.nfc_note.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
         dl.addWidget(self.nfc_note)
-        self.nfc_capacity = QLabel("Sélectionnez une fiche pour calculer sa taille NFC.")
+        self.nfc_capacity = QLabel(tr('Sélectionnez une fiche pour calculer sa taille NFC.'))
         self.nfc_capacity.setWordWrap(True)
         self.nfc_capacity.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
         dl.addWidget(self.nfc_capacity)
@@ -943,7 +947,7 @@ class MainWindow(CatalogueUx, QMainWindow):
 
         # Action principale : c'est LA fonction de l'app → grande, pleine
         # largeur, bien en évidence au milieu du panneau.
-        self.btn_generate = QPushButton("Exporter pour NFC")
+        self.btn_generate = QPushButton(tr('Exporter pour NFC'))
         self.btn_generate.setObjectName("primary")
         self.btn_generate.setProperty('large',True)
         self.btn_generate.setCursor(Qt.PointingHandCursor)
@@ -959,11 +963,11 @@ class MainWindow(CatalogueUx, QMainWindow):
         # Actions secondaires juste sous l'action principale.
         sec = QHBoxLayout()
         sec.setSpacing(8)
-        self.btn_inspect = QPushButton("Voir le JSON")
+        self.btn_inspect = QPushButton(tr('Voir le JSON'))
         self.btn_inspect.setObjectName("secondary")
         self.btn_inspect.setCursor(Qt.PointingHandCursor)
         self.btn_inspect.clicked.connect(self._toggle_inspect)
-        self.btn_open_out = QPushButton("Dossier d'export")
+        self.btn_open_out = QPushButton(tr("Dossier d'export"))
         self.btn_open_out.setObjectName("secondary")
         self.btn_open_out.setCursor(Qt.PointingHandCursor)
         self.btn_open_out.clicked.connect(self._open_output)
@@ -1181,6 +1185,14 @@ class MainWindow(CatalogueUx, QMainWindow):
             self._update_seg_icons()
             self.grid.itemDelegate().dark=t['dark'];self.grid.viewport().update()
 
+    def _fit_translated_headers(self):
+        # A layout saved in another language may have shorter header labels.
+        metrics = self.table.horizontalHeader().fontMetrics()
+        for column in range(1, self.table.columnCount()):
+            minimum = metrics.horizontalAdvance(self.table.horizontalHeaderItem(column).text()) + 22
+            if self.table.columnWidth(column) < minimum:
+                self.table.setColumnWidth(column, minimum)
+
     def _show_empty(self):
         self.stack.setCurrentIndex(0)
 
@@ -1195,15 +1207,16 @@ class MainWindow(CatalogueUx, QMainWindow):
 
     # ── Données / table ──────────────────────────────────────────────────
     def _reload_table(self):
+        self._facet_signature = None
         self._sku_rows = core.list_skus(self.db)
         grouped = core.load_config().get("ui", {}).get("group", True) if isinstance(core.load_config().get("ui"), dict) else True
         self._all_rows = core.group_filaments(self._sku_rows) if grouped else list(self._sku_rows)
-        for combo, key, label in ((self.brand_filter, "brand", "Tous les fabricants"),
-                                  (self.material_filter, "family", "Toutes les matières")):
+        for combo, key, label in ((self.brand_filter, "brand", tr('Tous les fabricants')),
+                                  (self.material_filter, "family", tr('Toutes les matières'))):
             selected = combo.currentData()
             combo.blockSignals(True)
             combo.clear()
-            combo.addItem(label, "")
+            combo.addItem(tr(label), "")
             for value in sorted({r[key] for r in self._all_rows if r[key]}, key=str.casefold):
                 combo.addItem(value, value)
             combo.setCurrentIndex(max(0, combo.findData(selected)))
@@ -1226,7 +1239,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             if sw is None:
                 sw=QTableWidgetItem();self.table.setItem(r,0,sw)
             sw.setIcon(QIcon(make_swatch_pixmap(None if e.get("hex_variants",0)>1 else e.get("hex"), 18, dpr)))
-            sw.setToolTip(f"#{e['hex']}" if e.get("hex") else "Couleur à renseigner")
+            sw.setToolTip(f"#{e['hex']}" if e.get("hex") else tr('Couleur à renseigner'))
             for col, key in enumerate(self._column_keys[1:], 1):
                 value = e.get(key)
                 if isinstance(value, float) and value.is_integer():
@@ -1234,21 +1247,21 @@ class MainWindow(CatalogueUx, QMainWindow):
                 item=self.table.item(r,col)
                 if item is None:
                     item=QTableWidgetItem();self.table.setItem(r,col,item)
-                item.setText(str(value) if value is not None else "—")
-                item.setToolTip(str(value) if value is not None else "Inconnu")
+                item.setText((display_quality(str(value)) if key=="quality" else str(value)) if value is not None else "—")
+                item.setToolTip((display_quality(str(value)) if key=="quality" else str(value)) if value is not None else tr("Inconnu"))
                 if col == 1:
                     item.setData(Qt.UserRole, e["sku"])
                     shown = e["reference"] if not e["reference"].startswith(("OFD-", "SMDB-")) else "—"
                     if e.get("variant_count", 1) > 1:
-                        shown = f"{shown} +{e['variant_count'] - 1}" if shown != "—" else f"{e['variant_count']} cond."
+                        shown = f"{shown} +{e['variant_count'] - 1}" if shown != "—" else tr('{v0} cond.',v0=e['variant_count'])
                     item.setText(shown)
-                    item.setToolTip(f"Référence interne : {e['sku']}" + (f"\nRéférence fabricant : {e['manufacturer_sku']}" if e.get("manufacturer_sku") else "")
-                                    + ("\nConditionnements : " + ", ".join(v["reference"] for v in e["variants"]) if e.get("variant_count", 1) > 1 else ""))
+                    item.setToolTip(tr('Référence interne : {v0}', v0=e['sku']) + (tr('\nRéférence fabricant : {v0}', v0=e['manufacturer_sku']) if e.get("manufacturer_sku") else "")
+                                    + (tr("\nConditionnements : ") + ", ".join(v["reference"] for v in e["variants"]) if e.get("variant_count", 1) > 1 else ""))
                 if key == 'product' and e.get('diameter'):
                     item.setText(f"{product_label(e['product'],e.get('brand',''))} · {e['diameter']:g} mm")
             color_item = self.table.item(r, 3)
             color_item.setText(e["color_name"] + (" ⚠" if e.get("hex_variants",0)>1 else ""))
-            color_item.setToolTip(f"#{e['hex']}" if e.get("hex") else "Couleur à renseigner")
+            color_item.setToolTip(f"#{e['hex']}" if e.get("hex") else tr('Couleur à renseigner'))
             if not e.get("hex"):
                 color_item.setForeground(QColor("#b00"))
             else:
@@ -1341,6 +1354,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             self._filtered_rows = [r for r in self._filtered_rows if self._is_favorite(r, favorites)]
         index = next((i for i, r in enumerate(self._filtered_rows) if r['sku'] == self.current_sku or any(v['sku'] == self.current_sku for v in r.get('variants', []))), None) if self.current_sku else None
         self._page = index // self._page_size if index is not None else 0
+        self._refresh_facets()
         self._show_page()
         self._header_indicators()
         self._sync_sidebar_selection()
@@ -1351,8 +1365,8 @@ class MainWindow(CatalogueUx, QMainWindow):
         start = self._page * self._page_size
         end = min(total, start + self._page_size)
         self._populate(self._filtered_rows[start:end])
-        self.page_label.setText(f"{fmt_int(start + 1) if total else 0}–{fmt_int(end)} sur {fmt_int(total)}")
-        self.results_label.setText(f"{fmt_int(total)} filaments trouvés")
+        self.page_label.setText(tr('{v0}–{v1} sur {v2}',v0=fmt_int(start + 1) if total else 0,v1=fmt_int(end),v2=fmt_int(total)))
+        self.results_label.setText(tr('{v0} filaments trouvés', v0=fmt_int(total)))
         self.previous_page.setEnabled(self._page > 0)
         self.next_page.setEnabled(end < total)
         self.previous_page.setVisible(total > self._page_size)
@@ -1392,14 +1406,13 @@ class MainWindow(CatalogueUx, QMainWindow):
             conflicts.extend(values)
         conflicts = list(dict.fromkeys(conflicts))
         self.stats_label.setText(
-            f"Références : {st['skus']}    Fabricants : {len(self.db.get('_brands', {}))}    Produits : {st['products']}    "
-            f"HEX à préciser : {st['missing_hex']}    Mise à jour complète : {age_str}"
-            + (f"    Mise à jour : {core.UPDATE_STATUS_LABELS.get(self.db['_update_status'], self.db['_update_status'])}"
+            tr('Références : {v0}    Fabricants : {v1}    Produits : {v2}    HEX à préciser : {v3}    Mise à jour complète : {v4}', v0=st['skus'], v1=len(self.db.get('_brands', {})), v2=st['products'], v3=st['missing_hex'], v4=age_str)
+            + (tr('    Mise à jour : {v0}', v0=tr(core.UPDATE_STATUS_LABELS.get(self.db['_update_status'], self.db['_update_status'])))
                if self.db.get('_update_status') else "")
-            + (f"    Valeurs locales conservées : {len(conflicts)}" if conflicts else "")
+            + (tr('    Valeurs locales conservées : {v0}', v0=len(conflicts)) if conflicts else "")
         )
         self._refresh_database_summary()
-        self.stats_label.setToolTip("Valeurs locales conservées lors de la fusion :\n" + "\n".join(conflicts[:100])
+        self.stats_label.setToolTip(tr('Valeurs locales conservées lors de la fusion :\n') + "\n".join(conflicts[:100])
                                    + (f"\n… et {len(conflicts)-100} autres." if len(conflicts) > 100 else "")
                                    if conflicts else "")
 
@@ -1446,7 +1459,7 @@ class MainWindow(CatalogueUx, QMainWindow):
     def _paint_swatch(self):
         t=self._tok;h=(getattr(self,'_cur_hex',None) or '').strip().lstrip('#')
         self.spool_preview.set_filament(h.upper() if len(h)==6 else None,t['dark'])
-        self.swatch.setText('#'+h.upper() if len(h)==6 else 'Teintes à vérifier' if self._variant_needs_choice() else 'Couleur à renseigner')
+        self.swatch.setText('#'+h.upper() if len(h)==6 else tr('Teintes à vérifier') if self._variant_needs_choice() else tr('Couleur à renseigner'))
         self.swatch.setStyleSheet(f"color:{t['muted']};background:transparent;font-size:11px;")
 
     def _show_detail(self, sku):
@@ -1454,9 +1467,9 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.current_sku = sku
         view = core.get_sku_view(self.db, sku)
         self._show_card()
-        self.status.showMessage("Échap : désélectionner")
+        self.status.showMessage(tr('Échap : désélectionner'))
         if view is None:
-            self.title.setText(f"{sku} — produit introuvable")
+            self.title.setText(tr('{v0} — produit introuvable', v0=sku))
             self.subtitle_sku.setText("")
             self.subtitle_color.setText("")
             for v in self._field_widgets.values():
@@ -1466,14 +1479,14 @@ class MainWindow(CatalogueUx, QMainWindow):
             self.btn_generate.setEnabled(False)
             self.btn_inspect.setEnabled(False)
             self._refresh_logo("")
-            self.nfc_capacity.setText("Produit absent : export impossible.")
+            self.nfc_capacity.setText(tr('Produit absent : export impossible.'))
             return
 
         self.title.setText(product_label(view.display_product,view.product_data.get('brand','')))
         self.filament_meta.setText(view.type_str)
         group = self._group_for_sku(sku)
         self.subtitle_sku.setText(view.product_data.get('brand') or '')
-        self.subtitle_sku.setToolTip('Référence interne : ' + view.sku)
+        self.subtitle_sku.setToolTip(tr('Référence interne : ') + view.sku)
         self._refresh_variant_choice(group, sku)
         self._refresh_favorite_button()
         self.subtitle_color.setText((group or {}).get('color_name') or view.color_name or "")
@@ -1485,7 +1498,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self._field_widgets["Bed"].setText(view.bed_str)
         self._field_widgets["Densité"].setText(view.density_str)
         self._field_widgets["Diamètre"].setText(view.diameter_str)
-        brand = view.product_data.get("brand") or "Non renseignée"
+        brand = view.product_data.get("brand") or tr('Non renseignée')
         line = view.product_data.get("line")
         self._field_widgets["Marque"].setText(f"{brand} · {line}" if line else brand)
         entry = self.db["_skus"][sku]
@@ -1493,9 +1506,9 @@ class MainWindow(CatalogueUx, QMainWindow):
         source_names.update(info["source"] for info in view.product_data.get("_field_sources", {}).values() if info.get("source") and info.get("value") is not None)
         source_names.update(info["source"] for info in entry.get("_field_sources", {}).values() if info.get("source"))
         source_names.update(view.product_data.get("_official_references", {}))
-        self._field_widgets["Source"].setText(" + ".join(sorted(source_names)))
-        self._field_widgets["SKU fabricant"].setText(entry.get("manufacturer_sku") or "Non fourni")
-        self._field_widgets["Masse"].setText(f"{entry['weight']} g" if entry.get("weight") else "Non fournie")
+        self._field_widgets["Source"].setText(" + ".join(tr(name) for name in sorted(source_names)))
+        self._field_widgets["SKU fabricant"].setText(entry.get("manufacturer_sku") or tr('Non fourni'))
+        self._field_widgets["Masse"].setText(f"{entry['weight']} g" if entry.get("weight") else tr('Non fournie'))
         self._field_widgets["Références"].setText(self._references_text(sku))
 
         self._refresh_logo(view.product_data.get("brand") or "")
@@ -1515,7 +1528,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         if view is None:
             return None
         if self._variant_needs_choice():
-            raise core.ExportValidationError('Comparez les pastilles de couleur et choisissez la teinte de votre bobine.')
+            raise core.ExportValidationError(tr('Comparez les pastilles de couleur et choisissez la teinte de votre bobine.'))
         entry = dict(self.db["_skus"][self.current_sku])
         entry["sku"] = self.current_sku
         return core.build_openspool(entry, view.product_data, brand_meta=view.brand_meta,
@@ -1530,21 +1543,20 @@ class MainWindow(CatalogueUx, QMainWindow):
             return
         count = sum(e.get("product") == view.product for e in self.db["_skus"].values())
         dialog = QDialog(self)
-        dialog.setWindowTitle("Caractéristiques locales du produit")
+        dialog.setWindowTitle(tr('Caractéristiques locales du produit'))
         dialog.resize(440,420)
         layout = QVBoxLayout(dialog)
         layout.setContentsMargins(16,16,16,16);layout.setSpacing(12)
-        note = QLabel('Enregistrez une copie personnelle de cette bobine. La référence source reste intacte.\n'
-                      'Le suffixe apparaît après @. Valeur inconnue : laissez la case vide.')
+        note = QLabel(tr('Enregistrez une copie personnelle de cette bobine. La référence source reste intacte.\nLe suffixe apparaît après @. Valeur inconnue : laissez la case vide.'))
         note.setWordWrap(True)
         layout.addWidget(note)
         fields = {}
         form=QGridLayout();form.setContentsMargins(0,0,0,0);form.setHorizontalSpacing(12);form.setVerticalSpacing(8);form.setColumnStretch(1,1)
         suffix=QLineEdit(self.db['_skus'][self.current_sku].get('_personal_suffix','Personnel'));suffix.setObjectName('personal_suffix');suffix.setFixedHeight(CONTROL_HEIGHT)
-        suffix.setPlaceholderText('Personnel, U1…');form.addWidget(QLabel('Suffixe @'),0,0);form.addWidget(suffix,0,1)
-        for key, label in (("min_temp", "Buse min. °C"), ("max_temp", "Buse max. °C"),
-                           ("bed_min_temp", "Plateau min. °C"), ("bed_max_temp", "Plateau max. °C"),
-                           ("diameter", "Diamètre mm"), ("density", "Densité g/cm³")):
+        suffix.setPlaceholderText(tr('Personnel, U1…'));form.addWidget(QLabel(tr('Suffixe @')),0,0);form.addWidget(suffix,0,1)
+        for key, label in (("min_temp", tr('Buse min. °C')), ("max_temp", tr('Buse max. °C')),
+                           ("bed_min_temp", tr('Plateau min. °C')), ("bed_max_temp", tr('Plateau max. °C')),
+                           ("diameter", tr('Diamètre mm')), ("density", tr('Densité g/cm³'))):
             value = view.product_data.get(key)
             field = QLineEdit("" if value is None else str(value))
             field.setObjectName(key);field.setFixedHeight(CONTROL_HEIGHT)
@@ -1553,7 +1565,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         layout.addLayout(form)
         error = QLabel(); error.setWordWrap(True); layout.addWidget(error)
         buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
-        buttons.button(QDialogButtonBox.Save).setText('Enregistrer');buttons.button(QDialogButtonBox.Cancel).setText('Annuler')
+        buttons.button(QDialogButtonBox.Save).setText(tr('Enregistrer'));buttons.button(QDialogButtonBox.Cancel).setText(tr('Annuler'))
         for button in buttons.buttons():button.setFixedHeight(CONTROL_HEIGHT)
         layout.addWidget(buttons)
         def save():
@@ -1567,7 +1579,7 @@ class MainWindow(CatalogueUx, QMainWindow):
                 dialog.setProperty('saved_sku',created)
                 dialog.accept()
             except (ValueError, OSError) as exc:
-                error.setText(str(exc))
+                error.setText(tr(str(exc)))
         buttons.accepted.connect(save)
         buttons.rejected.connect(dialog.reject)
         if dialog.exec() == QDialog.Accepted:
@@ -1575,7 +1587,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             self.current_sku=selected
             self._reload_table()
             self.current_sku=selected;self._show_detail(selected)
-            self.status.showMessage('Copie personnelle enregistrée ; la référence source est conservée.',8000)
+            self.status.showMessage(tr('Copie personnelle enregistrée ; la référence source est conservée.'),8000)
             self._update_stats()
 
     def _nfc_changed(self, *_):
@@ -1594,19 +1606,18 @@ class MainWindow(CatalogueUx, QMainWindow):
         if core.validate_hex(entry.get("hex")):
             return True
         dlg = QDialog(self)
-        dlg.setWindowTitle("Couleur à préciser")
+        dlg.setWindowTitle(tr('Couleur à préciser'))
         lay = QVBoxLayout(dlg)
-        note = QLabel("La couleur est inconnue. Choisissez explicitement un HEX représentatif.\n"
-                      "Une couleur transparente ou multicolore ne sera pas remplacée automatiquement par du noir.")
+        note = QLabel(tr('La couleur est inconnue. Choisissez explicitement un HEX représentatif.\nUne couleur transparente ou multicolore ne sera pas remplacée automatiquement par du noir.'))
         note.setTextFormat(Qt.PlainText)
         if entry.get("source_colors"):
-            note.setText(note.text() + "\nCouleurs fournies par la source : " + ", ".join(entry["source_colors"]))
+            note.setText(note.text() + tr('\nCouleurs fournies par la source : ') + ", ".join(entry["source_colors"]))
         note.setWordWrap(True)
         lay.addWidget(note)
-        lay.addWidget(QLabel("HEX représentatif (6 caractères)"))
+        lay.addWidget(QLabel(tr('HEX représentatif (6 caractères)')))
         hx = QLineEdit()
         lay.addWidget(hx)
-        lay.addWidget(QLabel("Alpha facultatif : 00 transparent, FF opaque ; vide pour conserver"))
+        lay.addWidget(QLabel(tr('Alpha facultatif : 00 transparent, FF opaque ; vide pour conserver')))
         alpha = QLineEdit(entry.get("alpha", ""))
         lay.addWidget(alpha)
         buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
@@ -1617,7 +1628,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             return False
         value = core.validate_hex(hx.text())
         if not value:
-            raise core.ExportValidationError("Couleur invalide : six caractères HEX requis.")
+            raise core.ExportValidationError(tr('Couleur invalide : six caractères HEX requis.'))
         sku = self.current_sku
         core.set_sku_hex(self.db, sku, value, alpha=alpha.text().strip() or None)
         self._reload_table()
@@ -1630,23 +1641,23 @@ class MainWindow(CatalogueUx, QMainWindow):
         if not self.current_sku:
             return
         if self.worker and self.worker.isRunning():
-            self.status.showMessage("Attendez la fin de la mise à jour avant de modifier ou exporter la fiche.", 6000)
+            self.status.showMessage(tr('Attendez la fin de la mise à jour avant de modifier ou exporter la fiche.'), 6000)
             return
         try:
             if mode == "nfc" and not self._can_export_for_printer():
                 return
             if core.get_sku_view(self.db, self.current_sku) is None:
-                raise core.ExportValidationError("Produit introuvable pour cette référence.")
+                raise core.ExportValidationError(tr('Produit introuvable pour cette référence.'))
             if not self._complete_color():
                 return
             view = core.get_sku_view(self.db, self.current_sku)
             if view is None:
-                raise core.ExportValidationError("Produit introuvable pour cette référence.")
+                raise core.ExportValidationError(tr('Produit introuvable pour cette référence.'))
             entry = self.db["_skus"][self.current_sku]
             export_options = self._nfc_options() if mode == "nfc" else dict(tag_type=self.tag_type.currentData(), profile="full", reserved_bytes=0)
             # Validate before opening a destination picker; cancellation writes nothing.
             core.serialize_openspool(self._build_payload(),mode=mode,**export_options)
-            directory=QFileDialog.getExistingDirectory(self,'Choisir le dossier d’export',core.export_directory())
+            directory=QFileDialog.getExistingDirectory(self,tr('Choisir le dossier d’export'),core.export_directory())
             if not directory:return
             out = core.write_openspool(self.current_sku, entry, view.product_data,
                                        output_dir=directory,
@@ -1656,23 +1667,23 @@ class MainWindow(CatalogueUx, QMainWindow):
             try:
                 cfg=core.load_config();cfg['export_directory']=directory;core.save_config(cfg)
             except OSError:
-                self.status.showMessage('Fichier exporté ; le dossier n’a pas pu être mémorisé.',8000)
-            else:self.status.showMessage(f'Export terminé : {out}',8000)
+                self.status.showMessage(tr('Fichier exporté ; le dossier n’a pas pu être mémorisé.'),8000)
+            else:self.status.showMessage(tr('Export terminé : {v0}', v0=out),8000)
             self._last_export_directory=directory
-            QMessageBox.information(self,'Export terminé',f'Fichier enregistré :\n{out}')
+            QMessageBox.information(self,tr('Export terminé'),tr('Fichier enregistré :\n{v0}', v0=out))
         except Exception as e:
-            QMessageBox.critical(self, "Erreur", f"Échec de l'export :\n{e}")
+            QMessageBox.critical(self, "Erreur", tr("Échec de l'export :\n{v0}", v0=e))
 
     def _toggle_inspect(self):
         if self.inspector.isVisible():
             self.inspector.setVisible(False)
-            self.btn_inspect.setText("Voir le JSON")
+            self.btn_inspect.setText(tr('Voir le JSON'))
             self.detail_scroll.verticalScrollBar().setValue(getattr(self,"_inspect_scroll_before",0))
         else:
             self._inspect_scroll_before=self.detail_scroll.verticalScrollBar().value()
             self._refresh_inspector()
             self.inspector.setVisible(True)
-            self.btn_inspect.setText("Masquer le JSON")
+            self.btn_inspect.setText(tr('Masquer le JSON'))
             QTimer.singleShot(0,lambda:self.detail_scroll.ensureWidgetVisible(self.inspector) if self.inspector.isVisible() else None)
 
     def _refresh_inspector(self):
@@ -1682,11 +1693,9 @@ class MainWindow(CatalogueUx, QMainWindow):
                 text = core.serialize_openspool(payload, **self._nfc_options())
                 size = core.nfc_size(text, tag_type=self._nfc_options()["tag_type"], reserved_bytes=self._nfc_options()["reserved_bytes"])
                 self.inspector.setPlainText(text)
-                self.status.showMessage(f"JSON : {size.utf8_bytes} octets UTF-8 ; "
-                                        f"occupation NFC : {size.type2_bytes}/{size.capacity_bytes} octets "
-                                        "(un enregistrement MIME).", 10000)
+                self.status.showMessage(tr('JSON : {v0} octets UTF-8 ; occupation NFC : {v1}/{v2} octets (un enregistrement MIME).', v0=size.utf8_bytes, v1=size.type2_bytes, v2=size.capacity_bytes), 10000)
         except (core.ExportValidationError, core.DatabaseError, OSError) as exc:
-            self.inspector.setPlainText(f"Export impossible : {exc}")
+            self.inspector.setPlainText(tr('Export impossible : {v0}', v0=exc))
 
     def _open_output(self):
         out_dir = getattr(self,'_last_export_directory',core.export_directory())
@@ -1701,7 +1710,7 @@ class MainWindow(CatalogueUx, QMainWindow):
                 import subprocess
                 subprocess.Popen(["xdg-open", out_dir])
         except Exception as e:
-            QMessageBox.warning(self, "Ouverture", f"Impossible d'ouvrir le dossier :\n{e}")
+            QMessageBox.warning(self, "Ouverture", tr("Impossible d'ouvrir le dossier :\n{v0}", v0=e))
 
     # ── Mise à jour DB ───────────────────────────────────────────────────
     def _ask_network_consent(self) -> bool:
@@ -1714,14 +1723,12 @@ class MainWindow(CatalogueUx, QMainWindow):
         )
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Question)
-        box.setWindowTitle("Mise à jour des données — accès réseau")
+        box.setWindowTitle(tr('Mise à jour des données — accès réseau'))
         box.setText(
-            "Cette action va télécharger des données depuis Internet.\n"
-            "Aucune donnée personnelle n'est envoyée.\n\n"
-            "Sources contactées :"
+            tr("Cette action va télécharger des données depuis Internet.\nAucune donnée personnelle n'est envoyée.\n\nSources contactées :")
         )
         box.setDetailedText(sources)
-        box.setInformativeText("Autoriser les mises à jour réseau ?")
+        box.setInformativeText(tr('Autoriser les mises à jour réseau ?'))
         box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         box.setDefaultButton(QMessageBox.No)
         consent = box.exec() == QMessageBox.Yes
@@ -1734,22 +1741,22 @@ class MainWindow(CatalogueUx, QMainWindow):
         try:
             consent = self._ask_network_consent()
         except OSError as exc:
-            QMessageBox.critical(self, "Consentement non enregistré", str(exc))
+            QMessageBox.critical(self, tr('Consentement non enregistré'), str(exc))
             return
         if not consent:
-            self.status.showMessage("Mise à jour annulée (réseau refusé).", 6000)
+            self.status.showMessage(tr('Mise à jour annulée (réseau refusé).'), 6000)
             return
         self.update_btn.setEnabled(False)
         self.menu_btn.setEnabled(False)
         self.btn_generate.setEnabled(False)
         self.progress.setVisible(True)
-        self.progress_label.setText('Préparation de la synchronisation…')
+        self.progress_label.setText(tr('Préparation de la synchronisation…'))
         self.progress_label.setVisible(True)
         self.cancel_update_btn.setVisible(True)
         self.cancel_update_btn.setEnabled(True)
         self.progress.setRange(0, len(core.selected_pipeline(core.load_config()["selected_sources"])))
         self.progress.setValue(0)
-        self.status.showMessage("Mise à jour en cours…")
+        self.status.showMessage(tr('Mise à jour en cours…'))
 
         self._sync_before = self._snapshot_stats()
         self._sync_manual = bool(manual)
@@ -1761,13 +1768,13 @@ class MainWindow(CatalogueUx, QMainWindow):
 
     def _on_update_progress(self, label, i, total):
         self.progress.setValue(i)
-        self.progress_label.setText(f"{i}/{total} · {label}")
+        self.progress_label.setText(f"{i}/{total} · {tr(label)}")
 
     def _cancel_update(self):
         if self.worker and self.worker.isRunning():
             self.worker.cancel.set()
             self.cancel_update_btn.setEnabled(False)
-            self.status.showMessage("Annulation demandée : l'étape en cours s'interrompt…", 8000)
+            self.status.showMessage(tr("Annulation demandée : l'étape en cours s'interrompt…"), 8000)
 
     def _finish_update_ui(self):
         self.progress.setVisible(False)
@@ -1784,7 +1791,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         try:
             self.db = core.load_db()
         except (core.DatabaseError, OSError) as exc:
-            QMessageBox.critical(self, "Base illisible", str(exc))
+            QMessageBox.critical(self, tr('Base illisible'), str(exc))
             return
         self._chosen_variant = None
         self._reload_table()
@@ -1797,9 +1804,9 @@ class MainWindow(CatalogueUx, QMainWindow):
             self._show_detail(self.current_sku)
         n_ok = sum(1 for r in results if r.ok)
         n_ko = [r for r in results if not r.ok and r.status != "cancelled"]
-        msg = f"Mise à jour {core.UPDATE_STATUS_LABELS[core.update_status(results)]} — {n_ok}/{len(results)} étapes OK."
+        msg = tr('Mise à jour {v0} — {v1}/{v2} étapes OK.', v0=core.UPDATE_STATUS_LABELS[core.update_status(results)], v1=n_ok, v2=len(results))
         if cancelled:
-            msg = f"Mise à jour annulée — {n_ok}/{len(results)} étapes terminées ; base locale conservée."
+            msg = tr('Mise à jour annulée — {v0}/{v1} étapes terminées ; base locale conservée.', v0=n_ok, v1=len(results))
         self.status.showMessage(msg, 10000)
         offline = n_ko and all(r.status == "unavailable" for r in n_ko)
         before = self._sync_before or self._snapshot_stats()
@@ -1808,7 +1815,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         if cancelled or (offline and not getattr(self, "_sync_manual", False)):
             # Being offline at launch is a normal situation: a status-bar line, not a window.
             if offline:
-                self.status.showMessage(msg + " Sources injoignables ; base locale conservée.", 12000)
+                self.status.showMessage(msg + tr(' Sources injoignables ; base locale conservée.'), 12000)
             return
         if n_ko or getattr(self, "_sync_manual", False):
             self._show_sync_report(results, before, after)
@@ -1817,69 +1824,115 @@ class MainWindow(CatalogueUx, QMainWindow):
         self._finish_update_ui()
         if self.current_sku:
             self._show_detail(self.current_sku)
-        QMessageBox.critical(self, "Erreur de mise à jour", tb)
+        QMessageBox.critical(self, tr('Erreur de mise à jour'), tb)
 
     # ── Mise à jour automatique ──────────────────────────────────────────
     # ── Paramètres ───────────────────────────────────────────────────────
     def _open_settings(self):
-        cfg=core.load_config();dlg=QDialog(self);dlg.setWindowTitle('Paramètres');dlg.resize(540,460)
+        cfg=core.load_config();dlg=QDialog(self);dlg.setWindowTitle(tr('Paramètres'));dlg.resize(540,460)
         lay=QVBoxLayout(dlg);lay.setContentsMargins(18,18,18,14);lay.setSpacing(12);tabs=QTabWidget();tabs.setDocumentMode(False);tabs.tabBar().setDrawBase(False);lay.addWidget(tabs,1)
+        interface=QWidget();interface_layout=QVBoxLayout(interface);interface_layout.setContentsMargins(0,12,0,0)
+        interface_layout.addWidget(QLabel(tr('Langue de l’interface')))
+        language=QComboBox();language.setObjectName('interface_language');language.setFixedHeight(CONTROL_HEIGHT)
+        from i18n import system_ui_languages, resolve_language
+        system_languages = system_ui_languages()
+        detected = resolve_language('auto', system_languages)
+        language.addItem(tr('Automatique — {v0}', v0=LANGUAGES[detected]),'auto')
+        language.setItemData(0,tr('Langues du système : {v0}. Si elles ne sont pas prises en charge : anglais.',v0=', '.join(system_languages) or tr('Inconnu')),Qt.ToolTipRole)
+        for code,name in LANGUAGES.items():language.addItem(name,code)
+        language.setCurrentIndex(max(0,language.findData(cfg.get('language','auto'))));interface_layout.addWidget(language)
+        interface_layout.addWidget(WrapLabel(tr('Après enregistrement, vous pourrez redémarrer maintenant ou plus tard.')))
+        interface_layout.addStretch(1)
         catalogue=QWidget();catalogue_layout=QVBoxLayout(catalogue);catalogue_layout.setContentsMargins(0,12,0,0)
-        catalogue_layout.addWidget(WrapLabel('Actualisez le catalogue à votre rythme. La dernière base locale reste disponible en cas d’échec.'))
-        catalogue_layout.addWidget(QLabel('Actualisation au lancement'))
+        catalogue_layout.addWidget(WrapLabel(tr('Actualisez le catalogue à votre rythme. La dernière base locale reste disponible en cas d’échec.')))
+        catalogue_layout.addWidget(QLabel(tr('Actualisation au lancement')))
         cadence=QComboBox()
-        for days,label in core.UPDATE_INTERVAL_CHOICES:cadence.addItem(label,days)
+        for days,label in core.UPDATE_INTERVAL_CHOICES:cadence.addItem(tr(label),days)
         cadence.setCurrentIndex(max(0,cadence.findData(cfg.get('update_interval_days',1))));catalogue_layout.addWidget(cadence)
-        sources=QPushButton('Sources du catalogue…');sources.clicked.connect(self._choose_sources);catalogue_layout.addWidget(sources)
-        revoke=QPushButton('Retirer l’autorisation réseau');revoke.setEnabled(core.has_network_consent())
+        sources=QPushButton(tr('Sources du catalogue…'));sources.clicked.connect(self._choose_sources);catalogue_layout.addWidget(sources)
+        revoke=QPushButton(tr('Retirer l’autorisation réseau'));revoke.setEnabled(core.has_network_consent())
         def revoke_consent():
             try:core.set_network_consent(False,auto_update=False);dlg.reject()
-            except OSError as exc:QMessageBox.critical(self,'Paramètres',str(exc))
+            except OSError as exc:QMessageBox.critical(self,tr('Paramètres'),str(exc))
         revoke.clicked.connect(revoke_consent);catalogue_layout.addWidget(revoke);catalogue_layout.addStretch(1);tabs.addTab(catalogue,'Catalogue')
         export=QWidget();export_layout=QVBoxLayout(export);export_layout.setContentsMargins(0,12,0,0)
-        export_layout.addWidget(QLabel('Ma bobine habituelle'))
-        export_layout.addWidget(WrapLabel('Présélection utilisée si elle existe. Vous pouvez la modifier dans la fiche.'))
+        export_layout.addWidget(QLabel(tr('Ma bobine habituelle')))
+        export_layout.addWidget(WrapLabel(tr('Présélection utilisée si elle existe. Vous pouvez la modifier dans la fiche.')))
         weight=QComboBox();weight.setObjectName('preferred_weight_g')
         selected_weight=cfg.get('preferred_weight_g',1000)
         if type(selected_weight) is not int or not 0<=selected_weight<=20000:selected_weight=1000
         weights=sorted({0,250,500,750,1000,1500,2000,2500,3000,5000,selected_weight})
-        for grams in weights:weight.addItem('Selon la fiche' if not grams else (f'{grams/1000:g} kg' if grams>=1000 else f'{grams} g').replace('.',','),grams)
+        for grams in weights:weight.addItem(tr('Selon la fiche') if not grams else (f'{grams/1000:g} kg' if grams>=1000 else f'{grams} g').replace('.',','),grams)
         weight.setCurrentIndex(max(0,weight.findData(cfg.get('preferred_weight_g',1000))));weight.setFixedHeight(32)
         form=QComboBox();form.setObjectName('preferred_packaging')
-        for label,key in (('Indifférent','any'),('Avec bobine','spool'),('Recharge','refill')):form.addItem(label,key)
+        for label,key in ((tr('Indifférent'),'any'),(tr('Avec bobine'),'spool'),(tr('Recharge'),'refill')):form.addItem(label,key)
         form.setCurrentIndex(max(0,form.findData(cfg.get('preferred_packaging','any'))));form.setFixedHeight(32)
         form_grid=QGridLayout();form_grid.setContentsMargins(0,0,0,0);form_grid.setHorizontalSpacing(16);form_grid.setVerticalSpacing(10)
-        mass_label=QLabel('Masse');mass_label.setBuddy(weight);format_label=QLabel('Format');format_label.setBuddy(form)
+        mass_label=QLabel(tr('Masse'));mass_label.setBuddy(weight);format_label=QLabel(tr('Format'));format_label.setBuddy(form)
         form_grid.addWidget(mass_label,0,0);form_grid.addWidget(weight,0,1);form_grid.addWidget(format_label,1,0);form_grid.addWidget(form,1,1);form_grid.setColumnStretch(1,1);export_layout.addLayout(form_grid)
-        chk_orca=QCheckBox('Préférer les valeurs Orca à l’export');chk_orca.setChecked(cfg.get('orca_overrides') is True)
-        chk_orca.setToolTip('Désactivé : vos corrections locales restent prioritaires. Le fichier JSON permet de vérifier les valeurs exportées.')
-        export_layout.addStretch(1);tabs.addTab(export,'Bobines')
+        chk_orca=QCheckBox(tr('Préférer les valeurs Orca à l’export'));chk_orca.setChecked(cfg.get('orca_overrides') is True)
+        chk_orca.setToolTip(tr('Désactivé : vos corrections locales restent prioritaires. Le fichier JSON permet de vérifier les valeurs exportées.'))
+        export_layout.addStretch(1);tabs.addTab(export,tr('Bobines'))
         advanced_export=QWidget();advanced_layout=QVBoxLayout(advanced_export);advanced_layout.setContentsMargins(0,12,0,0)
-        advanced_layout.addWidget(QLabel('Dossier d’export'))
+        advanced_layout.addWidget(QLabel(tr('Dossier d’export')))
         export_path=QLineEdit(core.export_directory(cfg));export_path.setObjectName('export_directory');export_path.setReadOnly(True);export_path.setFixedHeight(CONTROL_HEIGHT)
-        browse=QPushButton('Choisir…');browse.setFixedHeight(CONTROL_HEIGHT)
+        browse=QPushButton(tr('Choisir…'));browse.setFixedHeight(CONTROL_HEIGHT)
         def choose_export_folder():
-            chosen=QFileDialog.getExistingDirectory(dlg,'Choisir le dossier d’export',export_path.text())
+            chosen=QFileDialog.getExistingDirectory(dlg,tr('Choisir le dossier d’export'),export_path.text())
             if chosen:export_path.setText(chosen)
         browse.clicked.connect(choose_export_folder);folder_row=QHBoxLayout();folder_row.addWidget(export_path,1);folder_row.addWidget(browse);advanced_layout.addLayout(folder_row)
-        advanced_layout.addWidget(QLabel('Valeurs du fichier NFC'));advanced_layout.addWidget(chk_orca)
-        advanced_layout.addWidget(WrapLabel('Par défaut, vos corrections locales restent prioritaires. Activez cette option pour utiliser les paramètres Orca disponibles.'))
-        advanced_layout.addStretch(1);tabs.addTab(advanced_export,'Export')
-        bb=QDialogButtonBox(QDialogButtonBox.Save|QDialogButtonBox.Cancel);bb.button(QDialogButtonBox.Save).setText('Enregistrer');bb.button(QDialogButtonBox.Cancel).setText('Annuler');bb.button(QDialogButtonBox.Save).setFixedHeight(32);bb.button(QDialogButtonBox.Cancel).setFixedHeight(32)
+        advanced_layout.addWidget(QLabel(tr('Valeurs du fichier NFC')));advanced_layout.addWidget(chk_orca)
+        advanced_layout.addWidget(WrapLabel(tr('Par défaut, vos corrections locales restent prioritaires. Activez cette option pour utiliser les paramètres Orca disponibles.')))
+        advanced_layout.addStretch(1);tabs.addTab(advanced_export,tr('Export'));tabs.addTab(interface,tr('Interface'))
+        bb=QDialogButtonBox(QDialogButtonBox.Save|QDialogButtonBox.Cancel);bb.button(QDialogButtonBox.Save).setText(tr('Enregistrer'));bb.button(QDialogButtonBox.Cancel).setText(tr('Annuler'));bb.button(QDialogButtonBox.Save).setFixedHeight(32);bb.button(QDialogButtonBox.Cancel).setFixedHeight(32)
         bb.accepted.connect(dlg.accept);bb.rejected.connect(dlg.reject);lay.addWidget(bb)
         if dlg.exec()==QDialog.Accepted:
-            cfg=core.load_config();cfg.update(orca_overrides=chk_orca.isChecked(),update_interval_days=cadence.currentData(),preferred_weight_g=weight.currentData(),preferred_packaging=form.currentData(),export_directory=export_path.text())
+            cfg=core.load_config();previous_language=cfg.get('language','auto');cfg.update(language=language.currentData(),orca_overrides=chk_orca.isChecked(),update_interval_days=cadence.currentData(),preferred_weight_g=weight.currentData(),preferred_packaging=form.currentData(),export_directory=export_path.text())
             try:
                 core.save_config(cfg)
                 if self.current_sku:self._show_detail(self.current_sku)
                 if self.inspector.isVisible():self._refresh_inspector()
-                self.status.showMessage('Paramètres enregistrés. Le conditionnement préféré s’applique aux fiches sans choix manuel.',6000)
-            except OSError as exc:QMessageBox.critical(self,'Paramètres non enregistrés',str(exc))
+                self.status.showMessage(tr('Paramètres enregistrés. Le conditionnement préféré s’applique aux fiches sans choix manuel.'),6000)
+            except OSError as exc:
+                QMessageBox.critical(self,tr('Paramètres non enregistrés'),str(exc));return
+            if previous_language != cfg['language']:
+                self._offer_language_restart()
+
+    def _restart_busy(self):
+        return any(worker and worker.isRunning() for worker in (self.worker, self._release_worker))
+
+    def _offer_language_restart(self):
+        box = QMessageBox(self)
+        box.setWindowTitle(tr('Changer la langue'))
+        box.setIcon(QMessageBox.Information)
+        box.setText(tr('La langue a été enregistrée. Redémarrer SpoolScribe pour l’appliquer ?'))
+        if self._restart_busy():
+            box.setInformativeText(tr('Une actualisation est en cours. Redémarrez après sa fin ; votre choix reste enregistré.'))
+        now = box.addButton(tr('Redémarrer maintenant'), QMessageBox.AcceptRole)
+        later = box.addButton(tr('Plus tard'), QMessageBox.RejectRole)
+        now.setEnabled(not self._restart_busy())
+        box.setDefaultButton(later)
+        box.setEscapeButton(later)
+        for button in (now, later):
+            button.setFixedHeight(CONTROL_HEIGHT)
+        box.exec()
+        if box.clickedButton() is now and now.isEnabled():
+            self._request_language_restart()
+
+    def _request_language_restart(self):
+        # Check again: a queued automatic refresh may have started in the dialog.
+        if self._restart_busy():
+            return
+        self._restart_requested = True
+        if self.close():  # Existing closeEvent saves the workspace first.
+            self.app.exit(RESTART_EXIT_CODE)
+        else:
+            self._restart_requested = False
 
     # ── À propos ─────────────────────────────────────────────────────────
     def _open_about(self):
         dlg = QDialog(self)
-        dlg.setWindowTitle("À propos de SpoolScribe")
+        dlg.setWindowTitle(tr('À propos de SpoolScribe'))
         dlg.setMinimumWidth(420)
         lay = QVBoxLayout(dlg)
         lay.setContentsMargins(22, 20, 22, 16)
@@ -1913,31 +1966,22 @@ class MainWindow(CatalogueUx, QMainWindow):
         lay.addLayout(head)
 
         desc = QLabel(
-            "Prépare des données OpenSpool / NFC pour le Snapmaker U1 à firmware "
-            "ouvert et d'autres lecteurs OpenSpool. Catalogue multi-fabricants "
-            "téléchargé depuis des sources publiques, couleur, températures et "
-            "densité. Le fichier exporté peut ensuite être écrit sur une étiquette NFC avec une application dédiée.\n\n"
-            "Projet hobby, non affilié aux fabricants de filaments ni à Snapmaker. "
-            "Code sous licence MIT.\n\n"
-            "Données : Open Filament Database (MIT) · SpoolmanDB (MIT) · "
-            "TheFilamentDB (CC-BY 4.0) · pages publiques des fabricants.\n"
-            "Les logos restent la propriété de leurs marques respectives ; ils sont "
-            "affichés à titre d'identification seulement (voir docs/TRADEMARKS.md)."
+            tr("Prépare des données OpenSpool / NFC pour le Snapmaker U1 à firmware ouvert et d'autres lecteurs OpenSpool. Catalogue multi-fabricants téléchargé depuis des sources publiques, couleur, températures et densité. Le fichier exporté peut ensuite être écrit sur une étiquette NFC avec une application dédiée.\n\nProjet hobby, non affilié aux fabricants de filaments ni à Snapmaker. Code sous licence MIT.\n\nDonnées : Open Filament Database (MIT) · SpoolmanDB (MIT) · TheFilamentDB (CC-BY 4.0) · pages publiques des fabricants.\nLes logos restent la propriété de leurs marques respectives ; ils sont affichés à titre d'identification seulement (voir docs/TRADEMARKS.md).")
         )
         desc.setWordWrap(True)
         desc.setTextInteractionFlags(Qt.TextSelectableByMouse)
         lay.addWidget(desc)
 
         links=QVBoxLayout();links.setSpacing(8)
-        github=QPushButton('Code et documentation · GitHub');github.setObjectName('projectGithub');github.setFixedHeight(CONTROL_HEIGHT)
+        github=QPushButton(tr('Code et documentation · GitHub'));github.setObjectName('projectGithub');github.setFixedHeight(CONTROL_HEIGHT)
         github.clicked.connect(lambda:QDesktopServices.openUrl(QUrl('https://github.com/ArN-LaB/Spoolscribe-')));links.addWidget(github)
-        support=QPushButton('☕ Soutenir le projet · Buy Me a Coffee');support.setObjectName('supportProject');support.setFixedHeight(CONTROL_HEIGHT)
-        support.setToolTip('Ouvrir buymeacoffee.com/arn_lab dans votre navigateur')
+        support=QPushButton(tr('☕ Soutenir le projet · Buy Me a Coffee'));support.setObjectName('supportProject');support.setFixedHeight(CONTROL_HEIGHT)
+        support.setToolTip(tr('Ouvrir buymeacoffee.com/arn_lab dans votre navigateur'))
         support.clicked.connect(lambda:QDesktopServices.openUrl(QUrl('https://buymeacoffee.com/arn_lab')))
         links.addWidget(support);lay.addLayout(links)
 
         bb = QDialogButtonBox(QDialogButtonBox.Close)
-        bb.button(QDialogButtonBox.Close).setText("Fermer")
+        bb.button(QDialogButtonBox.Close).setText(tr('Fermer'))
         bb.button(QDialogButtonBox.Close).setFixedHeight(CONTROL_HEIGHT)
         bb.rejected.connect(dlg.reject)
         bb.accepted.connect(dlg.accept)
@@ -1946,42 +1990,66 @@ class MainWindow(CatalogueUx, QMainWindow):
         dlg.exec()
 
 
+def run_application(app, window, instance_lock):
+    """Restart only after the event loop stops and its data-folder lock is freed."""
+    try:
+        while True:
+            code = app.exec()
+            if code != RESTART_EXIT_CODE or not window._restart_requested:
+                return code
+            instance_lock.unlock()
+            try:
+                launch_replacement(__file__)
+            except OSError as exc:
+                # Failure to spawn must not strand the user with a closed app.
+                if not instance_lock.tryLock(200):
+                    QMessageBox.critical(None, tr('Redémarrage impossible'),
+                        tr('Une autre instance utilise les données. Votre choix de langue reste enregistré.'))
+                    return 1
+                window._restart_requested = False
+                window.show()
+                QMessageBox.warning(window, tr('Redémarrage impossible'),
+                    tr('La relance a échoué. Vos réglages sont enregistrés ; vous pouvez fermer puis rouvrir SpoolScribe.\n{v0}', v0=exc))
+            else:
+                return 0
+    finally:
+        instance_lock.unlock()
+
+
 def main():
     # Mode worker (exécutable gelé relançant un scraper) : agir puis sortir.
     if core.maybe_run_as_script_worker(sys.argv):
         return
     app = QApplication(sys.argv)
     configure_application(app)
+    configure_language(app, core.load_config().get("language", "auto"))
     # Une seule instance par dossier de données : deux synchronisations
     # simultanées se disputeraient la base et ses sauvegardes.
     os.makedirs(core.DATA_HOME, exist_ok=True)
     instance_lock = QLockFile(os.path.join(core.DATA_HOME, "spoolscribe.instance.lock"))
     instance_lock.setStaleLockTime(0)
     if not instance_lock.tryLock(200):
-        QMessageBox.information(None, "SpoolScribe", "SpoolScribe est déjà ouvert pour ce dossier de données.\n"
-                                "Utilisez la fenêtre existante.")
+        QMessageBox.information(None, "SpoolScribe", tr('SpoolScribe est déjà ouvert pour ce dossier de données.\nUtilisez la fenêtre existante.'))
         return 0
     try:
         win = MainWindow()
     except (core.DatabaseError, OSError) as exc:
         backup = core.DB_PATH + ".bak"
         if not os.path.isfile(backup) or QMessageBox.question(
-            None, "Base illisible", f"{exc}\n\nRestaurer {backup} ?\n"
-            "Le fichier actuel sera conservé séparément.", QMessageBox.Yes | QMessageBox.No,
+            None, tr('Base illisible'), tr('{v0}\n\nRestaurer {v1} ?\nLe fichier actuel sera conservé séparément.', v0=exc, v1=backup), QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No,
         ) != QMessageBox.Yes:
-            QMessageBox.critical(None, "Base illisible", str(exc))
+            QMessageBox.critical(None, tr('Base illisible'), str(exc))
             return 1
         try:
             core.restore_db()
             win = MainWindow()
         except (core.DatabaseError, OSError) as recovery_error:
-            QMessageBox.critical(None, "Restauration impossible", str(recovery_error))
+            QMessageBox.critical(None, tr('Restauration impossible'), str(recovery_error))
             return 1
     win.show()
-    code = app.exec()
-    instance_lock.unlock()
-    return code
+    return run_application(app, win, instance_lock)
+
 
 
 if __name__ == "__main__":

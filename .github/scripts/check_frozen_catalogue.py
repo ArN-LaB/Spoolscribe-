@@ -17,4 +17,5 @@ with tempfile.TemporaryDirectory() as directory:
                    env=env, check=True, timeout=120)
     result = json.loads(report.read_text(encoding="utf-8"))
     assert result["main_window_rendered"] and result["offline"] and result["empty_first_install"] and result["fixture_references"] == 1
+    assert result["interface_languages"] == ["en","fr","es","zh_CN"]
     print("FROZEN_CATALOGUE_OK", json.dumps(result))

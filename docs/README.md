@@ -1,6 +1,7 @@
 # Documentation SpoolScribe
 
-Version source et stable : **0.3.0**, sur `main`.
+Version source : **0.3.5**. Les téléchargements stables suivent la
+[dernière release publiée](https://github.com/ArN-LaB/Spoolscribe-/releases/latest).
 Les [releases](https://github.com/ArN-LaB/Spoolscribe-/releases) contiennent les
 archives Windows x64, macOS Apple Silicon et Linux x64 et leurs SHA-256.
 
@@ -32,3 +33,7 @@ ultérieures. Ils ne constituent pas des copies divergentes de la documentation.
 
 Les tests hors écran et les sondes des exécutables ne remplacent pas une recette
 visuelle humaine ni l’écriture/relecture d’une étiquette NFC sur une imprimante réelle.
+
+## v0.3.5
+
+[Validation and limits](VALIDATION-v0.3.5.md) · [Interface languages](../translations/README.md). See the [four configurations and three builds](VALIDATION-CI-v0.3.5.md) and [PR #7](https://github.com/ArN-LaB/Spoolscribe-/pull/7) for the integration and publication state.

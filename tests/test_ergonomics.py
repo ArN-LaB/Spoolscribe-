@@ -92,7 +92,7 @@ class ErgonomicsTests(unittest.TestCase):
         from PySide6.QtWidgets import QDialog,QTabWidget
         def inspect(dlg):
             tabs=dlg.findChild(QTabWidget)
-            self.assertEqual([tabs.tabText(i) for i in range(tabs.count())],['Catalogue','Bobines','Export'])
+            self.assertEqual([tabs.tabText(i) for i in range(tabs.count())],['Catalogue','Bobines','Export','Interface'])
             self.assertTrue(tabs.widget(1).findChild(fixture.app_gui.QComboBox,'preferred_weight_g'))
             self.assertIsNone(tabs.widget(2).findChild(fixture.app_gui.QComboBox,'preferred_weight_g'))
             return QDialog.Rejected
