@@ -18,4 +18,7 @@ with tempfile.TemporaryDirectory() as directory:
     result = json.loads(report.read_text(encoding="utf-8"))
     assert result["main_window_rendered"] and result["offline"] and result["empty_first_install"] and result["fixture_references"] == 1
     assert result["interface_languages"] == ["en","fr","es","zh_CN"]
+    assert result['reader_configuration_checks'] == 5
+    assert result['guided_setup_buttons']
+    assert result["opentag3d"] == {"version":"2.004","outputs":3,"tags":["NTAG215","NTAG216"]}
     print("FROZEN_CATALOGUE_OK", json.dumps(result))

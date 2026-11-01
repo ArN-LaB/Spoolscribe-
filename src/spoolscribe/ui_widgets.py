@@ -12,6 +12,37 @@ from .i18n import tr
 CONTROL_HEIGHT = 32
 
 
+class ChoiceButtons(QWidget):
+    """Small exclusive choices; several groups form one readable setup."""
+    choiceChanged=Signal(str)
+    def __init__(self,parent=None):
+        super().__init__(parent)
+        from PySide6.QtWidgets import QButtonGroup
+        self.group=QButtonGroup(self);self.group.setExclusive(True)
+        self.buttons={};self._choices=[]
+        self.grid=QGridLayout(self);self.grid.setContentsMargins(0,0,0,0);self.grid.setSpacing(8)
+        self.grid.setColumnStretch(0,1);self.grid.setColumnStretch(1,1)
+    def setChoices(self,choices):
+        from PySide6.QtWidgets import QToolButton
+        choices=list(choices)
+        if choices==self._choices:return
+        self._choices=choices
+        for button in self.buttons.values():
+            self.group.removeButton(button);self.grid.removeWidget(button);button.hide();button.deleteLater()
+        self.buttons={}
+        for i,(label,key) in enumerate(choices):
+            button=QToolButton(self);button.setText(label);button.setCheckable(True)
+            button.setFixedHeight(CONTROL_HEIGHT);button.setMinimumWidth(0)
+            button.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
+            button.setAccessibleName(label);button.clicked.connect(lambda _checked=False,value=key:self.choiceChanged.emit(value))
+            self.group.addButton(button);self.buttons[key]=button
+            self.grid.addWidget(button,i//2,i%2,1,2 if len(choices)==1 else 1)
+    def setChoice(self,key):
+        self.group.setExclusive(False)
+        for value,button in self.buttons.items():button.setChecked(value==key)
+        self.group.setExclusive(True)
+
+
 class SearchField(QLineEdit):
     """A clear action with a stable hit area, centred independently of native QSS."""
     def __init__(self, parent=None):
@@ -131,16 +162,20 @@ class PrinterBrowser(QDialog):
         title=QLabel(tr('Votre imprimante'));font=title.font();font.setPointSizeF(font.pointSizeF()+3);font.setBold(True);title.setFont(font);body.addWidget(title)
         self.search=QLineEdit();self.search.setPlaceholderText(tr('Marque ou modèle : Snapmaker, Prusa, X1…'));self.search.setClearButtonEnabled(True);self.search.setFixedHeight(CONTROL_HEIGHT);body.addWidget(self.search)
         self.category=QComboBox();self.category.setAccessibleName(tr('Catégorie de compatibilité'));self.category.setFixedHeight(CONTROL_HEIGHT)
-        for label,key in ((tr('Toutes les imprimantes et lecteurs'),'all'),(tr('Compatibles SpoolScribe · OpenSpool'),'compatible'),(tr('RFID / NFC non compatibles SpoolScribe'),'rfid'),(tr('Sans lecteur OpenSpool'),'none')):self.category.addItem(label,key)
+        for label,key in ((tr('Toutes les imprimantes et lecteurs'),'all'),(tr('Au moins une configuration exportable'),'compatible'),
+                          (tr('Lecteur USB ajouté'),'usb'),(tr('Lecteur réseau ajouté'),'network'),
+                          (tr('Export possible · firmware constructeur'),'stock'),(tr('Export possible · firmware modifié'),'modified'),
+                          (tr('Format lu, non exporté'),'rfid'),(tr('Aucune intégration confirmée'),'none')):self.category.addItem(label,key)
         body.addWidget(self.category)
         self.category_hint=WrapLabel(tr('La lecture dépend du logiciel installé ou d’un lecteur externe.'));self.category_hint.setObjectName('fieldvalue');body.addWidget(self.category_hint)
         self.list=QListWidget();self.list.setSpacing(4);self.list.setObjectName('printerChoices');body.addWidget(self.list,1)
         self.entries={}
         for i in range(combo.count()):
             profile=printer_profiles.PROFILES[combo.itemData(i)];info=presentation(profile)
-            item=QListWidgetItem(info['title']);item.setData(Qt.UserRole,i);item.setData(Qt.UserRole+1,(combo.itemText(i)+' '+info['title']).casefold())
-            category='compatible' if profile['nfc'] else 'rfid' if profile['group']=='incompatible' else 'none'
-            item.setData(Qt.UserRole+2,category);self.entries[i]=info;self.list.addItem(item)
+            item=QListWidgetItem(info['title']);item.setData(Qt.UserRole,i)
+            searchable=' '.join(' '.join(str(f.get(key,''))+' '+tr(f.get(key,'')) for key in ('label','reader','notes')) for f in profile['firmwares'])
+            item.setData(Qt.UserRole+1,(combo.itemText(i)+' '+info['title']+' '+searchable).casefold())
+            item.setData(Qt.UserRole+2,printer_profiles.categories(combo.itemData(i)));self.entries[i]=info;self.list.addItem(item)
             if i==combo.currentIndex():self.list.setCurrentItem(item)
         self.delegate=PrinterChoiceDelegate(self.entries,self.list);self.list.setItemDelegate(self.delegate)
         self.empty=QLabel(tr('Aucune imprimante trouvée. Essayez une autre marque ou un autre modèle.'));self.empty.setWordWrap(True);self.empty.hide();body.addWidget(self.empty)
@@ -158,11 +193,14 @@ class PrinterBrowser(QDialog):
         return super().eventFilter(watched,event)
     def _filter(self,text):
         visible=[]
-        self.category_hint.setText({'rfid':tr('Leur lecteur RFID/NFC ne lit pas les fichiers OpenSpool de SpoolScribe.'),
-            'none':tr('Fiches consultables ; aucune lecture NFC OpenSpool disponible avec cette configuration.')}.get(self.category.currentData(),tr('La lecture dépend du logiciel installé ou d’un lecteur externe.')))
+        self.category_hint.setText({'rfid':tr('Un lecteur utilise un format non exporté ici. Une autre installation peut être proposée.'),
+            'none':tr('Fiches consultables ; aucune intégration de lecture confirmée.'),
+            'usb':tr('USB avec logiciel et pilote documentés ; pas de prise en charge universelle au branchement.'),
+            'network':tr('Le scanner transmet par réseau. Son câble USB peut ne servir qu’à l’alimentation.'),
+            'stock':tr('Firmware constructeur conservé ; accessoires, mode LAN ou automatisations peuvent être requis.')}.get(self.category.currentData(),tr('Choisissez ensuite votre installation réelle. Le résultat peut se limiter à l’inventaire externe.')))
         for i in range(self.list.count()):
             item=self.list.item(i);category=self.category.currentData()
-            item.setHidden(text.casefold().strip() not in item.data(Qt.UserRole+1) or category!='all' and item.data(Qt.UserRole+2)!=category)
+            item.setHidden(text.casefold().strip() not in item.data(Qt.UserRole+1) or category!='all' and category not in item.data(Qt.UserRole+2))
             if not item.isHidden():visible.append(item)
         if self.list.currentItem() not in visible:self.list.setCurrentItem(visible[0] if visible else None)
         self.empty.setVisible(not visible);self._accept_button.setEnabled(bool(visible))
@@ -352,7 +390,8 @@ class PrinterCard(QFrame):
         super().__init__(parent);self.setObjectName('printerCard');self.setMinimumHeight(150);self.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Maximum)
         layout=QHBoxLayout(self);layout.setContentsMargins(14,12,14,12);layout.setSpacing(16)
         photo_col=QVBoxLayout();self.photo=QLabel();self.photo.setFixedSize(112,110);self.photo.setAlignment(Qt.AlignCenter)
-        self.photo_caption=WrapLabel();self.photo_caption.setStyleSheet('font-size:10px;');self.photo_caption.setMaximumWidth(112)
+        self.photo.setFixedSize(80,80)
+        self.photo_caption=WrapLabel();self.photo_caption.setStyleSheet('font-size:10px;');self.photo_caption.setMaximumWidth(80)
         photo_col.addWidget(self.photo);photo_col.addWidget(self.photo_caption);photo_col.addStretch(1);layout.addLayout(photo_col)
         body=QVBoxLayout();body.setSpacing(8)
         self.name=WrapLabel();font=QFont();font.setPointSize(15);font.setBold(True);self.name.setFont(font)
@@ -368,9 +407,10 @@ class PrinterCard(QFrame):
         self.reader.setText(profile.get('reader',''))
         pixmap=QPixmap(info.get('photo','')) if info.get('photo') else QPixmap()
         self.photo.setVisible(not pixmap.isNull());self.photo_caption.setVisible(not pixmap.isNull())
+        self.setMinimumHeight(108 if not pixmap.isNull() else 88)
         # Set DPR on the pixmap before assigning it: QLabel returns a value copy.
         if not pixmap.isNull():
-            fitted=pixmap.scaled(224,220,Qt.KeepAspectRatio,Qt.SmoothTransformation);fitted.setDevicePixelRatio(2);self.photo.setPixmap(fitted)
+            fitted=pixmap.scaled(160,160,Qt.KeepAspectRatio,Qt.SmoothTransformation);fitted.setDevicePixelRatio(2);self.photo.setPixmap(fitted)
         self.photo_caption.setText(info.get('caption',''))
         self.photo_caption.setVisible(not pixmap.isNull() and info.get('caption')!=info['title'])
         self.description.setToolTip(info.get('source',''))

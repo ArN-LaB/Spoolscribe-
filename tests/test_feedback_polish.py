@@ -60,11 +60,13 @@ class PolishUiTests(unittest.TestCase):
 
     def test_printer_switch_keeps_all_explanations_visible_in_small_dialog(self):
         w=self.window;w._open_hardware();w.hardware_dialog.resize(510,360)
-        for key in ('u1','prusa','bambu','no_reader','u1'):
-            w.printer.setCurrentIndex(w.printer.findData(key));w.app.processEvents()
+        for key,setup in (('u1','paxx12'),('prusa_core','stock'),('bambu','stock'),('no_reader','stock'),('u1','paxx12')):
+            w.printer.setCurrentIndex(w.printer.findData(key));w.firmware.setCurrentIndex(w.firmware.findData(setup))
+            w.setup_details_toggle.setChecked(True);w.app.processEvents()
             label=w.printer_help
             self.assertGreaterEqual(label.height(),label.heightForWidth(label.width()))
-            self.assertGreaterEqual(w.printer_card.height(),120)
+            self.assertGreaterEqual(w.printer_card.height(),88)
+            self.assertGreaterEqual(w.printer_card.description.height(),w.printer_card.description.heightForWidth(w.printer_card.description.width()))
         w.hardware_dialog.close()
 
     def test_printer_card_follows_the_theme(self):
