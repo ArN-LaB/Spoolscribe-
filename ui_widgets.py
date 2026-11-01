@@ -83,12 +83,17 @@ class PrinterBrowser(QDialog):
         body=QVBoxLayout(self);body.setContentsMargins(16,16,16,16);body.setSpacing(12)
         title=QLabel('Votre imprimante');font=title.font();font.setPointSizeF(font.pointSizeF()+3);font.setBold(True);title.setFont(font);body.addWidget(title)
         self.search=QLineEdit();self.search.setPlaceholderText('Marque ou modèle : Snapmaker, Prusa, X1…');self.search.setClearButtonEnabled(True);self.search.setFixedHeight(CONTROL_HEIGHT);body.addWidget(self.search)
+        self.category=QComboBox();self.category.setAccessibleName('Catégorie de compatibilité');self.category.setFixedHeight(CONTROL_HEIGHT)
+        for label,key in (('Toutes les imprimantes et lecteurs','all'),('Compatibles SpoolScribe · OpenSpool','compatible'),('RFID / NFC non compatibles SpoolScribe','rfid'),('Sans lecteur OpenSpool','none')):self.category.addItem(label,key)
+        body.addWidget(self.category)
+        self.category_hint=WrapLabel('La lecture dépend du logiciel installé ou d’un lecteur externe.');self.category_hint.setObjectName('fieldvalue');body.addWidget(self.category_hint)
         self.list=QListWidget();self.list.setSpacing(4);self.list.setObjectName('printerChoices');body.addWidget(self.list,1)
         self.entries={}
         for i in range(combo.count()):
             profile=printer_profiles.PROFILES[combo.itemData(i)];info=presentation(profile)
             item=QListWidgetItem(info['title']);item.setData(Qt.UserRole,i);item.setData(Qt.UserRole+1,(combo.itemText(i)+' '+info['title']).casefold())
-            self.entries[i]=info;self.list.addItem(item)
+            category='compatible' if profile['nfc'] else 'rfid' if profile['group']=='incompatible' else 'none'
+            item.setData(Qt.UserRole+2,category);self.entries[i]=info;self.list.addItem(item)
             if i==combo.currentIndex():self.list.setCurrentItem(item)
         self.delegate=PrinterChoiceDelegate(self.entries,self.list);self.list.setItemDelegate(self.delegate)
         self.empty=QLabel('Aucune imprimante trouvée. Essayez une autre marque ou un autre modèle.');self.empty.setWordWrap(True);self.empty.hide();body.addWidget(self.empty)
@@ -98,6 +103,7 @@ class PrinterBrowser(QDialog):
         self.list.itemDoubleClicked.connect(lambda *_:self._choose())
         self.search.textChanged.connect(self._filter)
         self._accept_button=buttons.button(QDialogButtonBox.Ok);self.search.setFocus()
+        self.category.currentIndexChanged.connect(lambda *_:self._filter(self.search.text()))
         self.list.viewport().installEventFilter(self)
     def eventFilter(self,watched,event):
         if watched is self.list.viewport() and event.type()==QEvent.Resize:
@@ -105,8 +111,11 @@ class PrinterBrowser(QDialog):
         return super().eventFilter(watched,event)
     def _filter(self,text):
         visible=[]
+        self.category_hint.setText({'rfid':'Leur lecteur RFID/NFC ne lit pas les fichiers OpenSpool de SpoolScribe.',
+            'none':'Fiches consultables ; aucune lecture NFC OpenSpool disponible avec cette configuration.'}.get(self.category.currentData(),'La lecture dépend du logiciel installé ou d’un lecteur externe.'))
         for i in range(self.list.count()):
-            item=self.list.item(i);item.setHidden(text.casefold().strip() not in item.data(Qt.UserRole+1))
+            item=self.list.item(i);category=self.category.currentData()
+            item.setHidden(text.casefold().strip() not in item.data(Qt.UserRole+1) or category!='all' and item.data(Qt.UserRole+2)!=category)
             if not item.isHidden():visible.append(item)
         if self.list.currentItem() not in visible:self.list.setCurrentItem(visible[0] if visible else None)
         self.empty.setVisible(not visible);self._accept_button.setEnabled(bool(visible))

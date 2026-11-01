@@ -94,6 +94,7 @@ def merge_catalogue(local, incoming, source, rank=10):
         key=entry.get('product');product_users[key]=product_users.get(key,0)+1
     by_identity={}
     for sku,e in result['_skus'].items():
+        if e.get('_personal'):continue
         p=result['_products'].get(e.get('product'),{})
         by_identity.setdefault(identity(e,p,sku),[]).append(sku)
     article_index={}
@@ -101,10 +102,13 @@ def merge_catalogue(local, incoming, source, rank=10):
         if ident[0]=='article':article_index.setdefault(ident[:3],[]).extend(skus)
     family_index={}
     for sku,e in result['_skus'].items():
+        if e.get('_personal'):continue
         for key in family_keys(e,result['_products'].get(e.get('product'),{})):
             family_index.setdefault(key,[]).append(sku)
     existing_brands={brand_key(p.get('brand','')) for p in result['_products'].values()}
     for sku,e in incoming['_skus'].items():
+        if sku in result['_skus'] and result['_skus'][sku].get('_personal'):
+            pending.append(dict(source_id=sku,reason='Identifiant personnel réservé'));continue
         p=incoming['_products'][e['product']]
         ident=identity(e,p,sku)
         matches=[sku] if sku in result['_skus'] else by_identity.get(ident,[])

@@ -185,6 +185,7 @@ DEFAULT_CONFIG = {
     "favorite_filaments": [],
     "preferred_weight_g": 1000,
     "preferred_packaging": "any",
+    "export_directory": "",
     "show_extra_fields": False,
     "nfc_reserved_bytes": 0,
 }
@@ -205,6 +206,11 @@ def load_config() -> dict:
 def save_config(cfg: dict) -> None:
     db_io.atomic_write(CONFIG_PATH, json.dumps(cfg, indent=2, ensure_ascii=False,
                                              allow_nan=False).encode("utf-8"))
+
+
+def export_directory(cfg=None) -> str:
+    value=(cfg if cfg is not None else load_config()).get('export_directory')
+    return value if isinstance(value,str) and value and os.path.isabs(value) and '\x00' not in value else OUTPUT_DIR
 
 
 def has_network_consent() -> bool:
@@ -868,6 +874,46 @@ def set_product_physical(db: dict, sku: str, values: dict, *, path: Optional[str
         db.revision, db.source_path = changed.revision, changed.source_path
 
 
+def save_personal_filament(db: dict, sku: str, values: dict, suffix: str, *, path=None) -> str:
+    """Save one independent spool reference; never rename or modify its source.
+
+    Copied values are frozen at personal priority; only explicitly edited values
+    become user-confirmed. Copying must not confirm an implausible source colour.
+    """
+    import uuid
+    suffix=suffix.strip().lstrip('@').strip() if isinstance(suffix,str) else ''
+    if not suffix or len(suffix)>40 or not all(c.isalnum() or c in ' _-' for c in suffix):
+        raise ExportValidationError('Suffixe personnel : 1 à 40 lettres, chiffres, espaces, tirets ou underscores.')
+    view=get_sku_view(db,sku)
+    allowed={'min_temp','max_temp','bed_min_temp','bed_max_temp','density','diameter'}
+    if view is None or not values or set(values)-allowed:raise ExportValidationError('Caractéristiques personnelles invalides.')
+    for key,value in values.items():
+        if key.endswith('temp') and value is not None and (type(value) not in (int,float) or not math.isfinite(value) or int(value)!=value):
+            raise ExportValidationError('Les températures doivent être entières.')
+    origin=db['_skus'][sku].get('_personal_origin') or sku
+    existing=next((key for key,record in db['_skus'].items() if record.get('_personal') and record.get('_personal_origin')==origin and record.get('_personal_suffix')==suffix),None)
+    changed=copy.deepcopy(db);entry=copy.deepcopy(db['_skus'][existing or sku])
+    product=copy.deepcopy(get_sku_view(db,existing).product_data if existing else view.product_data)
+    identifier=existing or 'USER-'+uuid.uuid4().hex
+    pkey=entry['product'] if existing else '@personal/'+identifier
+    base=product.get('_personal_base_name') or view.display_product
+    product.update(values);product.update(display_name=f'{base} @{suffix}',_personal=True,_personal_base_name=base)
+    entry.update(product=pkey,source='Personnalisation locale',_personal=True,_personal_suffix=suffix,
+                 _personal_origin=origin)
+    # Keep the original source reference as metadata, but give the copy its own identity.
+    for record in (entry,product):
+        previous=record.get('_field_sources',{})
+        record['_field_sources']={key:(copy.deepcopy(previous[key]) if previous.get(key,{}).get('source')==db_io.USER_SOURCE else
+            dict(source='Copie personnelle',rank=db_io.USER_RANK,value=copy.deepcopy(value))) for key,value in record.items() if not key.startswith('_')}
+    for key,value in values.items():product['_field_sources'][key]=db_io.user_correction(value)
+    changed['_products'][pkey]=product;changed['_skus'][identifier]=entry
+    db_io.validate_db(changed)
+    save_db(changed,path)
+    db.clear();db.update(changed)
+    if isinstance(db,db_io.Database):db.revision,db.source_path=changed.revision,changed.source_path
+    return identifier
+
+
 # ─── Payload OpenSpool / NFC ──────────────────────────────────────────────
 class ExportValidationError(ValueError):
     """Invalid data, before any output file is opened."""
@@ -1090,7 +1136,7 @@ def write_openspool(sku: str, entry: dict, product_data: dict,
                              use_orca_overrides=use_orca_overrides)
     text = serialize_openspool(payload, mode=mode, tag_type=tag_type, profile=profile,
                               reserved_bytes=reserved_bytes)
-    filename = openspool_filename(sku, entry.get("product", ""), entry.get("color_name", ""))
+    filename = openspool_filename(sku, product_data.get('display_name') if entry.get('_personal') else entry.get("product", ""), entry.get("color_name", ""))
     if mode == "archive":
         filename = filename.removesuffix(".json") + "_archive.json"
     elif tag_type != "NTAG216" or profile != "full":
@@ -1387,6 +1433,9 @@ def import_settings(path):
         if type(cfg[key]) is not bool:raise ValueError('Option invalide')
     if type(cfg['preferred_weight_g']) is not int or not 0 <= cfg['preferred_weight_g'] <= 20000 or cfg['preferred_packaging'] not in ('any','spool','refill'):
         raise ValueError('Conditionnement préféré invalide')
+    directory=cfg['export_directory']
+    if not isinstance(directory,str) or len(directory)>4096 or '\x00' in directory or directory and not os.path.isabs(directory):
+        raise ValueError('Dossier d’export invalide')
     for key, limit in (("favorite_brands", 500), ("favorite_filaments", 5000)):
         value = cfg.get(key)
         if not isinstance(value, list) or len(value) > limit or any(not isinstance(v, str) or len(v) > 256 for v in value):

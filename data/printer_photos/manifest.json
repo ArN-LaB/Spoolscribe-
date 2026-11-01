@@ -9,13 +9,14 @@
     "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation."
   },
   "bambu": {
-    "url": "https://raw.githubusercontent.com/bambulab/BambuStudio/master/resources/profiles/BBL/Bambu%20Lab%20X1%20Carbon_cover.png",
-    "file": "bambu-cover.png",
-    "sha256": "1e7b4cb8f1b3e46de805d242e5aa1345cd63f253e5b06a95cc02cc062b9fd788",
-    "bytes": 16719,
+    "url": "https://raw.githubusercontent.com/bambulab/BambuStudio/master/resources/images/printer_thumbnail_x1c_png.png",
+    "file": "bambu-x1c-transparent.png",
+    "sha256": "f01a0c0d0bf6390559e94ad12f5d363c6fe08ae43392e6f8148458c1a72c245f",
+    "bytes": 92554,
     "caption": "Exemple : X1 Carbon",
     "checked": "2026-11-01",
-    "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation."
+    "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation.",
+    "transparent": true
   },
   "qidi_box": {
     "url": "https://qidi3d.com/cdn/shop/files/PLUS4_a838191a-7fc5-49d6-a245-4fb88c793490.png?v=1773372605",
@@ -25,5 +26,15 @@
     "caption": "Exemple : QIDI Plus4",
     "checked": "2026-11-01",
     "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation."
+  },
+  "anycubic_ace": {
+    "url": "https://raw.githubusercontent.com/ANYCUBIC-3D/AnycubicSlicerNext/main/resources/profiles/Anycubic/Anycubic%20Kobra%20S1_cover.png",
+    "file": "anycubic-s1-transparent.png",
+    "sha256": "76c4f04c275297f08db4d6f45d8e3798f6f309583e7401eec8cae7dd23d0781e",
+    "bytes": 11273,
+    "caption": "Exemple : Kobra S1",
+    "checked": "2026-11-01",
+    "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation.",
+    "transparent": true
   }
 }

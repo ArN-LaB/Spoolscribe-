@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, QByteArray, QThread, Signal, QUrl, QTimer, QSize
 from PySide6.QtGui import QDesktopServices, QPixmap, QPainter, QColor, QImage, QKeySequence, QShortcut, QIcon
 from PySide6.QtWidgets import (QTableWidget, QListWidget, QListWidgetItem, QCompleter, QMenu, QDialog, QVBoxLayout,
     QHBoxLayout, QLabel, QPushButton, QToolButton, QCheckBox, QDialogButtonBox, QComboBox,
-    QFileDialog, QMessageBox, QPlainTextEdit, QLineEdit, QWidget, QScrollArea, QFrame, QTableWidgetItem, QHeaderView, QSizePolicy, QStackedWidget)
+    QFileDialog, QMessageBox, QPlainTextEdit, QLineEdit, QWidget, QScrollArea, QFrame, QTableWidgetItem, QHeaderView, QSizePolicy, QStackedWidget, QGridLayout)
 import core
 import printer_profiles
 from printer_profiles import PROFILES
@@ -137,10 +137,12 @@ class CatalogueUx:
         lay = QVBoxLayout(side); lay.setContentsMargins(0, 0, 6, 0); lay.setSpacing(6)
         def caption(text):
             label = QLabel(text); label.setObjectName('caption'); self._muted_labels.append(label); return label
-        filter_title = QHBoxLayout();filter_title.addWidget(caption('FILTRES'),1)
+        filter_title = QGridLayout();filter_title.setContentsMargins(0,0,0,0);filter_title.setHorizontalSpacing(8)
+        filter_title.setColumnStretch(0,1);filter_title.setColumnStretch(1,1);filter_title.addWidget(caption('FILTRES'),0,0)
         self.reset_filters = QToolButton();self.reset_filters.setText('Effacer');self.reset_filters.setFixedHeight(32)
         self.reset_filters.setToolTip('Effacer les filtres et la sélection. Vos favoris restent enregistrés.')
-        self.reset_filters.clicked.connect(self._reset_filters);filter_title.addWidget(self.reset_filters)
+        self.reset_filters.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
+        self.reset_filters.clicked.connect(self._reset_filters);filter_title.addWidget(self.reset_filters,0,1)
         lay.addLayout(filter_title)
         lay.addWidget(caption('FAVORIS'))
         favorites=QHBoxLayout();favorites.setContentsMargins(0,0,0,0);favorites.setSpacing(8)
@@ -888,10 +890,11 @@ class CatalogueUx:
         if self._release_worker and self._release_worker.isRunning():return
         if core.load_config().get('network_consent') is False:
             QMessageBox.information(self,'Mise à jour application','L’autorisation réseau a été retirée. Réactivez-la dans « Sources de la base » pour contacter GitHub.');return
-        self.status.showMessage('Vérification de la version publiée sur GitHub…')
+        self.status.showMessage('Vérification de la version publiée sur GitHub…',15000)
         self._release_worker=ReleaseWorker(self);self._release_worker.ready.connect(self._release_result);self._release_worker.start()
 
     def _release_result(self, result):
+        self.status.clearMessage()
         if result.get('error'):QMessageBox.warning(self,'Mise à jour application',result['error']);return
         if not result['newer']:
             QMessageBox.information(self,'Application',f'Votre version : {core.APP_VERSION}\nVersion publique : {result["version"]}\n'+('Vous utilisez une version de développement plus récente.' if core.APP_VERSION != result['version'] else 'Votre application est à jour.'));return

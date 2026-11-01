@@ -16,9 +16,9 @@ import functools
 import threading
 import traceback
 
-from PySide6.QtCore import Qt, QThread, Signal, QSize, QTimer, QRectF, QLockFile
+from PySide6.QtCore import Qt, QThread, Signal, QSize, QTimer, QRectF, QLockFile, QUrl
 from PySide6.QtGui import (
-    QColor, QFont, QPixmap, QPainter, QIcon, QPalette, QPainterPath, QAction, QPen,
+    QColor, QFont, QPixmap, QPainter, QIcon, QPalette, QPainterPath, QAction, QPen, QDesktopServices,
 )
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
@@ -26,7 +26,7 @@ from PySide6.QtWidgets import (
     QHeaderView, QAbstractItemView, QFrame, QMessageBox, QProgressBar, QGridLayout, QTabWidget,
     QSizePolicy, QStackedWidget, QToolButton, QMenu, QListWidget, QListWidgetItem,
     QDialog, QDialogButtonBox, QCheckBox, QSpinBox, QButtonGroup, QComboBox,
-    QScrollArea,
+    QScrollArea, QFileDialog,
 )
 
 try:
@@ -39,10 +39,8 @@ import core
 from ui_catalogue import CatalogueUx, ClearableTable, ClearableList
 from ui_widgets import SpoolPreview, MetricGrid, WrapLabel, FilamentDelegate, spool_icon, product_label, DetailScrollArea, CONTROL_HEIGHT
 
-# Hauteur fixe de l'inspecteur JSON + espacement du layout (12 px) = delta
-# appliqué à la fenêtre lors du toggle pour éviter tout scroll parasite.
+# The inspector lives inside the scroll area; toggling never changes the window.
 _INSPECTOR_H = 210
-_INSPECTOR_DELTA = _INSPECTOR_H + 12
 # Coche des cases à cocher (QSS) : chemin POSIX absolu, lisible aussi en mode gelé.
 CHECK_ICON_PATH = os.path.join(core.RESOURCE_DIR, "data", "check.svg").replace(os.sep, "/")
 CHEVRON_ICON_PATH = os.path.join(core.RESOURCE_DIR, "data", "chevron-down.svg").replace(os.sep, "/")
@@ -992,7 +990,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             f"QPushButton:hover {{ background:{t['sec_hover']}; }}"
             f"QPushButton:disabled {{ color:{faint}; }}"
             f"QPushButton#secondary {{ background:{t['sec_bg']}; border:1px solid {t['border']};"
-            f" border-radius:7px; padding:7px 14px; }}"
+            f" border-radius:7px; padding:6px 12px; }}"
             f"QPushButton#secondary:hover {{ background:{t['sec_hover']}; }}"
         )
         search_qss = (
@@ -1497,19 +1495,21 @@ class MainWindow(CatalogueUx, QMainWindow):
         dialog.resize(440,420)
         layout = QVBoxLayout(dialog)
         layout.setContentsMargins(16,16,16,16);layout.setSpacing(12)
-        note = QLabel(f"Ces valeurs s’appliquent aux {count} références du produit.\n"
-                      "Valeur inconnue : laissez la case vide. Vos corrections sont conservées lors des actualisations.")
+        note = QLabel('Enregistrez une copie personnelle de cette bobine. La référence source reste intacte.\n'
+                      'Le suffixe apparaît après @. Valeur inconnue : laissez la case vide.')
         note.setWordWrap(True)
         layout.addWidget(note)
         fields = {}
         form=QGridLayout();form.setContentsMargins(0,0,0,0);form.setHorizontalSpacing(12);form.setVerticalSpacing(8);form.setColumnStretch(1,1)
+        suffix=QLineEdit(self.db['_skus'][self.current_sku].get('_personal_suffix','Personnel'));suffix.setObjectName('personal_suffix');suffix.setFixedHeight(CONTROL_HEIGHT)
+        suffix.setPlaceholderText('Personnel, U1…');form.addWidget(QLabel('Suffixe @'),0,0);form.addWidget(suffix,0,1)
         for key, label in (("min_temp", "Buse min. °C"), ("max_temp", "Buse max. °C"),
                            ("bed_min_temp", "Plateau min. °C"), ("bed_max_temp", "Plateau max. °C"),
                            ("diameter", "Diamètre mm"), ("density", "Densité g/cm³")):
             value = view.product_data.get(key)
             field = QLineEdit("" if value is None else str(value))
             field.setObjectName(key);field.setFixedHeight(CONTROL_HEIGHT)
-            caption=QLabel(label);caption.setBuddy(field);row=len(fields)
+            caption=QLabel(label);caption.setBuddy(field);row=len(fields)+1
             form.addWidget(caption,row,0);form.addWidget(field,row,1);fields[key] = field
         layout.addLayout(form)
         error = QLabel(); error.setWordWrap(True); layout.addWidget(error)
@@ -1524,17 +1524,19 @@ class MainWindow(CatalogueUx, QMainWindow):
                     raw = field.text().strip().replace(",", ".")
                     value = float(raw) if raw else None
                     values[key] = int(value) if value is not None and key.endswith("temp") and value.is_integer() else value
-                core.set_product_physical(self.db, self.current_sku, values)
+                created=core.save_personal_filament(self.db,self.current_sku,values,suffix.text())
+                dialog.setProperty('saved_sku',created)
                 dialog.accept()
             except (ValueError, OSError) as exc:
                 error.setText(str(exc))
         buttons.accepted.connect(save)
         buttons.rejected.connect(dialog.reject)
         if dialog.exec() == QDialog.Accepted:
-            selected = self.current_sku
+            selected = dialog.property('saved_sku') or self.current_sku
+            self.current_sku=selected
             self._reload_table()
-            if self.current_sku == selected:
-                self._show_detail(selected)
+            self.current_sku=selected;self._show_detail(selected)
+            self.status.showMessage('Copie personnelle enregistrée ; la référence source est conservée.',8000)
             self._update_stats()
 
     def _nfc_changed(self, *_):
@@ -1603,11 +1605,22 @@ class MainWindow(CatalogueUx, QMainWindow):
                 raise core.ExportValidationError("Produit introuvable pour cette référence.")
             entry = self.db["_skus"][self.current_sku]
             export_options = self._nfc_options() if mode == "nfc" else dict(tag_type=self.tag_type.currentData(), profile="full", reserved_bytes=0)
+            # Validate before opening a destination picker; cancellation writes nothing.
+            core.serialize_openspool(self._build_payload(),mode=mode,**export_options)
+            directory=QFileDialog.getExistingDirectory(self,'Choisir le dossier d’export',core.export_directory())
+            if not directory:return
             out = core.write_openspool(self.current_sku, entry, view.product_data,
+                                       output_dir=directory,
                                        brand_meta=view.brand_meta, mode=mode,
                                        **export_options,
                                        use_orca_overrides=core.load_config().get("orca_overrides") is True)
-            self.status.showMessage(f"Fichier généré : {out} — « Dossier d'export » l'ouvre.", 12000)
+            try:
+                cfg=core.load_config();cfg['export_directory']=directory;core.save_config(cfg)
+            except OSError:
+                self.status.showMessage('Fichier exporté ; le dossier n’a pas pu être mémorisé.',8000)
+            else:self.status.showMessage(f'Export terminé : {out}',8000)
+            self._last_export_directory=directory
+            QMessageBox.information(self,'Export terminé',f'Fichier enregistré :\n{out}')
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Échec de l'export :\n{e}")
 
@@ -1616,16 +1629,11 @@ class MainWindow(CatalogueUx, QMainWindow):
             self.inspector.setVisible(False)
             self.btn_inspect.setText("Voir le JSON")
             self.detail_scroll.verticalScrollBar().setValue(getattr(self,"_inspect_scroll_before",0))
-            new_h = max(self.height() - _INSPECTOR_DELTA, self.minimumHeight())
-            self.resize(self.width(), new_h)
         else:
             self._inspect_scroll_before=self.detail_scroll.verticalScrollBar().value()
             self._refresh_inspector()
             self.inspector.setVisible(True)
             self.btn_inspect.setText("Masquer le JSON")
-            avail = QApplication.primaryScreen().availableGeometry().height()
-            new_h = min(self.height() + _INSPECTOR_DELTA, avail - 60)
-            self.resize(self.width(), new_h)
             QTimer.singleShot(0,lambda:self.detail_scroll.ensureWidgetVisible(self.inspector) if self.inspector.isVisible() else None)
 
     def _refresh_inspector(self):
@@ -1642,7 +1650,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             self.inspector.setPlainText(f"Export impossible : {exc}")
 
     def _open_output(self):
-        out_dir = core.OUTPUT_DIR
+        out_dir = getattr(self,'_last_export_directory',core.export_directory())
         os.makedirs(out_dir, exist_ok=True)
         try:
             if sys.platform.startswith("win"):
@@ -1776,7 +1784,7 @@ class MainWindow(CatalogueUx, QMainWindow):
     # ── Paramètres ───────────────────────────────────────────────────────
     def _open_settings(self):
         cfg=core.load_config();dlg=QDialog(self);dlg.setWindowTitle('Paramètres');dlg.resize(540,460)
-        lay=QVBoxLayout(dlg);lay.setContentsMargins(18,18,18,14);lay.setSpacing(12);tabs=QTabWidget();tabs.setDocumentMode(True);lay.addWidget(tabs,1)
+        lay=QVBoxLayout(dlg);lay.setContentsMargins(18,18,18,14);lay.setSpacing(12);tabs=QTabWidget();tabs.setDocumentMode(False);tabs.tabBar().setDrawBase(False);lay.addWidget(tabs,1)
         catalogue=QWidget();catalogue_layout=QVBoxLayout(catalogue);catalogue_layout.setContentsMargins(0,12,0,0)
         catalogue_layout.addWidget(WrapLabel('Actualisez le catalogue à votre rythme. La dernière base locale reste disponible en cas d’échec.'))
         catalogue_layout.addWidget(QLabel('Actualisation au lancement'))
@@ -1808,13 +1816,20 @@ class MainWindow(CatalogueUx, QMainWindow):
         chk_orca.setToolTip('Désactivé : vos corrections locales restent prioritaires. Le fichier JSON permet de vérifier les valeurs exportées.')
         export_layout.addStretch(1);tabs.addTab(export,'Bobines')
         advanced_export=QWidget();advanced_layout=QVBoxLayout(advanced_export);advanced_layout.setContentsMargins(0,12,0,0)
+        advanced_layout.addWidget(QLabel('Dossier d’export'))
+        export_path=QLineEdit(core.export_directory(cfg));export_path.setObjectName('export_directory');export_path.setReadOnly(True);export_path.setFixedHeight(CONTROL_HEIGHT)
+        browse=QPushButton('Choisir…');browse.setFixedHeight(CONTROL_HEIGHT)
+        def choose_export_folder():
+            chosen=QFileDialog.getExistingDirectory(dlg,'Choisir le dossier d’export',export_path.text())
+            if chosen:export_path.setText(chosen)
+        browse.clicked.connect(choose_export_folder);folder_row=QHBoxLayout();folder_row.addWidget(export_path,1);folder_row.addWidget(browse);advanced_layout.addLayout(folder_row)
         advanced_layout.addWidget(QLabel('Valeurs du fichier NFC'));advanced_layout.addWidget(chk_orca)
         advanced_layout.addWidget(WrapLabel('Par défaut, vos corrections locales restent prioritaires. Activez cette option pour utiliser les paramètres Orca disponibles.'))
         advanced_layout.addStretch(1);tabs.addTab(advanced_export,'Export')
         bb=QDialogButtonBox(QDialogButtonBox.Save|QDialogButtonBox.Cancel);bb.button(QDialogButtonBox.Save).setText('Enregistrer');bb.button(QDialogButtonBox.Cancel).setText('Annuler');bb.button(QDialogButtonBox.Save).setFixedHeight(32);bb.button(QDialogButtonBox.Cancel).setFixedHeight(32)
         bb.accepted.connect(dlg.accept);bb.rejected.connect(dlg.reject);lay.addWidget(bb)
         if dlg.exec()==QDialog.Accepted:
-            cfg=core.load_config();cfg.update(orca_overrides=chk_orca.isChecked(),update_interval_days=cadence.currentData(),preferred_weight_g=weight.currentData(),preferred_packaging=form.currentData())
+            cfg=core.load_config();cfg.update(orca_overrides=chk_orca.isChecked(),update_interval_days=cadence.currentData(),preferred_weight_g=weight.currentData(),preferred_packaging=form.currentData(),export_directory=export_path.text())
             try:
                 core.save_config(cfg)
                 if self.current_sku:self._show_detail(self.current_sku)
@@ -1874,15 +1889,17 @@ class MainWindow(CatalogueUx, QMainWindow):
         desc.setTextInteractionFlags(Qt.TextSelectableByMouse)
         lay.addWidget(desc)
 
-        link = QLabel(
-            '<a href="https://github.com/ArN-LaB/Spoolscribe-">'
-            'github.com/ArN-LaB/Spoolscribe-</a>'
-        )
-        link.setOpenExternalLinks(True)
-        lay.addWidget(link)
+        links=QVBoxLayout();links.setSpacing(8)
+        github=QPushButton('Code et documentation · GitHub');github.setObjectName('projectGithub');github.setFixedHeight(CONTROL_HEIGHT)
+        github.clicked.connect(lambda:QDesktopServices.openUrl(QUrl('https://github.com/ArN-LaB/Spoolscribe-')));links.addWidget(github)
+        support=QPushButton('☕ Soutenir le projet · Buy Me a Coffee');support.setObjectName('supportProject');support.setFixedHeight(CONTROL_HEIGHT)
+        support.setToolTip('Ouvrir buymeacoffee.com/arn_lab dans votre navigateur')
+        support.clicked.connect(lambda:QDesktopServices.openUrl(QUrl('https://buymeacoffee.com/arn_lab')))
+        links.addWidget(support);lay.addLayout(links)
 
         bb = QDialogButtonBox(QDialogButtonBox.Close)
         bb.button(QDialogButtonBox.Close).setText("Fermer")
+        bb.button(QDialogButtonBox.Close).setFixedHeight(CONTROL_HEIGHT)
         bb.rejected.connect(dlg.reject)
         bb.accepted.connect(dlg.accept)
         bb.button(QDialogButtonBox.Close).clicked.connect(dlg.accept)

@@ -44,6 +44,8 @@ class GuiTests(unittest.TestCase):
         self.addCleanup(errors.stop)
         self.window = app_gui.MainWindow()
         self.addCleanup(self.window.close)
+        picker=patch('app_gui.QFileDialog.getExistingDirectory',side_effect=lambda *a,**k:core.OUTPUT_DIR)
+        picker.start();self.addCleanup(picker.stop)
 
     def test_startup_and_inspection_are_offline_and_identical_to_export(self):
         self.window.current_sku = "PB05001"
