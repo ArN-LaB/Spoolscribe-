@@ -22,6 +22,7 @@ class GuiTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.app = QApplication.instance() or QApplication([])
+        app_gui.configure_application(cls.app)
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -29,10 +30,14 @@ class GuiTests(unittest.TestCase):
         root = Path(self.tmp.name)
         db = root / "db.json"
         db.write_text(json.dumps(catalogue()), encoding="utf-8")
-        self.paths = patch.multiple(core, DB_PATH=str(db), CONFIG_PATH=str(root / "config.json"),
+        self.paths = patch.multiple(core, DB_PATH=str(db), DATA_HOME=str(root), CONFIG_PATH=str(root / "config.json"),
                                     OUTPUT_DIR=str(root / "output"))
         self.paths.start()
         self.addCleanup(self.paths.stop)
+        # GUI fixtures explicitly stay offline; a delayed startup timer must not
+        # open the first-run consent dialog during another widget interaction.
+        # The real restore/startup test below still exercises the actual timer.
+        core.save_config(dict(core.DEFAULT_CONFIG, printer_firmware="paxx12", network_consent=False))
         errors = patch("app_gui.QMessageBox.critical", side_effect=lambda *args, **kwargs:
                        self.fail(f"Dialogue d'erreur inattendu : {args[-1]}"))
         errors.start()
@@ -118,19 +123,21 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(self.window.table.rowCount(), 0)
         self.assertIsNone(self.window.current_sku)
         self.window._reset_filters()
-        self.assertEqual(self.window.brand_filter.currentData(), "Polymaker")
+        self.assertEqual(self.window.brand_filter.currentData(), "")
         self.window.brand_filter.setCurrentIndex(0)
         self.window._change_page(1)
         self.assertEqual(self.window._rows[0], self.window._filtered_rows[250])
 
-    def test_sidebar_facets_drive_the_filters_and_pin_recent_brands(self):
+    def test_sidebar_facets_drive_filters_and_explicit_favorites(self):
         w = self.window
         for name in ("Prusament", "ROSA3D", "Polymaker"):
             w._choose_brand(name)
             self.assertEqual(w.brand_filter.currentData(), name)
+        w._toggle_brand_favorite("Polymaker")
         labels = [w.brand_list.item(i).text() for i in range(w.brand_list.count())]
         self.assertTrue(labels[0].startswith("Tous les fabricants"))
-        self.assertTrue(labels[1].startswith("★ Polymaker"))
+        self.assertTrue(labels[1].startswith("Polymaker"))
+        self.assertTrue(w.brand_list.item(1).data(Qt.UserRole+1))
         self.assertEqual(w.brand_list.currentItem().data(Qt.UserRole), "Polymaker")
         family = next(w.family_list.item(i) for i in range(w.family_list.count()) if w.family_list.item(i).data(Qt.UserRole) == "PETG")
         w.family_list.itemClicked.emit(family)
@@ -143,13 +150,14 @@ class GuiTests(unittest.TestCase):
         visible = [w.brand_list.item(i).data(Qt.UserRole) for i in range(w.brand_list.count()) if not w.brand_list.item(i).isHidden()]
         self.assertEqual(visible, ["", "ROSA3D"])
         w._reset_filters()
-        self.assertEqual((w.brand_filter.currentData(), w.material_filter.currentData(), w.quality_filter.currentData()), ("Polymaker", "", "all"))
+        self.assertEqual((w.brand_filter.currentData(), w.material_filter.currentData(), w.quality_filter.currentData()), ("", "", "all"))
 
     def test_importing_a_settings_file_restores_the_whole_workspace(self):
         w = self.window
         w.tag_choice.setCurrentIndex(w.tag_choice.findData("NTAG215"))
         w.nfc_default_btn.click()
         w._choose_brand("Prusament")
+        w._toggle_brand_favorite("Prusament")
         w._save_ui_preferences()  # the menu action does this before exporting
         exported = Path(self.tmp.name) / "settings.json"
         core.export_settings(str(exported))
@@ -160,7 +168,7 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(w.brand_filter.currentData(), "Prusament")
         self.assertEqual(w.tag_choice.currentData(), "NTAG215")
         self.assertEqual(w.nfc_default_btn.text(), "Par défaut ✓")
-        self.assertTrue(any(w.brand_list.item(i).text().startswith("★ Prusament") for i in range(w.brand_list.count())))
+        self.assertTrue(any(w.brand_list.item(i).data(Qt.UserRole)=="Prusament" and w.brand_list.item(i).data(Qt.UserRole+1) for i in range(w.brand_list.count())))
 
     def test_tag_choice_is_per_session_until_saved_as_default(self):
         w = self.window
@@ -189,7 +197,7 @@ class GuiTests(unittest.TestCase):
         self.window._refresh_inspector()
         expected = self.window.inspector.toPlainText()
         self.assertNotIn("brand_meta", json.loads(expected))
-        self.assertIn("marge", self.window.nfc_capacity.text())
+        self.assertIn("Espace restant", self.window.nfc_capacity.toolTip())
         with patch("app_gui.QMessageBox.information"):
             self.window._generate()
             self.window._generate(mode="archive")
@@ -198,7 +206,7 @@ class GuiTests(unittest.TestCase):
         archive, = Path(core.OUTPUT_DIR).glob("*archive.json")
         self.assertIn("brand_meta", json.loads(archive.read_text()))
 
-    def test_all_approved_logos_render_at_full_hidpi_size_with_an_outline(self):
+    def test_all_approved_logos_render_at_hidpi_with_transparency_and_contrast(self):
         from tests.support import ROOT
         manifest = json.loads((ROOT / "data/brand_logos/manifest.json").read_text())
         rendered = 0
@@ -249,7 +257,7 @@ class GuiTests(unittest.TestCase):
                     loop.exec()
                     return 0
 
-                with patch.multiple(core, _FROZEN=frozen, DB_PATH=str(db_path),
+                with patch.multiple(core, _FROZEN=frozen, DB_PATH=str(db_path), DATA_HOME=str(root / "user"),
                                     CONFIG_PATH=str(root / "config.json"), RESOURCE_DIR=str(root / "bundle"),
                                     DATA_DIR=str(db_path.parent), ORCA_DIR=str(root / "user/orca_profiles")), \
                      patch("app_gui.QApplication", return_value=self.app) as application, \

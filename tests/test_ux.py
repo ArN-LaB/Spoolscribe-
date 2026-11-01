@@ -181,11 +181,12 @@ class CatalogueInteractionTests(unittest.TestCase):
         w._brand_typed('rosa');self.assertEqual(w.brand_filter.currentData(),'ROSA3D')
         w.current_sku='PB05001';w._show_detail(w.current_sku)
         w.printer.setCurrentIndex(w.printer.findData('bambu'))
-        self.assertFalse(w.btn_generate.isEnabled());self.assertIn('RFID Bambu',w.printer_help.text())
-        w.printer.setCurrentIndex(w.printer.findData('prusa'));self.assertIn('ISO 15693',w.printer_help.text())
-        w.printer.setCurrentIndex(w.printer.findData('u1'));self.assertTrue(w.btn_generate.isEnabled())
+        self.assertFalse(w.btn_generate.isEnabled());self.assertIn('RFID Bambu',w.printer_help.toolTip());self.assertIn('ne lit pas',w.printer_help.text())
+        w.printer.setCurrentIndex(w.printer.findData('prusa'));self.assertIn('ISO 15693',w.printer_help.toolTip())
+        w.printer.setCurrentIndex(w.printer.findData('u1'));self.assertFalse(w.btn_generate.isEnabled())
+        w.firmware.setCurrentIndex(w.firmware.findData('paxx12'));self.assertTrue(w.btn_generate.isEnabled())
         self.assertTrue(w.nfc_advanced.isHidden())
-        self.assertFalse(w.stats_label.isVisible());self.assertIn('Base :',w.database_btn.text())
+        self.assertFalse(w.stats_label.isVisible());self.assertIn('filaments',w.database_btn.text())
 
     def test_startup_refresh_every_launch_except_after_restore(self):
         w=self.window;w.show();core.set_network_consent(True)

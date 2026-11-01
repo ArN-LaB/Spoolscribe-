@@ -1,0 +1,320 @@
+"""Small visual components with height-for-width support on native macOS too."""
+from functools import lru_cache
+import re
+from PySide6.QtCore import Qt, QRectF, QSize, Signal, QEvent
+from PySide6.QtGui import QColor, QPainter, QPen, QFont, QPixmap, QIcon, QRadialGradient, QLinearGradient, QPainterPath
+from PySide6.QtWidgets import (QLabel, QWidget, QFrame, QHBoxLayout, QVBoxLayout, QSizePolicy, QGridLayout,
+    QListWidget, QListWidgetItem, QStyledItemDelegate, QStyle, QComboBox, QDialog, QLineEdit,
+    QDialogButtonBox, QScrollArea, QStyleOptionComboBox)
+
+CONTROL_HEIGHT = 32
+
+
+class DetailScrollArea(QScrollArea):
+    viewportChanged = Signal()
+    def __init__(self, parent=None):
+        super().__init__(parent);self.viewport().installEventFilter(self)
+    def eventFilter(self, watched, event):
+        if watched is self.viewport() and event.type()==QEvent.Resize:self.viewportChanged.emit()
+        return super().eventFilter(watched,event)
+
+
+class PrinterPicker(QComboBox):
+    """A normal labelled choice that opens a visual, searchable browser."""
+    def __init__(self,parent=None):
+        super().__init__(parent);self.setObjectName('printerPicker')
+    def paintEvent(self,event):
+        super().paintEvent(event)
+        # QSS suppresses the native arrow on some macOS editable controls.
+        # Paint our own affordance, with the same palette and size on every OS.
+        painter=QPainter(self);painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(QPen(self.palette().text().color(),1.7,Qt.SolidLine,Qt.RoundCap,Qt.RoundJoin))
+        x=self.width()-18;y=self.height()/2
+        path=QPainterPath();path.moveTo(x-4,y-2);path.lineTo(x,y+2);path.lineTo(x+4,y-2);painter.drawPath(path);painter.end()
+    def showPopup(self):
+        browser=PrinterBrowser(self,self.window())
+        if browser.exec()==QDialog.Accepted and browser.selected_index is not None:
+            self.setCurrentIndex(browser.selected_index)
+        browser.deleteLater()
+
+
+class PrinterChoiceDelegate(QStyledItemDelegate):
+    """Paint compact rows; no child widget minimum heights accumulate on resize."""
+    def __init__(self,entries,parent=None):
+        super().__init__(parent);self.entries=entries
+    def _metrics(self,index,width,font):
+        info=self.entries[index.data(Qt.UserRole)];name_font=QFont(font);name_font.setBold(True)
+        from PySide6.QtGui import QFontMetrics
+        text_width=max(140,width-110)
+        name_height=QFontMetrics(name_font).boundingRect(0,0,text_width,1000,Qt.TextWordWrap,info['title']).height()
+        detail_height=QFontMetrics(font).boundingRect(0,0,text_width,1000,Qt.TextWordWrap,info['description']).height()
+        return info,name_font,text_width,name_height,detail_height
+    def sizeHint(self,option,index):
+        width=max(300,self.parent().viewport().width()-12)
+        _,_,_,name_height,detail_height=self._metrics(index,width,option.font)
+        return QSize(width,max(88,name_height+detail_height+30))
+    def paint(self,painter,option,index):
+        rect=QRectF(option.rect).adjusted(2,2,-2,-2);selected=bool(option.state&QStyle.State_Selected)
+        info,name_font,text_width,name_height,detail_height=self._metrics(index,int(rect.width()),option.font)
+        painter.save();painter.setRenderHint(QPainter.Antialiasing)
+        ink=option.palette.text().color();dark=ink.lightness()>128;accent=option.palette.highlight().color()
+        base=QColor('#252d34' if dark else '#ffffff');border=QColor('#434c55' if dark else '#d1d9df')
+        painter.setPen(QPen(accent if selected else border,2 if selected else 1));painter.setBrush(base);painter.drawRoundedRect(rect,10,10)
+        photo=QRectF(rect.left()+12,rect.top()+12,64,64);pixmap=QPixmap(info.get('photo',''))
+        if not pixmap.isNull():
+            size=pixmap.size().scaled(128,128,Qt.KeepAspectRatio);target=QRectF(photo.center().x()-size.width()/4,photo.center().y()-size.height()/4,size.width()/2,size.height()/2)
+            painter.drawPixmap(target,pixmap,QRectF(pixmap.rect()))
+        else:
+            painter.setPen(Qt.NoPen);painter.setBrush(option.palette.alternateBase());painter.drawRoundedRect(photo,10,10)
+            painter.setPen(accent);badge=QFont(option.font);badge.setPointSizeF(badge.pointSizeF()+3);painter.setFont(badge);painter.drawText(photo,Qt.AlignCenter,info['title'].split()[0][:2].upper())
+        x=rect.left()+90;y=rect.top()+12
+        painter.setFont(name_font);painter.setPen(ink);painter.drawText(QRectF(x,y,text_width,name_height),Qt.TextWordWrap|Qt.AlignTop,info['title'])
+        painter.setFont(option.font);painter.setPen(option.palette.text().color());painter.drawText(QRectF(x,y+name_height+6,text_width,detail_height),Qt.TextWordWrap|Qt.AlignTop,info['description'])
+        painter.restore()
+
+
+class PrinterBrowser(QDialog):
+    def __init__(self,combo,parent=None):
+        super().__init__(parent)
+        import printer_profiles
+        from printer_presentations import presentation
+        self.setWindowTitle('Choisir mon imprimante');self.resize(620,540);self.setMinimumSize(440,320)
+        self.selected_index=None;self._cards=[]
+        body=QVBoxLayout(self);body.setContentsMargins(16,16,16,16);body.setSpacing(12)
+        title=QLabel('Votre imprimante');font=title.font();font.setPointSizeF(font.pointSizeF()+3);font.setBold(True);title.setFont(font);body.addWidget(title)
+        self.search=QLineEdit();self.search.setPlaceholderText('Marque ou modèle : Snapmaker, Prusa, X1…');self.search.setClearButtonEnabled(True);self.search.setFixedHeight(CONTROL_HEIGHT);body.addWidget(self.search)
+        self.list=QListWidget();self.list.setSpacing(4);self.list.setObjectName('printerChoices');body.addWidget(self.list,1)
+        self.entries={}
+        for i in range(combo.count()):
+            profile=printer_profiles.PROFILES[combo.itemData(i)];info=presentation(profile)
+            item=QListWidgetItem(info['title']);item.setData(Qt.UserRole,i);item.setData(Qt.UserRole+1,(combo.itemText(i)+' '+info['title']).casefold())
+            self.entries[i]=info;self.list.addItem(item)
+            if i==combo.currentIndex():self.list.setCurrentItem(item)
+        self.delegate=PrinterChoiceDelegate(self.entries,self.list);self.list.setItemDelegate(self.delegate)
+        self.empty=QLabel('Aucune imprimante trouvée. Essayez une autre marque ou un autre modèle.');self.empty.setWordWrap(True);self.empty.hide();body.addWidget(self.empty)
+        buttons=QDialogButtonBox(QDialogButtonBox.Cancel|QDialogButtonBox.Ok);buttons.button(QDialogButtonBox.Cancel).setText('Annuler');buttons.button(QDialogButtonBox.Ok).setText('Choisir')
+        for button in buttons.buttons():button.setFixedHeight(CONTROL_HEIGHT)
+        buttons.rejected.connect(self.reject);buttons.accepted.connect(self._choose);body.addWidget(buttons)
+        self.list.itemDoubleClicked.connect(lambda *_:self._choose())
+        self.search.textChanged.connect(self._filter)
+        self._accept_button=buttons.button(QDialogButtonBox.Ok);self.search.setFocus()
+        self.list.viewport().installEventFilter(self)
+    def eventFilter(self,watched,event):
+        if watched is self.list.viewport() and event.type()==QEvent.Resize:
+            self.list.doItemsLayout()
+        return super().eventFilter(watched,event)
+    def _filter(self,text):
+        visible=[]
+        for i in range(self.list.count()):
+            item=self.list.item(i);item.setHidden(text.casefold().strip() not in item.data(Qt.UserRole+1))
+            if not item.isHidden():visible.append(item)
+        if self.list.currentItem() not in visible:self.list.setCurrentItem(visible[0] if visible else None)
+        self.empty.setVisible(not visible);self._accept_button.setEnabled(bool(visible))
+    def _choose(self):
+        item=self.list.currentItem()
+        if item and not item.isHidden():self.selected_index=item.data(Qt.UserRole);self.accept()
+
+
+def report_metrics(values):
+    panel=QWidget();grid=QGridLayout(panel);grid.setContentsMargins(0,0,0,0);grid.setSpacing(8)
+    for i,(label,value) in enumerate(values):
+        tile=QFrame();tile.setObjectName('metricTile');body=QVBoxLayout(tile);body.setContentsMargins(12,10,12,10)
+        number=QLabel(str(value));number.setObjectName('reportMetricValue');font=number.font();font.setPointSizeF(font.pointSizeF()+5);font.setBold(True);number.setFont(font)
+        caption=WrapLabel(label);caption.setObjectName('fieldvalue');body.addWidget(number);body.addWidget(caption);grid.addWidget(tile,i//3,i%3)
+    for col in range(3):grid.setColumnStretch(col,1)
+    return panel
+
+
+def product_label(text, brand):
+    """Remove repeated leading manufacturer names for display; source data stays intact."""
+    if not brand:return text
+    pattern=re.compile(r'^'+re.escape(brand)+r'\s+(?='+re.escape(brand)+r'\b)',re.IGNORECASE)
+    previous=None
+    while text!=previous:previous=text;text=pattern.sub('',text,count=1)
+    return text
+
+
+class WrapLabel(QLabel):
+    """A scroll area's child must reserve the height of the wrapped text."""
+    def __init__(self, text='', parent=None):
+        super().__init__(text, parent)
+        self.setWordWrap(True)
+        self.setTextFormat(Qt.PlainText)
+        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Minimum)
+
+    def fit_height(self):
+        if self.width() > 0:
+            height = max(self.fontMetrics().height(), self.heightForWidth(self.width()))
+            if self.minimumHeight() != height:
+                self.setMinimumHeight(height)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.fit_height()
+
+    def setText(self, text):
+        super().setText(text)
+        self.fit_height()
+
+
+def paint_spool(painter, bounds, hex_color=None, dark=False):
+    """Project every reel part from the same circular sections and physical axis."""
+    import math
+    painter.save();painter.setRenderHint(QPainter.Antialiasing)
+    scale=min(bounds.width()/170,bounds.height()/160)
+    painter.translate(bounds.center().x()-85*scale,bounds.center().y()-80*scale);painter.scale(scale,scale)
+    color=QColor('#'+hex_color) if hex_color else QColor('#8b98a2')
+    theta=math.radians(30);tilt=math.radians(-10)
+    def point(radius,angle,z=0):
+        a=math.radians(angle);x=math.cos(theta)*radius*math.cos(a)+math.sin(theta)*z;y=radius*math.sin(a)
+        return (65+math.cos(tilt)*x-math.sin(tilt)*y,82+math.sin(tilt)*x+math.cos(tilt)*y)
+    def loop(radius,z=0,start=0,end=360):
+        return [point(radius,start+(end-start)*i/96,z) for i in range(97)]
+    def path(points):
+        result=QPainterPath();result.moveTo(*points[0])
+        for p in points[1:]:result.lineTo(*p)
+        result.closeSubpath();return result
+    painter.setPen(Qt.NoPen);painter.setBrush(QColor(0,0,0,22));painter.drawEllipse(QRectF(19,136,127,9))
+    plastic=QLinearGradient(20,25,130,130);plastic.setColorAt(0,QColor('#95a6af' if dark else '#6b7c87'));plastic.setColorAt(.45,QColor('#566670' if dark else '#364751'));plastic.setColorAt(1,QColor('#26333c'))
+    painter.setBrush(plastic);painter.setPen(QPen(QColor('#91a0aa'),.7));painter.drawPath(path(loop(52,44)))
+    tube=path([point(43,-90,0)]+loop(43,44,-90,90)+[point(43,90,0)])
+    winding=QLinearGradient(30,25,110,130);winding.setColorAt(0,color.lighter(130));winding.setColorAt(.42,color);winding.setColorAt(1,color.darker(150))
+    painter.setBrush(winding);painter.setPen(Qt.NoPen);painter.drawPath(tube)
+    shade=color.darker(145);shade.setAlpha(110)
+    for z in range(3,44,3):
+        line=QPainterPath();line.moveTo(*point(43,-90,z))
+        for x,y in loop(43,z,-90,90)[1:]:line.lineTo(x,y)
+        painter.setPen(QPen(shade,.55));painter.drawPath(line)
+    painter.setPen(Qt.NoPen);painter.setBrush(winding);painter.drawPath(path(loop(43)))
+    for radius in range(18,44,4):
+        painter.setBrush(Qt.NoBrush);painter.setPen(QPen(shade,.6));painter.drawPath(path(loop(radius)))
+    # Broad moulded spokes and apertures, rather than bicycle-wheel spokes.
+    flange=path(loop(52))
+    for angle in range(0,360,60):
+        opening=path(loop(45,0,angle-22,angle+22)+list(reversed(loop(20,0,angle-22,angle+22))))
+        flange=flange.subtracted(opening)
+    painter.setPen(QPen(QColor('#a4b1b9'),.7));painter.setBrush(plastic);painter.drawPath(flange)
+    painter.setBrush(QColor('#192832'));painter.setPen(QPen(QColor('#97a7b0'),.7));painter.drawPath(path(loop(10)))
+    tail=QPainterPath();tail.moveTo(*point(43,0,44));tail.cubicTo(151,91,130,118,151,134)
+    painter.setBrush(Qt.NoBrush);painter.setPen(QPen(color,1.8,Qt.SolidLine,Qt.RoundCap));painter.drawPath(tail)
+    if hex_color is None:
+        painter.setPen(QColor('#edf3f6'));font=QFont();font.setPixelSize(12);font.setBold(True);painter.setFont(font)
+        painter.drawText(QRectF(58,70,14,24),Qt.AlignCenter,'?')
+    painter.restore()
+
+
+@lru_cache(maxsize=256)
+def spool_icon(hex_color, size=112, dpr=1, dark=False):
+    image=QPixmap(round(size*dpr),round(size*dpr));image.fill(Qt.transparent)
+    image.setDevicePixelRatio(dpr);p=QPainter(image)
+    paint_spool(p,QRectF(0,0,size,size),hex_color,dark);p.end()
+    return QIcon(image)
+
+
+class SpoolPreview(QWidget):
+    def __init__(self,parent=None):
+        super().__init__(parent);self.hex_color=None;self.dark=False
+        self.setFixedSize(128,136);self.setAccessibleName('Aperçu de la bobine')
+    def set_filament(self, hex_color, dark=False):
+        self.hex_color=hex_color;self.dark=dark
+        self.setToolTip('Couleur source #'+hex_color if hex_color else 'Couleur à préciser : aucune teinte choisie')
+        self.update()
+    def paintEvent(self,event):
+        painter=QPainter(self);paint_spool(painter,QRectF(self.rect()),self.hex_color,self.dark);painter.end()
+
+
+class MetricGrid(QWidget):
+    columns=2
+    def __init__(self,parent=None):
+        super().__init__(parent);grid=QGridLayout(self);grid.setContentsMargins(0,0,0,0);grid.setSpacing(8)
+        self.values={};self.labels={}
+        for i,(key,title) in enumerate((('Nozzle','BUSE'),('Bed','PLATEAU'),('Diamètre','DIAMÈTRE'),('Densité','DENSITÉ'))):
+            tile=QFrame();tile.setObjectName('metricTile');body=QVBoxLayout(tile);body.setContentsMargins(12,10,12,10);body.setSpacing(3)
+            label=QLabel(title);label.setObjectName('metricLabel');label.setProperty('field_key',key)
+            value=WrapLabel('—');value.setObjectName('metricValue');font=value.font();font.setPointSize(14);font.setBold(True);value.setFont(font)
+            body.addWidget(label);body.addWidget(value);grid.addWidget(tile,i//2,i%2)
+            self.values[key]=value;self.labels[key]=label
+        grid.setColumnStretch(0,1);grid.setColumnStretch(1,1)
+
+
+class BrandDelegate(QStyledItemDelegate):
+    def paint(self,painter,option,index):
+        selected=bool(option.state & QStyle.State_Selected);hovered=bool(option.state & QStyle.State_MouseOver)
+        painter.save();painter.setFont(option.font)
+        base=option.palette.highlight().color() if selected else option.palette.base().color()
+        if hovered and not selected:base=base.lighter(112) if base.lightness()<128 else base.darker(103)
+        painter.fillRect(option.rect,base)
+        ink=option.palette.highlightedText().color() if selected else option.palette.text().color();painter.setPen(ink)
+        text_rect=option.rect.adjusted(6,0,-28,0)
+        painter.drawText(text_rect,Qt.AlignVCenter,option.fontMetrics.elidedText(index.data() or '',Qt.ElideRight,text_rect.width()))
+        if index.data(Qt.UserRole) and (index.data(Qt.UserRole+1) or hovered):
+            painter.setPen(ink if selected else option.palette.highlight().color())
+            painter.drawText(option.rect.adjusted(option.rect.width()-26,0,-2,0),Qt.AlignCenter,'★' if index.data(Qt.UserRole+1) else '☆')
+        painter.restore()
+
+
+class FavoriteBrandList(QListWidget):
+    favoriteRequested=Signal(str)
+    def __init__(self,parent=None):
+        super().__init__(parent);self.setItemDelegate(BrandDelegate(self));self.setMouseTracking(True)
+    def mousePressEvent(self,event):
+        item=self.itemAt(event.position().toPoint())
+        if item and item.data(Qt.UserRole) and event.button()==Qt.LeftButton:
+            if event.position().x()>self.visualItemRect(item).right()-26:
+                self.favoriteRequested.emit(item.data(Qt.UserRole));return
+        super().mousePressEvent(event)
+
+
+class FilamentDelegate(QStyledItemDelegate):
+    """Cards share the spool drawing and name the actual product, not only its brand."""
+    dark=False
+    def __init__(self,parent=None):
+        super().__init__(parent);self.rows={}
+    def paint(self,painter,option,index):
+        row=self.rows.get(index.data(Qt.UserRole),{});dark=self.dark
+        box=QRectF(option.rect).adjusted(5,5,-5,-5);selected=bool(option.state & QStyle.State_Selected)
+        accent=QColor('#26c6da' if dark else '#007f91');ink=QColor('#edf1f5' if dark else '#24303a')
+        painter.save();painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(QPen(accent if selected else QColor('#45515b' if dark else '#d6dfe5'),2 if selected else 1))
+        painter.setBrush(QColor('#263139' if dark else '#ffffff'));painter.drawRoundedRect(box,12,12)
+        painter.setPen(ink);font=QFont(option.font);font.setPointSize(10);painter.setFont(font)
+        painter.drawText(box.adjusted(11,8,-30,-8),Qt.AlignTop,option.fontMetrics.elidedText(row.get('brand',''),Qt.ElideRight,int(box.width()-48)))
+        painter.setPen(accent if row.get('_favorite') else QColor('#87939b'))
+        painter.drawText(QRectF(box.right()-25,box.top()+6,20,22),Qt.AlignCenter,'★' if row.get('_favorite') else '☆')
+        icon=index.data(Qt.DecorationRole)
+        if icon:icon.paint(painter,int(box.center().x()-55),int(box.top()+25),110,100)
+        painter.setPen(ink);font.setBold(True);font.setPointSize(11);painter.setFont(font)
+        painter.drawText(QRectF(box.left()+10,box.top()+128,box.width()-20,37),Qt.TextWordWrap|Qt.AlignTop,product_label(row.get('product',''),row.get('brand','')))
+        font.setBold(False);font.setPointSize(10);painter.setFont(font);painter.setPen(QColor('#9eafb9' if dark else '#61717d'))
+        text=row.get('color_name','')+(f" · {row['diameter']:g} mm" if row.get('diameter') else '')+(' ⚠' if row.get('hex_variants',0)>1 else '')
+        painter.drawText(QRectF(box.left()+10,box.bottom()-28,box.width()-20,20),Qt.AlignVCenter,option.fontMetrics.elidedText(text,Qt.ElideRight,int(box.width()-20)))
+        painter.restore()
+
+
+class PrinterCard(QFrame):
+    def __init__(self,parent=None):
+        super().__init__(parent);self.setObjectName('printerCard');self.setMinimumHeight(150);self.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Maximum)
+        layout=QHBoxLayout(self);layout.setContentsMargins(14,12,14,12);layout.setSpacing(16)
+        photo_col=QVBoxLayout();self.photo=QLabel();self.photo.setFixedSize(112,110);self.photo.setAlignment(Qt.AlignCenter)
+        self.photo_caption=WrapLabel();self.photo_caption.setStyleSheet('font-size:10px;');self.photo_caption.setMaximumWidth(112)
+        photo_col.addWidget(self.photo);photo_col.addWidget(self.photo_caption);photo_col.addStretch(1);layout.addLayout(photo_col)
+        body=QVBoxLayout();body.setSpacing(8)
+        self.name=WrapLabel();font=QFont();font.setPointSize(15);font.setBold(True);self.name.setFont(font)
+        self.description=WrapLabel();self.status=WrapLabel();self.reader=WrapLabel();self.reader.hide()
+        body.addWidget(self.name);body.addWidget(self.description);body.addWidget(self.status);body.addStretch(1);layout.addLayout(body,1)
+    def update_profile(self,profile,status,can_export,dark=False):
+        from printer_presentations import presentation
+        info=presentation(profile)
+        accent='#31cadd' if dark else '#007f91';border='#434c55' if dark else '#d1d9df';background='#252d34' if dark else '#ffffff'
+        self.setStyleSheet(f'QFrame#printerCard {{ background:{background}; border:1px solid {border}; border-radius:12px; }}')
+        self.name.setText(info['title']);self.description.setText(info['description'])
+        self.status.setText(status);self.status.setStyleSheet(f'color:{accent};font-weight:600;')
+        self.reader.setText(profile.get('reader',''))
+        pixmap=QPixmap(info.get('photo','')) if info.get('photo') else QPixmap()
+        self.photo.setVisible(not pixmap.isNull());self.photo_caption.setVisible(not pixmap.isNull())
+        # Set DPR on the pixmap before assigning it: QLabel returns a value copy.
+        if not pixmap.isNull():
+            fitted=pixmap.scaled(224,220,Qt.KeepAspectRatio,Qt.SmoothTransformation);fitted.setDevicePixelRatio(2);self.photo.setPixmap(fitted)
+        self.photo_caption.setText(info.get('caption',''))
+        self.photo_caption.setVisible(not pixmap.isNull() and info.get('caption')!=info['title'])
+        self.description.setToolTip(info.get('source',''))
