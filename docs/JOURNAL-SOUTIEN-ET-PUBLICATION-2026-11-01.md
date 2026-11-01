@@ -90,7 +90,7 @@ PR [#1](https://github.com/ArN-LaB/Zenith/pull/1), fusionnée le 2026-11-01 à
 - **Modifié** `LICENSE` : seul le texte MIT reste (« Copyright (c) 2026 ArN-LaB »).
 - **Créé** `NOTICE` : attribution vpn-tools (MIT © 2025 Valera) déplacée sans
   modification.
-- **Modifié** `README.md` : « See [NOTICE](NOTICE). » ajouté à la section License.
+- **Modifié** `README.md` : `See [NOTICE](NOTICE).` ajouté à la section License.
 - **Modifié** `CHANGELOG.md` : section `[Unreleased]` → *Documentation*.
 - Effet : GitHub détecte maintenant **MIT**.
 
@@ -221,3 +221,29 @@ et la remise en fonctionnement des trois distributions.
   l’agent 1Password échouait pendant la signature avec « communication with
   agent failed ». Les pushes autorisés ont abouti avec l’authentification GitHub
   CLI disponible, sans modification de `~/.ssh/config` ni export de clé privée.
+
+
+## 10. Complément — cohérence locale/GitHub et publication stable v0.3.0
+
+L’utilisateur a signalé à juste titre que les artefacts Actions ne mettaient pas
+à jour la page Releases, puis a explicitement choisi « Publier v0.3.0 stable ».
+
+- Avant cette préparation, les 348 fichiers suivis, dont 40 Markdown, ont été
+  comparés aux objets GitHub : aucun écart de contenu, aucun fichier manquant ou
+  supplémentaire ; `main` local et distant étaient sur `7d901db`. Les dossiers
+  ignorés de builds et caches sont conservés localement et ne sont pas publiés.
+- La release publique était encore v0.2.2. Le workflow ne publie que les tags
+  `v*` : un push sur `main` seul avait donc laissé les téléchargements inchangés.
+- Le README, le changelog, la roadmap et l’index documentaire sont actualisés pour
+  v0.3.0. Le journal historique reste intact dans son contenu ; son exemple de
+  lien NOTICE de Zenith est présenté comme code pour ne pas produire un lien
+  relatif cassé dans ce document SpoolScribe.
+- Le rapport CI ajoute les résultats réellement obtenus sur `main`, distincts des
+  premières validations sur la branche. Les notes historiques ne sont pas
+  réécrites comme si les contrôles ultérieurs avaient déjà eu lieu.
+- La publication passe par le tag annoté `v0.3.0` et le workflow complet : quatre
+  configurations de tests, trois builds, vérification des six fichiers, mise en
+  ligne depuis un brouillon uniquement après contrôle des empreintes.
+- La recette physique NFC et l’acceptation visuelle humaine restent non exécutées
+  dans cette procédure automatique. Aucune donnée de catalogue, aucun profil
+  Orca, aucune préférence utilisateur ni infrastructure n’est modifié.

@@ -11,7 +11,7 @@ is done and what remains — contributions welcome.
 - Keep the **core** logic UI-agnostic (shared by CLI and GUI).
 - Prefer **small, reversible** changes.
 
-## v0.3.0 — universal catalogue (development, not released)
+## v0.3.0 — universal catalogue (stable, 1 November 2026)
 
 - [x] Generic OFD source adapter covering all usable manufacturers in the official archive.
 - [x] Complementary SpoolmanDB adapter for manufacturers absent from the other sources.
@@ -42,7 +42,8 @@ is done and what remains — contributions welcome.
 - [x] Shared app/test startup style and font, native geometry assertions, restored export tools, quieter favorite stars and perspective reel.
 - [ ] Review further model-specific images before bundling; keep unsupported entries textual.
 - [ ] Resolve remaining ambiguous source matches with documented product evidence.
-- [ ] Human screen acceptance, physical NFC readback and remote four-configuration CI for this pass.
+- [x] Remote four-configuration CI: 237 tests per configuration, three native builds.
+- [ ] Human screen acceptance and physical NFC readback.
 
 ### Audit 31 October 2026 — applied
 
@@ -92,7 +93,10 @@ by an earlier preview build, without provenance). Six remarks, all addressed:
       provenance, manifest-first resolution.
 - [x] **Search and filters** — the sidebar replaces the redundant controls.
 
-### Remaining before a v0.3.0 release
+### Post-release validation and follow-up
+
+Stable publication was authorized after automated validation. The unchecked
+items below remain open; publication does not imply hardware or human acceptance.
 
 - [ ] Finish re-sourcing official manufacturer logos through
       `.github/scripts/import_brand_logos.py` (the review file is being built).
@@ -173,7 +177,8 @@ SUNLU page) that only add facts to families the catalogues already contain.
 - [x] Alphabetical material search, equal characteristic actions and overflow-only scrolling.
 - [x] Bobines preferences separated from export configuration.
 - [x] Shared catalogue/synchronisation summaries and control-size rules.
-- [ ] Human acceptance of this local follow-up package; cross-platform CI and physical NFC remain separate.
+- [x] Cross-platform CI for the integrated code (237 tests per configuration).
+- [ ] Human acceptance of the integrated application and physical NFC readback.
 
 - [x] Expanded-state UX correction: bounded storage details, stable printer-card resize, aligned local correction form and provenance (local sixth pass, human acceptance pending).
 
