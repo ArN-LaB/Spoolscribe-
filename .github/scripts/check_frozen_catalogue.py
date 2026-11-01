@@ -16,5 +16,5 @@ with tempfile.TemporaryDirectory() as directory:
     subprocess.run([str(root / "dist" / relative), "--run-script", str(root / ".github/scripts/probe_frozen_catalogue.py")],
                    env=env, check=True, timeout=120)
     result = json.loads(report.read_text(encoding="utf-8"))
-    assert result["offline"] and result["empty_first_install"] and result["fixture_references"] == 1
+    assert result["main_window_rendered"] and result["offline"] and result["empty_first_install"] and result["fixture_references"] == 1
     print("FROZEN_CATALOGUE_OK", json.dumps(result))

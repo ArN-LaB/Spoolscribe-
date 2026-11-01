@@ -75,8 +75,25 @@ for key,info in photo_manifest.items():
 from ui_widgets import spool_icon
 assert not spool_icon('008899',112,2).isNull()
 assert not spool_icon(None,112,2).isNull()
+# Construct the actual UI from the frozen imports, with synthetic data only.
+# No startup consent dialog or source refresh can run in this smoke check.
+core.save_config(dict(core.load_config(),network_consent=False,printer_firmware='paxx12'))
+from app_gui import MainWindow, configure_application
+configure_application(app)
+window = MainWindow()
+try:
+    window.resize(1100,800)
+    window.show()
+    window._show_detail('TEST')
+    app.processEvents()
+    assert window.isVisible() and window.current_sku == 'TEST'
+    assert window.btn_generate.isEnabled(), 'Fixture export must be available'
+    assert not window.grab().isNull(), 'Frozen UI must render'
+finally:
+    window.close()
+    app.processEvents()
 result = {"version": core.APP_VERSION, "empty_first_install": True, "fixture_references": len(db["_skus"]),
           "approved_new_logos": len(manifest), "rendered_logos": rendered,
-          "printer_photos":len(photo_manifest),"spool_artwork":True,
+          "printer_photos":len(photo_manifest),"spool_artwork":True,"main_window_rendered":True,
           "tag_exports": list(core.NFC_CAPACITIES), "offline": True}
 Path(os.environ["SPOOLSCRIBE_CATALOGUE_REPORT"]).write_text(json.dumps(result), encoding="utf-8")
