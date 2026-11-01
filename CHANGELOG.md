@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Cross-platform integration
 
 - Recover abandoned writer locks on Windows without signalling processes; retain live or inaccessible writers.
-- Keep paired controls aligned using native minimum sizes; test reflow independently of platform fonts and normalize Windows export paths in assertions.
+- Keep paired controls aligned using measured label widths and consistent compact typography; test reflow independently of platform fonts and normalize Windows export paths in assertions.
 
 ### Export and personal copies (1 November 2026, local)
 

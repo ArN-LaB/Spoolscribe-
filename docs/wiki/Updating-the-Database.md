@@ -88,9 +88,11 @@ restoration, automatic refreshes are suspended for the rest of that session.
 Writes use validation, atomic replacement, a writer lock and revision checks.
 If an external editor changed the file meanwhile, the save stops and the
 detected bytes are kept in `polymaker_db.json.concurrent-*`. A lock left by a
-crashed or killed worker is recovered automatically (dead process, or lock
-older than 15 minutes); a lock of a live process still blocks. Close other
-writers before updates or restoration.
+crashed or killed worker is recovered automatically when the operating system
+confirms that its process has stopped, on Windows, macOS and Linux. A live or
+inaccessible process remains protected regardless of the lock age. Close other
+writers before updates or restoration. External editors that ignore the lock
+still require revision checks; the lock alone cannot exclude them.
 
 ## Settings file
 

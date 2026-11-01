@@ -81,7 +81,10 @@ class ErgonomicsTests(unittest.TestCase):
         font=w.font();font.setPointSize(20)
         for button in (w.reset_filters,w.favorites_only,w.brand_favorites_only,w.btn_edit_physical,w.provenance_toggle):button.setFont(font)
         w._apply_theme();w.show();w.app.processEvents()
-        self.assertLessEqual(w.sidebar.width(),280)
+        diagnostics=[(b.text(),b.width(),b.minimumSizeHint().width(),b.font().pixelSize()) for b in (w.reset_filters,w.favorites_only,w.brand_favorites_only,w.btn_edit_physical,w.provenance_toggle)]
+        self.assertLessEqual(w.sidebar.width(),280,diagnostics)
+        for b in (w.reset_filters,w.favorites_only,w.brand_favorites_only,w.btn_edit_physical,w.provenance_toggle):
+            self.assertGreaterEqual(b.width(),b.fontMetrics().horizontalAdvance(b.text())+18,diagnostics)
         self.assertEqual(w.reset_filters.width(),w.favorites_only.width())
         self.assertEqual(w.btn_edit_physical.width(),w.provenance_toggle.width())
 
