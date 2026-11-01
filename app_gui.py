@@ -318,14 +318,33 @@ def init_theme(app: QApplication) -> None:
         pass
 
 
+def prepare_qt_environment() -> None:
+    """Set up system fonts before QApplication, including frozen UI workers."""
+    # Qt 6 ne livre plus ses propres polices ; pointer vers les polices
+    # système *avant* QApplication pour supprimer l'avertissement de démarrage.
+    if "QT_QPA_FONTDIR" not in os.environ:
+        if os.name == "nt":
+            winfonts = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "Fonts")
+            if os.path.isdir(winfonts):
+                os.environ["QT_QPA_FONTDIR"] = winfonts
+        else:
+            for d in ("/usr/share/fonts", "/System/Library/Fonts"):
+                if os.path.isdir(d):
+                    os.environ["QT_QPA_FONTDIR"] = d
+                    break
+
+
+# Entry-point imports also run before offscreen tests and frozen workers create
+# QApplication. These paths must use the same font discovery as normal startup.
+prepare_qt_environment()
+
+
 def configure_application(app: QApplication) -> None:
     """Shared startup configuration for the app and its visual checks."""
     app.setApplicationName('SpoolScribe')
     if not app.property('spoolscribe_configured'):
         font=app.font()
-        # The Windows offscreen backend may choose the bitmap 'System' font;
-        # its fixed strikes do not honor compact pixel sizes. Use the native
-        # scalable UI family, also available in normal desktop sessions.
+        # Use the native scalable Windows UI family for compact controls.
         if os.name == 'nt':font.setFamily('Segoe UI')
         font.setPointSizeF(font.pointSizeF()+0.5);app.setFont(font)
         app.setProperty('spoolscribe_configured',True)
@@ -1931,18 +1950,6 @@ def main():
     # Mode worker (exécutable gelé relançant un scraper) : agir puis sortir.
     if core.maybe_run_as_script_worker(sys.argv):
         return
-    # Qt 6 ne livre plus ses propres polices ; pointer vers les polices
-    # système *avant* QApplication pour supprimer l'avertissement de démarrage.
-    if "QT_QPA_FONTDIR" not in os.environ:
-        if os.name == "nt":
-            winfonts = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "Fonts")
-            if os.path.isdir(winfonts):
-                os.environ["QT_QPA_FONTDIR"] = winfonts
-        else:
-            for d in ("/usr/share/fonts", "/System/Library/Fonts"):
-                if os.path.isdir(d):
-                    os.environ["QT_QPA_FONTDIR"] = d
-                    break
     app = QApplication(sys.argv)
     configure_application(app)
     # Une seule instance par dossier de données : deux synchronisations
