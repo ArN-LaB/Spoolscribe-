@@ -10,8 +10,8 @@ Anglais, français, espagnol et chinois simplifié. La langue du système est ut
 
 - La recherche principale porte sur les fabricants, produits, matières et couleurs.
   Les recherches latérales réduisent les listes de fabricants et de matières. Les matières sont classées par ordre alphabétique, sans déplacer les éléments selon leur effectif.
-- Survolez un fabricant pour faire apparaître **☆** à droite, puis cliquez pour le
-  mémoriser. Une étoile **★** reste visible pour les favoris ; le clic droit propose
+- Survolez un fabricant pour faire apparaître le bouton de favori à droite, puis cliquez pour le
+  mémoriser. Une étoile reste visible pour les favoris ; le clic droit propose
   aussi cette action. Le nom sélectionne le fabricant. Parcourir la liste ne change pas les favoris.
 - La fiche et les cartes de grille utilisent la même étoile pour les filaments.
 - Les boutons **Fabricants** et **Filaments**, sous le titre Favoris, limitent les résultats aux
@@ -48,7 +48,7 @@ la qualité physique du filament.
 
 ## Choisir le conditionnement
 
-Dans **⚙ → Paramètres → Bobines**, choisissez le poids préféré et, si souhaité,
+Dans **Paramètres → Bobines**, choisissez le poids préféré et, si souhaité,
 « Avec bobine » ou « Recharge ». Le choix initial est **1 kg, indifférent**.
 « Selon la fiche » conserve la référence proposée par le catalogue.
 
@@ -79,7 +79,7 @@ l’étiquette. L’archive JSON complète reste disponible dans le menu génér
 
 ## Configurer l’imprimante
 
-Ouvrez **⚙ → Mon matériel** depuis le menu général. Cliquez le choix avec sa flèche visible pour ouvrir une fenêtre de recherche par marque ou modèle, avec des cartes, une description courte et des photographies lorsqu’elles sont disponibles. La sélection est confirmée par « Choisir » ; « Annuler » conserve le matériel précédent. La fiche distingue la description de la machine et son statut OpenSpool.
+Ouvrez **Mon matériel** depuis le menu général. Cliquez le choix avec sa flèche visible pour ouvrir une fenêtre de recherche par marque ou modèle, avec des cartes, une description courte et des photographies lorsqu’elles sont disponibles. La sélection est confirmée par « Choisir » ; « Annuler » conserve le matériel précédent. La fiche distingue la description de la machine et son statut OpenSpool.
 La recherche propose trois catégories : **Compatibles SpoolScribe · OpenSpool**, **RFID / NFC non compatibles SpoolScribe** et **Sans lecteur OpenSpool**. Elles se combinent avec le nom recherché. « Compatible » reste conditionné au logiciel installé ou au lecteur externe indiqué.
 
 Des visuels transparents officiels sont embarqués pour la U1, la X1 Carbon illustrant les familles Bambu, la Plus4 illustrant les familles QIDI et la Kobra S1 illustrant la famille Anycubic. Le modèle illustré est précisé si

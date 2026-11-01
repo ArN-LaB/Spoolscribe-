@@ -1,6 +1,6 @@
-# ? Frequently asked questions
+# Frequently asked questions
 
-[⌂ Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
+[Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
 
 **Jump to:** [Your catalogue](#your-catalogue) · [Hardware & tags](#hardware--tags) · [Privacy & files](#privacy--files)
 
@@ -84,7 +84,7 @@ Open **Settings → Interface**. Choose the system language or English, French, 
 <details>
 <summary><strong>My printer is not in the list, or my firmware is missing</strong></summary>
 
-**⚙ → My hardware → Refresh list** downloads the
+**My hardware → Refresh list** downloads the
 current `data/printers.json` from the repository (network authorization
 required). If your machine is still missing, open an issue with the reader
 technology and firmware; see [Printers and Readers](Printers-and-Readers.md).
@@ -139,7 +139,7 @@ four things only, all listed before you agree: the first download of the
 catalogue, the refresh of the sources you selected (at the cadence you choose,
 daily by default, or when you click **Refresh catalogue**), the printer list refresh
 when you click **My hardware → Refresh list**, and
-the release check when you click **⚙ → Vérifier une mise à jour de
+the release check when you click **Vérifier une mise à jour de
 l'application**. Servers see
 your IP and the User-Agent, nothing about your catalogue or printer. See
 [PRIVACY.md](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/PRIVACY.md).

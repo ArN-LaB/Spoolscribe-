@@ -17,20 +17,20 @@
 
 ## A catalogue that works your way
 
-| 🔎 Find it | ★ Make it yours | 🏷 Prepare the label |
+| Find it | Make it yours | Prepare the label |
 | --- | --- | --- |
 | Search manufacturers, materials, colours and references. Filters narrow each other. | Save favourites, choose your usual spool size and keep a personal <code>@copy</code>. | Choose a compatible reader and NTAG215/216. Preview the JSON and export it to your folder. |
-| [Explore the catalogue →](Getting-Started.md#3-find-your-filament) | [Personal copies and favourites →](FAQ.md#your-catalogue) | [Write your first tag →](Writing-RFID-Tags.md) |
+| [Explore the catalogue](Getting-Started.md#3-find-your-filament) | [Personal copies and favourites](FAQ.md#your-catalogue) | [Write your first tag](Writing-RFID-Tags.md) |
 
 ## Your first label, in four steps
 
-| ① Download | ② Find | ③ Configure | ④ Export & write |
+| 1. Download | 2. Find | 3. Configure | 4. Export & write |
 | --- | --- | --- | --- |
 | Open the app and download your selected sources after consent. | Select the filament, shade and actual spool size. | Choose your printer or reader, installed software and tag. | Export the JSON; use a separate NFC writer, then read the tag back. |
 
 **SpoolScribe prepares the file.** A separate writing app programs the tag.
 An RFID/NFC reader alone does not guarantee OpenSpool compatibility.
-[Check your setup before buying tags →](Printers-and-Readers.md)
+[Check your setup before buying tags](Printers-and-Readers.md)
 
 [![Grid view with colour-matched spool previews and a selected Bambu Lab refill](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/collection.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/collection.png)
 <p align="center"><sub>Switch between list and grid. The spool preview follows the recorded HEX; missing colours are never invented.</sub></p>
@@ -45,7 +45,7 @@ No Python installation needed. Download the ZIP for your system and its checksum
 | **macOS · Apple Silicon** | [Download ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-macos.zip) | [Checksum](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-macos.zip.sha256) |
 | **Linux · x64** | [Download ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-linux.zip) | [Checksum](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-linux.zip.sha256) |
 
-[First-launch help →](Getting-Started.md#1-download-and-open) · [Release notes](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
+[First-launch help](Getting-Started.md#1-download-and-open) · [Release notes](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
 
 **English · Français · Español · 简体中文** — the app follows your computer’s language,
 with English as the fallback. Change it in **Settings → Interface** and restart
@@ -55,8 +55,8 @@ when prompted.
 
 | Start using the app | Understand your hardware | Keep your catalogue healthy |
 | --- | --- | --- |
-| [🚀 Getting started](Getting-Started.md)<br>Install, search, personalise and export. | [🖨 Printers & readers](Printers-and-Readers.md)<br>OpenSpool setups and other RFID formats. | [↻ Catalogue updates](Updating-the-Database.md)<br>Sources, refresh results and backups. |
-| [🏷 Writing RFID tags](Writing-RFID-Tags.md)<br>NTAG215/216, capacity and read-back. | [Snapmaker U1 & paxx12](Snapmaker-U1-and-paxx12.md)<br>The U1 workflow and its limits. | [? Frequently asked questions](FAQ.md)<br>Personal copies, missing data and troubleshooting. |
+| [Getting started](Getting-Started.md)<br>Install, search, personalise and export. | [Printers & readers](Printers-and-Readers.md)<br>OpenSpool setups and other RFID formats. | [Catalogue updates](Updating-the-Database.md)<br>Sources, refresh results and backups. |
+| [Writing RFID tags](Writing-RFID-Tags.md)<br>NTAG215/216, capacity and read-back. | [Snapmaker U1 & paxx12](Snapmaker-U1-and-paxx12.md)<br>The U1 workflow and its limits. | [Frequently asked questions](FAQ.md)<br>Personal copies, missing data and troubleshooting. |
 
 <details>
 <summary><strong>Sources, privacy and validation</strong></summary>

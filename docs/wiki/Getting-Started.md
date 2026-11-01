@@ -1,10 +1,10 @@
-# 🚀 Getting started
+# Getting started
 
-[⌂ Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
+[Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
 
 **From an empty catalogue to your first exported label.** No Python installation needed.
 
-| ① Install | ② Download sources | ③ Pick a filament | ④ Export |
+| 1. Install | 2. Download sources | 3. Pick a filament | 4. Export |
 | --- | --- | --- | --- |
 | Choose your platform. | Give consent and refresh. | Confirm colour and spool size. | Configure a reader and save the file. |
 
@@ -49,13 +49,13 @@ The first launch starts empty. Choose your sources, give network consent and
 click **Refresh now**. Later, **Refresh catalogue** lets you refresh on demand.
 After the first download, your saved catalogue works offline.
 
-[Choose sources and understand refresh results →](Updating-the-Database.md)
+[Choose sources and understand refresh results](Updating-the-Database.md)
 
 ## 3. Find your filament
 
 [![List view: filters on the left, filaments in the centre, selected filament and export on the right](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)
 
-| 🔎 Narrow the list | ★ Keep your favourites | 🎨 Confirm the actual spool |
+| Narrow the list | Keep your favourites | Confirm the actual spool |
 | --- | --- | --- |
 | Search products, colours or references. Manufacturer and material filters narrow each other. | Save manufacturers and filaments. Clearing filters keeps those favourites. | Open a row or grid card. Choose the shade when sources disagree, then the available spool size. |
 
@@ -70,7 +70,7 @@ primary/secondary sort and visible columns. Use the list/grid buttons to switch 
 
 | In the app | Next action |
 | --- | --- |
-| **⚙ → My hardware** | Choose the printer or reader and installed software. [Check compatibility](Printers-and-Readers.md). |
+| **My hardware** | Choose the printer or reader and installed software. [Check compatibility](Printers-and-Readers.md). |
 | **Tag type** | Choose the NTAG215 or NTAG216 you bought. Advanced profile/reserve settings are optional. |
 | **Show JSON** | Inspect the same payload that will be exported; the window size stays unchanged. |
 | **Export for NFC** | Choose a destination folder and wait for the saved-file confirmation. Cancelling creates no file. |
@@ -80,4 +80,4 @@ sheet. SpoolScribe prepares the payload and does not replace the slicer profile.
 
 **Next:** use a separate NFC writing app, read the tag back, then check it on your reader.
 
-[Continue to writing and read-back →](Writing-RFID-Tags.md)
+[Continue to writing and read-back](Writing-RFID-Tags.md)

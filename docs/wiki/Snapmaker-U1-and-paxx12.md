@@ -1,6 +1,6 @@
 # Snapmaker U1 & paxx12
 
-[⌂ Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
+[Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
 
 **Prepare OpenSpool labels for a U1 running compatible community firmware.**
 
@@ -23,11 +23,11 @@ firmware project’s current instructions for the exact installed release.
 
 ## From a spool to a recognised filament
 
-| ① Select | ② Export | ③ Write & read back | ④ Check on the U1 |
+| 1. Select | 2. Export | 3. Write & read back | 4. Check on the U1 |
 | --- | --- | --- | --- |
 | Find the product, colour and actual packaging. | Select U1, compatible firmware and your tag in **My hardware**. Save the JSON. | Use a separate NFC writer with an NDEF MIME <code>application/json</code> record. | Confirm the detected material and colour against the spool. |
 
-[Writing guide →](Writing-RFID-Tags.md) · [All printer configurations →](Printers-and-Readers.md)
+[Writing guide](Writing-RFID-Tags.md) · [All printer configurations](Printers-and-Readers.md)
 
 ## What the label does — and what still needs checking
 

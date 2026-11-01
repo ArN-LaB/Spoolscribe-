@@ -1,6 +1,6 @@
-# 🏷 Writing RFID tags
+# Writing RFID tags
 
-[⌂ Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
+[Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
 
 **One file, one compatible tag, then a read-back check.**
 
@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Select a filament → export JSON | Write an NDEF MIME record → read it back | Check the detected material and colour |
 
-Choose the printer or reader first (**⚙ → My hardware**), with its firmware when that matters. For the Snapmaker U1 under the
+Choose the printer or reader first (**My hardware**), with its firmware when that matters. For the Snapmaker U1 under the
 paxx12 firmware, for Flashforge machines under Zmod + FF_NFC, for Klipper +
 Spoolman readers, for a Bambu printer fed by an external OpenSpool reader and
 for other OpenSpool readers, SpoolScribe produces an OpenSpool 1.0 JSON payload.
@@ -40,7 +40,7 @@ memory pages, change a Capability Container (CC) or associate a hardware UID.
   `--nfc-profile full`): the essential fields plus the reference, product and colour names and
   brand metadata (website, logo URL). Larger; extra names/branding do not replace the slicer profile.
   Unknown metadata is omitted, never written as `null`.
-- **Readable archive** (**⚙ → Export JSON archive…**): all
+- **Readable archive** (**Export JSON archive…**): all
   full-profile fields, indented, under an `_archive.json` filename. It may
   exceed a tag's capacity and is not meant to be written verbatim.
 
@@ -151,4 +151,4 @@ Physical iPhone/tag/printer acceptance remains a separate check.
 
 </details>
 
-[← Check compatibility](Printers-and-Readers.md) · [Get help →](FAQ.md)
+[Check compatibility](Printers-and-Readers.md) · [Get help](FAQ.md)
