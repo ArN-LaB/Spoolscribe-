@@ -45,11 +45,18 @@ It is **not affiliated with any filament manufacturer or with Snapmaker**; see
 
 ## Status
 
-v0.3.0 is in development on the `feature/universal-catalogue` branch. The published stable
-release is [v0.2.2](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.2.2).
-The 31 October 2026 audit, the review on real data of 1 November 2026 and their fixes are
-recorded in [docs/VALIDATION-RETOURS-v0.3.0.md](docs/VALIDATION-RETOURS-v0.3.0.md) (latest screen feedback) and [docs/VALIDATION-AUDIT-v0.3.0.md](docs/VALIDATION-AUDIT-v0.3.0.md) (test build)
-and in [CHANGELOG.md](CHANGELOG.md); earlier reports are in [docs/archive/](docs/archive/).
+The source version on `main` is **0.3.0**. Download the current stable release,
+[v0.3.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.0), with Windows x64,
+macOS Apple Silicon and Linux x64 archives plus SHA-256 checksums.
+
+The four-configuration CI runs 237 offline tests per configuration before the three
+native builds. Packaged checks open the main window offscreen and verify bundled
+resources, TLS trust and NTAG215/216 exports. Human desktop acceptance and physical
+NFC write/read-back remain separate checks; they are not claimed as completed.
+
+See the [documentation index](docs/README.md), the
+[CI validation report](docs/VALIDATION-CI-v0.3.0.md) and [CHANGELOG.md](CHANGELOG.md).
+Earlier reports remain available as dated evidence, including [docs/archive/](docs/archive/).
 
 ## Download
 

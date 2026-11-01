@@ -11,7 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > public release. Their highlights are preserved below under *Development
 > history* for reference.
 
-## [0.3.0] — Unreleased
+## [0.3.0] - 2026-11-01
+
+### Stable release
+
+- Universal catalogue, manufacturer/material filters and header sorting, stable favorites, guided printer/tag selection and personal `@suffix` filament copies.
+- Choose and remember export destinations, confirm successful exports and inspect JSON without resizing the window.
+- Validated with 237 offline tests on Linux/Python 3.10 and 3.12, Windows/Python 3.12 and macOS/Python 3.12; three native builds, frozen-window and TLS/export checks, ZIP layout and SHA-256 verification.
+- Windows x64, macOS Apple Silicon and Linux x64 archives. Physical NFC write/read-back and full human desktop acceptance remain separate validations, not claimed here.
 
 ### Documentation
 

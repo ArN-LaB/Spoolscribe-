@@ -1,6 +1,10 @@
 # Validation CI — SpoolScribe v0.3.0
 
-Validation automatique du code avant intégration sur `main`, le 1er novembre 2026.
+Validation automatique, intégration sur `main` et préparation de la publication stable, le 1er novembre 2026.
+
+Les deux exécutions documentées ci-dessous sont attachées à leurs commits. Les
+SHA-256 des archives de validation ne sont pas ceux d’une reconstruction de release ;
+les fichiers `.zip.sha256` joints à la release sont la référence de téléchargement.
 
 - Code validé : `2338be17f22f541375b02141c27664e52f5f81e8` ; branche `feature/universal-catalogue`.
 - [Exécution complète : 41277583138](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41277583138).
@@ -44,8 +48,47 @@ Les archives ci-dessus appartiennent au commit de code validé ; une reconstruct
 
 - Les 222 fichiers `data/` et `orca_profiles/` présents au début de cette passe, dont les 48 profils Orca, sont identiques. Aucun catalogue utilisateur n’a été utilisé dans les builds ou commité.
 - Le journal parallèle, le financement, la licence MIT standard et `NOTICE` sont conservés ; l’ajout au journal est appenditif.
-- `git diff --check` sans erreur ; versions `core.py`, `pyproject.toml` et changelog cohérentes avec 0.3.0, toujours indiquée Unreleased.
+- `git diff --check` sans erreur ; versions `core.py`, `pyproject.toml` et changelog cohérentes avec 0.3.0, alors encore indiquée Unreleased.
 - Le verrou coopératif et les vérifications de révision ne peuvent exclure absolument un éditeur externe qui ignore le verrou.
 - Recette visuelle humaine sur les trois OS, tests réseau dans les applications téléchargées, écriture/lecture physique NTAG215/216 et imprimante réelle : non exécutés ici. Aucun résultat matériel n’est revendiqué.
 - macOS reste signé ad hoc, sans notarisation Developer ID ; Windows sans certificat de signature commerciale. Voir les instructions de premier lancement du README.
-- Aucun tag ni nouvelle GitHub Release créé pendant cette intégration.
+- Aucun tag ni nouvelle GitHub Release n’avait été créé pendant cette première intégration. La publication stable a ensuite été explicitement autorisée par l’utilisateur.
+
+
+## Validation complémentaire sur `main`
+
+- Commit : `7d901db2c585fabbe7819015923976f67037596b`.
+- [Exécution complète sur main : 41278081495](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41278081495).
+- Linux / Python 3.10 : 237 réussis en 35,491 s.
+- Linux / Python 3.12 : 237 réussis en 38,398 s.
+- Windows / Python 3.12 : 237 réussis en 50,497 s.
+- macOS / Python 3.12 : 237 réussis en 20,208 s.
+- Aucun test ignoré ; trois builds réussis. Les trois fenêtres ont été rendues hors
+  écran par les exécutables natifs, les exports NTAG215/216 vérifiés et les
+  193 ressources comparées à Git. Six fichiers téléchargés, CRC et SHA-256 vérifiés.
+- Le `.app` extrait du ZIP macOS a également passé `codesign --verify --deep
+  --strict` puis les sondes TLS et catalogue/GUI avec des dossiers de données vierges.
+
+| Archive de validation sur main | SHA-256 |
+|---|---|
+| `SpoolScribe-linux.zip` | `cd3359bbfe9a356d89a58445ac4895a52d09739cfa081d6143b0b243c9921fd0` |
+| `SpoolScribe-macos.zip` | `3f61e6eef78a49ecd21358404afe84085752511db4db1a658a1b0f1287de09d6` |
+| `SpoolScribe-windows.zip` | `6a5c5c91ac391741442a0ae389fec9ad717627803f45a0a9489579308dbb5d2b` |
+
+## Audit de synchronisation et préparation de release
+
+À l’ouverture de cette passe, `main` local et GitHub avaient le même commit et le
+même arbre Git (`1fe54a09d199d4088f070a9e47ec4cb92931f7b4`). Les 348 fichiers
+suivis, dont les 40 Markdown, avaient un contenu identique. La release était
+encore v0.2.2 ; les builds Actions ne constituaient pas une publication.
+
+Les 237 tests ont été relancés localement : Python 3.10 en 17,570 s, Python 3.12
+en 15,581 s, tous réussis. Cette passe ne change que la documentation et la date
+de publication du changelog. Le code, les dépendances, les workflows, les données
+et les 48 profils Orca restent identiques au commit `7d901db`. Les rapports datés
+sont conservés ; un index distingue les références actuelles de ces preuves historiques.
+
+L’utilisateur a ensuite autorisé **v0.3.0 stable**. Le tag annoté déclenche une
+nouvelle validation complète avant publication ; la release, ses six fichiers
+et l’identité locale/GitHub doivent être vérifiés à la fin. La recette physique
+NFC et l’acceptation visuelle humaine restent ouvertes dans la roadmap.
