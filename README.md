@@ -20,7 +20,7 @@
 [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us), writes it to your NTAG215 or
 NTAG216. Your printer or external reader needs to support **OpenSpool**.
 
-**v0.3.5 — in preparation. Interface languages:** English · Français · Español · 简体中文. The app follows your computer’s language, with English as the fallback. Override it in **Settings → Interface**. The app offers **Restart now** or **Later** after saving.
+**Interface languages:** English · Français · Español · 简体中文. The app follows your computer’s language, with English as the fallback. Override it in **Settings → Interface**. The app offers **Restart now** or **Later** after saving.
 
 ## Download
 
@@ -112,9 +112,9 @@ The app uses Python and PySide6, with a shared core for the desktop and command-
 interfaces. See [development and CLI use](docs/DEVELOPMENT.md) and
 [how to contribute](.github/CONTRIBUTING.md).
 
-v0.3.0 passed **237 offline tests per configuration** on Linux/Python 3.10 and 3.12,
+v0.3.5 passed **267 offline tests per configuration** on Linux/Python 3.10 and 3.12,
 Windows/Python 3.12 and macOS/Python 3.12. All three native builds passed frozen-app,
-resource, TLS and export checks. See the [validation record](docs/VALIDATION-CI-v0.3.0.md).
+resource, TLS and export checks. See the [validation record](docs/VALIDATION-CI-v0.3.5.md).
 These automated checks do not replace human desktop acceptance or physical NFC read-back.
 
 </details>

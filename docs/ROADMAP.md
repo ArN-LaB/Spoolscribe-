@@ -187,7 +187,7 @@ SUNLU page) that only add facts to families the catalogues already contain.
 - [x] Export destination/confirmation, fixed-size JSON inspection, isolated @suffix personal copies and sourced NFC format explanation (local eighth pass; human acceptance pending).
 
 
-## v0.3.5 — interface languages and linked filters (prepared locally)
+## v0.3.5 — interface languages and linked filters
 
 - [x] English, French, Spanish and Simplified Chinese UI, with OS detection and English fallback.
 - [x] Persistent language override, applied on restart; included in settings files.
@@ -195,7 +195,7 @@ SUNLU page) that only add facts to families the catalogues already contain.
 - [x] Clear-search affordance and explicit catalogue-refresh label.
 - [x] Restore the animated README logo without an external image host.
 - [ ] Native-speaker acceptance of translations.
-- [ ] Four-configuration CI matrix and three release builds on the final commit.
+- [x] Four-configuration CI matrix and three candidate builds on `f818654`, including byte-for-byte validation of bundled translations. See [CI validation](VALIDATION-CI-v0.3.5.md).
 - [ ] Human desktop acceptance and physical NFC read-back (not inferred from automation).
 
 See [v0.3.5 validation](VALIDATION-v0.3.5.md). Existing roadmap and historical

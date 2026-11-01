@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update the GitHub repository description/topics and protect `main` with PRs and the four CI checks.
 - Validate Dependabot PR #3 (checkout 7.0.1 / setup-python 7.1.0, still SHA-pinned) on all four test configurations and all three builds before merging.
 
-## [0.3.5] - Unreleased
+## [0.3.5] - 2026-11-01
 
 ### Interface
 
@@ -43,8 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Catalogue identities, personal copies and favourite IDs remain language-independent.
   OpenSpool JSON and the 1,008 historical export contract remain unchanged.
 - Embed translations in all builds and exercise the four languages in the frozen
-  GUI probe. This prepared version has not yet been published; see the local
-  [validation record](docs/VALIDATION-v0.3.5.md) for checks actually performed.
+  GUI probe. Validated with 267 tests on each of four configurations and three
+  native builds; see the [CI record](docs/VALIDATION-CI-v0.3.5.md).
 
 ## [0.3.0] - 2026-11-01
 
@@ -578,7 +578,8 @@ These were same-day iterations, kept here for traceability:
 - Cleaned repository: removed one-off bootstrap scripts, raw scrape caches,
   bundled PDF, and generated output; minimized root directory.
 
-[0.3.0]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.2...HEAD
+[0.3.5]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.3.0...v0.3.5
+[0.3.0]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.2.0
