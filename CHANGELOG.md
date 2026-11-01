@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > public release. Their highlights are preserved below under *Development
 > history* for reference.
 
+## [Unreleased]
+
+### Documentation
+- Add an optional Buy Me a Coffee link: `.github/FUNDING.yml` (GitHub "Sponsor"
+  button), a badge and a short *Support* section in the README. SpoolScribe stays
+  free and open source; support never conditions access to the software.
+- `LICENSE` now holds the standard MIT text only, so GitHub detects the licence;
+  the scope note (third-party datasets, trademarks) moves unchanged to `NOTICE`.
+
 ## [0.2.2] - 2026-10-31
 
 ### Fixed
