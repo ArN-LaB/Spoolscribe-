@@ -27,6 +27,23 @@ is done and what remains — contributions welcome.
 - [x] Persistent settings, settings file import/export and explicit application-update discovery.
 - [x] Native packaged catalogue/TLS smoke checks in the three-platform workflow.
 
+### Screen feedback, 1 November 2026 — local corrective pass
+
+- [x] Explicit manufacturer/filament favorites, persistent identities and favorites filter.
+- [x] Bounded sidebar, migration of old splitter sizes, scrolling dialogs and fixed export actions.
+- [x] Printer/software questions without assuming a modified U1; progressive technical details.
+- [x] Diameter-specific groups, selectable packaging and explicit choice for conflicting hues.
+- [x] Preserve historical brand-line metadata; reject incoherent partial temperature pairs; fix OFD line websites.
+- [x] Native macOS bundle logo paths, complete filter reset preserving favorites, colour swatches then packaging, and schematic printer cards.
+- [x] Explicit partial source coverage, analysis counters, inline printer-list fallback and readable sync progress.
+- [x] HEX-driven spool hero/grid, product-first cards, four parameter tiles and a compact export footer.
+- [x] Homogeneous favorite stars/filters, preferred packaging settings and direct saved-source synchronisation.
+- [x] Reviewed official printer images for U1, X1 Carbon and QIDI Plus4; documented summaries and searchable selection.
+- [x] Shared app/test startup style and font, native geometry assertions, restored export tools, quieter favorite stars and perspective reel.
+- [ ] Review further model-specific images before bundling; keep unsupported entries textual.
+- [ ] Resolve remaining ambiguous source matches with documented product evidence.
+- [ ] Human screen acceptance, physical NFC readback and remote four-configuration CI for this pass.
+
 ### Audit 31 October 2026 — applied
 
 Four read-only audits (data/core, sources/network/security, Qt interface,
@@ -57,7 +74,7 @@ addressed in separate commits, see [CHANGELOG.md](../CHANGELOG.md):
 The first test build was run on a real installation (24,649 references created
 by an earlier preview build, without provenance). Six remarks, all addressed:
 
-- [x] **Interface** — sidebar of facets (manufacturers with pinned recents,
+- [x] **Interface** — sidebar of facets (manufacturers with explicit favorites,
       material families, data state) instead of three dropdowns and quick-access
       chips; ⚙ menu; **Mon matériel** dialog; card with references, provenance
       and a hardware summary; one row per filament.
@@ -148,3 +165,13 @@ SUNLU page) that only add facts to families the catalogues already contain.
 - No telemetry, accounts, or cloud sync.
 - No commercial offering.
 - No bundling of trademarked assets beyond what's needed for identification.
+
+### Local UX follow-up — 1 November, 11:07–11:12 feedback
+
+- [x] Visual printer browser, explicit arrow and search.
+- [x] Alphabetical material search, equal characteristic actions and overflow-only scrolling.
+- [x] Bobines preferences separated from export configuration.
+- [x] Shared catalogue/synchronisation summaries and control-size rules.
+- [ ] Human acceptance of this local follow-up package; cross-platform CI and physical NFC remain separate.
+
+- [x] Expanded-state UX correction: bounded storage details, stable printer-card resize, aligned local correction form and provenance (local sixth pass, human acceptance pending).

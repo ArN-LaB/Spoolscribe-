@@ -13,6 +13,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] — Unreleased
 
+### Expanded-state corrections (1 November 2026, local)
+
+- Bound catalogue storage details to a scrollable alternate view; keep the dialog and close button on screen.
+- Paint printer search cards with calculated text heights instead of child widgets that accumulated minimum sizes.
+- Align physical-correction fields in one grid and translate Save/Cancel.
+- Align equal favorite-filter columns, frame and top-align expanded provenance, and tighten status-bar margins.
+- Draw reel parts using one shared geometric projection and broad moulded spokes.
+
+### Ergonomics follow-up (1 November 2026, local)
+
+- Open printer choices in a searchable visual browser with a visible arrow, documented descriptions and available photos.
+- Sort material facets alphabetically and add a dedicated search cleared by reset without deleting favorites.
+- Keep characteristic editing and provenance together below their tiles; hide unused scrollbars and align the export footer dynamically.
+- Use a short, coaxial spool projection; separate Bobines preferences from Export settings.
+- Replace raw database text and sync tables with shared counters and expandable source cards, readable dates and translated statuses.
+- Establish 32 px standard controls, a 48 px main export action and shared menu spacing.
+
+### Alignment and visual correction (1 November 2026, local)
+
+- Restore visible JSON/output-directory buttons beneath export and align them with the filament card.
+- Show manufacturer stars only for saved favorites or on hover; simplify the favorite filter row.
+- Unify toolbar dimensions, form columns, field styling, tabs, menus and compact status text.
+- Draw an axially wound spool in perspective and remove broad logo halos.
+- Use one startup configuration in the application, GUI tests and capture harness; previous previews omitted Fusion and the font enlargement.
+- Clean repeated leading manufacturer names for display only; preserve catalogue records, exports and favorite identities.
+
+### Visual workspace revision (1 November 2026, local)
+
+- Replace flat colour blocks with a source-HEX spool preview, matching product grid cards, four parameter tiles and collapsible provenance.
+- Use consistent manufacturer/filament stars and matching favorite filters; preserve package selection across list/grid switches.
+- Store preferred packaging weight/form in Export settings, with explicit fallback and no automatic colour-conflict resolution.
+- Synchronise saved sources directly after consent; move source configuration to Catalogue settings and collapse source details.
+- Replace the generic printer drawing with reviewed manufacturer images where available and documented product summaries.
+- Keep one primary export button and place secondary tools in its menu; restore the correct list/grid selected state and theme.
+
+### Second screen feedback pass (1 November 2026, local)
+
+- Resolve macOS bundle resource-directory symlinks for application and manufacturer logos, while retaining path escape protection; render logos in the frozen probe.
+- Clear every filter and selection without deleting saved favorites; move reset beside the filters and the filament star beside its title.
+- Compare source hues using colour swatches, then choose the matching packaging separately.
+- Add a schematic printer card, readable compatibility status and native height-aware wrapping.
+- Handle an unpublished printer list (HTTP 404) as a bundled-list fallback; display other refresh errors inline.
+- Make source coverage explicit and partial, show available analysis counts, and separate synchronisation progress text from its bar.
+
+### Screen feedback fixes (1 November 2026, local)
+
+- Replace starred recent brands with explicit persistent manufacturer and filament favorites.
+- Bound the sidebar, migrate old two-pane geometry, scroll hardware/source dialogs, keep export actions visible, and collapse technical provenance.
+- Ask for installed printer software before assuming a modified U1; shorten compatibility guidance and keep byte details in tooltips.
+- Separate diameters/grades/transparency in display groups; normalize manufacturer-prefixed colour names, select packaging explicitly, and block ambiguous hue exports until a reference is chosen.
+- Preserve old brand metadata when folding product lines, fix OFD line websites, and preserve a coherent temperature pair when partial enrichment would invert it.
+- Isolate changed article physics from shared historical products; refresh identity indexes within the same merge.
+- Reuse grid cards and restore filters once to avoid a native Qt crash on repeated refresh.
+- Isolate the Qt restore test's instance lock and legacy pipeline test settings from the actual user application.
+
+
 ### UX revision after user feedback
 
 - Header-only two-level sorting, contextual column selection, searchable manufacturers

@@ -163,7 +163,7 @@ rejected and incomplete records. Twenty OFD brand folders have no usable variant
 
 ### Logos
 
-136 logos (115 PNG, 21 SVG) are listed in `data/brand_logos/manifest.json`
+147 logos (118 PNG, 29 SVG) are listed in `data/brand_logos/manifest.json`
 with their hash, size and provenance; twenty-one OFD images were excluded
 (`.github/catalogue-logo-exclusions.json`) and 14 complementary manufacturers
 have none, so those brands show their name instead. **A transparent background
@@ -178,8 +178,8 @@ mode reprocesses the logos already listed. The bundled manifest takes precedence
 over the `logo_path` a database remembers, so a replaced logo shows without a
 refresh. Official logos are being re-sourced brand by brand through that
 process; until a brand is imported, its reviewed OFD image stays. The
-application keeps colours, proportions and transparency, adds a thin outline and
-shows the name for bitmaps under 24 px. Runtime updates never download or
+application keeps colours, proportions and transparency, adds a one-device-pixel contrast edge only when the artwork would be unreadable
+on the current background, and shows the name for bitmaps under 24 px. Runtime updates never download or
 approve a logo. The MIT licence of the OFD repository covers its data, not the
 trademarks it depicts: see [TRADEMARKS.md](TRADEMARKS.md).
 
@@ -221,3 +221,45 @@ it will be removed.
 
 The OpenSpool / NFC JSON files you generate describe your own spools. They are
 yours to use freely.
+
+### Screen-feedback corrections, 1 November 2026
+
+OFD product-line metadata with a website no longer raises an error after its variants
+were imported. Historical brand-line keys are retained as aliases when canonicalizing
+manufacturers, so the no-deletion storage guard remains active. Partial enrichment
+that would invert a temperature range keeps the previous pair and records a conflict.
+Presentation grouping keeps diameter/grade/transparency distinctions; a normalized
+colour label is not permission to overwrite differing source HEX values. See
+[the corrective validation](VALIDATION-RETOURS-v0.3.0.md) for measurements and remaining gaps.
+
+
+### Coverage shown in the application
+
+The catalogue is not exhaustive. Polymaker has a direct manufacturer catalogue;
+Bambu Studio enriches existing Bambu records with profile characteristics, and
+SUNLU currently enriches existing PLA records. Neither enrichment is a complete
+catalogue of that manufacturer's colours or products. OFD and SpoolmanDB broaden
+coverage but may omit products, packaging or fields; SpoolmanDB currently adds
+manufacturers absent from the principal catalogue rather than merging every
+same-brand community record.
+
+The source chooser shows the last recorded analysis counts, when available,
+including incomplete records. Counts describe that snapshot, not the total
+manufacturer range and not the number of unique selectable filaments after
+reconciliation. A successful refresh means the selected sources were processed;
+colour differences and uncertain identities can remain. The report labels this
+**Sources actualisées** and shows unresolved counts separately.
+
+The native macOS package now resolves the `Frameworks/data` → `Resources/data`
+link before applying the path containment check. Historical Polymaker, Prusament
+and ROSA3D artwork also has a bundled fallback independent of downloaded metadata.
+Path escapes outside the resolved data directory remain rejected. Frozen probes
+check all manifest paths and render the three historical manufacturers' logos.
+
+
+### Printer presentation assets
+
+The visual workspace adds original manufacturer images for U1, X1 Carbon and
+QIDI Plus4 and a separate presentation module. These files do not change the
+filament catalogue or printer compatibility flags. They are bundled rather
+than downloaded at runtime; see [PRINTER_VISUALS.md](PRINTER_VISUALS.md).

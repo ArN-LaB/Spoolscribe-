@@ -42,7 +42,7 @@ cadence in **⚙ → Paramètres**); **Synchroniser** (Ctrl+U) forces a refresh 
 any time, and **Annuler** stops one. Offline, the cached catalogue stays usable.
 See [[Updating the Database|Updating-the-Database]].
 
-Then browse: the sidebar lists manufacturers (recent ones pinned at the top; a
+Then browse: the sidebar lists manufacturers (explicit favorites pinned at the top; a
 field filters the list), material families and data states; the search box
 (Ctrl+F) matches product, colour, reference, manufacturer and material; a column
 header click sorts (second click reverses, Shift-click or right-click adds a
@@ -79,3 +79,9 @@ choice for later launches. The card then shows a one-line summary
 When the chosen hardware cannot read an OpenSpool tag, the tag controls are
 hidden and the card is a reference sheet for your slicer profile; no proprietary
 RFID tag or OpenPrintTag is generated.
+
+
+The current development interface uses spool cards and parameter tiles. Favorite
+stars work on manufacturers, filament cards and the detail header. Configure a
+preferred packaging in **Paramètres → Bobines**, and sources in **Paramètres →
+Catalogue**. **Synchroniser** then uses those saved sources directly. **Voir le JSON** and **Dossier d’export** remain directly visible below NFC export.

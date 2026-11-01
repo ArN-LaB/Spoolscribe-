@@ -47,7 +47,7 @@ It is **not affiliated with any filament manufacturer or with Snapmaker**; see
 v0.3.0 is in development on the `feature/universal-catalogue` branch. The published stable
 release is [v0.2.2](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.2.2).
 The 31 October 2026 audit, the review on real data of 1 November 2026 and their fixes are
-recorded in [docs/VALIDATION-AUDIT-v0.3.0.md](docs/VALIDATION-AUDIT-v0.3.0.md) (test build)
+recorded in [docs/VALIDATION-RETOURS-v0.3.0.md](docs/VALIDATION-RETOURS-v0.3.0.md) (latest screen feedback) and [docs/VALIDATION-AUDIT-v0.3.0.md](docs/VALIDATION-AUDIT-v0.3.0.md) (test build)
 and in [CHANGELOG.md](CHANGELOG.md); earlier reports are in [docs/archive/](docs/archive/).
 
 ## Download
@@ -107,7 +107,7 @@ Run from source (below).
   flagged **to be checked** (« À vérifier ») and cannot reach a tag until you confirm them.
 - Refresh cadence of your choice (every launch, daily, weekly, manual); sources answer
   "not modified" when nothing changed; a running refresh can be cancelled.
-- Sidebar with manufacturers (recent ones pinned), material families and data state
+- Sidebar with manufacturers (explicit favorites pinned), material families and data state
   (« État des données »), plus search, two-level sorting from the column headers, a column
   chooser, list and grid views and 250 rows per page.
 - Manufacturer logos with a transparent background (checked by a test), a name fallback and
@@ -129,25 +129,38 @@ Run from source (below).
 Internal `OFD-…` / `SMDB-…` identifiers name source records; they are **not manufacturer
 SKUs**. The optional *Référence* column shows the manufacturer article number when the
 source provides one (`+n` when several packagings share it) and `n cond.` otherwise; the
-card always lists every reference.
+card lists source details behind **Détails et sources**. Select the exact packaging in the card before exporting; conflicting hues require an explicit choice.
 
 ### Interface
 
-Left, a **sidebar** of facets: manufacturers (★ recent ones first, a field filters the
-list, counts next to each name), material families (PLA, PETG, ABS, ASA, PA…) and data
-state (all / ready to export / to complete / to check), with *Réinitialiser les filtres*
-at the bottom. Top, the search field, the list/grid toggle, **Synchroniser** and the
-**⚙** menu (*Mon matériel…*, *Paramètres…*, *Exporter la sélection en archive JSON…*,
-*Sources de la base…*, *Enregistrer/Charger des réglages…*, *Vérifier une mise à jour…*,
-*À propos*). Centre, the table: one row per filament with colour swatch, product, colour,
-manufacturer, material and data state; *Colonnes* adds the reference, diameter and weight.
-Right, the **card**: logo, product, main reference and colour, the colour band, the
-characteristics (material, colour, nozzle, bed, density, diameter, brand · product line)
-with *Corriger…*, the references of every packaging (weight, diameter, state; a warning
-when sources disagree on the hue), the provenance, a one-line summary of your hardware
-(*Pour : printer — firmware · tag · profile*) with *Modifier…*, the format and capacity
-notes, **Exporter pour NFC**, *Inspecter le JSON* and *Dossier d'export*. The status bar
-shows references, filaments and the database state and opens the database details.
+The catalogue toolbar contains the **list/grid** switch and column controls.
+The grid shows a spool, actual product name, colour, diameter and favorite star.
+The filament card uses the selected source HEX for its spool illustration; unknown
+or conflicting colours stay neutral until an explicit choice is made. No artwork
+writes or invents catalogue values.
+
+Manufacturer favorite stars appear on hover; saved favorites retain their star.
+Matching **Fabricants** and **Filaments** buttons in the Favorites row filter saved
+favorites. **Effacer**
+clears searches, filters and selection while retaining both favorite lists.
+
+The card groups nozzle/bed temperatures, diameter and density into four tiles.
+**Détails et sources** expands provenance. Its footer has a full-width NFC export
+button with **Voir le JSON** and **Dossier d’export** visible underneath. Shared
+control heights and content edges keep the main commands aligned.
+
+**Paramètres → Bobines** stores a preferred spool weight (initially 1 kg) and
+spool/refill preference. Selection uses existing source references only, falls
+back visibly when a weight is unavailable, and never resolves conflicting hues.
+A manual packaging choice wins for that group during the session.
+
+**Synchroniser** uses saved sources after consent. **Paramètres → Catalogue**
+contains source selection and refresh cadence. Source details expand on demand.
+**Mon matériel** offers searchable printer names, concise documented descriptions
+and reviewed manufacturer images for U1, X1 Carbon and QIDI Plus4; other entries
+stay textual. Compatibility checks and firmware questions remain mandatory.
+See the [French UX guide](docs/UX-v0.3.0.md) and
+[printer visual sources](docs/PRINTER_VISUALS.md).
 
 ### Writing NTAG215 or NTAG216 tags
 

@@ -66,3 +66,17 @@ format is generated.
 If your printer or firmware is missing or wrong, open an issue with the reader
 technology, the firmware and a link to its documentation; the list is data, not
 code, and can be refreshed without a new release.
+
+
+## Development build and list updates
+
+The printer picker includes documented product summaries and an explicit OpenSpool
+status. Reviewed manufacturer images are used for U1, X1 Carbon and QIDI Plus4;
+the illustrated model is identified for a family. Other entries remain textual.
+These images do not imply identical accessories across a family. Confirm the installed software where requested.
+
+A development build may ship `data/printers.json` before that file is present
+on the published `main` branch. In this case, updating the list retains the
+bundled catalogue and displays “Aucune nouvelle liste publiée”. Other network
+errors are displayed inline and retain the current catalogue too. No fallback
+to an unreviewed development branch is performed.

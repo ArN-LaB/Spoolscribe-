@@ -138,3 +138,11 @@ conservés).
 
 Aucun commit n'a été poussé ; aucune donnée personnelle ni application installée
 n'a été modifiée.
+
+## Suite des retours sur écran — 1er novembre 2026
+
+Les captures de 08:44–08:53 ont révélé des défauts supplémentaires qui n’étaient
+pas levés par les contrôles ci-dessus. Le diagnostic, les correctifs locaux et
+les résultats actuels figurent dans [VALIDATION-RETOURS-v0.3.0.md](VALIDATION-RETOURS-v0.3.0.md).
+Les mesures et archives des sections précédentes restent des preuves historiques,
+pas une validation du nouveau binaire.

@@ -57,14 +57,19 @@ display fields, `family` and `variant` (from `core.material_family`), `line`,
 `ready`, `quality` (the data state), a private `_hex_rank` (provenance rank of
 the HEX, −1 when absent) and a private `_search` key normalized once per reload.
 
-`core.group_filaments(rows)` returns one row per filament, keyed by normalized
-manufacturer, product and colour name. The row copies its primary reference (the
-best-documented HEX, then the ready one, then the first identifier) and adds
-`variants` (`sku`, `reference`, `weight`, `diameter`, `hex`, `ready`, `quality`,
-`manufacturer_sku` of every grouped reference), `variant_count` and
-`hex_variants` (distinct HEX values among them). The interface shows grouped
-rows by default (`ui.group` setting); the *Référence* column then shows the
-manufacturer article plus `+n`, or `n cond.` when no article is known.
+`core.group_filaments(rows)` is a non-destructive presentation grouping by normalized
+manufacturer, product, colour, material, diameter, alpha, multiple colours and traits.
+Trademarks/punctuation and a leading manufacturer name in a colour are normalized;
+product grades remain distinct. Each group retains complete `variants`, a stable
+`filament_id` independent of its primary reference, `variant_count` and `hex_variants`.
+Conflicting known HEX values mark the group incomplete and require a reference choice
+in the GUI. The selected reference, not a synthesized combination, supplies the export.
+Group IDs and member reference IDs keep favorites stable across representative changes.
+Historical brand-line metadata is retained with `_alias_of`; normalization does not
+bypass the storage layer's protection against deletion. If an article's physical
+values change while its product record is shared with other articles, reconciliation
+creates a reference-specific product record (`@reference/…`) and keeps the original.
+This prevents a 2.85 mm article from changing the diameter of every 1.75 mm bobbin.
 
 ## Data state
 
@@ -93,9 +98,10 @@ The state filter accepts `all`, `ready`, `incomplete` (not ready) and
 | `last_update` | Legacy date kept for older settings |
 | `nfc_tag_type`, `nfc_profile` (`auto` / `essential` / `full`), `nfc_reserved_bytes` | Saved NFC default, written only by **Définir par défaut** or `--save-nfc-default`; invalid values fall back to NTAG216 / `auto` / 0 |
 | `printer_profile`, `printer_firmware` | Printer/reader and firmware chosen in **Mon matériel** (`u1_stock` from older settings maps to `u1` + `stock`) |
-| `orca_overrides`, `show_extra_fields` | Export options (`show_extra_fields` is kept for imported settings; the card always shows references and provenance) |
+| `orca_overrides`, `show_extra_fields` | Export options (`show_extra_fields` is kept for imported settings; provenance expands in the card) |
 | `ui` | Filters, sorting, columns, geometry, splitter, view, `group` (one row per filament, default `true`) |
-| `recent_brands` | Manufacturers pinned at the top of the sidebar |
+| `recent_brands` | Legacy browsing history, never interpreted as favorites |
+| `favorite_brands`, `favorite_filaments` | Explicit persistent favorites, included in settings export/import |
 | `auto_update` | Legacy flag, accepted but unused; the cadence applies |
 
 Settings exported from the application contain everything except the consent
@@ -142,7 +148,7 @@ Both profiles are OpenSpool `protocol: "openspool"`, `version: "1.0"` JSON.
 
 | Profile | Fields |
 |---|---|
-| **Essential** (recommended; `auto` resolves to it) | `protocol`, `version`, `type`, `color_hex`, `brand`, `min_temp`, `max_temp`, `bed_min_temp`, `bed_max_temp`, `diameter`, `density`, `subtype`, `alpha`, `additional_color_hexes` — everything a reader uses; fits every reference on NTAG215 |
+| **Essential** (recommended; `auto` resolves to it) | `protocol`, `version`, `type`, `color_hex`, `brand`, `min_temp`, `max_temp`, `bed_min_temp`, `bed_max_temp`, `diameter`, `density`, `subtype`, `alpha`, `additional_color_hexes` — compact OpenSpool fields; actual use depends on the reader, and size is checked for each export |
 | **Full** (explicit choice) | Essential fields plus `sku`, `product`, `color_name`, `brand_meta` (`name`, `website`, `origin`, `logo_url`, `logo_path`), `logo_url`, `image`. Unknown metadata is omitted, never written as `null` |
 | **Readable archive** | All full-profile fields, indented, without a tag-size check (`_archive.json`) |
 
@@ -169,3 +175,23 @@ Review the audit reports and every logo contact sheet before copying the files
 into `data/`. Do not replace the historical catalogue or the Orca profiles. The
 tool needs the build dependencies (Pillow/PySide6); runtime adapters use the
 standard library only. Tests use local data and deny network access.
+
+
+## Packaging preferences and visual presentation
+
+`preferred_weight_g` is an integer from 0 to 20000; default 1000, with 0 meaning
+use the catalogue proposal. `preferred_packaging` is `any`, `spool`, or `refill`.
+These config values are exported/imported with settings and validated before
+saving an imported file. They never modify catalogue records. An unavailable
+weight keeps the actual reference and is indicated in the GUI; unknown refill
+metadata is not synthesized. Explicit choices are remembered per group during
+the session, and are invalidated if the group's source HEX set changes.
+
+The UI persists both favorite filters and the manufacturer-search text. Spool
+artwork is computed from the selected HEX and is display-only. For ambiguous
+colours it stays neutral; package preference is not colour confirmation.
+
+`data/printer_photos/manifest.json` records file names, source URLs, hashes and
+illustrated models for reviewed UI artwork. It is separate from the filament
+catalogue and from `data/printers.json` compatibility flags. These additional
+images are bundled, never downloaded automatically by the running app.
