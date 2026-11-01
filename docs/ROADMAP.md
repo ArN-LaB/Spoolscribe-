@@ -33,7 +33,7 @@ See [release validation](validation/v0.3.5.md) and [changelog](../CHANGELOG.md).
 - [ ] More reviewed manufacturer logos and printer images with traceable origins.
 - [ ] Resolve ambiguous matches using documented product evidence.
 
-## Possible future work — outside v0.3.5
+## Possible future work
 
 - Additional reviewed manufacturer adapters; no generic scraping or invented values.
 - An explicit editor for unresolved matches and wider catalogue editing.
@@ -47,9 +47,9 @@ Do not duplicate Spoolman, migrate RFID associations or change printer firmware.
 The [previous detailed roadmap](https://github.com/ArN-LaB/Spoolscribe-/blob/5d652232e5b989028f13704ad6ca13b65724332b/docs/archive/v0.3.0/ROADMAP-before-v0.3.5.md) preserves
 the v0.2.x/v0.3.0 history and screen-feedback campaigns.
 
-## v0.4.0 — OpenTag3D en préparation
+## v0.4.0 — OpenTag3D en préversion
 
-- Encodeur 2.004, sorties NFC Tools et NDEF, choix par lecteur : implémentés sur la branche de développement.
+- Encodeur 2.004, sorties NFC Tools et NDEF, choix par lecteur : disponibles dans la [préversion v0.4.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0).
 - Contrôles hors réseau, conservation des exports OpenSpool et réglages : [validation](validation/v0.4.0.md).
 - Recette des imports NFC Tools et lecture sur matériel réel : non exécutée.
 - OpenPrintTag : hors de cette étape.

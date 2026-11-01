@@ -6,22 +6,41 @@
 
 | SpoolScribe | NFC writing app | Compatible reader |
 | --- | --- | --- |
-| Select a filament → export JSON | Write an NDEF MIME record → read it back | Check the detected material and colour |
+| Select a filament → export a file | Write an NDEF MIME record → read it back | Check the detected material and colour |
 
-Choose the printer or reader first (**My hardware**), with its firmware when that matters. For the Snapmaker U1 under the
-paxx12 firmware, for Flashforge machines under Zmod + FF_NFC, for Klipper +
-Spoolman readers, for a Bambu printer fed by an external OpenSpool reader and
-for other OpenSpool readers, SpoolScribe produces an OpenSpool 1.0 JSON payload.
-Bambu AMS, Prusa OpenPrintTag, Creality CFS, Anycubic ACE, Elegoo, QIDI or
-UltiMaker tags are not generated; for those printers the card is a reference
-sheet and the tag controls are hidden. See
-[Printers and Readers](Printers-and-Readers.md).
+**v0.4.0 is a [pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0).**
+Choose the printer first in **My hardware**, then combine the reader/software
+buttons and confirm the installed solution. The result distinguishes printer
+recognition from external inventory; only eligible formats are offered.
+[Check the exact setup and prerequisites](Printers-and-Readers.md).
 
-SpoolScribe prepares the **JSON data** only. A separate writer, such as
-SpoolFlux on iPhone, programs the physical NFC tag. SpoolScribe does not write
-memory pages, change a Capability Container (CC) or associate a hardware UID.
+| Format | Exported file | Writing application |
+| --- | --- | --- |
+| **OpenSpool 1.0** | UTF-8 JSON, MIME `application/json` | SpoolFlux or a compatible OpenSpool writer |
+| **OpenTag3D 2.004** | NFC Tools mobile or Desktop profile containing binary data | Import as a profile in the matching NFC Tools app; not as plain JSON text |
+| **OpenTag3D, expert output** | Raw `.ndef` message, MIME `application/opentag3d` | A writer that explicitly imports raw NDEF |
 
-## Choose the right export
+SpoolScribe prepares files, not physical tags. It does not write chip memory pages,
+change a Capability Container or associate a hardware UID. Native/proprietary
+manufacturer tags and OpenPrintTag are not generated. An external integration
+is a different configuration from the original printer reader.
+
+## OpenTag3D label preparation
+
+Confirm filament mass, target nozzle/bed temperatures and chamber temperature
+explicitly in **Prepare label…**. Nothing is inferred from the middle of a range;
+a non-heated chamber is zero only when you confirm it. Temperatures use 5 °C steps.
+Long names and unrepresentable values are refused, not silently truncated or rounded.
+
+The binary payload is 224 bytes, complete NDEF 248, and tag occupancy 251 before
+writer additions: 245 bytes remain on NTAG215 and 621 on NTAG216, before your reserve.
+The size of a base64 JSON file is not its occupancy on the tag.
+
+[Full OpenTag3D guide and validation limits](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/OPENTAG3D.md).
+Physical import, writing and printer acceptance remain untested here for these additions.
+[Share a test or a problem](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml).
+
+## OpenSpool export profiles
 
 | Choice | Use it for |
 | --- | --- |
@@ -76,7 +95,7 @@ memory and its standard CC `E1103E00` declares 496 bytes for NDEF. NTAG216 has
 888 bytes of user memory and CC `E1106D00` declares 872 bytes. See the
 [NXP data sheet, sections 8.5.4–8.5.6](https://www.nxp.com/docs/en/data-sheet/NTAG213_215_216.pdf).
 
-Use one **NDEF MIME `application/json` record** containing UTF-8 JSON, as in
+For OpenSpool, use one **NDEF MIME `application/json` record** containing UTF-8 JSON, as in
 [OpenSpool](https://github.com/spuder/OpenSpool). A plain NDEF Text record is not
 accepted by the OpenRFID revision bundled in Paxx12-24.
 
@@ -133,7 +152,8 @@ diameter/density as positive numbers, HEX as six uppercase characters.
    **Advanced settings**. These choices apply to the current session; **Set as default** next to the tag selector keeps them for later launches (CLI:
    `--save-nfc-default`).
 2. Export the NFC file and check its size estimate in the card.
-3. Import it into your writer and select MIME `application/json`.
+3. Use the matching writer: OpenSpool JSON is MIME `application/json`; OpenTag3D
+   profiles must be imported by NFC Tools, or the raw NDEF file by a supported writer.
 4. Program the tag and read it back.
 5. Check the printer's detected brand, material and colour.
 

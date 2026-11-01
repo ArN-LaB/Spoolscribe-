@@ -1,10 +1,11 @@
-# Choisir une installation de lecture — v0.4.0 en préparation
+# Choisir une installation de lecture — v0.4.0 Pre-release
 
 [Documentation](README.md) · [OpenTag3D](OPENTAG3D.md) · [Validation](validation/v0.4.0.md)
 
 **L’imprimante, son lecteur et le logiciel doivent fonctionner ensemble.**
 La présence d’un port USB ou d’une puce NFC ne suffit pas. La liste présente des
 installations documentées, sans prétendre couvrir tous les modèles disponibles.
+Ces choix sont disponibles dans la [préversion v0.4.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0).
 La version stable publique reste v0.3.5.
 
 ## Ce qui a été vérifié, et vos retours

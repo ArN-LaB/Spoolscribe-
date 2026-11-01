@@ -1,9 +1,10 @@
-# OpenTag3D — préparation de SpoolScribe v0.4.0
+# OpenTag3D — SpoolScribe v0.4.0 Pre-release
 
 [Documentation](README.md) · [Installations de lecture](PRINTER-CONFIGURATIONS.md) · [Formats NFC](FORMATS-NFC.md) · [Validation](validation/v0.4.0.md)
 
-**Fonction en développement, non publiée.** La version stable v0.3.5 continue
-à exporter OpenSpool uniquement. Cette intégration ajoute OpenTag3D **2.004** ;
+**Disponible dans la [préversion v0.4.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0).**
+La version stable v0.3.5 continue à exporter OpenSpool uniquement. Cette préversion
+ajoute OpenTag3D **2.004** ;
 elle ne remplace pas OpenSpool et n’ajoute pas OpenPrintTag.
 
 ## Choisir le matériel avant le format

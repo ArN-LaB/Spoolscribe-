@@ -1,6 +1,6 @@
-# Documentation SpoolScribe v0.3.5
+# Documentation SpoolScribe v0.4.0 · Pre-release
 
-**[Télécharger la version stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)** · [Présentation](../README.md) · [Wiki](wiki/Home.md)
+**[Télécharger la préversion v0.4.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0)** · **[Version stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)** · [Présentation](../README.md) · [Wiki](wiki/Home.md)
 
 ## Utiliser l’application
 
@@ -35,7 +35,9 @@ ils ne décrivent pas la version actuelle.
 Les tests automatisés et les sondes des exécutables ne remplacent pas une recette
 visuelle humaine ni une écriture/relecture NFC sur une imprimante réelle.
 
-## In development: v0.4.0
+## Préversion v0.4.0
 
 [Reader setup guide](PRINTER-CONFIGURATIONS.md) · [OpenTag3D export guide](OPENTAG3D.md) · [Validation status](validation/v0.4.0.md).
-Stable downloads and their historical validation remain v0.3.5.
+La préversion propose trois ZIP et leurs SHA-256. La stable reste v0.3.5.
+Les tests logiciels ne certifient pas toutes les combinaisons imprimante/lecteur ;
+[retours de compatibilité bienvenus](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml).
