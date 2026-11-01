@@ -213,6 +213,10 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: write
+    env:
+      # v0.4.0 is explicitly authorised as a pre-release. Suffixed tags are
+      # pre-releases too; neither may replace the latest stable download.
+      RELEASE_PRERELEASE: ${{ github.ref_name == 'v0.4.0' || contains(github.ref_name, '-') }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -251,6 +255,8 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           draft: true
+          prerelease: ${{ env.RELEASE_PRERELEASE == 'true' }}
+          make_latest: ${{ env.RELEASE_PRERELEASE != 'true' }}
           fail_on_unmatched_files: true
           body: ${{ steps.changelog.outputs.body }}
           files: |
@@ -262,7 +268,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: python
         run: |
-          import hashlib, os, pathlib, subprocess, tempfile
+          import hashlib, json, os, pathlib, subprocess, tempfile
           expected = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                       for p in pathlib.Path('artifacts').rglob('*') if p.is_file()}
           assert len(expected) == 6, 'Incomplete local release assets'
@@ -272,4 +278,12 @@ jobs:
               actual = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                         for p in pathlib.Path(directory).iterdir() if p.is_file()}
               assert actual == expected, 'Uploaded release assets differ from verified build artifacts'
-          subprocess.run(['gh', 'release', 'edit', tag, '--repo', repo, '--draft=false', '--latest'], check=True)
+          channel = os.environ['RELEASE_PRERELEASE']
+          assert channel in ('true', 'false'), 'Invalid release channel'
+          prerelease = channel == 'true'
+          subprocess.run(['gh', 'release', 'edit', tag, '--repo', repo, '--draft=false',
+                          '--prerelease=' + str(prerelease).lower(),
+                          '--latest=' + str(not prerelease).lower()], check=True)
+          published = json.loads(subprocess.check_output(
+              ['gh', 'release', 'view', tag, '--repo', repo, '--json', 'isDraft,isPrerelease,tagName'], text=True))
+          assert published == {'isDraft': False, 'isPrerelease': prerelease, 'tagName': tag}, 'Wrong release channel'

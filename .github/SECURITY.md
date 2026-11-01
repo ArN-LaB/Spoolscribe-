@@ -6,6 +6,8 @@ Security reports are welcome; please keep vulnerability details private.
 ## Supported versions
 
 Current stable release: [v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
+The [v0.4.0 pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0) is
+also open for bug and private security reports; it is not a hardware certification.
 
 The [latest stable GitHub Release](https://github.com/ArN-LaB/Spoolscribe-/releases/latest)
 is the supported version. `main` may include changes for the next release.

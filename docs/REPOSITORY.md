@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Ressources](../data/README.md) · [Fixtures](../tests/fixtures/README.md) · [Développement](DEVELOPMENT.md)
 
-**Développement v0.4.0 :** l’[encodeur OpenTag3D](OPENTAG3D.md) est ajouté sous `src/spoolscribe/opentag3d.py`. Les preuves ci-dessous décrivent la passe de structure v0.3.5 ; les nouveaux contrôles sont consignés [séparément](validation/v0.4.0.md).
+**Préversion v0.4.0 :** l’[encodeur OpenTag3D](OPENTAG3D.md) est ajouté sous `src/spoolscribe/opentag3d.py`. Les preuves ci-dessous décrivent la passe de structure v0.3.5 ; les nouveaux contrôles sont consignés [séparément](validation/v0.4.0.md).
 
 ## Organisation actuelle
 
@@ -43,7 +43,7 @@ Les catalogues de filaments, les 48 profils Orca et le contrat des 1 008 exports
 gardent leur contenu. Les chemins de logos déjà enregistrés restent lisibles par
 des alias ; les fichiers du dossier utilisateur ne sont ni déplacés ni réécrits.
 Les anciennes copies de manifestes et les personnalisations de logos restent prises
-en compte. La version applicative reste **0.3.5**.
+en compte. Cette passe historique conservait la version **0.3.5** ; la préversion actuelle est **0.4.0**.
 
 Le packaging utilise une liste déclarée, pas une collecte de toutes les images
 trouvées dans `data/`. Le contrôle du dépôt refuse les ressources orphelines,

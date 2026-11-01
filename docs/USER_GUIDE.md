@@ -1,6 +1,6 @@
-# Utiliser SpoolScribe v0.3.5
+# Utiliser SpoolScribe v0.4.0 · Pre-release
 
-[Accueil](../README.md) · [Documentation](README.md) · [Télécharger v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
+[Accueil](../README.md) · [Documentation](README.md) · [Préversion v0.4.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0) · [Stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
 
 ## Langue de l’interface
 
@@ -72,15 +72,32 @@ et **Dossier d’export** restent visibles dessous, alignées sur les mêmes bor
 L’inspection défile vers le fichier lorsqu’elle s’ouvre, sans changer la taille de la fenêtre. Chaque export propose un dossier de destination, mémorise le dernier choix et confirme le chemin du fichier après son écriture. Annuler le choix de dossier ne crée rien. Le dossier proposé se règle aussi dans **Paramètres → Export**. Le menu général contient
 les réglages matériels et les paramètres du conditionnement.
 
+Pour OpenTag3D, **Voir l’export** affiche le profil NFC Tools ; le NDEF brut affiche
+ses champs décodés et octets. **Préparer l’étiquette…** demande les cibles et la
+masse explicites. [Guide OpenTag3D](OPENTAG3D.md).
+
 Le fichier inspecté est identique à celui exporté avec les mêmes options. Les
-formats compact/complet et les réserves d’écriture restent dans les réglages
+profils OpenSpool compact/complet et les réserves d’écriture restent dans les réglages
 matériels avancés. SpoolScribe prépare le fichier ; une autre application écrit
 l’étiquette. L’archive JSON complète reste disponible dans le menu général.
 
 ## Configurer l’imprimante
 
-Ouvrez **Mon matériel** depuis le menu général. Cliquez le choix avec sa flèche visible pour ouvrir une fenêtre de recherche par marque ou modèle, avec des cartes, une description courte et des photographies lorsqu’elles sont disponibles. La sélection est confirmée par « Choisir » ; « Annuler » conserve le matériel précédent. La fiche distingue la description de la machine et son statut OpenSpool.
-La recherche propose trois catégories : **Compatibles SpoolScribe · OpenSpool**, **RFID / NFC non compatibles SpoolScribe** et **Sans lecteur OpenSpool**. Elles se combinent avec le nom recherché. « Compatible » reste conditionné au logiciel installé ou au lecteur externe indiqué.
+Ouvrez **Mon matériel** depuis le menu général. La flèche ouvre une recherche par
+marque ou modèle avec descriptions et photographies disponibles. Confirmez par
+« Choisir » ; « Annuler » conserve le matériel précédent.
+
+Composez ensuite votre installation par boutons : **lecteur**, **logiciel**, puis
+**solution installée**. Choisir USB ou réseau ne confirme pas automatiquement un
+plugin. Le résumé fixé sous les choix distingue identification dans l’imprimante,
+inventaire externe et lecteur autonome. Les versions, pilotes et connexions sont
+regroupés sous **Prérequis et détails**.
+
+Les filtres de recherche distinguent installations exportables, lecteurs USB ou
+réseau ajoutés, firmware constructeur ou modifié, formats non exportés et absence
+d’intégration confirmée. Un même modèle peut relever de plusieurs catégories.
+Choisissez un format proposé, votre NTAG215/216 et, pour OpenTag3D, le logiciel
+qui importera le fichier. [Installations et limites](PRINTER-CONFIGURATIONS.md).
 
 Des visuels transparents officiels sont embarqués pour la U1, la X1 Carbon illustrant les familles Bambu, la Plus4 illustrant les familles QIDI et la Kobra S1 illustrant la famille Anycubic. Le modèle illustré est précisé si
 nécessaire. Les autres entrées restent textuelles : aucune icône générique n’est

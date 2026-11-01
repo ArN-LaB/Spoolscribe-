@@ -55,8 +55,11 @@ Output stays `dist/SpoolScribe.exe` (Windows), `dist/SpoolScribe` (Linux) and
 The [workflow](../.github/workflows/build.yml) runs four test configurations before
 three builds, then checks TLS, the frozen UI in four languages, resource integrity
 and NTAG215/216 exports offline, including all three OpenTag3D containers. Only a version tag can publish a release, after
-all six assets are verified. The existing `v0.3.5` tag identifies the published
-binaries: maintenance on `main` does not silently replace them or move the tag.
+all six assets are verified. The release workflow marks `v0.4.0` and suffixed
+version tags as pre-releases; their publication uses `--latest=false`. The stable
+`v0.3.5` downloads and tag remain intact. A pre-release is downloaded explicitly;
+the application's stable-release check continues to follow the latest stable.
+Maintenance on `main` does not silently replace old binaries or move tags.
 
 ## Data and resources
 

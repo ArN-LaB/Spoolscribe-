@@ -13,7 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### v0.4.0 — OpenTag3D (in development)
+## [0.4.0] - 2026-11-01
+
+### Pre-release
+
+**This is a pre-release, not the latest stable version.** v0.3.5 remains stable.
+Download the Windows x64, macOS Apple Silicon or Linux x64 ZIP and its SHA-256
+from [v0.4.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0).
+
+All four CI test configurations and all three native builds pass before tagging.
+Documented printer setups are not exhaustive hardware certification: physical
+NFC writing/read-back and printer acceptance have not been performed for these
+additions. Successful tests and problems are welcome through the
+[compatibility Issue form](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml).
+
+### OpenTag3D and reader setup
 
 - Describe printer setups by built-in, USB or network reader, firmware and
   actual effect (printer or external inventory). Clarify paxx12 OpenRFID/Generic
@@ -613,6 +627,7 @@ These were same-day iterations, kept here for traceability:
 - Cleaned repository: removed one-off bootstrap scripts, raw scrape caches,
   bundled PDF, and generated output; minimized root directory.
 
+[0.4.0]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.3.5...v0.4.0
 [0.3.5]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.3.0...v0.3.5
 [0.3.0]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.1...v0.2.2

@@ -67,8 +67,9 @@ corrected by manufacturer sources and completed by community sources.
 <details>
 <summary><strong>What does « Export possible » mean?</strong></summary>
 
-Only that the fields OpenSpool needs are filled in. It says nothing about the
-filament's quality, nor that every printer recognizes the tag.
+Only that the required catalogue fields are filled in. It says nothing about the
+filament's quality, nor that every printer recognizes the tag. OpenTag3D additionally
+requires explicit label settings; see [the writing guide](Writing-RFID-Tags.md).
 
 </details>
 
@@ -107,15 +108,19 @@ works on any machine. Other OpenSpool-capable readers can use the same files.
 
 NTAG215 (504 bytes) or NTAG216 (888 bytes). The recommended *essential* profile
 (material, colours, temperatures, diameter, density) is the compact choice. The app checks the actual payload against your tag and reserve before export. The *full* profile adds names and brand metadata and is an explicit choice.
-See [Writing RFID Tags](Writing-RFID-Tags.md).
+These profiles apply to OpenSpool; OpenTag3D uses its own binary layout and explicit
+label settings. See [Writing RFID Tags](Writing-RFID-Tags.md).
 
 </details>
 
 <details>
 <summary><strong>Which tag hardware do I need?</strong></summary>
 
-Any NFC writer able to write an NDEF MIME `application/json` record, for example
-SpoolFlux on iPhone. See [Writing RFID Tags](Writing-RFID-Tags.md).
+For OpenSpool, an NFC writer able to write MIME `application/json`, such as
+SpoolFlux on iPhone. For OpenTag3D, import the generated profile into the matching
+NFC Tools mobile/Desktop app, or use a writer supporting raw NDEF. The files are
+not interchangeable. These profiles apply to OpenSpool; OpenTag3D uses its own binary layout and explicit
+label settings. See [Writing RFID Tags](Writing-RFID-Tags.md).
 
 </details>
 

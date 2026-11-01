@@ -5,7 +5,7 @@
 **Choose the printer, then its actual reader/software setup.** A USB socket,
 a reader powered by USB and a reader supported by the printer are different things.
 
-**Development guide for v0.4.0:** OpenSpool and OpenTag3D are offered only for
+**[v0.4.0 · Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0):** OpenSpool and OpenTag3D are offered only for
 identified setups. The public stable v0.3.5 still exports OpenSpool only.
 
 <table>
@@ -87,10 +87,10 @@ all external integrations for that printer are impossible.
 
 ## Sources and full requirements
 
-The [configuration guide](../PRINTER-CONFIGURATIONS.md) records the scope,
+The [configuration guide](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/PRINTER-CONFIGURATIONS.md) records the scope,
 prerequisites, version limits, legacy settings and primary sources. The
-[validation report](../validation/v0.4.0.md) separates software checks from hardware
-acceptance. The [hardware catalogue](../../data/printers.json) remains at its
+[validation report](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.4.0.md) separates software checks from hardware
+acceptance. The [hardware catalogue](https://github.com/ArN-LaB/Spoolscribe-/blob/main/data/printers.json) remains at its
 public path; older lists keep their historical fields.
 
 - [paxx12 detection systems](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/develop/docs/design/rfid.md).
@@ -100,6 +100,6 @@ public path; older lists keep their historical fields.
 - [Prusa accessory models and CAN connection](https://www.prusa3d.com/product/openprinttag-upgrade/).
 
 Images illustrate named models, not every printer in a family. Accessories and
-reader support differ. [Image provenance](../../data/printers/photos/manifest.json).
+reader support differ. [Image provenance](https://github.com/ArN-LaB/Spoolscribe-/blob/main/data/printers/photos/manifest.json).
 
 [Writing tags](Writing-RFID-Tags.md) · [U1 walkthrough](Snapmaker-U1-and-paxx12.md)

@@ -1,4 +1,4 @@
-# Catalogue and OpenSpool data contract
+# Catalogue and NFC export data contracts
 
 ## Catalogue files
 
@@ -98,6 +98,7 @@ The state filter accepts `all`, `ready`, `incomplete` (not ready) and
 | `last_update_attempt`, `last_update_status` | Date and status (`complete` / `partial` / `failed`) of the last attempt, successful or not |
 | `last_update` | Legacy date kept for older settings |
 | `nfc_tag_type`, `nfc_profile` (`auto` / `essential` / `full`), `nfc_reserved_bytes` | Saved NFC default, written only by **Définir par défaut** or `--save-nfc-default`; invalid values fall back to NTAG216 / `auto` / 0 |
+| `nfc_format`, `opentag3d_output`, `opentag3d_settings` | Selected encoding, writer container and explicit per-reference OpenTag3D settings; source catalogue unchanged |
 | `printer_profile`, `printer_firmware` | Printer/reader and firmware chosen in **Mon matériel** (`u1_stock` from older settings maps to `u1` + `stock`) |
 | `orca_overrides`, `show_extra_fields` | Export options (`show_extra_fields` is kept for imported settings; provenance expands in the card) |
 | `ui` | Filters, sorting, columns, geometry, splitter, view, `group` (one row per filament, default `true`) |
@@ -120,8 +121,10 @@ rejects unknown formats, duplicate or missing identifiers, unknown groups and
 firmwares without a boolean `openspool`. The bundled file is used unless a valid
 copy in the user data folder (`data/printers.json`, installed by **Mettre à jour
 la liste des imprimantes…**) carries an `updated` date at least as recent.
-`printer_profiles.can_export(printer, firmware)` is the only test used to show
-the tag controls and allow an OpenSpool export.
+In v0.4.0, `configuration_schema: 1` adds connection, software, documented formats
+and actual effect to each installation; historical fields remain compatible.
+`printer_profiles.can_export(printer, firmware, export_format)` gates the selected
+format. Unknown setups remain unconfirmed. See [reader configurations](PRINTER-CONFIGURATIONS.md).
 
 ## Logo manifest (`data/brands/manifest.json`)
 
@@ -204,3 +207,11 @@ images are bundled, never downloaded automatically by the running app.
 A personal copy adds its own `USER-<uuid>` SKU and private product key, leaving the original reference intact. The product display name ends in an editable ` @suffix`. `_personal`, `_personal_origin`, `_personal_suffix` and `_personal_base_name` are local metadata, preserved in the database/backups and omitted from NFC payload metadata. Same origin/suffix saves update the existing personal copy.
 
 Source reconciliation excludes personal SKUs from identity/article/family matching. Copied fields carry high-priority `Copie personnelle` provenance; explicit physical edits use `Utilisateur`. Copying a colour does not silently confirm an implausible source HEX. Existing explicit corrections and null values remain protected. Standard reference exports are unchanged. The display name is used in personal export filenames and full payloads; the suffix is an application label, not a new printer material type or NFC standard.
+
+## OpenTag3D 2.004 (v0.4.0 Pre-release)
+
+This independent binary format does not change the historical OpenSpool JSON
+contract. It uses MIME `application/opentag3d`, not `application/json`, with NFC
+Tools mobile/Desktop profile envelopes or a raw NDEF message. Required targets
+and filament mass are explicit; no range midpoint or silently rounded value is
+substituted. [Fields, sizes and writer formats](OPENTAG3D.md).

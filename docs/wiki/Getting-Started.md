@@ -10,11 +10,13 @@
 
 ## 1. Download and open
 
-| Platform | v0.3.5 download | Inside the ZIP |
+**v0.4.0 is a pre-release.** [Choose v0.3.5 for the latest stable build](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
+
+| Platform | v0.4.0 pre-release download | Inside the ZIP |
 | --- | --- | --- |
-| **Windows · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-windows.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-windows.zip.sha256) | One <code>SpoolScribe.exe</code> |
-| **macOS · Apple Silicon** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-macos.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-macos.zip.sha256) | One <code>SpoolScribe.app</code> |
-| **Linux · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-linux.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-linux.zip.sha256) | One <code>SpoolScribe</code> executable |
+| **Windows · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-windows.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-windows.zip.sha256) | One <code>SpoolScribe.exe</code> |
+| **macOS · Apple Silicon** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-macos.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-macos.zip.sha256) | One <code>SpoolScribe.app</code> |
+| **Linux · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-linux.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-linux.zip.sha256) | One <code>SpoolScribe</code> executable |
 
 Verify the download’s origin and checksum, unzip it and open the application.
 
@@ -70,14 +72,18 @@ primary/secondary sort and visible columns. Use the list/grid buttons to switch 
 
 | In the app | Next action |
 | --- | --- |
-| **My hardware** | Choose the printer or reader and installed software. [Check compatibility](Printers-and-Readers.md). |
+| **My hardware** | Choose the printer, then combine reader/software/installed-solution buttons. [Check compatibility](Printers-and-Readers.md). |
 | **Tag type** | Choose the NTAG215 or NTAG216 you bought. Advanced profile/reserve settings are optional. |
-| **Show JSON** | Inspect the same payload that will be exported; the window size stays unchanged. |
+| **Format / writing app** | Choose an eligible format. OpenTag3D offers NFC Tools mobile/Desktop profiles and an expert raw NDEF output. |
+| **Show JSON / Show export** | Inspect the file; the window size stays unchanged. |
 | **Export for NFC** | Choose a destination folder and wait for the saved-file confirmation. Cancelling creates no file. |
 
-A compatible OpenSpool setup enables NFC export; other setups provide a reference
-sheet. SpoolScribe prepares the payload and does not replace the slicer profile.
+An explicitly configured OpenSpool or OpenTag3D setup enables the corresponding
+export. The result distinguishes printer recognition from external inventory.
+Other setups provide a reference sheet. SpoolScribe prepares the payload and does not replace the slicer profile.
 
-**Next:** use a separate NFC writing app, read the tag back, then check it on your reader.
+**Next:** use the matching NFC writing app, read the tag back, then check it on your reader.
+Documented support is not exhaustive hardware certification;
+[successful tests and problems are welcome](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml).
 
 [Continue to writing and read-back](Writing-RFID-Tags.md)

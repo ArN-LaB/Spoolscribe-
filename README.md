@@ -2,11 +2,12 @@
   <img src="docs/images/spoolscribe-animated.gif" alt="SpoolScribe — animated spool logo" width="128" height="128">
 </p>
 
-<h1 align="center">SpoolScribe <sub>v0.3.5</sub></h1>
+<h1 align="center">SpoolScribe <sub>v0.4.0 · Pre-release</sub></h1>
 <p align="center"><strong>Find your filament. Prepare its NFC label.</strong></p>
-<p align="center">A filament catalogue for your desktop, with colour previews and OpenSpool exports.<br>Windows · macOS · Linux — free, open source, no account.</p>
+<p align="center">A filament catalogue for your desktop, with colour previews, OpenSpool and OpenTag3D exports.<br>Windows · macOS · Linux — free, open source, no account.</p>
 
 <p align="center">
+  <a href="https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0"><img src="https://img.shields.io/badge/v0.4.0-Pre--release-d4a017" alt="v0.4.0 pre-release"></a>
   <a href="https://github.com/ArN-LaB/Spoolscribe-/releases/latest"><img src="https://img.shields.io/github/v/release/ArN-LaB/Spoolscribe-?color=008899&amp;label=stable" alt="Latest stable release"></a>
   <a href="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml"><img src="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml/badge.svg?branch=main" alt="Build and tests"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT licence"></a>
@@ -18,10 +19,10 @@
 
 **Current stable: [v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).**
 
-**Next version, in development:** v0.4.0 adds OpenTag3D 2.004 exports alongside
-OpenSpool, with reader-specific format choices and NFC Tools profiles.
-[OpenTag3D guide](docs/OPENTAG3D.md) · [Printer and reader setups](docs/PRINTER-CONFIGURATIONS.md). The downloads below
-remain the published v0.3.5 builds.
+**Try [v0.4.0 — Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0):**
+OpenTag3D 2.004 alongside OpenSpool, with guided reader choices and NFC Tools profiles.
+The downloads below are the pre-release builds; v0.3.5 remains the latest stable release.
+[OpenTag3D guide](docs/OPENTAG3D.md) · [Printer and reader setups](docs/PRINTER-CONFIGURATIONS.md).
 
 **Help verify real-world setups.** The v0.4.0 printer list describes documented
 configurations, not a hardware-tested certification. Automated tests check the
@@ -32,23 +33,27 @@ read-back have not been validated by this project for these additions.
 with your printer model, reader, firmware/plugin versions, tag type, export format
 and what happened. Your feedback will help improve the compatibility list and fix problems.
 
-**SpoolScribe prepares the JSON file.** A separate NFC writing app, such as
-[SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us), writes it to your NTAG215 or
-NTAG216. Your printer or external reader needs to support **OpenSpool**.
+**SpoolScribe prepares the file.** A separate NFC writing app writes your NTAG215/216.
+Use [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us) or another compatible writer
+for OpenSpool JSON; import OpenTag3D profiles into the matching NFC Tools app.
+Your printer or external reader must support the selected format and configuration.
 
 **Interface languages:** English · Français · Español · 简体中文. The app follows your computer’s language, with English as the fallback. Override it in **Settings → Interface**. The app offers **Restart now** or **Later** after saving.
 
 ## Download
 
+**v0.4.0 · Pre-release** — for testing the new formats and reader setup.
+Prefer a stable build? [Download v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
+
 No Python installation needed. Download, unzip and open the app for your system.
 
 | System | Download | Checksum |
 |---|---|---|
-| **Windows 10 / 11 · x64** | [SpoolScribe.exe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-windows.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-windows.zip.sha256) |
-| **macOS · Apple Silicon** | [SpoolScribe.app — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-macos.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-macos.zip.sha256) |
-| **Linux · x64** | [SpoolScribe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-linux.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-linux.zip.sha256) |
+| **Windows 10 / 11 · x64** | [SpoolScribe.exe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-windows.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-windows.zip.sha256) |
+| **macOS · Apple Silicon** | [SpoolScribe.app — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-macos.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-macos.zip.sha256) |
+| **Linux · x64** | [SpoolScribe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-linux.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-linux.zip.sha256) |
 
-[Release notes](https://github.com/ArN-LaB/Spoolscribe-/releases/latest) ·
+[Pre-release notes](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0) ·
 [First-launch help](docs/wiki/Getting-Started.md) · [Run from source](docs/DEVELOPMENT.md)
 
 <details>
@@ -72,7 +77,7 @@ The `.zip.sha256` file contains the expected hash. Compare it with `sha256sum`
 
 | Find the right filament | Make it yours | Prepare the tag |
 |---|---|---|
-| Search across manufacturers, materials and colours. Switch between list and grid. | Pin favourite manufacturers and filaments. Save your preferred spool size. | Choose your reader and NTAG215/216. Preview the same JSON that gets exported. |
+| Search across manufacturers, materials and colours. Switch between list and grid. | Pin favourite manufacturers and filaments. Save your preferred spool size. | Choose your reader and NTAG215/216. Preview the file that gets exported. |
 | Sort from the column headers and choose the columns you need. | Keep an independent `@Personal` copy of your adjustments through catalogue refreshes. | Check capacity before export, choose the destination folder and get a saved-file confirmation. |
 
 [![SpoolScribe grid: colour-matched spool previews and the selected filament card](docs/images/collection.png)](docs/images/collection.png)
@@ -85,7 +90,7 @@ The `.zip.sha256` file contains the expected hash. Compare it with `sha256sum`
 2. **Find your filament.** Manufacturer and material filters narrow each other’s available choices. Search or filter, then select the colour and the actual
    spool size. Save a favourite if you use it often.
 3. **Set up your hardware.** Open **My hardware** and choose your printer or
-   reader, the installed firmware when relevant, and the tag you bought.
+   reader, then compose its actual installation with the buttons and choose the tag you bought.
 4. **Export and write.** Click **Export for NFC**, choose a folder, then use your
    NFC writer to write the file. Read the tag back and check it on your reader.
 
@@ -95,14 +100,15 @@ stay in your user folder.
 
 ## Will it work with my printer?
 
-**An RFID/NFC reader does not by itself mean OpenSpool compatibility.** The app's
+**An RFID/NFC reader does not by itself guarantee format compatibility.** The app's
 **My hardware** selector explains what your setup can read.
 
 | Your setup | What SpoolScribe provides |
 |---|---|
-| **Snapmaker U1 with compatible paxx12 OpenSpool firmware** | OpenSpool files for NTAG215/216. A stock U1 firmware is not an OpenSpool configuration. |
-| **Another compatible OpenSpool reader** | OpenSpool files; check the reader's firmware and integration requirements. |
-| **A reader using another format** — Bambu AMS, Prusa OpenPrintTag and others | A filament reference sheet. Their native/proprietary tags are not generated by SpoolScribe. |
+| **Snapmaker U1 / paxx12, built-in Snapmaker detection** | OpenSpool files for NTAG215/216. Stock manufacturer firmware is a different setup. |
+| **The same U1 / paxx12, OpenRFID or OpenRFID Generic** | OpenSpool or OpenTag3D. Generic changes brand handling, not the available formats. |
+| **A documented USB or network integration** | Formats and prerequisites depend on the reader/plugin. External inventory and printer recognition are distinguished. |
+| **Native Bambu AMS, Prusa OpenPrintTag and other unsupported formats** | A reference sheet; native/proprietary tags are not generated. An added reader is a separate configuration. |
 
 [Printer and reader guide](docs/wiki/Printers-and-Readers.md) ·
 [NFC formats explained](docs/FORMATS-NFC.md) · [Writing a tag](docs/wiki/Writing-RFID-Tags.md)
@@ -128,9 +134,10 @@ The app uses Python and PySide6, with a shared core for the desktop and command-
 interfaces. See [development and CLI use](docs/DEVELOPMENT.md) and
 [how to contribute](.github/CONTRIBUTING.md).
 
-v0.3.5 passed **267 offline tests per configuration** on Linux/Python 3.10 and 3.12,
-Windows/Python 3.12 and macOS/Python 3.12. All three native builds passed frozen-app,
-resource, TLS and export checks. See the [validation record](docs/validation/v0.3.5.md).
+The suite contains **323 offline tests**, including five publication safety checks.
+CI runs Linux/Python 3.10 and 3.12, Windows/Python 3.12 and macOS/Python 3.12 before
+three native builds and their frozen-app, resource, TLS and export checks. See the
+[validation record](docs/validation/v0.4.0.md) and its release workflow links.
 These automated checks do not replace human desktop acceptance or physical NFC read-back.
 
 </details>

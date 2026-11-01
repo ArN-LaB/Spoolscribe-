@@ -2,7 +2,9 @@
 
 [Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
 
-**Prepare OpenSpool labels for a U1 running compatible community firmware.**
+**Prepare OpenSpool or OpenTag3D labels with the matching paxx12 detection mode.**
+
+Available in [v0.4.0 · Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0).
 
 <table>
 <tr>
@@ -15,8 +17,11 @@
 
 | U1 configuration | What SpoolScribe can do |
 | --- | --- |
-| **Compatible paxx12 OpenSpool firmware** | Prepare an OpenSpool JSON file for NTAG215/216; confirm the installed version and its reader support. |
-| **Stock firmware** | Provide a filament reference sheet; an OpenSpool label is not a native Snapmaker tag. |
+| **paxx12, built-in Snapmaker detection** | OpenSpool JSON for NTAG215/216. |
+| **The same paxx12, built-in OpenRFID detection** | OpenSpool or OpenTag3D 2.004; select the matching format and writing app. |
+| **paxx12, OpenRFID Generic** | The same two formats; Generic changes brand identification, not the encoding. |
+| **paxx12, External detection** | A documented network reader/integration is required. Not the same path as the built-in reader. |
+| **Stock manufacturer firmware** | A reference sheet; SpoolScribe does not generate native Snapmaker tags. |
 
 The bundled catalogue documents OpenSpool support from paxx12 0.9.4. Follow the
 firmware project’s current instructions for the exact installed release.
@@ -25,7 +30,7 @@ firmware project’s current instructions for the exact installed release.
 
 | 1. Select | 2. Export | 3. Write & read back | 4. Check on the U1 |
 | --- | --- | --- | --- |
-| Find the product, colour and actual packaging. | Select U1, compatible firmware and your tag in **My hardware**. Save the JSON. | Use a separate NFC writer with an NDEF MIME <code>application/json</code> record. | Confirm the detected material and colour against the spool. |
+| Find the product, colour and actual packaging. | Choose U1, reader and installed solution using the buttons. Select the format and tag, then export. | Use an OpenSpool writer for JSON, or import the OpenTag3D profile into the matching NFC Tools app. | Confirm the detected material and colour against the spool. |
 
 [Writing guide](Writing-RFID-Tags.md) · [All printer configurations](Printers-and-Readers.md)
 
@@ -37,6 +42,8 @@ firmware project’s current instructions for the exact installed release.
 - Keep an appropriate slicer profile. A readable tag does not validate printing settings.
 - Physical tag, writer and U1 acceptance remains a separate check; screenshots and
   automated tests do not establish it.
+
+[Successful tests and problems are welcome](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml): include the firmware version, detection mode, reader, tag, export format and writing app.
 
 This is a community setup, not official Snapmaker functionality. Firmware changes
 belong to the paxx12 project; this guide covers the SpoolScribe side.
