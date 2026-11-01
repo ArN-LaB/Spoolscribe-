@@ -203,7 +203,7 @@ class OpenTagCliTests(unittest.TestCase):
         env=dict(os.environ,SPOOLSCRIBE_DATA_HOME=str(root),SPOOLSCRIBE_CONFIG_PATH=str(root/'config.json'),
                  PYTHONPATH=os.pathsep.join([str(ROOT/'src'),str(ROOT)]))
         return subprocess.run([sys.executable,'-B','-m','spoolscribe.convert_profile',*extra],
-                              input=typed,text=True,capture_output=True,env=env,cwd=root,timeout=30)
+                              input=typed,text=True,encoding='utf-8',capture_output=True,env=env,cwd=root,timeout=30)
 
     def test_real_cli_writes_a_writer_profile_without_touching_the_database(self):
         from tests.support import small_db
