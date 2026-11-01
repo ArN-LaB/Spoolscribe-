@@ -1,6 +1,6 @@
 # Documentation SpoolScribe
 
-Version source et stable : **0.3.0**, sur `main`.
+Version source de cette branche : **0.3.5**. Version stable publiée : **0.3.0**, sur `main`, en attente de la décision de publication de v0.3.5.
 Les [releases](https://github.com/ArN-LaB/Spoolscribe-/releases) contiennent les
 archives Windows x64, macOS Apple Silicon et Linux x64 et leurs SHA-256.
 
@@ -35,4 +35,4 @@ visuelle humaine ni l’écriture/relecture d’une étiquette NFC sur une impri
 
 ## Prepared v0.3.5
 
-[Validation and limits](VALIDATION-v0.3.5.md) · [Interface languages](../translations/README.md). This work is local until explicitly integrated and published.
+[Validation and limits](VALIDATION-v0.3.5.md) · [Interface languages](../translations/README.md). The work is pushed on `feature/v0.3.5-languages-facets` and proposed in PR #7; it is not yet merged or published. See the [four configurations and three builds](VALIDATION-CI-v0.3.5.md).

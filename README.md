@@ -20,7 +20,7 @@
 [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us), writes it to your NTAG215 or
 NTAG216. Your printer or external reader needs to support **OpenSpool**.
 
-**v0.3.5 — in preparation. Interface languages:** English · Français · Español · 简体中文. The app follows your computer’s language, with English as the fallback. Override it in **Settings → Interface** The app offers **Restart now** or **Later** after saving.
+**v0.3.5 — in preparation. Interface languages:** English · Français · Español · 简体中文. The app follows your computer’s language, with English as the fallback. Override it in **Settings → Interface**. The app offers **Restart now** or **Later** after saving.
 
 ## Download
 
