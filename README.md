@@ -70,7 +70,7 @@ The `.zip.sha256` file contains the expected hash. Compare it with `sha256sum`
    **Refresh now** (*Actualiser maintenant* in French). The app downloads its database after your consent.
 2. **Find your filament.** Manufacturer and material filters narrow each other’s available choices. Search or filter, then select the colour and the actual
    spool size. Save a favourite if you use it often.
-3. **Set up your hardware.** Open **⚙ → My hardware** and choose your printer or
+3. **Set up your hardware.** Open **My hardware** and choose your printer or
    reader, the installed firmware when relevant, and the tag you bought.
 4. **Export and write.** Click **Export for NFC**, choose a folder, then use your
    NFC writer to write the file. Read the tag back and check it on your reader.

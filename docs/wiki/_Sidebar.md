@@ -4,19 +4,19 @@
 
 **Start here**
 
-- [⌂ Welcome](Home.md)
-- [🚀 Getting started](Getting-Started.md)
-- [⬇ Download v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
+- [Welcome](Home.md)
+- [Getting started](Getting-Started.md)
+- [Download v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
 
 **Your hardware & labels**
 
-- [🖨 Printers & readers](Printers-and-Readers.md)
-- [🏷 Writing RFID tags](Writing-RFID-Tags.md)
+- [Printers & readers](Printers-and-Readers.md)
+- [Writing RFID tags](Writing-RFID-Tags.md)
 - [Snapmaker U1 & paxx12](Snapmaker-U1-and-paxx12.md)
 
 **Your catalogue**
 
-- [↻ Updates & backups](Updating-the-Database.md)
-- [? FAQ & troubleshooting](FAQ.md)
+- [Updates & backups](Updating-the-Database.md)
+- [FAQ & troubleshooting](FAQ.md)
 
 [Source code](https://github.com/ArN-LaB/Spoolscribe-) · [Report a bug](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose)

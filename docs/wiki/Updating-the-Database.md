@@ -1,10 +1,10 @@
-# ↻ Catalogue updates & backups
+# Catalogue updates & backups
 
-[⌂ Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
+[Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
 
 **Refresh selected sources while keeping your own work.**
 
-| ① Choose | ② Refresh | ③ Review |
+| 1. Choose | 2. Refresh | 3. Review |
 | --- | --- | --- |
 | Select the sources you want to contact. | Follow progress; cached data stay available if a source fails. | Read the result and inspect any unresolved records. |
 
@@ -22,7 +22,7 @@ shows the host it contacts and the result of its last run (updated, unchanged,
 unreachable, partial, error). **Refresh now** saves the choice and
 starts a refresh; **Save only** saves it for the next launch; **Details of the last refresh** reopens the last report.
 Deselecting a source prevents future requests to it; existing records are kept.
-The first selection records your network consent; **⚙ → Settings → Revoke network permission** withdraws it. The CLI shares the choices (`--sources`)
+The first selection records your network consent; **Settings → Revoke network permission** withdraws it. The CLI shares the choices (`--sources`)
 and its `U` command can reconsider consent.
 
 Sources, hosts and licences:
@@ -31,7 +31,7 @@ Sources, hosts and licences:
 
 ## Cadence
 
-**⚙ → Settings → Refresh on startup** sets when the app refreshes by
+**Settings → Refresh on startup** sets when the app refreshes by
 itself: at every launch, once a day (default), once a week, or manually only.
 An empty database always triggers the first download. **Refresh catalogue** forces a
 refresh regardless of the cadence.
@@ -120,9 +120,9 @@ still require revision checks; the lock alone cannot exclude them.
 
 ## Keep your settings too
 
-**⚙ → Save settings to file… / Load settings…** export and import the
+**Save settings to file… / Load settings…** export and import the
 interface, source, printer/firmware and tag preferences. Imported files never grant
 network consent, and a different source selection invalidates the previous
 authorization until you confirm it in the Sources dialog.
 
-[← Back to the catalogue guide](Getting-Started.md) · [Questions? →](FAQ.md)
+[Back to the catalogue guide](Getting-Started.md) · [Questions?](FAQ.md)

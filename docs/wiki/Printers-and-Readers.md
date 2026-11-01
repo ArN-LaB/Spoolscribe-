@@ -1,6 +1,6 @@
-# 🖨 Printers & readers
+# Printers & readers
 
-[⌂ Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
+[Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
 
 **Check the reader and installed software, not just the printer name.**
 SpoolScribe exports OpenSpool 1.0 JSON. A printer having RFID/NFC does not
@@ -101,7 +101,7 @@ code, and can be refreshed without a new release.
 
 ## Find your setup in the app
 
-Open **⚙ → My hardware**, search for the printer or reader, and confirm the
+Open **My hardware**, search for the printer or reader, and confirm the
 installed software. The picker shows a short product summary and an explicit
 OpenSpool status. **Refresh list** retrieves the reviewed hardware catalogue
 after network consent; failed updates keep the current list.
@@ -125,4 +125,4 @@ No new encoder or physical acceptance is implied.
 
 </details>
 
-[Ready to write a tag? →](Writing-RFID-Tags.md) · [U1 walkthrough →](Snapmaker-U1-and-paxx12.md)
+[Ready to write a tag?](Writing-RFID-Tags.md) · [U1 walkthrough](Snapmaker-U1-and-paxx12.md)

@@ -245,7 +245,7 @@ NFC:
   fixture keeps the v0.2.2 digest and the verification note).
 - Saved NFC default: changing the tag, profile or reserve no longer rewrites
   the default; **Définir par défaut** (next to the tag selector) stores it and
-  shows **Par défaut ✓** when the current choice is the default. The CLI reads
+  shows **Par défaut** when the current choice is the default. The CLI reads
   the same default and stores one with `--save-nfc-default`.
 - CLI: `--nfc-profile auto` (default), case-insensitive `--brand`/`--material`
   and reference lookup, strict argument parsing, empty-database hint for
@@ -309,7 +309,7 @@ provenance, created by an earlier preview build that bundled the catalogue):
 - **Interface.** Sidebar with manufacturers (recent pinned, list filter,
   counts), material families and data state replaces the three dropdowns and
   quick-access chips; the card shows characteristics, references, provenance
-  and a hardware summary; **Mon matériel** (⚙ menu / *Modifier…*) holds the
+  and a hardware summary; **Mon matériel** (main menu / *Modifier…*) holds the
   printer/reader, firmware, tag and defaults.
 - **Printers and readers** live in `data/printers.json` (native OpenSpool,
   via external reader, proprietary, no reader) with per-firmware "reads
