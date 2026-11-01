@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import core
+from spoolscribe import core
 from scripts import catalogue_sources, catalogue_merge, db_io
 from tests.support import small_db
 from tests.test_universal import source_fixture, change
@@ -94,7 +94,7 @@ class FeedbackUiTests(unittest.TestCase):
     def setUp(self):gui_fixture.GuiTests.setUp(self)
 
     def test_new_install_does_not_assume_a_modified_u1_firmware(self):
-        import app_gui
+        from spoolscribe import app_gui
         self.window.close()
         core.save_config(dict(core.DEFAULT_CONFIG))
         other=app_gui.MainWindow();self.addCleanup(other.close)

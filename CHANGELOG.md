@@ -13,12 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Documentation and repository maintenance
+### v0.3.5 repository maintenance
 
-- Shorter visual README with real catalogue screenshots, direct downloads and a beginner workflow; developer details move to `docs/DEVELOPMENT.md`.
-- Refresh contributor/security guidance and the bug-report template; keep the standard MIT licence and contributor covenant.
-- Update the GitHub repository description/topics and protect `main` with PRs and the four CI checks.
-- Validate Dependabot PR #3 (checkout 7.0.1 / setup-python 7.1.0, still SHA-pinned) on all four test configurations and all three builds before merging.
+- Group application modules under `src/spoolscribe/`, build entry/spec under
+  `packaging/`, and dependency files under `requirements/`; update CLI/GUI entry
+  points, source relaunch, CI, Dependabot and the local macOS installer manifest.
+- Refresh the README with actual v0.3.5 English screenshots, the existing animated
+  logo and pinned release downloads; align guides, Wiki, settings and roadmap.
+- Archive dated audits and UX reports by version, preserving evidence and fixing
+  links. Add offline documentation/layout checks and an explicit dry-run Wiki copier.
+- Remove the obsolete, unreferenced Bambu cover thumbnail; retain the reviewed
+  transparent X1 Carbon image. Catalogue records and all 48 Orca profiles are unchanged.
+- Preserve app version 0.3.5 and existing release assets/tag. Source-layout checks
+  extend the suite from 267 release tests to 269 maintenance tests.
 
 ## [0.3.5] - 2026-11-01
 
@@ -44,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   OpenSpool JSON and the 1,008 historical export contract remain unchanged.
 - Embed translations in all builds and exercise the four languages in the frozen
   GUI probe. Validated with 267 tests on each of four configurations and three
-  native builds; see the [CI record](docs/VALIDATION-CI-v0.3.5.md).
+  native builds; see the [CI record](docs/validation/v0.3.5.md).
 
 ## [0.3.0] - 2026-11-01
 
@@ -364,7 +371,7 @@ Build, CI, licences and documentation:
   Windows, and the Linux executable. Validate archive layout and binary format.
 - Add offline catalogue, OpenSpool, NFC size, storage, updater, Orca and GUI tests.
 - Run tests on pushes/PRs and require them before the existing three-OS builds.
-- Record a Python 3.12 build dependency snapshot in `requirements-build.txt`.
+- Record a Python 3.12 build dependency snapshot in `requirements/requirements-build.txt`.
 - Include the shared storage helper in packaged worker execution.
 
 ### Compatibility
@@ -410,7 +417,7 @@ tidied repository.
 
 ### Changed
 - **Single source of truth for the version.** `core.APP_VERSION` is now the only
-  place the version is declared; `spoolscribe.spec` reads it from `core.py` and
+  place the version is declared; `spoolscribe.spec` reads it from `src/spoolscribe/core.py` and
   `pyproject.toml` is kept aligned — no more "sync the version number" releases.
 - **Reworked detail panel.** The colour preview is a labelled band showing the
   HEX directly on the swatch; characteristics live in a card; the primary
@@ -559,9 +566,9 @@ These were same-day iterations, kept here for traceability:
 ## [0.1.0] - 2026-05-30
 
 ### Added
-- Cross-platform desktop GUI (`app_gui.py`) built on PySide6 (Qt): instant
+- Cross-platform desktop GUI (`src/spoolscribe/app_gui.py`) built on PySide6 (Qt): instant
   search, color swatches, SVG brand logo, JSON inspector, one-click export.
-- Shared pure-logic core (`core.py`) used by both the CLI and the GUI.
+- Shared pure-logic core (`src/spoolscribe/core.py`) used by both the CLI and the GUI.
 - Consent-gated, fully disclosed data updates (`core.NETWORK_SOURCES`,
   `docs/PRIVACY.md`). Offline by default; no network without explicit opt-in.
 - PyInstaller spec and GitHub Actions workflow producing Windows, macOS and

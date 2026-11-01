@@ -6,7 +6,7 @@ pas le parcours des téléchargements publics. Gatekeeper reste actif.
 
 ## Préparer
 
-- macOS, Git, Python 3.12 et les dépendances de `requirements-build.txt` installées
+- macOS, Git, Python 3.12 et les dépendances de `requirements/requirements-build.txt` installées
   dans l'environnement Python choisi (voir [DEVELOPMENT.md](DEVELOPMENT.md)).
 - Une copie examinée de `ArN-LaB/homebrew-tap`, contenant
   `developer-tools/macos-local-installer`, version **0.1.1**, référence publiée `local-installer-v0.1.1`.
@@ -30,7 +30,7 @@ Aucun script distant n'est téléchargé ou exécuté automatiquement.
 
 La compilation utilise un export Git dans un dossier privé distinct ; les anciens
 `build/`, `dist/`, données personnelles, préférences, catalogue et profils Orca du Mac
-ne sont pas écrasés. La commande PyInstaller et le spec multiplateforme sont inchangés.
+ne sont pas écrasés. Le manifeste utilise désormais `packaging/spoolscribe.spec` ; le format de sortie reste inchangé.
 La source du bundle est `dist/SpoolScribe.app` dans cet export, avec l'identifiant
 `com.github.arn-lab.spoolscribe`.
 

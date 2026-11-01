@@ -6,8 +6,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import core
-import convert_profile
+from spoolscribe import core
+from spoolscribe import convert_profile
 from scripts import db_io
 from tests.support import catalogue
 
@@ -28,7 +28,7 @@ class CliTests(unittest.TestCase):
 
     def run_cli(self, answers, args=()):
         out = io.StringIO()
-        with patch("sys.argv", ["convert_profile.py", *args]), patch("builtins.input", side_effect=answers), \
+        with patch("sys.argv", ["spoolscribe.convert_profile.py", *args]), patch("builtins.input", side_effect=answers), \
              contextlib.redirect_stdout(out):
             code = convert_profile.main()
         return code, out.getvalue()
@@ -77,7 +77,7 @@ class CliTests(unittest.TestCase):
 
     def test_filtered_list_exits_without_network_or_writes(self):
         before = self.db.read_bytes()
-        with patch("convert_profile.check_and_update_db", side_effect=AssertionError("List must stay offline")):
+        with patch("spoolscribe.convert_profile.check_and_update_db", side_effect=AssertionError("List must stay offline")):
             code, output = self.run_cli([], ["--list", "--brand", "Polymaker", "--search", "PETG Black", "--limit", "3"])
         self.assertEqual(code, 0)
         self.assertIn("résultats", output)
@@ -106,21 +106,21 @@ class CliTests(unittest.TestCase):
         core.set_network_consent(True, auto_update=True)
         preferences = Path(core.CONFIG_PATH).read_bytes()
         self.db.write_text("corrupt")
-        with patch("convert_profile.run_update_pipeline", return_value=[]) as update:
+        with patch("spoolscribe.convert_profile.run_update_pipeline", return_value=[]) as update:
             code, _ = self.run_cli(["o", "q"], ["--restore-db", str(backup)])
         self.assertIn(code, (None, 0))
         update.assert_not_called()
         self.assertEqual(self.db.read_bytes(), chosen)
         self.assertEqual(Path(core.CONFIG_PATH).read_bytes(), preferences)
         # Restoration blocks automatic work only; explicit U remains available.
-        with patch("convert_profile.ensure_consent_interactive", return_value=True), \
-             patch("convert_profile.run_update_pipeline", return_value=[]) as update, \
+        with patch("spoolscribe.convert_profile.ensure_consent_interactive", return_value=True), \
+             patch("spoolscribe.convert_profile.run_update_pipeline", return_value=[]) as update, \
              contextlib.redirect_stdout(io.StringIO()):
             convert_profile.check_and_update_db(force=True)
         update.assert_called_once()
         # A fresh process has no in-memory restoration marker.
         with patch.object(core, "_RESTORED_DB_PATHS", set()), \
-             patch("convert_profile.run_update_pipeline", return_value=[]) as update, \
+             patch("spoolscribe.convert_profile.run_update_pipeline", return_value=[]) as update, \
              contextlib.redirect_stdout(io.StringIO()):
             convert_profile.check_and_update_db()
         update.assert_called_once()

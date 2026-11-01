@@ -58,7 +58,7 @@ def main():
     args = parser.parse_args()
     version = args.version
     if version is None:
-        core = (Path(__file__).resolve().parents[2] / "core.py").read_text(encoding="utf-8")
+        core = (Path(__file__).resolve().parents[2] / "src/spoolscribe/core.py").read_text(encoding="utf-8")
         version = re.search(r'^APP_VERSION = "([^"]+)"$', core, re.M).group(1)
     for path in args.archives:
         print(json.dumps(verify_archive(path, version)))

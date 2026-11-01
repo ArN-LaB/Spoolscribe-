@@ -11,9 +11,9 @@ class FinalPolishTests(unittest.TestCase):
     def setUp(self):fixture.GuiTests.setUp(self)
 
     def test_printer_categories_preserve_firmware_conditions_and_search(self):
-        from ui_widgets import PrinterBrowser
+        from spoolscribe.ui_widgets import PrinterBrowser
         from PySide6.QtCore import Qt
-        import printer_profiles
+        from spoolscribe import printer_profiles
         w=self.window;browser=PrinterBrowser(w.printer,w);self.addCleanup(browser.close)
         for key in ('compatible','rfid','none'):
             browser.category.setCurrentIndex(browser.category.findData(key))
@@ -42,20 +42,20 @@ class FinalPolishTests(unittest.TestCase):
             button=dialog.findChild(QPushButton,'supportProject');self.assertIsNotNone(button)
             self.assertEqual(button.height(),32)
             return QDialog.Rejected
-        with patch.object(QDialog,'exec',inspect),patch('app_gui.QDesktopServices.openUrl') as opened:
+        with patch.object(QDialog,'exec',inspect),patch('spoolscribe.app_gui.QDesktopServices.openUrl') as opened:
             self.window._open_about();opened.assert_not_called()
 
     def test_about_support_click_opens_exact_author_url(self):
         from PySide6.QtWidgets import QDialog,QPushButton
         def inspect(dialog):dialog.findChild(QPushButton,'supportProject').click();return QDialog.Rejected
-        with patch.object(QDialog,'exec',inspect),patch('app_gui.QDesktopServices.openUrl',return_value=True) as opened:
+        with patch.object(QDialog,'exec',inspect),patch('spoolscribe.app_gui.QDesktopServices.openUrl',return_value=True) as opened:
             self.window._open_about();self.assertEqual(opened.call_args.args[0].toString(),'https://buymeacoffee.com/arn_lab')
 
     def test_referenced_printer_images_keep_native_transparency_and_manifest_hashes(self):
         import json,hashlib
         from pathlib import Path
         from PySide6.QtGui import QImage
-        import core
+        from spoolscribe import core
         root=Path(core.RESOURCE_DIR)/'data/printer_photos'
         manifest=json.loads((root/'manifest.json').read_text())
         self.assertIn('anycubic_ace',manifest)

@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import core
+from spoolscribe import core
 from scripts import db_io, download_orca_profiles, import_orca_profiles
 from tests.support import ROOT, small_db
 

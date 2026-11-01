@@ -2,7 +2,7 @@
   <img src="docs/images/spoolscribe-animated.gif" alt="SpoolScribe — animated spool logo" width="128" height="128">
 </p>
 
-<h1 align="center">SpoolScribe</h1>
+<h1 align="center">SpoolScribe <sub>v0.3.5</sub></h1>
 <p align="center"><strong>Find your filament. Prepare its NFC label.</strong></p>
 <p align="center">A filament catalogue for your desktop, with colour previews and OpenSpool exports.<br>Windows · macOS · Linux — free, open source, no account.</p>
 
@@ -14,7 +14,9 @@
 <p align="center"><a href="#download">Download</a> · <a href="#your-first-tag">Your first tag</a> · <a href="#will-it-work-with-my-printer">Compatibility</a> · <a href="docs/README.md">Documentation</a></p>
 
 [![SpoolScribe catalogue: searchable manufacturers, filament colours and NFC export](docs/images/catalogue.png)](docs/images/catalogue.png)
-<p align="center"><sub>Actual v0.3.0 interface, shown with public catalogue data and temporary demo settings. This screenshot shows the French interface in v0.3.0. Version 0.3.5 adds English, French, Spanish and Simplified Chinese.</sub></p>
+<p align="center"><sub>Actual v0.3.5 interface, shown in English with public catalogue fixtures and temporary offline settings. Available in English, French, Spanish and Simplified Chinese.</sub></p>
+
+**Current stable: [v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).**
 
 **SpoolScribe prepares the JSON file.** A separate NFC writing app, such as
 [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us), writes it to your NTAG215 or
@@ -28,9 +30,9 @@ No Python installation needed. Download, unzip and open the app for your system.
 
 | System | Download | Checksum |
 |---|---|---|
-| **Windows 10 / 11 · x64** | [SpoolScribe.exe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/latest/download/SpoolScribe-windows.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/latest/download/SpoolScribe-windows.zip.sha256) |
-| **macOS · Apple Silicon** | [SpoolScribe.app — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/latest/download/SpoolScribe-macos.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/latest/download/SpoolScribe-macos.zip.sha256) |
-| **Linux · x64** | [SpoolScribe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/latest/download/SpoolScribe-linux.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/latest/download/SpoolScribe-linux.zip.sha256) |
+| **Windows 10 / 11 · x64** | [SpoolScribe.exe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-windows.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-windows.zip.sha256) |
+| **macOS · Apple Silicon** | [SpoolScribe.app — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-macos.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-macos.zip.sha256) |
+| **Linux · x64** | [SpoolScribe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-linux.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-linux.zip.sha256) |
 
 [Release notes](https://github.com/ArN-LaB/Spoolscribe-/releases/latest) ·
 [First-launch help](docs/wiki/Getting-Started.md) · [Run from source](docs/DEVELOPMENT.md)
@@ -114,7 +116,7 @@ interfaces. See [development and CLI use](docs/DEVELOPMENT.md) and
 
 v0.3.5 passed **267 offline tests per configuration** on Linux/Python 3.10 and 3.12,
 Windows/Python 3.12 and macOS/Python 3.12. All three native builds passed frozen-app,
-resource, TLS and export checks. See the [validation record](docs/VALIDATION-CI-v0.3.5.md).
+resource, TLS and export checks. See the [validation record](docs/validation/v0.3.5.md).
 These automated checks do not replace human desktop acceptance or physical NFC read-back.
 
 </details>

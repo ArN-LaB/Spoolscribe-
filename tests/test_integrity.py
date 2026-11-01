@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import core
+from spoolscribe import core
 from scripts import db_io, catalogue_merge as merge
 from tests.support import small_db, entry
 
@@ -149,7 +149,7 @@ class PlausibilityTests(unittest.TestCase):
 
 class NfcDefaultTests(unittest.TestCase):
     def test_defaults_are_validated_and_invalid_stored_values_fall_back(self):
-        with tempfile.TemporaryDirectory() as directory, patch('core.CONFIG_PATH', str(Path(directory) / 'config.json')):
+        with tempfile.TemporaryDirectory() as directory, patch('spoolscribe.core.CONFIG_PATH', str(Path(directory) / 'config.json')):
             self.assertEqual(core.nfc_defaults(), dict(tag_type='NTAG216', profile='auto', reserved_bytes=0))
             core.save_nfc_defaults('NTAG215', 'full', 40)
             self.assertEqual(core.nfc_defaults(), dict(tag_type='NTAG215', profile='full', reserved_bytes=40))

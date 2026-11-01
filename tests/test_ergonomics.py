@@ -12,7 +12,7 @@ class ErgonomicsTests(unittest.TestCase):
 
     def test_printer_choice_has_a_searchable_visual_browser(self):
         from PySide6.QtWidgets import QDialog
-        from ui_widgets import PrinterBrowser
+        from spoolscribe.ui_widgets import PrinterBrowser
         w=self.window
         self.assertFalse(w.printer.isEditable())
         browser=PrinterBrowser(w.printer,w)
@@ -35,7 +35,7 @@ class ErgonomicsTests(unittest.TestCase):
         self.assertEqual(w.printer.currentData(),'prusa')
 
     def test_printer_results_fit_when_resizing(self):
-        from ui_widgets import PrinterBrowser
+        from spoolscribe.ui_widgets import PrinterBrowser
         browser=PrinterBrowser(self.window.printer,self.window);self.addCleanup(browser.close)
         browser.resize(440,340);browser.show();self.window.app.processEvents()
         for i in range(browser.list.count()):
@@ -45,7 +45,7 @@ class ErgonomicsTests(unittest.TestCase):
 
     def test_materials_are_alphabetical_searchable_and_reset_keeps_favorites(self):
         from PySide6.QtCore import Qt
-        import core
+        from spoolscribe import core
         w=self.window
         names=[w.family_list.item(i).data(Qt.UserRole) for i in range(1,w.family_list.count())]
         self.assertEqual(names,sorted(names,key=str.casefold))
@@ -113,7 +113,7 @@ class ErgonomicsTests(unittest.TestCase):
 
     def test_partial_sync_report_does_not_claim_complete_success(self):
         from PySide6.QtWidgets import QDialog,QLabel
-        import core
+        from spoolscribe import core
         w=self.window;before=w._snapshot_stats()
         results=[core.StepResult('Polymaker officiel',True,status='unchanged'),core.StepResult('SUNLU officiel',False,2,'CERTIFICATE_VERIFY_FAILED',status='unavailable')]
         w._show_sync_report(results,before)

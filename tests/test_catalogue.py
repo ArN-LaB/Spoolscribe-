@@ -1,7 +1,7 @@
 import json
 import unittest
 
-import core
+from spoolscribe import core
 from scripts.db_io import validate_db
 from tests.support import ROOT, catalogue
 

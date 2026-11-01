@@ -8,7 +8,7 @@ for other OpenSpool readers, SpoolScribe produces an OpenSpool 1.0 JSON payload.
 Bambu AMS, Prusa OpenPrintTag, Creality CFS, Anycubic ACE, Elegoo, QIDI or
 UltiMaker tags are not generated; for those printers the card is a reference
 sheet and the tag controls are hidden. See
-[[Printers and Readers|Printers-and-Readers]].
+[Printers and Readers](Printers-and-Readers.md).
 
 SpoolScribe prepares the **JSON data** only. A separate writer, such as
 SpoolFlux on iPhone, programs the physical NFC tag. SpoolScribe does not write
@@ -31,13 +31,13 @@ memory pages, change a Capability Container (CC) or associate a hardware UID.
 No colour or printing value is ever dropped to make an export fit: an oversized
 export is refused before anything is written.
 
-CLI: `python convert_profile.py` (interactive; `--export-format nfc` by default,
+CLI: `python -m spoolscribe.convert_profile` (interactive; `--export-format nfc` by default,
 `--export-format archive` for the archive), with `--tag-type NTAG215|NTAG216`,
 `--nfc-profile auto|essential|full` and `--reserve-bytes N`. `--compact` only
 changes the terminal display. `--brand`, `--material` and typed references are
 case-insensitive.
 
-The NFC inspector (**Inspecter le JSON**) uses the same serializer as the NFC
+The NFC inspector (**View JSON**) uses the same serializer as the NFC
 file: what you see is what is written.
 
 ## Tag and record format

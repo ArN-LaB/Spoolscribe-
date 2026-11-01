@@ -1,50 +1,47 @@
-# SpoolScribe Wiki
+# SpoolScribe v0.3.5
 
-Welcome! This wiki collects user-facing guides for **SpoolScribe** — preparing
-[OpenSpool](https://github.com/spuder/OpenSpool) / NFC spool-tag data for the
-open-firmware **[Snapmaker U1](https://snapmaker.com/snapmaker-u1)** and other
-OpenSpool readers.
+<p align="center"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/spoolscribe-animated.gif" alt="Animated SpoolScribe spool" width="96" height="96"></p>
 
-> These pages live in the repo under `docs/wiki/` as a starter. Copy them into
-> the GitHub Wiki (the **Wiki** tab) to publish and edit them online. Links to
-> the repository documentation are absolute so they keep working there.
+**Find your filament. Prepare its NFC label.**
 
-## Pages
+[Download v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5) ·
+[Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md)
 
-- [[Getting Started|Getting-Started]] — install, first run, first tag
-- [[Writing RFID Tags|Writing-RFID-Tags]] — from JSON to a programmed tag
-- [[Snapmaker U1 & paxx12|Snapmaker-U1-and-paxx12]] — the open firmware context
-- [[Updating the Database|Updating-the-Database]] — sources, consent, cadence, report, backups
-- [[Printers and Readers|Printers-and-Readers]] — which printers read which tags
-- [[FAQ|FAQ]] — common questions
+SpoolScribe is a free desktop catalogue for Windows x64, macOS Apple Silicon and
+Linux x64. The interface follows your computer’s language: English, French,
+Spanish or Simplified Chinese, with English as the fallback.
 
-## The catalogue in one paragraph
+## From catalogue to tag
 
-The installer contains no filament data. On first launch you choose the sources
-(Open Filament Database, SpoolmanDB, Polymaker, Bambu Lab, SUNLU…) and the app
-downloads them into your user folder: about 24,000 references from 170+
-manufacturers. Manufacturer facts outrank community values, your own corrections
-outrank both, and anything uncertain is held aside instead of merged. Internal
-`OFD-…` / `SMDB-…` identifiers are not manufacturer SKUs; the *Référence*
-column (optional) shows the manufacturer article number when the source provides one.
-The table shows one row per filament: the spool sizes, refills and diameters of
-one manufacturer, product and colour are grouped, and the card lists each
-reference. Product lines some sources list as brands (PolyLite, Panchroma,
-Fiberon…) appear under their manufacturer. The sidebar (manufacturers, material
-families, data state « État des données »), the search field, two-level header
-sorting and 250-row pages apply to the whole catalogue. Logos are reviewed local
-assets with a transparent background; a readable name replaces an unsuitable
-image.
+1. Choose public sources and download the catalogue after giving consent.
+2. Search for a filament. Manufacturer and material choices narrow each other.
+3. Choose the actual colour and packaging; keep favourites or a personal copy.
+4. Export the OpenSpool JSON, then write and read it back with a separate NFC app.
 
-Reference documentation in the repository:
-[data sources](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DATA_SOURCES.md),
-[data contract](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DATA_FORMAT.md),
-[privacy](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/PRIVACY.md),
-[interface guide (French)](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/UX-v0.3.0.md),
-[roadmap](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/ROADMAP.md).
+An RFID reader alone does not guarantee compatibility. Check the printer,
+firmware and reader in [Printers and Readers](Printers-and-Readers.md).
 
-## Disclaimer
+## Guides
 
-SpoolScribe is an unofficial hobby project, not affiliated with any filament
-manufacturer or with Snapmaker. See
-[TRADEMARKS.md](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/TRADEMARKS.md).
+| Task | Page |
+| --- | --- |
+| Install, choose a language, first export | [Getting Started](Getting-Started.md) |
+| NTAG215/216, capacity and writing | [Writing RFID Tags](Writing-RFID-Tags.md) |
+| U1 with compatible open firmware | [Snapmaker U1 and paxx12](Snapmaker-U1-and-paxx12.md) |
+| Sources, consent, refresh and backups | [Updating the Database](Updating-the-Database.md) |
+| Supported setups and other RFID formats | [Printers and Readers](Printers-and-Readers.md) |
+| Personal copies, favourites and troubleshooting | [FAQ](FAQ.md) |
+
+The catalogue is not exhaustive. Manufacturer facts take priority over community
+values; your corrections remain protected. Missing values are not invented and
+uncertain matches are held aside. The installer contains no catalogue.
+
+The reviewed source of this Wiki lives in the
+[repository](https://github.com/ArN-LaB/Spoolscribe-/tree/main/docs/wiki).
+See the [documentation index](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/README.md),
+[release validation](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.3.5.md)
+and [roadmap](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/ROADMAP.md).
+Automated validation does not mean physical NFC testing has been performed.
+
+SpoolScribe is an unofficial hobby project, unaffiliated with printer or filament
+manufacturers. [Licences and trademarks](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/TRADEMARKS.md).

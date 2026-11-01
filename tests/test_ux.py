@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-import core
+from spoolscribe import core
 from scripts import db_io, catalogue_merge as merge, official_sources, app_updates
 from tests.support import small_db, product, entry, ROOT
 
@@ -101,7 +101,7 @@ class SourcePolicyTests(unittest.TestCase):
                 db_io.save_db(small_db(),path);before=path.read_bytes()
                 self.assertEqual(core.load_db()['_skus']['LOCAL']['hex'],'FF0000')
                 self.assertEqual(path.read_bytes(),before)
-        from packaging_rules import resources
+        from spoolscribe.packaging_rules import resources
         files=resources(ROOT)
         self.assertFalse(any(p.startswith('orca_profiles/') or p.endswith('polymaker_db.json') or 'catalogue_' in p and p.startswith('data/') for p in files))
         self.assertIn('data/brand_logos/manifest.json',files)
@@ -118,7 +118,7 @@ class SourcePolicyTests(unittest.TestCase):
         self.assertEqual(full['brand_meta'],{'name':'Audit'});self.assertNotIn('logo_url',full);self.assertNotIn('image',full)
 
     def test_settings_roundtrip_does_not_grant_network_authorization(self):
-        with tempfile.TemporaryDirectory() as directory,patch('core.CONFIG_PATH',str(Path(directory)/'config.json')):
+        with tempfile.TemporaryDirectory() as directory,patch('spoolscribe.core.CONFIG_PATH',str(Path(directory)/'config.json')):
             cfg=core.load_config();cfg.update(printer_profile='bambu',nfc_tag_type='NTAG215',selected_sources=['sunlu'])
             cfg['ui']={'brand':'SUNLU','sort1':'color_name','view':'grid'};core.save_config(cfg)
             target=Path(directory)/'saved.json';core.export_settings(target)
@@ -145,14 +145,14 @@ if gui_fixture.HAS_QT:
     from PySide6.QtCore import Qt
     from PySide6.QtTest import QTest
     from PySide6.QtWidgets import QDialog, QCheckBox, QDialogButtonBox
-    import app_gui
+    from spoolscribe import app_gui
 
 
 @unittest.skipUnless(gui_fixture.HAS_QT, "PySide6 non installé : interactions Qt non mesurées")
 class CatalogueInteractionTests(unittest.TestCase):
     setUpClass=classmethod(gui_fixture.GuiTests.setUpClass.__func__)
     def setUp(self):
-        schedule=patch('app_gui.QTimer.singleShot');schedule.start();self.addCleanup(schedule.stop)
+        schedule=patch('spoolscribe.app_gui.QTimer.singleShot');schedule.start();self.addCleanup(schedule.stop)
         gui_fixture.GuiTests.setUp(self)
 
     def test_header_cycle_secondary_sort_and_column_visibility_persist(self):
@@ -190,9 +190,9 @@ class CatalogueInteractionTests(unittest.TestCase):
 
     def test_startup_refresh_every_launch_except_after_restore(self):
         w=self.window;w.show();core.set_network_consent(True)
-        with patch.object(w,'_start_update') as update,patch('core.db_restored_this_session',return_value=False):
+        with patch.object(w,'_start_update') as update,patch('spoolscribe.core.db_restored_this_session',return_value=False):
             w._maybe_auto_update();update.assert_called_once()
-        with patch.object(w,'_start_update') as update,patch('core.db_restored_this_session',return_value=True):
+        with patch.object(w,'_start_update') as update,patch('spoolscribe.core.db_restored_this_session',return_value=True):
             w._maybe_auto_update();update.assert_not_called()
 
     def test_source_dialog_saves_exact_selection_without_launch_when_save_only(self):
@@ -215,7 +215,7 @@ class CatalogueInteractionTests(unittest.TestCase):
     def test_archive_remains_available_when_neither_nfc_profile_fits(self):
         w=self.window;w.current_sku='PB05001';w.db['_skus']['PB05001']['color_name']='x'*1400
         w.nfc_reserve.setValue(490);w.tag_type.setCurrentIndex(w.tag_type.findData('NTAG215'))
-        with patch('app_gui.QMessageBox.information'):
+        with patch('spoolscribe.app_gui.QMessageBox.information'):
             w._generate(mode='archive')
         files=list(Path(core.OUTPUT_DIR).glob('*archive.json'))
         self.assertEqual(len(files),1)

@@ -12,7 +12,7 @@ import unittest
 import urllib.error
 from unittest.mock import patch
 
-import core
+from spoolscribe import core
 from scripts import db_io, app_updates, official_sources, download_orca_profiles
 from tests.support import small_db
 
@@ -50,12 +50,12 @@ class PipelineTests(unittest.TestCase):
         return subprocess.CompletedProcess([], code, stdout=db_io.STEP_PREFIX + json.dumps({'status': status, 'message': ''}), stderr='')
 
     def test_an_unchanged_offline_attempt_does_not_rewrite_the_database(self):
-        with patch('core._run_step_process', return_value=self._completed('unavailable', 2)):
+        with patch('spoolscribe.core._run_step_process', return_value=self._completed('unavailable', 2)):
             core.run_update_pipeline(consent=True)
         first = self.db_path.read_bytes()
         attempt = core.load_config()['last_update_attempt']
         self.assertTrue(attempt)
-        with patch('core._run_step_process', return_value=self._completed('unavailable', 2)):
+        with patch('spoolscribe.core._run_step_process', return_value=self._completed('unavailable', 2)):
             core.run_update_pipeline(consent=True)
         self.assertEqual(self.db_path.read_bytes(), first)
         self.assertNotIn('_last_attempt', db_io.load_db(self.db_path))
@@ -68,7 +68,7 @@ class PipelineTests(unittest.TestCase):
         def first_step(cmd, **kwargs):
             cancel.set()
             raise core.UpdateCancelled('stop')
-        with patch('core._run_step_process', side_effect=first_step) as run:
+        with patch('spoolscribe.core._run_step_process', side_effect=first_step) as run:
             results = core.run_update_pipeline(consent=True, cancel=cancel)
         self.assertEqual(run.call_count, 1)
         self.assertTrue(all(r.status == 'cancelled' for r in results))

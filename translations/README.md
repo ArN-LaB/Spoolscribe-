@@ -4,7 +4,7 @@ SpoolScribe 0.3.5 provides English (`en`), French (`fr`), Spanish (`es`) and
 Simplified Chinese (`zh_CN`). This selection extends the existing French interface;
 it is not a claim that these are the four most spoken languages by every measure.
 
-`i18n.py` resolves the operating system's preferred UI languages: native
+`src/spoolscribe/i18n.py` resolves the operating system's preferred UI languages: native
 CoreFoundation preferences on macOS, Qt elsewhere. An explicit saved choice wins;
 unsupported locales fall back to English. Traditional Chinese is not labelled as
 supported. Settings → Interface shows the effective automatic language.
@@ -28,7 +28,7 @@ messages must have all three translations; `tests/test_v035.py` checks literal
   in their source catalogue; translate their presentation at the UI boundary.
 - The CLI and OpenSpool encoder keep their existing behaviour. Interface language
   does not change JSON keys, values, encoding, capacity calculations or catalogues.
-- `packaging_rules.py` includes this JSON in all three native bundles. The frozen
+- `src/spoolscribe/packaging_rules.py` includes this JSON in all three native bundles. The frozen
   catalogue probe renders the actual main window in all four languages offline.
 
 Translations are maintained with the code and need native-speaker review. No

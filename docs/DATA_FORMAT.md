@@ -92,6 +92,7 @@ The state filter accepts `all`, `ready`, `incomplete` (not ready) and
 | Key | Meaning |
 |---|---|
 | `network_consent`, `network_sources_revision` | Explicit authorization and the source revision it was given for |
+| `language` | `auto`, `en`, `fr`, `es`, `zh_CN` ; interface uniquement, choix appliqué au redémarrage, inclus dans les réglages exportés |
 | `selected_sources` | Keys of `core.SOURCE_GROUPS` to refresh |
 | `update_interval_days` | Launch refresh cadence: `0` every launch, `1` daily (default), `7` weekly, `-1` manual only |
 | `last_update_attempt`, `last_update_status` | Date and status (`complete` / `partial` / `failed`) of the last attempt, successful or not |
@@ -196,7 +197,7 @@ illustrated models for reviewed UI artwork. It is separate from the filament
 catalogue and from `data/printers.json` compatibility flags. These additional
 images are bundled, never downloaded automatically by the running app.
 
-## Personal filament copies (development 0.3.0)
+## Personal filament copies (v0.3.5)
 
 A personal copy adds its own `USER-<uuid>` SKU and private product key, leaving the original reference intact. The product display name ends in an editable ` @suffix`. `_personal`, `_personal_origin`, `_personal_suffix` and `_personal_base_name` are local metadata, preserved in the database/backups and omitted from NFC payload metadata. Same origin/suffix saves update the existing personal copy.
 

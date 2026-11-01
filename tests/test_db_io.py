@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import core
+from spoolscribe import core
 from scripts import db_io
 from tests.support import small_db
 
@@ -170,7 +170,7 @@ class StorageTests(unittest.TestCase):
 
     def test_failed_color_save_restores_in_memory_value(self):
         db = small_db()
-        with patch("core.save_db", side_effect=OSError("disk full")):
+        with patch("spoolscribe.core.save_db", side_effect=OSError("disk full")):
             with self.assertRaises(OSError):
                 core.set_sku_hex(db, "LOCAL", "ABCDEF", alpha="00")
         self.assertEqual(db["_skus"]["LOCAL"]["hex"], "FF0000")

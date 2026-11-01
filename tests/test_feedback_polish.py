@@ -7,8 +7,8 @@ import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError
 
-import core
-import printer_profiles
+from spoolscribe import core
+from spoolscribe import printer_profiles
 from tests import test_gui as fixture
 from tests.support import small_db
 
@@ -69,9 +69,9 @@ class PolishUiTests(unittest.TestCase):
 
     def test_printer_card_follows_the_theme(self):
         w=self.window
-        with patch('app_gui.is_dark_theme',return_value=True):w._apply_theme()
+        with patch('spoolscribe.app_gui.is_dark_theme',return_value=True):w._apply_theme()
         self.assertIn('#252d34',w.printer_card.styleSheet())
-        with patch('app_gui.is_dark_theme',return_value=False):w._apply_theme()
+        with patch('spoolscribe.app_gui.is_dark_theme',return_value=False):w._apply_theme()
         self.assertIn('#ffffff',w.printer_card.styleSheet())
 
     def test_conflicting_shades_are_visual_and_conditioning_is_separate(self):
@@ -97,7 +97,7 @@ class PolishUiTests(unittest.TestCase):
 
     def test_printer_refresh_404_does_not_display_a_failure(self):
         w=self.window;cfg=core.load_config();cfg['network_consent']=True;core.save_config(cfg)
-        with patch('printer_profiles.refresh_catalogue',return_value=None),patch('ui_catalogue.QMessageBox.warning') as warning:
+        with patch('spoolscribe.printer_profiles.refresh_catalogue',return_value=None),patch('spoolscribe.ui_catalogue.QMessageBox.warning') as warning:
             w._update_printers()
         warning.assert_not_called()
         self.assertIn('publiée',w.printers_origin.text())

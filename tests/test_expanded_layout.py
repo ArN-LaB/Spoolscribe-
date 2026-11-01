@@ -56,7 +56,7 @@ class ExpandedLayoutTests(unittest.TestCase):
             self.assertEqual(label.mapTo(w,QPoint()).y(),value.mapTo(w,QPoint()).y())
 
     def test_printer_rows_do_not_grow_after_narrow_wide_narrow_sequence(self):
-        from ui_widgets import PrinterBrowser
+        from spoolscribe.ui_widgets import PrinterBrowser
         browser=PrinterBrowser(self.window.printer,self.window);self.addCleanup(browser.close);browser.show()
         narrow_heights=None
         for width in (440,900,440,700,440):
@@ -77,7 +77,7 @@ class ExpandedLayoutTests(unittest.TestCase):
             self.assertTrue(all(r.width()<=browser.list.viewport().width() for r in rects))
 
     def test_printer_card_surface_stays_readable_on_light_theme(self):
-        from ui_widgets import PrinterBrowser
+        from spoolscribe.ui_widgets import PrinterBrowser
         from PySide6.QtCore import Qt
         browser=PrinterBrowser(self.window.printer,self.window);self.addCleanup(browser.close)
         browser.search.setText('prusa');browser.show();self.window.app.processEvents()

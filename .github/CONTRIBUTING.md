@@ -19,23 +19,24 @@ For source setup, CLI examples and packaging, see [development](../docs/DEVELOPM
 python -m venv .venv
 # Windows:        .venv\Scripts\activate
 # macOS / Linux:  source .venv/bin/activate
-pip install -r requirements.txt
+python -m pip install -r requirements/requirements.txt
+python -m pip install --no-deps -e .
 ```
 
 Quick checks before opening a PR:
 
 ```sh
 python -B -m unittest discover -s tests -t . -v
-python -c "import core, app_gui, convert_profile; print('imports OK')"
-python convert_profile.py   # smoke-test the CLI
-python app_gui.py           # smoke-test the GUI
+python -c "from spoolscribe import core, app_gui, convert_profile; print('imports OK')"
+python -m spoolscribe.convert_profile   # smoke-test the CLI
+python -m spoolscribe           # smoke-test the GUI
 ```
 
 Core tests need Python 3.10+ and `certifi`; GUI tests need PySide6 and are
 skipped otherwise (set `QT_QPA_PLATFORM=offscreen` on a headless machine). The
 tests block network connections, use temporary user data, and never contact a
 printer or a personal Spoolman instance. Build with Python 3.12 and
-`requirements-build.txt` for the recorded dependency snapshot.
+`requirements/requirements-build.txt` for the recorded dependency snapshot.
 
 Packaged QA can isolate its data with `SPOOLSCRIBE_DATA_HOME` and its consent
 settings with `SPOOLSCRIBE_CONFIG_PATH`, both pointing inside a temporary folder.
@@ -96,16 +97,16 @@ and steps to reproduce. See also [SECURITY.md](SECURITY.md) for private reports.
 
 ## Architecture
 
-- `core.py` — **pure logic, no `print`/`input`**. Put business logic here.
-- `app_gui.py`, `ui_catalogue.py` — Qt UI only (sidebar, card, **Mon matériel**,
+- `src/spoolscribe/core.py` — **pure logic, no `print`/`input`**. Put business logic here.
+- `src/spoolscribe/app_gui.py`, `src/spoolscribe/ui_catalogue.py` — Qt UI only (sidebar, card, **Mon matériel**,
   sources and report dialogs).
-- `printer_profiles.py` + `data/printers.json` — printers/readers catalogue.
-- `convert_profile.py` — terminal UI only.
+- `src/spoolscribe/printer_profiles.py` + `data/printers.json` — printers/readers catalogue.
+- `src/spoolscribe/convert_profile.py` — terminal UI only.
 - `scripts/` — source adapters (`catalogue_sources.py`, `official_sources.py`,
   `catalogue_merge.py`), update workers (`sync_*.py`, standard library only)
   and legacy scrapers kept for reference.
 
-If you add a feature, prefer putting the logic in `core.py` so both the CLI and
+If you add a feature, prefer putting the logic in `src/spoolscribe/core.py` so both the CLI and
 GUI benefit.
 
 ## Universal catalogue changes

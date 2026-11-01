@@ -8,7 +8,7 @@ them into your user folder. Browsing, editing and exporting then work offline.
 
 | Access | When | Host(s) |
 |---|---|---|
-| Catalogue refresh | At launch, according to the cadence set in **⚙ → Paramètres** (every launch / once a day, the default / once a week / manually only), and whenever you click **Synchroniser → Synchroniser maintenant**. An empty database always triggers the first download. | The selected sources below |
+| Catalogue refresh | At launch, according to the cadence set in **⚙ → Paramètres** (every launch / once a day, the default / once a week / manually only), and whenever you click **Refresh catalogue** (French: **Actualiser le catalogue**). An empty database always triggers the first download. | The selected sources below |
 | Printer list refresh | Only when you click **Mon matériel → Mettre à jour la liste des imprimantes…**, and only if the network authorization has been granted. The downloaded `printers.json` is validated and installed in your user folder only when it is newer than the bundled one. | `raw.githubusercontent.com` (ArN-LaB/Spoolscribe-, `data/printers.json`, 512 KiB limit) |
 | Application update check | Only when you click **⚙ → Vérifier une mise à jour de l'application**. Refused if the network authorization has been withdrawn. | `api.github.com` (read-only `releases/latest`); the release page opens in your browser only after a second click |
 
@@ -80,3 +80,7 @@ contain interface, source, printer and tag preferences but never the network
 consent; importing a file never grants it, and widening the source choice
 invalidates the previous authorization. Restoring a database backup suspends
 automatic refreshes for the rest of that session.
+
+## Interface language
+
+The four interface languages (English, French, Spanish, Simplified Chinese) are bundled locally. System-language detection and restarting after a language change do not contact a server or change consent.

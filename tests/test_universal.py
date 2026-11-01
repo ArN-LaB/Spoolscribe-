@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import core
+from spoolscribe import core
 from scripts import catalogue_sources as source, db_io, sync_universal_catalogue as worker
 from tests.support import ROOT, entry, product, small_db
 
@@ -234,7 +234,7 @@ class CatalogueQueryTests(unittest.TestCase):
             core.query_catalogue(rows, sort1="unknown")
 
     def test_old_consent_does_not_authorize_new_host(self):
-        with patch("core.load_config", return_value={"network_consent": True}):
+        with patch("spoolscribe.core.load_config", return_value={"network_consent": True}):
             self.assertFalse(core.has_network_consent())
             self.assertFalse(core.consent_was_asked())
 

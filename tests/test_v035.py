@@ -7,9 +7,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import core
-import i18n
-from packaging_rules import resources
+from spoolscribe import core
+from spoolscribe import i18n
+from spoolscribe.packaging_rules import resources
 from tests.support import ROOT
 from tests import test_gui as fixture
 
@@ -37,7 +37,7 @@ class TranslationTests(unittest.TestCase):
                     self.assertTrue(text.strip())
                     self.assertEqual(i18n.placeholders(source),i18n.placeholders(text))
         for filename in ('app_gui.py','ui_catalogue.py','ui_widgets.py','printer_presentations.py'):
-            for node in ast.walk(ast.parse((ROOT/filename).read_text(encoding='utf-8'))):
+            for node in ast.walk(ast.parse((ROOT/'src/spoolscribe'/filename).read_text(encoding='utf-8'))):
                 if isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id=='tr' and node.args and isinstance(node.args[0],ast.Constant):
                     self.assertIn(node.args[0].value,messages,f'{filename}:{node.lineno}')
 
@@ -47,7 +47,7 @@ class TranslationTests(unittest.TestCase):
         self.assertEqual(i18n.tr('Produit @U1 {custom}'),'Produit @U1 {custom}')
         self.assertEqual(i18n.tr('Export terminé : {v0}',v0='Red {private}'),'Exportación completada: Red {private}')
         self.assertEqual(i18n.tr('Unknown source log'),'Unknown source log')
-        with patch('i18n.catalogue',return_value={'Test':{'en':'English only'}}):
+        with patch('spoolscribe.i18n.catalogue',return_value={'Test':{'en':'English only'}}):
             self.assertEqual(i18n.tr('Test'),'English only')
 
     def test_language_roundtrip_and_invalid_import_is_atomic(self):
@@ -80,7 +80,7 @@ class InterfaceTests(unittest.TestCase):
     setUpClass=classmethod(fixture.GuiTests.setUpClass.__func__)
 
     def setUp(self):
-        timer=patch('app_gui.QTimer.singleShot');timer.start();self.addCleanup(timer.stop)
+        timer=patch('spoolscribe.app_gui.QTimer.singleShot');timer.start();self.addCleanup(timer.stop)
         fixture.GuiTests.setUp(self)
         self.addCleanup(i18n.set_language,'fr')
 
@@ -178,7 +178,7 @@ class InterfaceTests(unittest.TestCase):
     def test_auto_language_reads_system_and_falls_back_to_english(self):
         from PySide6.QtCore import QLocale
         cfg=core.load_config();cfg['language']='auto';core.save_config(cfg)
-        with patch.object(QLocale,'system') as system,patch('i18n._macos_preferred_languages',return_value=[]):
+        with patch.object(QLocale,'system') as system,patch('spoolscribe.i18n._macos_preferred_languages',return_value=[]):
             system.return_value.uiLanguages.return_value=['de-DE']
             w=fixture.app_gui.MainWindow();self.addCleanup(w.close)
         self.assertEqual(w.update_btn.text(),'Refresh catalogue')
