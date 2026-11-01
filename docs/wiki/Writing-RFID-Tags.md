@@ -1,7 +1,14 @@
-# Writing RFID Tags
+# 🏷 Writing RFID tags
 
-Choose the printer or reader first (**⚙ → Mon matériel**, or **Modifier…** in
-the card), with its firmware when that matters. For the Snapmaker U1 under the
+[⌂ Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
+
+**One file, one compatible tag, then a read-back check.**
+
+| SpoolScribe | NFC writing app | Compatible reader |
+| --- | --- | --- |
+| Select a filament → export JSON | Write an NDEF MIME record → read it back | Check the detected material and colour |
+
+Choose the printer or reader first (**⚙ → My hardware**), with its firmware when that matters. For the Snapmaker U1 under the
 paxx12 firmware, for Flashforge machines under Zmod + FF_NFC, for Klipper +
 Spoolman readers, for a Bambu printer fed by an external OpenSpool reader and
 for other OpenSpool readers, SpoolScribe produces an OpenSpool 1.0 JSON payload.
@@ -14,17 +21,26 @@ SpoolScribe prepares the **JSON data** only. A separate writer, such as
 SpoolFlux on iPhone, programs the physical NFC tag. SpoolScribe does not write
 memory pages, change a Capability Container (CC) or associate a hardware UID.
 
-## Profiles
+## Choose the right export
+
+| Choice | Use it for |
+| --- | --- |
+| **Essential · recommended** | A compact NFC payload with the supported filament fields. |
+| **Full · advanced** | Extra names and brand metadata, when capacity allows. |
+| **Readable archive** | An indented reference copy; not intended for writing verbatim to a tag. |
+
+<details>
+<summary><strong>Profile fields and command-line options</strong></summary>
 
 - **Essential** — the recommended profile and the default (`auto`): protocol and
   version, material type and subtype, brand, representative HEX, explicit alpha
   and additional colours, nozzle and bed ranges, diameter and density. This is
   the compact set supplied to compatible readers. SpoolScribe checks the actual payload against the selected tag and writing reserve before export.
-- **Full** — an explicit choice under **Mon matériel → Réglages avancés** (or
+- **Full** — an explicit choice under **My hardware → Advanced settings** (or
   `--nfc-profile full`): the essential fields plus the reference, product and colour names and
   brand metadata (website, logo URL). Larger; extra names/branding do not replace the slicer profile.
   Unknown metadata is omitted, never written as `null`.
-- **Readable archive** (**⚙ → Exporter la sélection en archive JSON…**): all
+- **Readable archive** (**⚙ → Export JSON archive…**): all
   full-profile fields, indented, under an `_archive.json` filename. It may
   exceed a tag's capacity and is not meant to be written verbatim.
 
@@ -37,10 +53,23 @@ CLI: `python -m spoolscribe.convert_profile` (interactive; `--export-format nfc`
 changes the terminal display. `--brand`, `--material` and typed references are
 case-insensitive.
 
-The NFC inspector (**View JSON**) uses the same serializer as the NFC
+The NFC inspector (**Show JSON**) uses the same serializer as the NFC
 file: what you see is what is written.
 
-## Tag and record format
+</details>
+
+## Choose your tag
+
+| Chip | User memory | Standard declared NDEF area |
+| --- | --- | --- |
+| **NTAG215** | 504 bytes | **496 bytes** |
+| **NTAG216** | 888 bytes | **872 bytes** |
+
+The app checks the complete payload against the selected tag and writing reserve.
+An export that does not fit is refused; colours and printing values are not silently dropped.
+
+<details>
+<summary><strong>Technical details: NDEF, byte budget and writer reserve</strong></summary>
 
 NTAG215/216 are chip models, not byte counts. NTAG215 has 504 bytes of user
 memory and its standard CC `E1103E00` declares 496 bytes for NDEF. NTAG216 has
@@ -58,16 +87,27 @@ header plus 5 bytes of TLV/terminator; shorter records use their shorter headers
 4-byte CC is outside the declared area and is not counted.
 
 The card shows the remaining margin for the chosen tag. The optional writer
-reserve (**Réglages avancés**) subtracts the bytes your writer may add; a zero
+reserve (**Advanced settings**) subtracts the bytes your writer may add; a zero
 reserve does not mean that SpoolFlux or another writer adds nothing. The writer
 must check the tag's actual writable capacity and read the tag back.
 
-## Unknown, transparent and multicolour filaments
+</details>
+
+## Colours: what to confirm
+
+| Colour state | What to do |
+| --- | --- |
+| **Unknown** | Enter an explicit representative HEX or cancel. |
+| **Conflicting sources** | Compare the shades in the card and confirm yours. |
+| **Transparent / multicolour** | Check the explicit source colours; reader support varies. |
+
+<details>
+<summary><strong>Alpha, additional colours and reader limitations</strong></summary>
 
 An unknown HEX never becomes black automatically. At export, enter an explicit
 six-character representative HEX or cancel; the value is saved locally. A
 source HEX that contradicts the colour name (black for "White") is flagged
-*À vérifier* and must be confirmed in the card first.
+*Needs review* and must be confirmed in the card first.
 
 For transparency, an optional explicit `alpha` is available: `00` transparent,
 `FF` opaque. No alpha or colour is inferred from a product name. Explicit
@@ -84,17 +124,21 @@ than being truncated.
 The OpenSpool version stays `1.0`. Temperatures are exported as integers,
 diameter/density as positive numbers, HEX as six uppercase characters.
 
-## Writing and diagnosis
+</details>
 
-1. In **Mon matériel**, choose the printer/reader and its firmware, the tag
+## Write, read back, check
+
+1. In **My hardware**, choose the printer/reader and its firmware, the tag
    (NTAG215 or NTAG216), optionally the profile and the writer reserve under
-   **Réglages avancés**. These choices apply to the current session; **Définir
-   par défaut** next to the tag selector keeps them for later launches (CLI:
+   **Advanced settings**. These choices apply to the current session; **Set as default** next to the tag selector keeps them for later launches (CLI:
    `--save-nfc-default`).
 2. Export the NFC file and check its size estimate in the card.
 3. Import it into your writer and select MIME `application/json`.
 4. Program the tag and read it back.
 5. Check the printer's detected brand, material and colour.
+
+<details>
+<summary><strong>Diagnosis: empty TLV, Capability Container and parser reference</strong></summary>
 
 `0300FE` denotes an empty NDEF TLV; it is not filament data. A reader error
 about CC `E1107F00` concerns tag formatting/compatibility. Neither is proof of a
@@ -104,3 +148,7 @@ The audit simulated the parser pinned by
 [Paxx12-24](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/v2.0.0-paxx12-24/overlays/firmware-extended/64-app-openrfid/pre-scripts/01-install-openrfid.sh),
 [OpenRFID a13bc9e](https://github.com/suchmememanyskill/OpenRFID/blob/a13bc9e181374e182f61db4e69abf9fa1786cc29/src/tag/openspool/processor.py).
 Physical iPhone/tag/printer acceptance remains a separate check.
+
+</details>
+
+[← Check compatibility](Printers-and-Readers.md) · [Get help →](FAQ.md)
