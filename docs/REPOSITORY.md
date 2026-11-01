@@ -57,13 +57,31 @@ de toutes les entrées partageant l’image retraitée. Dependabot suit `/` et
 
 La suite comprend les 269 tests précédents et neuf cas supplémentaires : identité
 des 54 fixtures, anciens chemins et logos utilisateur, exclusion d’images non
-déclarées, instantané optionnel, endpoint imprimantes cohérence des images
-partagées retraitées et stockage utilisateur par défaut des 13 workers autonomes et
-  repli sur l’image ROSA3D déclarée, sans copie dans les données utilisateur. Les essais locaux sont hors réseau et isolés.
+déclarées, instantané optionnel, endpoint imprimantes, cohérence des images
+partagées retraitées, stockage utilisateur par défaut des 13 workers autonomes et
+repli sur l’image ROSA3D déclarée sans copie dans les données utilisateur.
+Les essais locaux sont hors réseau et isolés : **278 tests réussis** sous Python
+3.10 et 3.12.
 
 Le build macOS utilise un dossier temporaire non synchronisé : quatre langues,
 TLS strict, NTAG215/216, **186 ressources** et signature stricte contrôlés.
 Aucune application de `/Applications`, aucun catalogue personnel ou firmware n’est modifié.
+
+La [campagne GitHub Actions](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41302882188)
+porte sur le code `798b75001b82ae52800c7f1340920dddf503ae89` :
+
+| Vérification | Résultat |
+| --- | --- |
+| Linux / Python 3.10 et 3.12, Windows et macOS / Python 3.12 | 278 tests réussis dans chacune des quatre configurations |
+| Builds Windows, macOS et Linux | Trois builds exécutés et réussis après les tests |
+| Trois ZIP et trois fichiers SHA-256 | Téléchargés et contrôlés indépendamment ; structure et empreintes valides |
+| Ressources embarquées | 186 fichiers identiques aux blobs Git dans chaque build ; aucune fixture |
+| Bundle macOS téléchargé | Signature stricte vérifiée |
+
+Ces archives sont des **artefacts de validation CI**. Le job de publication est
+ignoré sur cette branche, conformément au workflow ; aucune release n’est publiée
+par cette campagne. Les exécutables Windows et Linux sont testés sur leurs runners
+natifs, pas exécutés sur le Mac de développement.
 
 Les [preuves de la release](validation/v0.3.5.md) et celles de la
 [première passe de structure](https://github.com/ArN-LaB/Spoolscribe-/blob/5d652232e5b989028f13704ad6ca13b65724332b/docs/REPOSITORY.md)
