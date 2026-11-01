@@ -15,7 +15,7 @@ sys.addaudithook(_deny_network)
 
 
 def catalogue():
-    return json.loads((ROOT / "data/polymaker_db.json").read_text(encoding="utf-8"))
+    return json.loads((ROOT / "tests/fixtures/catalogues/polymaker_db.json").read_text(encoding="utf-8"))
 
 
 def product():

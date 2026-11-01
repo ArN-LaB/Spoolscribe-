@@ -1,111 +1,90 @@
-# Structure et maintenance — v0.3.5
+# Structure du dépôt — SpoolScribe v0.3.5
 
-[Documentation](README.md) · [Développement](DEVELOPMENT.md) · [Validation de la release](validation/v0.3.5.md)
+[Documentation](README.md) · [Ressources](../data/README.md) · [Fixtures](../tests/fixtures/README.md) · [Développement](DEVELOPMENT.md)
 
-La racine conserve six fichiers visibles : `README.md`, `CHANGELOG.md`, `LICENSE`,
-`NOTICE`, `pyproject.toml` et le lanceur personnel `install-local.command`.
-Les trois fichiers cachés de règles Git et du manifeste macOS restent à leur place.
+## Organisation actuelle
+
+La racine conserve six fichiers visibles : README, changelog, licence,
+attributions, pyproject et lanceur personnel macOS.
 
 | Dossier | Rôle |
 | --- | --- |
-| `src/spoolscribe/` | Application, CLI, traductions UI et logique métier Python |
-| `scripts/` | Adaptateurs, stockage et workers d’acquisition |
+| `src/spoolscribe/` | Application, CLI, interface Qt et logique métier |
+| `scripts/` | Stockage, adaptateurs, workers et alias de ressources |
 | `packaging/` | Entrée PyInstaller et spec multiplateforme |
-| `requirements/` | Dépendances source et snapshot de compilation |
-| `data/` | Ressources, licences et jeux de régression ; les catalogues ne sont pas installés |
-| `orca_profiles/` | 48 profils officiels de régression, non embarqués |
-| `translations/` | Catalogue JSON des quatre langues et consignes |
-| `tests/` | Tests hors réseau et fixtures |
-| `docs/` | Guides actuels, wiki, visuels et index |
-| `docs/validation/` | Preuves de la release actuelle |
-| `docs/archive/` | Rapports datés v0.2.2, v0.3.0 et préparation v0.3.5 |
-| `.github/` | Workflows, politiques, maintenance et vérifications |
+| `requirements/` | Dépendances et snapshot de compilation |
+| `data/` | Ressources runtime classées : app, UI, marques, imprimantes, langues, licences |
+| `tests/fixtures/` | Catalogues, audits, 48 profils Orca et instantané historique, jamais embarqués |
+| `docs/` | Guides actuels, wiki et preuves de la release |
+| `docs/archive/README.md` | Index vers les rapports historiques dans Git |
+| `.github/` | Workflows, politiques, outils de contrôle et de maintenance |
 
-## Nettoyage retenu
+## Suppressions et déplacements justifiés
 
-- Déplacement des dix modules Python dans un package ; imports et relance source adaptés.
-- Regroupement du spec et des dépendances ; chemins CI et manifeste d’installation mis à jour.
-- Anciens audits, huit passes UX et journal de publication regroupés par version,
-  avec un bandeau d’archive et des liens recalculés. Leurs résultats ne sont pas réécrits.
-- Guide utilisateur courant sans numéro obsolète dans son nom ; roadmap consolidée.
-- Wiki du dépôt utilisable avec des liens Markdown standards ; outil de copie
-  vers le Wiki GitHub, sans suppression de pages supplémentaires.
+- **54 fichiers de référence** déplacés hors de `data/` et de la racine : leurs
+  octets sont identiques, contrôlés par `tests/fixtures/manifest.json` à partir
+  du commit `5d652232e5b989028f13704ad6ca13b65724332b`.
+- **Sept copies exactes de logos** supprimées ; les entrées de provenance partagent
+  désormais la même image. Ancien PNG Prusament supprimé au profit du SVG actuel.
+  Les 147 entrées restent présentes, avec 141 images distinctes.
+- Logo ROSA3D historique conservé comme repli : ce fichier a encore une utilité.
+- **22 rapports intermédiaires** retirés de l’arborescence active. L’[index](archive/README.md)
+  donne leurs liens Git immuables ; aucun résultat historique n’est réécrit.
+- **1 525 810 840 octets** d’anciens builds, paquets de recette et caches locaux
+  supprimés. Leur archive locale provisoire a également été retirée.
+- `data/printers.json` reste volontairement à son chemin public : les applications
+  déjà publiées y téléchargent leur liste. Ce fichier n’est pas dupliqué.
 
-La miniature `data/printer_photos/bambu-cover.png`, remplacée par le PNG transparent X1 Carbon et absente du manifeste, a été supprimée. Aucun chemin du code ou du catalogue ne la référence. Les catalogues et les profils Orca restent identiques à ceux de la release.
-Les anciens scrapers restent nécessaires aux fixtures, à l’enrichissement optionnel
-ou à la lecture des pipelines historiques : ils ne sont pas supprimés sur la seule
-absence de lien Markdown. Les licences, attributions et actifs de marque sont conservés.
+## Compatibilité et qualité
 
-Les répertoires ignorés `build/`, `dist/` et les caches locaux ne sont pas publiés.
-Les anciens paquets de recette locaux ne sont pas supprimés : ce sont des preuves
-distinctes des fichiers sources suivis, pas des documents courants du dépôt.
+Les catalogues de filaments, les 48 profils Orca et le contrat des 1 008 exports
+gardent leur contenu. Les chemins de logos déjà enregistrés restent lisibles par
+des alias ; les fichiers du dossier utilisateur ne sont ni déplacés ni réécrits.
+Les anciennes copies de manifestes et les personnalisations de logos restent prises
+en compte. La version applicative reste **0.3.5**.
 
-## Contrôles de maintenance
+Le packaging utilise une liste déclarée, pas une collecte de toutes les images
+trouvées dans `data/`. Le contrôle du dépôt refuse les ressources orphelines,
+les images binaires dupliquées et les modifications des fixtures protégées.
+Les téléchargements d’une nouvelle installation ne contiennent aucun catalogue.
 
-`python .github/scripts/check_repository.py` vérifie les liens locaux de tous les
-Markdown, les versions, la structure et le manifeste macOS. La CI l’exécute avant
-les tests. Le build et les sondes restent identiques dans leur finalité : absence
-de données personnelles, quatre langues, TLS et exports NFC hors réseau.
+Les outils de préparation écrivent dans un dossier de revue vide et partagent
+les images strictement identiques. L’import de logos actualise les empreintes
+de toutes les entrées partageant l’image retraitée. Dependabot suit `/` et
+`/requirements`, selon la [configuration multi-dossiers GitHub](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#directories-or-directory).
 
-La maintenance garde la version applicative **0.3.5**. Elle ne déplace pas le tag
-existant et ne remplace pas les six fichiers de la release publiée. Les nouveaux
-builds de contrôle sont des artefacts CI, distincts de cette release.
+## Vérification de cette passe
 
-Dependabot suit explicitement `/` et `/requirements`, conformément à la [configuration multi-dossiers GitHub](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#directories-or-directory). Les bornes PySide6 et PyInstaller sont conservées.
+La suite comprend les 269 tests précédents et neuf cas supplémentaires : identité
+des 54 fixtures, anciens chemins et logos utilisateur, exclusion d’images non
+déclarées, instantané optionnel, endpoint imprimantes, cohérence des images
+partagées retraitées, stockage utilisateur par défaut des 13 workers autonomes et
+repli sur l’image ROSA3D déclarée sans copie dans les données utilisateur.
+Les essais locaux sont hors réseau et isolés : **278 tests réussis** sous Python
+3.10 et 3.12.
 
-## Vérifications locales du 1er novembre 2026
+Le build macOS utilise un dossier temporaire non synchronisé : quatre langues,
+TLS strict, NTAG215/216, **186 ressources** et signature stricte contrôlés.
+Aucune application de `/Applications`, aucun catalogue personnel ou firmware n’est modifié.
 
-- 269 tests réussis sous Python 3.10 et 3.12, dont les 267 tests de la release et
-  deux contrôles des nouvelles entrées source et de la relance en package.
-- Installation éditable sans accès réseau validée dans l’environnement temporaire ;
-  commande CLI et imports exécutés depuis un dossier extérieur au dépôt.
-- Build macOS isolé : fenêtre réelle dans quatre langues, TLS strict, NTAG215/216,
-  193 ressources comparées aux sources et signature stricte valides. Le passage de
-  194 à 193 correspond uniquement à la miniature Bambu supprimée.
-- Liens locaux de tous les Markdown et `git diff --check` sans erreur.
+La [campagne GitHub Actions](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41302882188)
+porte sur le code `798b75001b82ae52800c7f1340920dddf503ae89` :
 
-Un premier build dans le dossier synchronisé Proton Drive a échoué au contrôle
-strict de signature à cause d’attributs de fichiers. La reconstruction dans un
-dossier temporaire non synchronisé passe le contrôle, sans désactiver Gatekeeper,
-effacer globalement des attributs ou modifier les sources du catalogue.
-Cette vérification locale ne vaut pas exécution des builds Windows/Linux : leurs
-résultats doivent être lus dans les contrôles GitHub Actions de la PR de maintenance.
-
-## Validation distante de la structure
-
-[Validation complète GitHub Actions](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41298696746),
-commit `b14f9067ef58b89e39bf6c67b6ae8f97cc6a61df`, [PR #8](https://github.com/ArN-LaB/Spoolscribe-/pull/8) :
-
-| Configuration | Tests exécutés | Résultat |
-| --- | ---: | --- |
-| Linux / Python 3.10 | 269 | Réussite |
-| Linux / Python 3.12 | 269 | Réussite |
-| Windows / Python 3.12 | 269 | Réussite |
-| macOS / Python 3.12 | 269 | Réussite |
-
-Les trois builds natifs ont réellement réussi après les tests. Leurs sondes
-exécutent TLS strict, la fenêtre gelée dans les quatre langues et les exports
-NTAG215/216 sur des fixtures temporaires, sans réseau. Les 193 ressources sont
-comparées aux blobs Git dans chaque build.
-
-Les six fichiers CI ont été téléchargés : empreintes, architectures, structure
-et ressources recontrôlées ; signature stricte macOS valide. Les binaires
-Windows/Linux ne sont pas exécutés sur le Mac : leurs sondes tournent sur les
-runners natifs. Les ZIP de contrôle contiennent uniquement l’exécutable natif
-ou le bundle `.app`, sans double exécutable macOS.
-
-| Archive CI | SHA-256 |
+| Vérification | Résultat |
 | --- | --- |
-| SpoolScribe-windows.zip | `fa77142ca539fa34d87ff7d0dbbdbbef91908cf3d7951725e0f3dbb643bd533f` |
-| SpoolScribe-macos.zip | `27ada9c3483069df0ef2dd38f5545b15dfdd5d9ad6d6e366508c2fd1fb6f1bdf` |
-| SpoolScribe-linux.zip | `0ccad99211235ff10913a6d77e8fc6960dc5207c87850994f7dcfbc8cfa8b06e` |
+| Linux / Python 3.10 et 3.12, Windows et macOS / Python 3.12 | 278 tests réussis dans chacune des quatre configurations |
+| Builds Windows, macOS et Linux | Trois builds exécutés et réussis après les tests |
+| Trois ZIP et trois fichiers SHA-256 | Téléchargés et contrôlés indépendamment ; structure et empreintes valides |
+| Ressources embarquées | 186 fichiers identiques aux blobs Git dans chaque build ; aucune fixture |
+| Bundle macOS téléchargé | Signature stricte vérifiée |
 
-Il s’agit d’artefacts CI de maintenance (soumis à la rétention GitHub), pas de
-nouveaux assets de la release. La publication est ignorée sur cette branche ;
-elle n’est pas présentée comme une étape réussie. Les derniers changements de
-guides et ce relevé de preuves ne modifient pas le code applicatif validé.
-Les contrôles requis sont relancés sur le dernier commit avant fusion.
+Ces archives sont des **artefacts de validation CI**. Le job de publication est
+ignoré sur cette branche, conformément au workflow ; aucune release n’est publiée
+par cette campagne. Les exécutables Windows et Linux sont testés sur leurs runners
+natifs, pas exécutés sur le Mac de développement.
 
-Les 52 Markdown sont accessibles depuis les index, les guides ou les entrées
-GitHub automatiques ; aucun document orphelin n’a été trouvé. Les essais NFC
-physiques et la recette humaine exhaustive demeurent à réaliser.
+Les [preuves de la release](validation/v0.3.5.md) et celles de la
+[première passe de structure](https://github.com/ArN-LaB/Spoolscribe-/blob/5d652232e5b989028f13704ad6ca13b65724332b/docs/REPOSITORY.md)
+conservent leurs propres commits et empreintes. Le tag et les six fichiers de
+la release v0.3.5 ne sont pas déplacés ou remplacés par cette maintenance.
+Les essais NFC physiques et la recette humaine exhaustive restent à effectuer.

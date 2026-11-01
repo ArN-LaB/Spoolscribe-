@@ -31,11 +31,11 @@ def presentation(profile):
     result=dict(title=tr(title),description=tr(description),source=source)
     root=printer_profiles.bundled_path().parent
     try:
-        manifest=json.loads((root/'printer_photos/manifest.json').read_text())
+        manifest=json.loads((root/'printers/photos/manifest.json').read_text())
         item=manifest.get('bambu' if key=='bambu_openspool' else key,{})
         if item:
-            path=(root/'printer_photos'/item['file']).resolve()
-            if path.is_relative_to((root/'printer_photos').resolve()) and path.is_file():
+            path=(root/'printers/photos'/item['file']).resolve()
+            if path.is_relative_to((root/'printers/photos').resolve()) and path.is_file():
                 result.update(photo=str(path),caption=tr(item['caption']))
     except (OSError,ValueError,KeyError):pass
     return result

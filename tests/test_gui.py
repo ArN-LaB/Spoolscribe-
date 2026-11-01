@@ -95,7 +95,7 @@ class GuiTests(unittest.TestCase):
     def test_universal_filters_double_sort_pagination_and_selection(self):
         from scripts import db_io
         from tests.support import ROOT
-        extension = db_io.load_db(ROOT / "data/catalogue_ofd.json")
+        extension = db_io.load_db(ROOT / "tests/fixtures/catalogues/catalogue_ofd.json")
         self.window.db.update(db_io.merge_bundled_db(self.window.db, extension)[0])
         self.window._reload_table()
         self.assertEqual(self.window.table.rowCount(), 250)
@@ -210,7 +210,7 @@ class GuiTests(unittest.TestCase):
 
     def test_all_approved_logos_render_at_hidpi_with_transparency_and_contrast(self):
         from tests.support import ROOT
-        manifest = json.loads((ROOT / "data/brand_logos/manifest.json").read_text())
+        manifest = json.loads((ROOT / "data/brands/manifest.json").read_text())
         rendered = 0
         for asset in manifest.values():
             with self.subTest(brand=asset["name"]):
@@ -241,7 +241,7 @@ class GuiTests(unittest.TestCase):
             with self.subTest(frozen=frozen), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 db_path = root / "user/db.json"
-                bundled = root / "bundle/data/polymaker_db.json"
+                bundled = root / "bundle/tests/fixtures/catalogues/polymaker_db.json"
                 bundled.parent.mkdir(parents=True)
                 db = catalogue()
                 db["_last_updated"] = "2020-01-01T00:00:00"

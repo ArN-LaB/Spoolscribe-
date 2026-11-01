@@ -56,7 +56,7 @@ class FinalPolishTests(unittest.TestCase):
         from pathlib import Path
         from PySide6.QtGui import QImage
         from spoolscribe import core
-        root=Path(core.RESOURCE_DIR)/'data/printer_photos'
+        root=Path(core.RESOURCE_DIR)/'data/printers/photos'
         manifest=json.loads((root/'manifest.json').read_text())
         self.assertIn('anycubic_ace',manifest)
         for key,meta in manifest.items():

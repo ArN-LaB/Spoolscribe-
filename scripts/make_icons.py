@@ -2,8 +2,8 @@
 """
 scripts/make_icons.py — Génère les icônes binaires de l'app à partir du SVG.
 
-Source unique : data/spoolscribe_logo.svg
-Produit       : data/app.ico (Windows) et data/app.png (macOS/Linux/usage divers).
+Source unique : data/app/spoolscribe_logo.svg
+Produit       : data/app/app.ico (Windows) et data/app/app.png (macOS/Linux/usage divers).
 
 Lancement :  python scripts/make_icons.py
 """
@@ -18,10 +18,10 @@ from PySide6.QtSvg import QSvgRenderer
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SVG = os.path.join(ROOT, "data", "spoolscribe_logo.svg")
-ICO = os.path.join(ROOT, "data", "app.ico")
-ICNS = os.path.join(ROOT, "data", "app.icns")
-PNG = os.path.join(ROOT, "data", "app.png")
+SVG = os.path.join(ROOT, "data", "app", "spoolscribe_logo.svg")
+ICO = os.path.join(ROOT, "data", "app", "app.ico")
+ICNS = os.path.join(ROOT, "data", "app", "app.icns")
+PNG = os.path.join(ROOT, "data", "app", "app.png")
 
 
 def render(size: int) -> Image.Image:
@@ -33,7 +33,7 @@ def render(size: int) -> Image.Image:
     p.setRenderHint(QPainter.SmoothPixmapTransform, True)
     r.render(p)
     p.end()
-    tmp = os.path.join(ROOT, "data", f"_tmp_{size}.png")
+    tmp = os.path.join(ROOT, "data", "app", f"_tmp_{size}.png")
     img.save(tmp)
     pil = Image.open(tmp).convert("RGBA")
     os.remove(tmp)

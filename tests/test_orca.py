@@ -19,7 +19,7 @@ def profile():
 
 class OrcaTests(unittest.TestCase):
     def test_all_bundled_profiles_are_valid(self):
-        files = list((ROOT / "orca_profiles").glob("*.json"))
+        files = list((ROOT / "tests/fixtures/orca").glob("*.json"))
         self.assertGreaterEqual(len(files), 48)
         for path in files:
             with self.subTest(path=path.name):

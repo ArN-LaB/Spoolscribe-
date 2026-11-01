@@ -1,5 +1,4 @@
 # Keep bundled resource bytes identical to Git objects on every build OS.
 data/** -text
-orca_profiles/** -text
+tests/fixtures/** -text
 scripts/** -text
-translations/** -text

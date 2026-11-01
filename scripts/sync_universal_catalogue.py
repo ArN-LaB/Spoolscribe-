@@ -59,12 +59,12 @@ def main():
         return "unchanged"
     except Exception as exc:
         raise db_io.SourceUnavailable(f"Catalogue OFD indisponible : {exc}") from exc
-    manifest = ROOT / "data/brand_logos/manifest.json"
+    manifest = ROOT / "data/brands/manifest.json"
     logos = db_io.parse_json(manifest.read_bytes()) if manifest.is_file() else {}
     incoming, report = catalogue_sources.adapt_ofd(files, source_digest=hashlib.sha256(raw).hexdigest(), logos=logos, preserve_curated=False)
     # These three reviewed legacy logos remain artwork resources even though
     # the historical filament database is no longer installed.
-    legacy_logos = {"polymaker": "polymaker_logo.svg", "prusament": "prusament_logo.png", "rosa3d": "rosa3d_logo.png"}
+    legacy_logos = {"polymaker": "brands/logos/polymaker-lines.svg", "prusament": "brands/logos/prusament.svg", "rosa3d": "brands/logos/rosa3d.png"}
     for name, meta in incoming["_brands"].items():
         logo = legacy_logos.get(catalogue_sources.brand_key(name))
         if logo and (ROOT / "data" / logo).is_file():

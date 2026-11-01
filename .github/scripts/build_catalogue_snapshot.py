@@ -104,15 +104,22 @@ def main():
         parser.error("--spoolman-license is required with --spoolman")
     if not re.fullmatch(r"[0-9a-f]{40}", args.commit):
         parser.error("Commit SHA-1 attendu")
+    if args.output.exists() and any(args.output.iterdir()):
+        parser.error("Use an empty output directory; review before copying into the repository")
     app = QApplication.instance() or QApplication([])
     raw = args.archive.read_bytes()
     files = catalogue_sources.read_ofd_archive(raw)
     digest = hashlib.sha256(raw).hexdigest()
     initial, _ = catalogue_sources.adapt_ofd(files, source_digest=digest)
-    asset_dir = args.output / "brand_logos"
+    asset_dir = args.output / "data/brands/logos"
+    catalogues = args.output / "tests/fixtures/catalogues"
+    audits = catalogues / "audits"
+    licenses = args.output / "data/licenses"
+    for directory in (catalogues, audits, licenses):directory.mkdir(parents=True, exist_ok=True)
     asset_dir.mkdir(parents=True, exist_ok=True)
     args.review.mkdir(parents=True, exist_ok=True)
     manifest, rejected, previews = {}, [], []
+    unique_artwork = {}
     exclusions = json.loads((Path(__file__).resolve().parents[1] / "catalogue-logo-exclusions.json").read_text())
     for name, meta in sorted(initial["_brands"].items(), key=lambda pair: pair[0].casefold()):
         slug = meta["source_slug"]
@@ -126,31 +133,35 @@ def main():
                 raise ValueError("Chemin de logo invalide ou absent")
             original = files[path]
             content, suffix, preview = prepare_logo(original, Path(path).suffix.lower())
-            target = asset_dir / (slug + suffix)
-            target.write_bytes(content)
-            manifest[meta["source_id"]] = {"name": name, "path": f"data/brand_logos/{target.name}",
+            asset_hash = hashlib.sha256(content).hexdigest()
+            target = unique_artwork.get(asset_hash)
+            if target is None:
+                target = asset_dir / (slug + suffix)
+                target.write_bytes(content)
+                unique_artwork[asset_hash] = target
+            manifest[meta["source_id"]] = {"name": name, "path": f"data/brands/logos/{target.name}",
                 "source_path": path, "source_commit": args.commit,
                 "source_sha256": hashlib.sha256(original).hexdigest(),
                 "sha256": hashlib.sha256(content).hexdigest(), "width": preview.width, "height": preview.height}
             previews.append((name, preview))
         except (ValueError, KeyError, OSError, ET.ParseError) as exc:
             rejected.append({"brand": name, "reason": str(exc)})
-    (asset_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    (asset_dir / "OFD-LICENSE.txt").write_bytes(files["LICENSE"])
+    (asset_dir.parent / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    (licenses / "OFD-LICENSE.txt").write_bytes(files["LICENSE"])
     db, report = catalogue_sources.adapt_ofd(files, source_digest=digest, logos=manifest)
     report.update(source_commit=args.commit, logos_approved=len(manifest), logos_rejected=rejected)
     db["_source_snapshot"]["source_commit"] = args.commit
-    (args.output / "catalogue_ofd.json").write_text(json.dumps(db, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
-    (args.output / "catalogue_ofd_audit.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    (catalogues / "catalogue_ofd.json").write_text(json.dumps(db, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
+    (audits / "catalogue_ofd_audit.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     if args.spoolman:
         spoolman_raw = args.spoolman.read_bytes()
-        existing = db_io.load_db(Path(__file__).resolve().parents[2] / "data/polymaker_db.json")
+        existing = db_io.load_db(Path(__file__).resolve().parents[2] / "tests/fixtures/catalogues/polymaker_db.json")
         supplement, supplement_report = catalogue_sources.adapt_spoolman(
             db_io.parse_json(spoolman_raw), source_digest=hashlib.sha256(spoolman_raw).hexdigest(),
             covered_brands=set(db["_brands"]) | set(existing["_brands"]))
-        (args.output / "catalogue_spoolman.json").write_text(json.dumps(supplement, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
-        (args.output / "catalogue_spoolman_audit.json").write_text(json.dumps(supplement_report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        (args.output / "SpoolmanDB-LICENSE.txt").write_bytes(args.spoolman_license.read_bytes())
+        (catalogues / "catalogue_spoolman.json").write_text(json.dumps(supplement, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
+        (audits / "catalogue_spoolman_audit.json").write_text(json.dumps(supplement_report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        (licenses / "SpoolmanDB-LICENSE.txt").write_bytes(args.spoolman_license.read_bytes())
     for offset in range(0, len(previews), 40):
         sheet = Image.new("RGB", (1200, 1400), "#eeeeee")
         draw = ImageDraw.Draw(sheet)

@@ -101,10 +101,10 @@ SpoolFlux on iPhone. See [Writing RFID Tags](Writing-RFID-Tags.md).
 Logos are bundled in the application with a transparent background (checked by
 a test); the packaged app shows the brand name when a logo is absent. Official
 logos are being re-sourced brand by brand with their origin recorded in the
-manifest. To build your own copy without a logo, remove its file from
-`data/brand_logos/` and its entry in `manifest.json` (or list the brand in
-`.github/catalogue-logo-exclusions.json`). Trademark holders can also ask for
-removal by opening an issue.
+manifest. To build a copy without a logo, remove its entry from
+`data/brands/manifest.json`; delete the image only when no other entry uses it.
+See the [removal and legacy fallback rules](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/TRADEMARKS.md).
+Trademark holders can also request removal by opening an issue.
 
 ## Where are my files?
 

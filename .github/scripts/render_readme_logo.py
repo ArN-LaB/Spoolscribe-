@@ -19,7 +19,7 @@ from PySide6.QtWidgets import QApplication
 def main():
     app = QApplication.instance() or QApplication([])
     root = Path(__file__).resolve().parents[2]
-    svg = ET.fromstring((root / 'data/spoolscribe_logo_animated.svg').read_bytes())
+    svg = ET.fromstring((root / 'data/app/spoolscribe_logo_animated.svg').read_bytes())
     for node in list(svg):
         if node.tag.endswith('style'):
             svg.remove(node)

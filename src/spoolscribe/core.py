@@ -27,7 +27,7 @@ from datetime import datetime
 from typing import Callable, Optional
 from pathlib import Path
 
-from scripts import db_io, catalogue_sources
+from scripts import db_io, catalogue_sources, resource_paths
 from . import printer_profiles
 
 DatabaseError = db_io.DatabaseError
@@ -452,14 +452,15 @@ def load_orca_temps(path: str) -> dict:
 # ─── Logo SVG ─────────────────────────────────────────────────────────────
 def app_logo_abs_path() -> Optional[str]:
     """Chemin absolu du logo de l'application SpoolScribe, ou None."""
-    rel = os.path.join("data", "spoolscribe_logo.svg")
+    rel = "data/app/spoolscribe_logo.svg"
     for base in (DATA_HOME, RESOURCE_DIR):
         root = Path(base).resolve()
-        candidate = (root / rel).resolve()
         # PyInstaller macOS places data in Resources and links Frameworks/data
         # to it. Compare resolved paths on both sides, keeping escape checks.
-        if candidate.is_relative_to((root / "data").resolve()) and candidate.is_file():
-            return str(candidate)
+        for relative in resource_paths.resource_candidates(rel):
+            candidate = (root / relative).resolve()
+            if candidate.is_relative_to((root / "data").resolve()) and candidate.is_file():
+                return str(candidate)
     return None
 
 
@@ -467,9 +468,10 @@ def app_icon_abs_path() -> Optional[str]:
     """Chemin absolu de l'icône binaire (.png) de l'application, ou None."""
     for name in ("app.png", "app.ico"):
         for base in (DATA_HOME, RESOURCE_DIR):
-            abs_p = os.path.join(base, "data", name)
-            if os.path.exists(abs_p):
-                return abs_p
+            for relative in resource_paths.resource_candidates("data/app/" + name):
+                abs_p = os.path.join(base, relative)
+                if os.path.exists(abs_p):
+                    return abs_p
     return None
 
 
@@ -486,13 +488,15 @@ def logo_manifest() -> dict:
     if _LOGO_MANIFEST is None:
         index = {}
         for base in (RESOURCE_DIR, DATA_HOME):
-            path = Path(base) / "data" / "brand_logos" / "manifest.json"
-            try:
-                for entry in db_io.parse_json(path.read_bytes()).values():
-                    if isinstance(entry, dict) and entry.get("name") and entry.get("path"):
-                        index[catalogue_sources.brand_key(entry["name"])] = entry["path"]
-            except (OSError, DatabaseError):
-                continue
+            # Read older user manifests without rewriting or migrating their files.
+            for relative in ("data/brand_logos/manifest.json", "data/brands/manifest.json"):
+                path = Path(base) / relative
+                try:
+                    for entry in db_io.parse_json(path.read_bytes()).values():
+                        if isinstance(entry, dict) and entry.get("name") and entry.get("path"):
+                            index[catalogue_sources.brand_key(entry["name"])] = entry["path"]
+                except (OSError, DatabaseError):
+                    continue
         _LOGO_MANIFEST = index
     return _LOGO_MANIFEST
 
@@ -513,9 +517,10 @@ def logo_abs_path(db: dict, brand: str = "Polymaker") -> Optional[str]:
         # Données inscriptibles (mises à jour) d'abord, puis bundle en repli.
         for base in (DATA_HOME, RESOURCE_DIR):
             root = Path(base).resolve()
-            candidate = (root / rel).resolve()
-            if candidate.is_relative_to((root / "data").resolve()) and candidate.is_file():
-                return str(candidate)
+            for relative in resource_paths.resource_candidates(rel):
+                candidate = (root / relative).resolve()
+                if candidate.is_relative_to((root / "data").resolve()) and candidate.is_file():
+                    return str(candidate)
     return None
 
 

@@ -2,7 +2,7 @@
   "014a00d3-342e-4b67-9d1a-e534700faca9": {
     "height": 121,
     "name": "Matter3D Inc",
-    "path": "data/brand_logos/matter3d_inc.png",
+    "path": "data/brands/logos/matter3d_inc.png",
     "sha256": "8ddd7ef087667690bb3e028c2e41a55409f7c709a6b507a42115d777a13f3e15",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/matter3d_inc/logo.png",
@@ -18,7 +18,7 @@
       "url": "https://store.anycubic.com/cdn/shop/files/logo_30ab490e-df79-44be-93ca-f1891724de75.png?v=1753086227"
     },
     "name": "Anycubic",
-    "path": "data/brand_logos/anycubic.png",
+    "path": "data/brands/logos/anycubic.png",
     "sha256": "979a73589c47edfc011abcb403aee7e00ab5a038863ab4ec6aa2910242896311",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/anycubic/logo.png",
@@ -29,7 +29,7 @@
   "0457a82e-e752-4f3d-b138-4575c51ef5d9": {
     "height": 37,
     "name": "Siddament",
-    "path": "data/brand_logos/siddament.png",
+    "path": "data/brands/logos/siddament.png",
     "sha256": "9213221a204fdc41bebef68ae7dd97ddfb492a6aab97dab6f7f8303a1cf79df2",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/siddament/logo.png",
@@ -46,7 +46,7 @@
       "url": "https://eolasprints.com/cdn/shop/files/1707598815735-logo400x120.png?v=1707598817"
     },
     "name": "Eolas Prints",
-    "path": "data/brand_logos/eolas_prints.png",
+    "path": "data/brands/logos/eolas_prints.png",
     "sha256": "2a6554f1a8e6c9cc1023efd3c6bb28892011f8af3df36ff29375a28e9b2a003e",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/eolas_prints/logo.png",
@@ -57,7 +57,7 @@
   "0a98b6ca-4c53-4916-85c9-f426e309a046": {
     "height": 66,
     "name": "123-3D",
-    "path": "data/brand_logos/123_3d.png",
+    "path": "data/brands/logos/123_3d.png",
     "sha256": "dc1053006fd4e360ccc294f6e3ace0d9b6c4c6a8646cd0da970e5126bbfc3d49",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/123_3d/logo.png",
@@ -68,7 +68,7 @@
   "0c6a8e5f-0e41-4934-9d80-081415548387": {
     "height": 52,
     "name": "FilaCube",
-    "path": "data/brand_logos/filacube.png",
+    "path": "data/brands/logos/filacube.png",
     "sha256": "eb46f4fb9e50186ac129d182e9d6027b881d0735de045907abb2f518aa752848",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/filacube/logo.png",
@@ -78,7 +78,7 @@
   "0f647629-6dd8-48da-a616-56da2c1779e0": {
     "height": 50,
     "name": "PrimaCreator",
-    "path": "data/brand_logos/primacreator.png",
+    "path": "data/brands/logos/primacreator.png",
     "sha256": "ab13de8b873c2b4d9f1d6449d62a3a1b80dfa0858c7781719cf722ad744966e9",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/primacreator/logo.png",
@@ -94,7 +94,7 @@
       "url": "https://ueeshop.ly200-cdn.com/u_file/UPBB/UPBB609/2407/30/photo/logo.png"
     },
     "name": "eSUN 3D",
-    "path": "data/brand_logos/esun_3d.png",
+    "path": "data/brands/logos/esun_3d.png",
     "sha256": "9469a6c20924b81796155edf81d8f6f5f0e3f1b881bf70947d68ee53ae3c8fff",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/esun_3d/logo.png",
@@ -111,7 +111,7 @@
       "url": "https://www.amolen.com/cdn/shop/files/Amolen_logo_new-1.png?v=1760427986"
     },
     "name": "AMOLEN",
-    "path": "data/brand_logos/amolen.png",
+    "path": "data/brands/logos/amolen.png",
     "sha256": "9c9bf5fb8c46f12cf09605cd6f5d2a257dec3c6012ce9977c6546a49f167c990",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/amolen/logo.png",
@@ -122,7 +122,7 @@
   "17db1e3c-1775-49f7-a1a8-5200c058be46": {
     "height": 212,
     "name": "SmartPrint",
-    "path": "data/brand_logos/smartprint.png",
+    "path": "data/brands/logos/smartprint.png",
     "sha256": "98e677b41fe8819bae1ac4da377b87111a7d838bc367d1698473fc257111ba68",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/smartprint/logo.png",
@@ -139,7 +139,7 @@
       "url": "https://copymaster3d.com/cdn/shop/files/copymaster-logo.png?v=1652173787"
     },
     "name": "Copymaster",
-    "path": "data/brand_logos/copymaster.png",
+    "path": "data/brands/logos/copymaster.png",
     "sha256": "82b0c4cb01679e97f5fe5cd4a62e520e0c8063e4873465dd543b8e4cc2e2adc1",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/copymaster/logo.png",
@@ -150,7 +150,7 @@
   "18523783-22c9-4652-b564-7fb015d2349d": {
     "height": 121,
     "name": "Proteor Print",
-    "path": "data/brand_logos/proteor_print.png",
+    "path": "data/brands/logos/proteor_print.png",
     "sha256": "7a1bd921e1d828d5a206cf8f0f5d65244604bb27d848f3d401077be8d45ac4a4",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/proteor_print/logo.png",
@@ -167,7 +167,7 @@
       "url": "https://3d.nice-cdn.com/disco/build/assets/Logo/threedjake-logo.e0559f435h0p.svg"
     },
     "name": "3DJake",
-    "path": "data/brand_logos/3djake.svg",
+    "path": "data/brands/logos/3djake.svg",
     "sha256": "5e2b7e67a4b3e6bebc531c424c1a42d803d5d18e0413dded0dbadb9d96118e53",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3djake/logo.svg",
@@ -184,7 +184,7 @@
       "url": "https://sakata3d.com/img/logo-1748901612.jpg"
     },
     "name": "Sakata 3D",
-    "path": "data/brand_logos/sakata_3d.png",
+    "path": "data/brands/logos/sakata_3d.png",
     "sha256": "2b568f815102386c546369a11626c54699383f92dc49d8e8764806a175a60b6e",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/sakata_3d/logo.jpg",
@@ -195,7 +195,7 @@
   "1b65f78a-ac84-4ab8-8dd8-e5768b80fb76": {
     "height": 64,
     "name": "iSANMATE",
-    "path": "data/brand_logos/isanmate.png",
+    "path": "data/brands/logos/isanmate.png",
     "sha256": "33c41595e90cdd6a1a85bfd15fc7b86545fe3f885b2cf330defb5b7c14c25e7b",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/isanmate/logo.png",
@@ -205,7 +205,7 @@
   "21d5959c-7162-420a-9168-7b9184054611": {
     "height": 215,
     "name": "Arianeplast",
-    "path": "data/brand_logos/arianeplast.png",
+    "path": "data/brands/logos/arianeplast.png",
     "sha256": "c59636ab6c2efc7dc1e3acc1b5064d62a0c30bff2253172a1d3aadb45f36eaec",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/arianeplast/logo.jpg",
@@ -216,7 +216,7 @@
   "224ea4f9-b0af-416a-94cf-56f45ae0a61b": {
     "height": 304,
     "name": "IEMAI",
-    "path": "data/brand_logos/iemai.png",
+    "path": "data/brands/logos/iemai.png",
     "sha256": "c09b5a05acb8dca71dd17a2ca143da2e0580457974071380b793fc5a2b27e255",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/iemai/logo.png",
@@ -226,7 +226,7 @@
   "236d14ba-9d64-4914-973a-d9ad66402806": {
     "height": 64,
     "name": "Hatchbox",
-    "path": "data/brand_logos/hatchbox.png",
+    "path": "data/brands/logos/hatchbox.png",
     "sha256": "4fb54f4b91f8379741562e9ee62241dd691d2ef61d2bf0cb071441f798e46e25",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/hatchbox/logo.png",
@@ -236,7 +236,7 @@
   "243bb58f-1295-4fe6-b056-54103e440b4e": {
     "height": 43,
     "name": "Filamentree",
-    "path": "data/brand_logos/filamentree.png",
+    "path": "data/brands/logos/filamentree.png",
     "sha256": "d07875f1c8d2c58a9ea3782fbd6d8616104ac22e7ae661b316cb05228ee6bbd5",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/filamentree/logo.png",
@@ -246,7 +246,7 @@
   "24f34176-18b8-4268-97c5-fe8a8ec2f953": {
     "height": 175,
     "name": "Prografen",
-    "path": "data/brand_logos/prografen.svg",
+    "path": "data/brands/logos/prografen.svg",
     "sha256": "64445c5be52677b00925f4c8e5745a624a91e10a85b0254b63e722a0a3dc4277",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/prografen/logo.svg",
@@ -256,7 +256,7 @@
   "2525430a-2783-4a31-b23b-afcb9a0f495a": {
     "height": 91,
     "name": "SMART MATERIALS 3D",
-    "path": "data/brand_logos/smart_materials_3d.svg",
+    "path": "data/brands/logos/smart_materials_3d.svg",
     "sha256": "4a8073f12399a82ebee14f0e0f0493e9a38a09c50764177844ea44ac737c83be",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/smart_materials_3d/logo.svg",
@@ -266,7 +266,7 @@
   "2716041f-6b48-438d-a64d-57f211cc6776": {
     "height": 123,
     "name": "EasyPrint",
-    "path": "data/brand_logos/easyprint.png",
+    "path": "data/brands/logos/primavalue.png",
     "sha256": "8a3c46876286d1b8405c1ec6849187141bfedcc745bee5071d98f90414c968ca",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/easyprint/logo.png",
@@ -276,7 +276,7 @@
   "27d1baa1-f2f3-4b7d-886d-f776ab3c4f05": {
     "height": 123,
     "name": "PrimaSelect",
-    "path": "data/brand_logos/primaselect.png",
+    "path": "data/brands/logos/primavalue.png",
     "sha256": "8a3c46876286d1b8405c1ec6849187141bfedcc745bee5071d98f90414c968ca",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/primaselect/logo.png",
@@ -286,7 +286,7 @@
   "281dea71-6910-4dac-b9e3-6c20d1e96f83": {
     "height": 75,
     "name": "Inland",
-    "path": "data/brand_logos/inland.png",
+    "path": "data/brands/logos/inland.png",
     "sha256": "e16a4619099a16e21dc92283a5555702940a813ffd72f9d857acfa3bd1322bc0",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/inland/logo.png",
@@ -297,7 +297,7 @@
   "292e95fb-3245-46a5-8379-15b1694202e8": {
     "height": 58,
     "name": "Phrozen",
-    "path": "data/brand_logos/phrozen.png",
+    "path": "data/brands/logos/phrozen.png",
     "sha256": "aa9f13c79f84489e7b1c1ab54e0fa8c4763603e1e0a407300a2e72c60ac8839a",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/phrozen/logo.png",
@@ -307,7 +307,7 @@
   "2949cefb-381f-4a8e-af49-d59803ee7db4": {
     "height": 56,
     "name": "SainSmart",
-    "path": "data/brand_logos/sainsmart.png",
+    "path": "data/brands/logos/sainsmart.png",
     "sha256": "12d769fb20e228603533b8d5f7304f88661efa9d4f92b65a372b4686d3441179",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/sainsmart/logo.png",
@@ -323,7 +323,7 @@
       "url": "https://storage.googleapis.com/addnorth-com-public/images/logo_liggande.png"
     },
     "name": "add:north",
-    "path": "data/brand_logos/add_north.png",
+    "path": "data/brands/logos/add_north.png",
     "sha256": "59f80c652b3d9168f3ce55c69d517c482189d3b9fafa46a61ead5e8e4d448a4d",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/add_north/logo.jpg",
@@ -334,7 +334,7 @@
   "2dc4fce1-ef8f-4c67-91a1-f685776b4f45": {
     "height": 63,
     "name": "Artillery",
-    "path": "data/brand_logos/artillery.png",
+    "path": "data/brands/logos/artillery.png",
     "sha256": "7d7fc73394611c7ef4aa14da5ede39bd049135ad5ff820779e0f6120e3ad4808",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/artillery/logo.png",
@@ -345,7 +345,7 @@
   "2f8536de-f691-4fdb-9097-ce6978ac4e74": {
     "height": 45,
     "name": "Insignia",
-    "path": "data/brand_logos/insignia.png",
+    "path": "data/brands/logos/insignia.png",
     "sha256": "be067fe3c54fa26a2d02edec9a173749cee31520d16c445bb8fdbe2ef8f26b0f",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/insignia/logo.png",
@@ -356,7 +356,7 @@
   "323c59ec-1125-499b-bb33-b0c2bf171b8e": {
     "height": 26,
     "name": "Aceaddity",
-    "path": "data/brand_logos/aceaddity.png",
+    "path": "data/brands/logos/aceaddity.png",
     "sha256": "209f8e6812d8ec1945c53d6291682c161dcd288335904c74bda8727999ad53fb",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/aceaddity/logo.png",
@@ -372,7 +372,7 @@
       "url": "https://fiberlogy.com/app/uploads/2026/04/logo.svg"
     },
     "name": "Fiberlogy",
-    "path": "data/brand_logos/fiberlogy.svg",
+    "path": "data/brands/logos/fiberlogy.svg",
     "sha256": "300ab560ea42e21e9096ab46cdb190bbd6682c83ab0fa9407317a4125ff99e3b",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/fiberlogy/logo.png",
@@ -389,7 +389,7 @@
       "url": "https://filamentive.com/wp-content/uploads/2021/07/Filamentive_logo_2021.png"
     },
     "name": "Filamentive",
-    "path": "data/brand_logos/filamentive.png",
+    "path": "data/brands/logos/filamentive.png",
     "sha256": "a245a6a5f1ab26b427a93847879e2ab31e6751694b94391e3e2f7416ae33d3f2",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/filamentive/logo.png",
@@ -406,7 +406,7 @@
       "url": "https://www.geeetech.com/cdn/shop/files/logo_r.png?v=1780653605"
     },
     "name": "Geeetech",
-    "path": "data/brand_logos/geeetech.png",
+    "path": "data/brands/logos/geeetech.png",
     "sha256": "7085627afb7b67e49d5f97ed0b3361020a4ce5a891aa1ba30b23f457f97775bf",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/geeetech/logo.png",
@@ -417,7 +417,7 @@
   "3d78ad75-4838-4bbf-a120-7371290f2406": {
     "height": 31,
     "name": "GIANTARM",
-    "path": "data/brand_logos/giantarm.png",
+    "path": "data/brands/logos/giantarm.png",
     "sha256": "b46f934e71f6fb4b165dc312342feda105ef85f27707e44be76d5a8970568f42",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/giantarm/logo.png",
@@ -434,7 +434,7 @@
       "url": "https://cdn03.plentymarkets.com/ioseuwg7moqp/frontend/Pics/3d-prima-01.svg"
     },
     "name": "3D Prima",
-    "path": "data/brand_logos/3d_prima.svg",
+    "path": "data/brands/logos/3d_prima.svg",
     "sha256": "3fa6580e7e60e0bf66b9959a6568e748af0360dd93fd380287f4f1ac032d61e2",
     "transparent_background": true,
     "width": 640
@@ -442,7 +442,7 @@
   "3f074b81-270b-471e-b889-cf4e36cf02a6": {
     "height": 107,
     "name": "Cai Lab",
-    "path": "data/brand_logos/cai_lab.png",
+    "path": "data/brands/logos/cai_lab.png",
     "sha256": "3f7c2fc67c0ec47858d16256ae028d146382ba17284088eb851694c16f7dd922",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/cai_lab/logo.png",
@@ -453,7 +453,7 @@
   "42ac0b6c-987a-4815-b5fe-fa8ec663ca40": {
     "height": 124,
     "name": "Filamentworld",
-    "path": "data/brand_logos/filamentworld.png",
+    "path": "data/brands/logos/filamentworld.png",
     "sha256": "e07080940e84688faebd6ff1d2b5c7e050810ba17091bd05905f221b538872db",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/filamentworld/logo.png",
@@ -469,7 +469,7 @@
       "url": "https://store.bblcdn.com/static/bambu_logo__1_110x.svg"
     },
     "name": "Bambu Lab",
-    "path": "data/brand_logos/bambu_lab.svg",
+    "path": "data/brands/logos/bambu_lab.svg",
     "sha256": "609c91ad73652831a5d9685095e520c68593859d8ae66109690f39227e91db48",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/bambu_lab/logo.png",
@@ -480,7 +480,7 @@
   "43ed0e1e-9b23-4840-b16f-e332cd5a5325": {
     "height": 160,
     "name": "3DFOX",
-    "path": "data/brand_logos/3dfox.png",
+    "path": "data/brands/logos/3dfox.png",
     "sha256": "7421a27379782cbfa1548b072a018f86459b851bd33df1eb273d226c57d282fc",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3dfox/logo.png",
@@ -497,7 +497,7 @@
       "url": "https://www.filament-pm.com/dist/images/logo.svg"
     },
     "name": "Filament PM",
-    "path": "data/brand_logos/filamentpm.svg",
+    "path": "data/brands/logos/filamentpm.svg",
     "sha256": "a9588c6afbe5b9c6b9423376cb75eb7e564b8e90493b3621222c96172458908d",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/filamentpm/logo.png",
@@ -514,7 +514,7 @@
       "url": "https://filkemp.com/wp-content/uploads/2018/08/logo.png"
     },
     "name": "Filkemp",
-    "path": "data/brand_logos/filkemp.png",
+    "path": "data/brands/logos/filkemp.png",
     "sha256": "bf519fcf98566f734e9da212ee6ea4c5335b505d943eab5616df618e95f4fddd",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/filkemp/logo.svg",
@@ -525,7 +525,7 @@
   "496fec1f-4bb8-4c3c-9399-a222cb14fa0e": {
     "height": 32,
     "name": "3DHoJor",
-    "path": "data/brand_logos/3dhojor.svg",
+    "path": "data/brands/logos/3dhojor.svg",
     "sha256": "6b5a6e6c42d960071892cb14547aba548365146af371054178df722667392793",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3dhojor/logo.svg",
@@ -541,7 +541,7 @@
       "url": "https://jayo3d.com/cdn/shop/files/800-400_1.jpg?v=1727232047"
     },
     "name": "JAYO",
-    "path": "data/brand_logos/jayo.png",
+    "path": "data/brands/logos/jayo.png",
     "sha256": "9073b5e57fc994af3d58e2e88e9be82dc1cafc48e3af572e4b03c35cbe529149",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/jayo/logo.jpg",
@@ -552,7 +552,7 @@
   "4b0b65de-13fd-437d-a5b9-ace7b370e222": {
     "height": 67,
     "name": "Siraya Tech",
-    "path": "data/brand_logos/siraya_tech.png",
+    "path": "data/brands/logos/siraya_tech.png",
     "sha256": "017ddacbd0326b714ec62243df4f96a2a06394f7bdac264e1a73acb530a9d5de",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/siraya_tech/logo.png",
@@ -562,7 +562,7 @@
   "4c73d2cc-c3ab-4976-b752-25a687fa6485": {
     "height": 45,
     "name": "The Filament",
-    "path": "data/brand_logos/the_filament.png",
+    "path": "data/brands/logos/the_filament.png",
     "sha256": "2b176649ab0bcb0c8b650c8aed5a8ef7fde5c5f059ba46aadac77479ce62eb98",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/the_filament/logo.png",
@@ -573,7 +573,7 @@
   "4eca26c3-f7a3-41c4-8461-a4ef88693372": {
     "height": 207,
     "name": "Mosaic",
-    "path": "data/brand_logos/mosaic.svg",
+    "path": "data/brands/logos/mosaic.svg",
     "sha256": "51d9329ae4fb0a886eff0bbbc1dbde0ddb36416579042396709a6f7835726a7b",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/mosaic/logo.svg",
@@ -589,7 +589,7 @@
       "url": "https://devildesign.com/wp-content/uploads/2018/11/Logo-RGB-Red-300ppi-.png"
     },
     "name": "Devil Design",
-    "path": "data/brand_logos/devil_design.png",
+    "path": "data/brands/logos/devil_design.png",
     "sha256": "53775239ac48edb640b507a584071383a606ece9a952acd7e1588a1d62751690",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/devil_design/logo.png",
@@ -600,7 +600,7 @@
   "50b29a1b-9547-4b5b-8c7c-62a99b142ebe": {
     "height": 73,
     "name": "CC3D",
-    "path": "data/brand_logos/cc3d.png",
+    "path": "data/brands/logos/cc3d.png",
     "sha256": "fe19a3407725e3f1dd295775831be9c5814120f28e6ea47a092bed09e4b24729",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/cc3d/logo.png",
@@ -616,7 +616,7 @@
       "url": "https://kexcelled3d.com/cdn/shop/files/LOGO-_800x800_1.png?v=1776755667"
     },
     "name": "Kexcelled",
-    "path": "data/brand_logos/kexcelled.png",
+    "path": "data/brands/logos/kexcelled.png",
     "sha256": "1a919f67ed2effa74c51d0bd5370823daac6582cabe79ea184834d07e5d6b516",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/kexcelled/logo.png",
@@ -628,7 +628,7 @@
     "filled_shape": true,
     "height": 398,
     "name": "Patron EG",
-    "path": "data/brand_logos/patron_eg.png",
+    "path": "data/brands/logos/patron_eg.png",
     "sha256": "0f7b7535703f3ddaff403614c5fbf0052293b89713408c33c1657af140b1ba4f",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/patron_eg/logo.png",
@@ -639,7 +639,7 @@
   "549b5936-e822-43d7-b8bc-58559370d5f9": {
     "height": 221,
     "name": "Renkforce",
-    "path": "data/brand_logos/renkforce.png",
+    "path": "data/brands/logos/renkforce.png",
     "sha256": "f23b6f4a4fc0cf8c0c3f5051eeca8fe4ac4ea314bcd2b53eca848a6bea468e7b",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/renkforce/logo.png",
@@ -656,7 +656,7 @@
       "url": "https://spectrumfilaments.com/wp-content/uploads/2024/10/logo.svg"
     },
     "name": "Spectrum",
-    "path": "data/brand_logos/spectrum.svg",
+    "path": "data/brands/logos/spectrum.svg",
     "sha256": "2f163bdd9bb740b6317dc03e9d55a99eb6e163ee17b1d5a5817858e1f8b51b63",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/spectrum/logo.png",
@@ -673,7 +673,7 @@
       "url": "https://colorfabb.com/static/version1792565382/frontend/ISM/color-fabb/default/images/logo.svg"
     },
     "name": "colorFabb",
-    "path": "data/brand_logos/colorfabb.svg",
+    "path": "data/brands/logos/colorfabb.svg",
     "sha256": "7340c3fc9ba6cbe71c05e8ea086f324cd8fc1faf0baa7aba48218102b6a68d57",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/colorfabb/logo.svg",
@@ -690,7 +690,7 @@
       "url": "https://www.formfutura.com/web/image/website/3/logo/FormFutura?unique=88b73d2"
     },
     "name": "FormFutura",
-    "path": "data/brand_logos/formfutura.png",
+    "path": "data/brands/logos/formfutura.png",
     "sha256": "88159b17d6a49b7177b3458da488e8bb0a3e10293db0e2cd0ddc4ad03ac70efa",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/formfutura/logo.png",
@@ -701,7 +701,7 @@
   "5cf0b5cb-d0ba-4cf0-b4c1-cc352dcaae0a": {
     "height": 106,
     "name": "Voxel PLA",
-    "path": "data/brand_logos/voxel_pla.png",
+    "path": "data/brands/logos/voxel_pla.png",
     "sha256": "24e1f186b14a6332e1599def1c1accd3828ffa95256deeb0726637e7ce4b4868",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/voxel_pla/logo.png",
@@ -711,7 +711,7 @@
   "60da204a-3b22-4842-a15b-854085a88e1a": {
     "height": 185,
     "name": "TECBEARS",
-    "path": "data/brand_logos/tecbears.png",
+    "path": "data/brands/logos/tecbears.png",
     "sha256": "4b14bba84a19a90466f042ca7d6c4a5fe6160b566fb1281cf199da334f917b52",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/tecbears/logo.png",
@@ -727,7 +727,7 @@
       "url": "https://atomicfilament.com/cdn/shop/files/logo.png?v=1650352936"
     },
     "name": "Atomic Filament",
-    "path": "data/brand_logos/atomic_filament.png",
+    "path": "data/brands/logos/atomic_filament.png",
     "sha256": "1b43340c249667ce7f7c90fd84c48c3effaa3486ef9c85819413883868341c53",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/atomic_filament/logo.png",
@@ -738,7 +738,7 @@
   "61d2732e-dcbf-42d2-9b0e-f71637c16aa3": {
     "height": 120,
     "name": "CHCKX",
-    "path": "data/brand_logos/chckx.png",
+    "path": "data/brands/logos/chckx.png",
     "sha256": "0e787e922f64d4bd29a36534cf3f9bf0cc4438e3ed5c5e3b0f1a8cb7011b2624",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/chckx/logo.png",
@@ -755,7 +755,7 @@
       "url": "https://www.printwithsmile.cz/deploy/img/fck/Image/logos/print-with-smile-logo-1695029110.jpg"
     },
     "name": "Print With Smile",
-    "path": "data/brand_logos/print_with_smile.png",
+    "path": "data/brands/logos/print_with_smile.png",
     "sha256": "dc862a7a84b19da182a0a192ce85af1cae3072dade3c89b3d4b7ff284a2a5173",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/print_with_smile/logo.png",
@@ -766,7 +766,7 @@
   "66014e05-7168-4ca8-bdd2-ddefbd882b15": {
     "height": 74,
     "name": "Voxelab",
-    "path": "data/brand_logos/voxelab.png",
+    "path": "data/brands/logos/voxelab.png",
     "sha256": "88275ce3a9dde9789f33baeaaca3d4946a29bdcd2f71e7a6ef930f7cf41453cb",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/voxelab/logo.png",
@@ -777,7 +777,7 @@
   "6851a54a-b0bd-44a5-a3a1-11622244068e": {
     "height": 79,
     "name": "LOVOON",
-    "path": "data/brand_logos/lovoon.png",
+    "path": "data/brands/logos/lovoon.png",
     "sha256": "7139e9cf4c64cf2ac0d2ba2538cd059f39d46e46e264c608ee20df325450505b",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/lovoon/logo.png",
@@ -794,7 +794,7 @@
       "url": "https://kingroon.com/cdn/shop/files/logo_84f7ef73-556b-4db1-8259-8d91b5f51331.png?v=1715151840"
     },
     "name": "Kingroon",
-    "path": "data/brand_logos/kingroon.png",
+    "path": "data/brands/logos/kingroon.png",
     "sha256": "4d9311c20921fc13fa6d4ed16fe052a711f7970cdd11c6c597615359d3d2c98c",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/kingroon/logo.png",
@@ -805,7 +805,7 @@
   "68e1c465-01a8-4108-9d82-923bd88acd75": {
     "height": 373,
     "name": "StrongHero3D",
-    "path": "data/brand_logos/stronghero3d.png",
+    "path": "data/brands/logos/stronghero3d.png",
     "sha256": "7b3efbac0782d3b8148e4c1aec1e9f1f81006b15ee1aa6505a6604a1fa3c2ad4",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/stronghero3d/logo.png",
@@ -822,7 +822,7 @@
       "url": "https://qidi3d.com/cdn/shop/files/QIDI-TECH-logo-new.png?v=1726827742"
     },
     "name": "QIDI Tech",
-    "path": "data/brand_logos/qidi_tech.png",
+    "path": "data/brands/logos/qidi_tech.png",
     "sha256": "6498457ac1162827cff2f63e7d21ceb764c73ea38e5a39dbd64cb777e2329731",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/qidi_tech/logo.png",
@@ -839,7 +839,7 @@
       "url": "https://www.verbatim-europe.com/files/assets/verbatim-logo-tm.svg"
     },
     "name": "Verbatim",
-    "path": "data/brand_logos/verbatim.svg",
+    "path": "data/brands/logos/verbatim.svg",
     "sha256": "916e564d44fc5767626bfbbbc6836bcf3df96d9c1e9d39f564786b548262ebe2",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/verbatim/logo.svg",
@@ -850,7 +850,7 @@
   "6cf69613-f917-4d76-8a27-0b09eadda5b6": {
     "height": 123,
     "name": "3D Prima Basic",
-    "path": "data/brand_logos/3d_prima_basic.png",
+    "path": "data/brands/logos/primavalue.png",
     "sha256": "8a3c46876286d1b8405c1ec6849187141bfedcc745bee5071d98f90414c968ca",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3d_prima_basic/logo.png",
@@ -860,7 +860,7 @@
   "6d07613a-8a35-459b-8030-869d766752f0": {
     "height": 32,
     "name": "EPAX",
-    "path": "data/brand_logos/epax.png",
+    "path": "data/brands/logos/epax.png",
     "sha256": "f14a05bd271fd180f9aa72ddda9d813f248e9f7164769363530bb3e84ba5ae9a",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/epax/logo.jpg",
@@ -871,7 +871,7 @@
   "764c2eba-ddde-4d2e-94b1-7ce85549d506": {
     "height": 118,
     "name": "COEX 3D",
-    "path": "data/brand_logos/coex_3d.png",
+    "path": "data/brands/logos/coex_3d.png",
     "sha256": "45a928a21036196f3df832512163a57dc81d58a8b1989537ea7902f908d33518",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/coex_3d/logo.png",
@@ -887,7 +887,7 @@
       "url": "https://biqu.equipment/cdn/shop/files/BQ-LOGO_TM_0542b27c-c154-4e49-ab16-c3515878834c.png?v=1633748036"
     },
     "name": "BIQU",
-    "path": "data/brand_logos/biqu.png",
+    "path": "data/brands/logos/biqu.png",
     "sha256": "76c3045bd2a0d781e54b5ebdd59091d1af81665f519409f74239a39f817a644c",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/biqu/logo.png",
@@ -898,7 +898,7 @@
   "7b82eb83-f6c4-4e16-a2f5-5c7c6c15bca5": {
     "height": 259,
     "name": "GST3D",
-    "path": "data/brand_logos/gst3d.png",
+    "path": "data/brands/logos/gst3d.png",
     "sha256": "2b0bbe7a358bf2a9add1a0ed358fe2f1f46afb3ea8c825b6f41f16bcad53a8d1",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/gst3d/logo.png",
@@ -908,7 +908,7 @@
   "7c934944-fb26-44bc-8868-93a204a58373": {
     "height": 123,
     "name": "PrimaValue",
-    "path": "data/brand_logos/primavalue.png",
+    "path": "data/brands/logos/primavalue.png",
     "sha256": "8a3c46876286d1b8405c1ec6849187141bfedcc745bee5071d98f90414c968ca",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/primavalue/logo.png",
@@ -918,7 +918,7 @@
   "8537db88-4be4-42b2-82fc-4fcd0ca1ac77": {
     "height": 87,
     "name": "Fremover",
-    "path": "data/brand_logos/fremover.png",
+    "path": "data/brands/logos/fremover.png",
     "sha256": "c4670cb334c28f0ee9c83ef086a35285a6736bcbd07216c3a6d74fac5f24cc4f",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/fremover/logo.png",
@@ -935,7 +935,7 @@
       "url": "https://aurapol.s16.cdn-upgates.com/_cache/7/8/78944a00c433d8118382f57d86ea62c1-aurapol-logo-360x.png"
     },
     "name": "AURAPOL",
-    "path": "data/brand_logos/aurapol.png",
+    "path": "data/brands/logos/aurapol.png",
     "sha256": "6aef177d4589e3f62ac412e3e17f9d78d7c1a7b9937a14fab18362e80d5f9971",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/aurapol/logo.png",
@@ -946,7 +946,7 @@
   "88fc7fc2-2fec-4a1c-b0b3-749a02c6aa81": {
     "height": 350,
     "name": "4D-Lab",
-    "path": "data/brand_logos/4d_lab.png",
+    "path": "data/brands/logos/4d_lab.png",
     "sha256": "1cf6c8e044b7cb2986b163a1c5bd28365dfd5b545a0e9996025ba162edfdd77c",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/4d_lab/logo.png",
@@ -956,7 +956,7 @@
   "8e1be559-a7f3-4a32-8fbd-bd98e1edcc1b": {
     "height": 181,
     "name": "Filatech",
-    "path": "data/brand_logos/filatech.svg",
+    "path": "data/brands/logos/filatech.svg",
     "sha256": "c4bfd977ec29e03b0d6a042f6e49919c3a87e49414f089283cd1bca98a35ffcd",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/filatech/logo.svg",
@@ -966,7 +966,7 @@
   "92e814f3-3563-4a6e-92b1-72148b5f6393": {
     "height": 113,
     "name": "Push Plastic",
-    "path": "data/brand_logos/push_plastic.png",
+    "path": "data/brands/logos/push_plastic.png",
     "sha256": "73befe64d3480363e5a0625cdc1e8ad1d1400d0458672483f6d4b3fe3212c5b8",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/push_plastic/logo.png",
@@ -976,7 +976,7 @@
   "93d00b61-bc63-43a4-9869-50fc0f5c44d3": {
     "height": 119,
     "name": "Precision 3D Filament",
-    "path": "data/brand_logos/precision_3d_filament.png",
+    "path": "data/brands/logos/precision_3d_filament.png",
     "sha256": "f79b199ea8e7fe862589615486d1ce311cf8e4287c312e4a3d43bdd6e33aa214",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/precision_3d_filament/logo.png",
@@ -987,7 +987,7 @@
   "982fd4e0-1eec-48ca-b77d-404bfc9532cb": {
     "height": 34,
     "name": "EUMAKERS",
-    "path": "data/brand_logos/eumakers.png",
+    "path": "data/brands/logos/eumakers.png",
     "sha256": "fc2f730167574db7f6cb4605281c70daed1ebe40b0b06d8845c6d541759c6bea",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/eumakers/logo.png",
@@ -997,7 +997,7 @@
   "98ef6c66-fc56-4cdb-9d95-3391a9d0e978": {
     "height": 122,
     "name": "Fiberon",
-    "path": "data/brand_logos/fiberon.svg",
+    "path": "data/brands/logos/fiberon.svg",
     "sha256": "c0e7aca5330cf0b7d09a5009f1b29a37596280bafa7648dc41cad58fcd424cae",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/fiberon/logo.svg",
@@ -1007,7 +1007,7 @@
   "998525b8-debf-4a50-bed1-fa518b8f2739": {
     "height": 61,
     "name": "DeepLee",
-    "path": "data/brand_logos/deeplee.png",
+    "path": "data/brands/logos/deeplee.png",
     "sha256": "9c445391dbb21eb2988d82e7c94dfabd8289904a484a3d62a9aacc46c5b4b665",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/deeplee/logo.png",
@@ -1024,7 +1024,7 @@
       "url": "https://www.ic3dprinters.com/ic3d/wp-content/uploads/2018/11/IC3D-logo-square-transparent-e1542470290387.png"
     },
     "name": "IC3D",
-    "path": "data/brand_logos/ic3d.png",
+    "path": "data/brands/logos/ic3d.png",
     "sha256": "353e82d28a91b924d6c271598ef20ea3808904bf7309ffabc3f0270f5ac7c074",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/ic3d/logo.png",
@@ -1035,7 +1035,7 @@
   "9a80e970-5239-4e95-81c7-a4db07669080": {
     "height": 55,
     "name": "FiberThree",
-    "path": "data/brand_logos/fiberthree.png",
+    "path": "data/brands/logos/fiberthree.png",
     "sha256": "fc58064b359f8bc6123bd84f05aefe427e050381d08f83d43b4ba1b16a842879",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/fiberthree/logo.png",
@@ -1046,7 +1046,7 @@
   "9c64971b-a9d5-464b-8df8-23069f637550": {
     "height": 100,
     "name": "AmazonBasics",
-    "path": "data/brand_logos/amazonbasics.png",
+    "path": "data/brands/logos/amazonbasics.png",
     "sha256": "6d396edb9ec1a8fc3ca58c0ec788b468042c1d96c385ad910ce4b9c9be136b59",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/amazonbasics/logo.png",
@@ -1056,7 +1056,7 @@
   "a045de73-7cc3-4f3a-8424-ef54c673e323": {
     "height": 123,
     "name": "Snapmaker",
-    "path": "data/brand_logos/snapmaker.svg",
+    "path": "data/brands/logos/snapmaker.svg",
     "sha256": "2696cfe19bf2da0bdfee7963c0ef3f7fc2323190f2543a81a8b36e4e2342fc0b",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/snapmaker/logo.svg",
@@ -1066,7 +1066,7 @@
   "a0784b3f-ea25-4241-9abd-20153980de17": {
     "height": 59,
     "name": "3DPower",
-    "path": "data/brand_logos/3dpower.png",
+    "path": "data/brands/logos/3dpower.png",
     "sha256": "429812da5aa7324086a9f3a0362f06ebe42951a83d2566dd502a6e6b340f5f96",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3dpower/logo.png",
@@ -1082,7 +1082,7 @@
       "url": "https://eryone3d.com/cdn/shop/files/Eryone.png?v=1621309492"
     },
     "name": "Eryone",
-    "path": "data/brand_logos/eryone.png",
+    "path": "data/brands/logos/eryone.png",
     "sha256": "8af3995e3d2ed9fcb448a9dd86eba799bfde548f71dc4cda32bbe651e8e017fb",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/eryone/logo.png",
@@ -1093,7 +1093,7 @@
   "a1f703f8-b0ba-4cc5-9952-c2e9ae6c5da7": {
     "height": 118,
     "name": "LDO",
-    "path": "data/brand_logos/ldo.svg",
+    "path": "data/brands/logos/ldo.svg",
     "sha256": "ecf0e69a52cb81aab1bd2561ffdf1db407e9bbadd475dff5f012699f689efb8e",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/ldo/logo.svg",
@@ -1103,7 +1103,7 @@
   "a40a9590-c483-4c19-ad08-a36a8ace59c6": {
     "height": 66,
     "name": "MatterHackers",
-    "path": "data/brand_logos/matterhackers.svg",
+    "path": "data/brands/logos/matterhackers.svg",
     "sha256": "0a0fd2ec2878fa5116bd3e46750e619bb50d33169578bf5160ea125dc8321f9a",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/matterhackers/logo.svg",
@@ -1114,7 +1114,7 @@
     "filled_shape": true,
     "height": 378,
     "name": "RS PRO",
-    "path": "data/brand_logos/rs_pro.png",
+    "path": "data/brands/logos/rs_pro.png",
     "sha256": "de5e0a89ba8866ae332298814005bc842820e1d2b200c1f9af6c9bc6f3fa9316",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/rs_pro/logo.png",
@@ -1125,7 +1125,7 @@
   "a69755dd-96a3-42f6-8b90-dfcca48d187e": {
     "height": 92,
     "name": "SUNLU",
-    "path": "data/brand_logos/sunlu.png",
+    "path": "data/brands/logos/sunlu.png",
     "sha256": "1bb12987963b92d4b3471ef4af2f72bd79c9f5cd6587ec299ae6ddf89cf246e6",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/sunlu/logo.png",
@@ -1135,7 +1135,7 @@
   "a69f1beb-24a6-4b54-b475-2dfa2466b91e": {
     "height": 54,
     "name": "OVV3D",
-    "path": "data/brand_logos/ovv3d.png",
+    "path": "data/brands/logos/ovv3d.png",
     "sha256": "1cc0c84ddf21e126fd7bd12dc00b3e35051d6197c195815da5cfb7db526986fc",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/ovv3d/logo.png",
@@ -1152,7 +1152,7 @@
       "url": "https://numakers.com/cdn/shop/files/numaker-logo.png?v=1679155131"
     },
     "name": "NuMakers",
-    "path": "data/brand_logos/numakers.png",
+    "path": "data/brands/logos/numakers.png",
     "sha256": "9ac14764d58bb1bb26218845291d3e2fc78f2d660cbab0edfe00af4f3e448de6",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/numakers/logo.png",
@@ -1169,7 +1169,7 @@
       "url": "https://fillamentum.com/wp-content/uploads/2020/04/logo.png"
     },
     "name": "Fillamentum",
-    "path": "data/brand_logos/fillamentum.png",
+    "path": "data/brands/logos/fillamentum.png",
     "sha256": "8bfd2d60d957bf6b03f3ca6d757194f88528927a1fb867b6ec020d120952fa91",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/fillamentum/logo.png",
@@ -1186,7 +1186,7 @@
       "url": "https://s3.extrudr.com/extrudr-media/extrudr-logo-dark.png"
     },
     "name": "extrudr",
-    "path": "data/brand_logos/extrudr.png",
+    "path": "data/brands/logos/extrudr.png",
     "sha256": "99fd66f218169fbb136b8e05bca66647a6a46670e96f899986f917490f746315",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/extrudr/logo.png",
@@ -1197,7 +1197,7 @@
   "af65aa0d-5349-48d0-89e2-95b55d549dad": {
     "height": 230,
     "name": "KiwiFil",
-    "path": "data/brand_logos/kiwifil.png",
+    "path": "data/brands/logos/kiwifil.png",
     "sha256": "8439310e89ce346cf69b5529fa660bcd947ff9615282f71a25c98908dc416c94",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/kiwifil/logo.png",
@@ -1207,7 +1207,7 @@
   "b06f04b0-075c-4a2d-b0c1-1030a73ee029": {
     "height": 147,
     "name": "RecyclingFabrik",
-    "path": "data/brand_logos/recyclingfabrik.png",
+    "path": "data/brands/logos/recyclingfabrik.png",
     "sha256": "c8a2646fbfa097671299c171d76b3f00efd4fb2f4b8ffae4988132b88f6a94d8",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/recyclingfabrik/logo.png",
@@ -1217,7 +1217,7 @@
   "b37620c8-f704-4af5-b9ed-3fa897ffb7b0": {
     "height": 101,
     "name": "Nobufil",
-    "path": "data/brand_logos/nobufil.png",
+    "path": "data/brands/logos/nobufil.png",
     "sha256": "763befb943b40a3f9ff6c557134fa342e34b447266c6459ade432ca06b8bf3ac",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/nobufil/logo.png",
@@ -1233,7 +1233,7 @@
       "url": "https://cdn.shopify.com/oxygen-v2/22380/6804/13678/4916882/assets/cookiecad-logo-dark-7VwJX-XF.svg"
     },
     "name": "Cookiecad",
-    "path": "data/brand_logos/cookiecad.svg",
+    "path": "data/brands/logos/cookiecad.svg",
     "sha256": "31e8c7adb5cdf7309e5b7beacb5dbd49062d19f47875fc98ceb3b0b48f9da961",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/cookiecad/logo.svg",
@@ -1244,7 +1244,7 @@
   "b86ad784-fb74-48fe-b23c-dd687572ca05": {
     "height": 43,
     "name": "Nexaforge",
-    "path": "data/brand_logos/nexaforge.png",
+    "path": "data/brands/logos/nexaforge.png",
     "sha256": "fafdd6926ea3502366fffb5e2331411c143b5071cfd30db7a00344b799a92c39",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/nexaforge/logo.png",
@@ -1255,7 +1255,7 @@
   "b89c1577-28c9-4e89-8245-4f77fce7716d": {
     "height": 208,
     "name": "PolyLite",
-    "path": "data/brand_logos/polylite.svg",
+    "path": "data/brands/logos/polymaker-lines.svg",
     "sha256": "f2826bf8ea3b973c1a24ef8a14013d44a533eaf80b28fdbabcee8d3b62fcdb91",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/polylite/logo.svg",
@@ -1271,7 +1271,7 @@
       "url": "https://ninjatek.com/ (SVG inline dans l'en-tête)"
     },
     "name": "NinjaTek",
-    "path": "data/brand_logos/ninjatek.svg",
+    "path": "data/brands/logos/ninjatek.svg",
     "sha256": "3d8ed444607a6b1ff07a3aaf848114092d69b9222662e8c0cabcb5f794fce534",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/ninjatek/logo.svg",
@@ -1282,7 +1282,7 @@
   "bc3059ca-cf1a-4153-8e93-12e21456fb72": {
     "height": 208,
     "name": "PolySonic",
-    "path": "data/brand_logos/polysonic.svg",
+    "path": "data/brands/logos/polymaker-lines.svg",
     "sha256": "f2826bf8ea3b973c1a24ef8a14013d44a533eaf80b28fdbabcee8d3b62fcdb91",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/polysonic/logo.svg",
@@ -1292,7 +1292,7 @@
   "c0967b79-d21f-4294-a32c-6d73c931fffe": {
     "height": 130,
     "name": "AzureFilm",
-    "path": "data/brand_logos/azurefilm.png",
+    "path": "data/brands/logos/azurefilm.png",
     "sha256": "632651cc3903314618f6ee3aafa3aa96c872d0cf9c2ff9aa62001523b183be83",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/azurefilm/logo.png",
@@ -1308,7 +1308,7 @@
       "url": "https://www.flashforge.com/cdn/shop/files/LOGO-EN-_2x_66aaab68-61ed-4eaa-84fe-a74385d064b8.webp?v=1786583712"
     },
     "name": "Flashforge",
-    "path": "data/brand_logos/flashforge.png",
+    "path": "data/brands/logos/flashforge.png",
     "sha256": "0e1432c6640edfa9af6d487fd0f2db388997918296d69b85b07252ee4474659e",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/flashforge/logo.png",
@@ -1325,7 +1325,7 @@
       "url": "https://www.yoopai.com/cdn/shop/files/Yoopai-removebg-preview_format_815d8fd0-8c50-4a4a-b700-1dbe74ff85a6.webp?v=1719915222"
     },
     "name": "Yoopai",
-    "path": "data/brand_logos/yoopai.png",
+    "path": "data/brands/logos/yoopai.png",
     "sha256": "6b5f30bf975e8e6ffa895e78211358c365a6e254b250c268d12ca9df1fafe866",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/yoopai/logo.png",
@@ -1336,7 +1336,7 @@
   "c46e06dd-abe9-4930-b461-6fa14cf20a45": {
     "height": 171,
     "name": "PrintedSolid",
-    "path": "data/brand_logos/printedsolid.png",
+    "path": "data/brands/logos/printedsolid.png",
     "sha256": "c793c130c4a323fe1913b452fe8be5e2ca8e5b305c2a4433511ebc5f2043ba0e",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/printedsolid/logo.png",
@@ -1346,7 +1346,7 @@
   "cd83c71e-ecd0-4a43-97f5-e30cdcf2ec77": {
     "height": 137,
     "name": "Slic3D",
-    "path": "data/brand_logos/slic3d.png",
+    "path": "data/brands/logos/slic3d.png",
     "sha256": "1d100f6d2ea2b16d4f5750d7283800cbd6614139a81d9ea90f934c220fd90d36",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/slic3d/logo.png",
@@ -1363,7 +1363,7 @@
       "url": "https://francofil.fr/wp-content/uploads/2023/07/cropped-Logo-Francofil.png"
     },
     "name": "Francofil",
-    "path": "data/brand_logos/francofil.png",
+    "path": "data/brands/logos/francofil.png",
     "sha256": "cf2d4648b97cec4a2778eed96a3fbc93d7300c151476f5a5ed45e6ebe975afa9",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/francofil/logo.png",
@@ -1374,7 +1374,7 @@
   "cef23847-06ab-4d9c-81f0-651cb50f592d": {
     "height": 208,
     "name": "PolyFlex",
-    "path": "data/brand_logos/polyflex.svg",
+    "path": "data/brands/logos/polymaker-lines.svg",
     "sha256": "f2826bf8ea3b973c1a24ef8a14013d44a533eaf80b28fdbabcee8d3b62fcdb91",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/polyflex/logo.svg",
@@ -1390,7 +1390,7 @@
       "url": "https://www.creality.com/images/header/creality-logo-black.svg"
     },
     "name": "Creality",
-    "path": "data/brand_logos/creality.svg",
+    "path": "data/brands/logos/creality.svg",
     "sha256": "a7cacaa99f2a8484235d960f60e7fae27bf328090a6fce4ec378cbff402ed8e2",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/creality/logo.png",
@@ -1401,7 +1401,7 @@
   "d1089235-2443-49ee-8138-24318020d93a": {
     "height": 51,
     "name": "Dremel",
-    "path": "data/brand_logos/dremel.png",
+    "path": "data/brands/logos/dremel.png",
     "sha256": "23e06b2ca41bce5ab380732c6a2b05430ea9fc8099bf2c7c67da269c036f8c9f",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/dremel/logo.png",
@@ -1412,7 +1412,7 @@
   "d2f244ec-2b27-4e7b-9bad-e61a735e2ffa": {
     "height": 96,
     "name": "Inslogic",
-    "path": "data/brand_logos/inslogic.png",
+    "path": "data/brands/logos/inslogic.png",
     "sha256": "5bc2c0ff7f484165edaa3b86ab5c39aa4b4cbe499935c2b8f909c968bf089f20",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/inslogic/logo.png",
@@ -1423,7 +1423,7 @@
   "d308d874-e16e-4c23-a95c-96c37b12b2f4": {
     "height": 121,
     "name": "Tectonic 3D",
-    "path": "data/brand_logos/tectonic_3d.svg",
+    "path": "data/brands/logos/tectonic_3d.svg",
     "sha256": "cf220a0a7addc7f8bf10320ee7ef42bb447c96126886bee53993256b1790cdc6",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/tectonic_3d/logo.svg",
@@ -1439,7 +1439,7 @@
       "url": "https://www.3dxtech.com/cdn/shop/files/3DXTECH-Logo-Horz.svg?v=1717417194"
     },
     "name": "3DXTECH",
-    "path": "data/brand_logos/3dxtech.svg",
+    "path": "data/brands/logos/3dxtech.svg",
     "sha256": "8ca6d20d330cb60e9904e5173e5dbfdddad02cd797517f7b461c4f24e59f6a2b",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3dxtech/logo.svg",
@@ -1456,7 +1456,7 @@
       "url": "https://www.elegoo.com/cdn/shop/files/Logo_e6b0d316-e2b8-4362-9112-a9b185ebbf9b.png?v=1691652260"
     },
     "name": "ELEGOO",
-    "path": "data/brand_logos/elegoo.png",
+    "path": "data/brands/logos/elegoo.png",
     "sha256": "29312279e2a4c9d6ca61aeccbe2a2763c6a70f57b47e0835e841b88485fb19c3",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/elegoo/logo.png",
@@ -1467,7 +1467,7 @@
   "da53e5fb-a090-4fec-801d-96122ca220da": {
     "height": 98,
     "name": "3DO",
-    "path": "data/brand_logos/3do.png",
+    "path": "data/brands/logos/3do.png",
     "sha256": "f7ea0712c27a38269c95fb50432355017893d13fc1ca4351c5edc4b90e730a8a",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3do/logo.png",
@@ -1479,7 +1479,7 @@
     "filled_shape": true,
     "height": 57,
     "name": "SOVB 3D",
-    "path": "data/brand_logos/sovb_3d.png",
+    "path": "data/brands/logos/sovb_3d.png",
     "sha256": "595c3c0de5691d2bff950c1c42bf4add52257b15b3afcf457fa0eafd8c73b3c3",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/sovb_3d/logo.jpg",
@@ -1490,7 +1490,7 @@
   "dc03a792-a019-46b2-ba5e-7c0a86479df1": {
     "height": 377,
     "name": "UniTak3D",
-    "path": "data/brand_logos/unitak3d.png",
+    "path": "data/brands/logos/unitak3d.png",
     "sha256": "dbbffc9a8e7a8798f1274d3e995bd1b7c71f3992cc1f6ea2b5b9afcdb01a1da0",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/unitak3d/logo.png",
@@ -1501,7 +1501,7 @@
   "dc903d56-0040-4a56-930f-65e607f784e8": {
     "height": 32,
     "name": "22 Network",
-    "path": "data/brand_logos/22_network.png",
+    "path": "data/brands/logos/22_network.png",
     "sha256": "60f813bcfcd3c1979ef0247b90f77b07b493fccd9861f4c47e000ade8d37b988",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/22_network/logo.png",
@@ -1511,7 +1511,7 @@
   "df4f0cb8-53a6-4c69-b207-33df366625d3": {
     "height": 74,
     "name": "Panchroma",
-    "path": "data/brand_logos/panchroma.png",
+    "path": "data/brands/logos/panchroma.png",
     "sha256": "fa634363543908a52a9c0a49ca231b4424010e0a38e58903bab205924079e6e7",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/panchroma/logo.png",
@@ -1521,7 +1521,7 @@
   "e3033267-4806-4e6b-b71e-1a22ad52a975": {
     "height": 118,
     "name": "Alzament",
-    "path": "data/brand_logos/alzament.png",
+    "path": "data/brands/logos/alzament.png",
     "sha256": "768a8fd58680bb3bb4caccf65d30342f6fcc210a714dabfad6c87580c72b6da4",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/alzament/logo.jpg",
@@ -1538,7 +1538,7 @@
       "url": "https://www.3dfuel.com/cdn/shop/files/3D-Fuel_Logo_-_Full_Color.png?v=1613761649"
     },
     "name": "3D-Fuel",
-    "path": "data/brand_logos/3d_fuel.png",
+    "path": "data/brands/logos/3d_fuel.png",
     "sha256": "bf92d6c2aa21e0c0fb083b6ca617a16597b1bd7a784a7efb686f6b7389d33eb8",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3d_fuel/logo.png",
@@ -1555,7 +1555,7 @@
       "url": "https://cdn11.bigcommerce.com/s-eblil3q2nd/images/stencil/original/spool_logo_1_1756046690__33530.original.jpg"
     },
     "name": "Zyltech",
-    "path": "data/brand_logos/zyltech.png",
+    "path": "data/brands/logos/zyltech.png",
     "sha256": "3c5ad8793b0fcde7330ed0a12e14e0fd0a37f55f495fbe320d4256d0772e9ffe",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/zyltech/logo.jpg",
@@ -1566,7 +1566,7 @@
   "e6330b22-7144-4706-8347-26538fe7a219": {
     "height": 177,
     "name": "3D Printing Canada",
-    "path": "data/brand_logos/3d_printing_canada.png",
+    "path": "data/brands/logos/3d_printing_canada.png",
     "sha256": "cd4bec2084d09d981a2f999f5e4e99a7586f565ffdd040eb2644e95f6f43aa79",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3d_printing_canada/logo.png",
@@ -1577,7 +1577,7 @@
   "e6ec1842-00aa-4f90-ba1e-db630b34aae0": {
     "height": 137,
     "name": "L3D",
-    "path": "data/brand_logos/l3d.png",
+    "path": "data/brands/logos/l3d.png",
     "sha256": "c2cce56de9623dcf7af132eca4a2bc3c7d1b41d3691e56eb28685cc6fd768460",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/l3d/logo.png",
@@ -1587,7 +1587,7 @@
   "e9547930-bf28-421b-bacf-e81c622fa8c0": {
     "height": 158,
     "name": "Ambrosia",
-    "path": "data/brand_logos/ambrosia.png",
+    "path": "data/brands/logos/ambrosia.png",
     "sha256": "2d9d670779eb2cdf32af57b8dee6c5388344ae14021e78021632c3b68fc76eab",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/ambrosia/logo.png",
@@ -1603,7 +1603,7 @@
       "url": "https://ziro3d.com/cdn/shop/files/LOGO_T_600.250.png?v=1745634931"
     },
     "name": "ZIRO 3D",
-    "path": "data/brand_logos/ziro_3d.png",
+    "path": "data/brands/logos/ziro_3d.png",
     "sha256": "9aa8bff20c909edcee444e89a833270d09954face64c43309340c01197391fd3",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/ziro_3d/logo.png",
@@ -1620,7 +1620,7 @@
       "url": "https://dasfilament.de/wp-content/uploads/2025/11/DAS_FILAMENT_LOGO-scaled.png"
     },
     "name": "Das Filament",
-    "path": "data/brand_logos/das_filament.png",
+    "path": "data/brands/logos/das_filament.png",
     "sha256": "20197b646fb03fc4b25fa18d121cab3b9fc10115cfe1672bc490e0bbce61bb89",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/das_filament/logo.png",
@@ -1637,7 +1637,7 @@
       "url": "https://cdn.shopify.com/s/files/1/0279/4933/4599/files/logo-big.png?v=1613689833"
     },
     "name": "DURAMIC 3D",
-    "path": "data/brand_logos/duramic_3d.png",
+    "path": "data/brands/logos/duramic_3d.png",
     "sha256": "2a76463b61b11e54dcf0e4dc16886d6f0332589098022ee52da8e4b4401386a1",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/duramic_3d/logo.jpg",
@@ -1654,7 +1654,7 @@
       "url": "https://overture3d.com/cdn/shop/files/Overture-Logo-Standard_815def4f-b87b-4b61-8dc8-02420460aac0.png?v=1763464788"
     },
     "name": "Overture",
-    "path": "data/brand_logos/overture.png",
+    "path": "data/brands/logos/overture.png",
     "sha256": "f9970c089675703a4e4c5ccdbac79b4c8b08b7076176a88bc4b33a8691bb426e",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/overture/logo.png",
@@ -1665,7 +1665,7 @@
   "f7ec4458-05a7-4dd9-a3e6-4ca5142e0b72": {
     "height": 134,
     "name": "EconoFil",
-    "path": "data/brand_logos/econofil.png",
+    "path": "data/brands/logos/econofil.png",
     "sha256": "43098ae54ce6af189f6a4f1bacade5798794a13e2e2189210f6a1d24490f37f9",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/econofil/logo.png",
@@ -1681,7 +1681,7 @@
       "url": "https://tinmorry.net/cdn/shop/files/LOGO-05_1.png?v=1781665585"
     },
     "name": "Tinmorry",
-    "path": "data/brand_logos/tinmorry.png",
+    "path": "data/brands/logos/tinmorry.png",
     "sha256": "9ae0850a00d6593b2b7885006d5d567f817412b1dd1d238e0d679b9fd5138ec6",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/tinmorry/logo.jpg",
@@ -1692,7 +1692,7 @@
   "f85ba9d2-ab20-451b-a694-7456ae2cff2e": {
     "height": 88,
     "name": "LayerWorks Solutions",
-    "path": "data/brand_logos/layerworks_solutions.png",
+    "path": "data/brands/logos/layerworks_solutions.png",
     "sha256": "f7eb27ab40f792c5265fde53b80134e094e7582f9710bcb6629d072c55f49a19",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/layerworks_solutions/logo.png",
@@ -1703,7 +1703,7 @@
   "f8e01f86-3d07-4086-a163-5393ebe80c61": {
     "height": 83,
     "name": "Dancyn 3D Prints",
-    "path": "data/brand_logos/dancyn_3d_prints.png",
+    "path": "data/brands/logos/dancyn_3d_prints.png",
     "sha256": "6c926bb59be1a8abe53fb411459ddd4b09a0837299d2de91dfdedee85e5b4da1",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/dancyn_3d_prints/logo.png",
@@ -1714,7 +1714,7 @@
   "fd9b6909-c3aa-42f8-ae2b-2102e4026245": {
     "height": 118,
     "name": "3DE",
-    "path": "data/brand_logos/3deksperten.png",
+    "path": "data/brands/logos/3deksperten.png",
     "sha256": "1e6cf34b0f58f27189508851b187a935808d47ef8f98508aa14388129dbe64a0",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/3deksperten/logo.jpg",
@@ -1725,7 +1725,7 @@
   "fdc88a00-ba6a-4924-ab57-ed2a2948fbf9": {
     "height": 317,
     "name": "Nebula",
-    "path": "data/brand_logos/nebula.png",
+    "path": "data/brands/logos/nebula.png",
     "sha256": "3352e90f14ba4cf798a3aaef34da0d9cee74b0fe18e28e3721c262dacbe79eb4",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/nebula/logo.png",
@@ -1736,7 +1736,7 @@
   "fea4e45c-9879-4cf0-a98d-2599594095ad": {
     "height": 208,
     "name": "PolyMide",
-    "path": "data/brand_logos/polymide.svg",
+    "path": "data/brands/logos/polymaker-lines.svg",
     "sha256": "f2826bf8ea3b973c1a24ef8a14013d44a533eaf80b28fdbabcee8d3b62fcdb91",
     "source_commit": "1dda27a4afcc4f9200b5b3867e85e75f8e1ea147",
     "source_path": "data/polymide/logo.svg",
@@ -1752,7 +1752,7 @@
       "url": "https://polarfilament.com/cdn/shop/files/TextLogo.png?v=1705864625"
     },
     "name": "Polar Filament",
-    "path": "data/brand_logos/polar_filament.png",
+    "path": "data/brands/logos/polar_filament.png",
     "sha256": "4bd8377d0a62ead1d3db64af60f8434a8eaf14556393fdc53f1513352f71fccf",
     "transparent_background": true,
     "width": 872
@@ -1766,7 +1766,7 @@
       "url": "https://shop.polymaker.com/cdn/shop/files/Polymaker_New_Logo.png?v=1756260800&width=2000"
     },
     "name": "Polymaker",
-    "path": "data/brand_logos/polymaker.png",
+    "path": "data/brands/logos/polymaker.png",
     "sha256": "973b49ec99955930ca34011d0f1022721456ea3ef6f3ed6b5738f80c2ffe3b87",
     "transparent_background": true,
     "width": 1600
@@ -1780,7 +1780,7 @@
       "url": "https://proto-pasta.com/cdn/shop/files/long_lockup.png?v=1745461243"
     },
     "name": "Protopasta",
-    "path": "data/brand_logos/protopasta.png",
+    "path": "data/brands/logos/protopasta.png",
     "sha256": "6f219cdabeec3805ba443011950a47db0e3005a208be2bcadfa07a82e501ad84",
     "transparent_background": true,
     "width": 1347
@@ -1794,7 +1794,7 @@
       "url": "https://prusament.com/wp-content/themes/prusament/images/logo.svg"
     },
     "name": "Prusament",
-    "path": "data/brand_logos/prusament.svg",
+    "path": "data/brands/logos/prusament.svg",
     "sha256": "9de90ececfa8bfcb89c1957fafc8bf04eec1390a4329759ec4eeaf7043841495",
     "transparent_background": true,
     "width": 640
@@ -1808,7 +1808,7 @@
       "url": "https://r3d-europe.com/cdn/shop/files/Plan_de_travail_1.svg?v=1790325484"
     },
     "name": "R3D",
-    "path": "data/brand_logos/r3d.svg",
+    "path": "data/brands/logos/r3d.svg",
     "sha256": "133ed8215c2f39c3f707a595ad9889a60adf3a39145b9a794ef36a119e6f8e3d",
     "transparent_background": true,
     "width": 636
@@ -1822,7 +1822,7 @@
       "url": "https://recreus.com/cdn/shop/files/logo-recreus-desktop.png?v=1729233624"
     },
     "name": "Recreus",
-    "path": "data/brand_logos/recreus.png",
+    "path": "data/brands/logos/recreus.png",
     "sha256": "9a800a945b75ea5f1f3cb8d1338c90f46e37ef8dbf0be506dca4f0fda490bd57",
     "transparent_background": true,
     "width": 500
@@ -1836,7 +1836,7 @@
       "url": "https://redline-filament.com/cdn/shop/files/Redline_Filament_Logo_red-white.png?v=1700553429"
     },
     "name": "Redline Filament",
-    "path": "data/brand_logos/redline_filament.png",
+    "path": "data/brands/logos/redline_filament.png",
     "sha256": "63cfe29b45f491c4b131115b001fdf0ee6f90fe9583b0b37680ab6d2801be3fc",
     "transparent_background": true,
     "width": 996
@@ -1850,7 +1850,7 @@
       "url": "https://www.sovol3d.com/cdn/shop/files/Sovol_logo_61583546-cbe4-40f5-8f4c-f6174cfac8af.png?v=1740647815"
     },
     "name": "Sovol",
-    "path": "data/brand_logos/sovol.png",
+    "path": "data/brands/logos/sovol.png",
     "sha256": "f4c14c707aa87e2f0c6408c708c3661065bce28d1bedfdbfe9b86e0ad5615bb5",
     "transparent_background": true,
     "width": 1590
@@ -1864,7 +1864,7 @@
       "url": "https://acdn-us.mitiendanube.com/stores/005/959/122/themes/common/logo-4569829627342265996-1771432741-a6d2ff3adbcb1506ade569cc7532a3091771432741.png"
     },
     "name": "Voolt3D",
-    "path": "data/brand_logos/voolt3d.png",
+    "path": "data/brands/logos/voolt3d.png",
     "sha256": "6162ff83980b557c7500a954444b9367b3a4e8989dfa2559805158668e68aca2",
     "transparent_background": true,
     "width": 1600
@@ -1878,7 +1878,7 @@
       "url": "https://winkle.shop/img/logo-1776669009.svg"
     },
     "name": "Winkle",
-    "path": "data/brand_logos/winkle.svg",
+    "path": "data/brands/logos/winkle.svg",
     "sha256": "61006d5dc371e58aeba95de4a48cb3572594668a75a9476de9c4fe6c03e2280f",
     "transparent_background": true,
     "width": 452

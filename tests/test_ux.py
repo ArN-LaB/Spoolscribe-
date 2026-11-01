@@ -95,7 +95,7 @@ class SourcePolicyTests(unittest.TestCase):
 
     def test_fresh_packaged_install_contains_no_catalogue_and_existing_db_survives(self):
         with tempfile.TemporaryDirectory() as directory:
-            root=Path(directory);path=root/'user/data/polymaker_db.json'
+            root=Path(directory);path=root/'user/tests/fixtures/catalogues/polymaker_db.json'
             with patch.multiple(core,_FROZEN=True,RESOURCE_DIR=str(root/'empty-bundle'),DB_PATH=str(path)):
                 self.assertFalse(core.load_db()['_skus'])
                 db_io.save_db(small_db(),path);before=path.read_bytes()
@@ -104,7 +104,7 @@ class SourcePolicyTests(unittest.TestCase):
         from spoolscribe.packaging_rules import resources
         files=resources(ROOT)
         self.assertFalse(any(p.startswith('orca_profiles/') or p.endswith('polymaker_db.json') or 'catalogue_' in p and p.startswith('data/') for p in files))
-        self.assertIn('data/brand_logos/manifest.json',files)
+        self.assertIn('data/brands/manifest.json',files)
 
     def test_recommendation_is_essential_and_full_stays_an_explicit_choice(self):
         payload=core.build_openspool(dict(entry(),color_name='x'*400),product())

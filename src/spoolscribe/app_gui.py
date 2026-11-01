@@ -44,8 +44,8 @@ from .ui_widgets import SearchField, SpoolPreview, MetricGrid, WrapLabel, Filame
 # The inspector lives inside the scroll area; toggling never changes the window.
 _INSPECTOR_H = 210
 # Coche des cases à cocher (QSS) : chemin POSIX absolu, lisible aussi en mode gelé.
-CHECK_ICON_PATH = os.path.join(core.RESOURCE_DIR, "data", "check.svg").replace(os.sep, "/")
-CHEVRON_ICON_PATH = os.path.join(core.RESOURCE_DIR, "data", "chevron-down.svg").replace(os.sep, "/")
+CHECK_ICON_PATH = os.path.join(core.RESOURCE_DIR, "data", "ui", "check.svg").replace(os.sep, "/")
+CHEVRON_ICON_PATH = os.path.join(core.RESOURCE_DIR, "data", "ui", "chevron-down.svg").replace(os.sep, "/")
 
 
 # ─── Logo animé : la bobine tourne, le fil reste posé ─────────────────────

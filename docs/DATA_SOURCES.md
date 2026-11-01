@@ -9,13 +9,13 @@ the adapter uses it and what it refuses to guess.
 
 | Source | Maintainer | Licence / basis | Used for | Obligation |
 |---|---|---|---|---|
-| [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database) (OFD) | Open Filament Collective | **MIT** (data) | Broad manufacturer / material / colour / size catalogue, read from the official repository archive | Keep the upstream notice (`data/brand_logos/OFD-LICENSE.txt`). Logos in that repository remain their owners' trademarks (see below) |
-| [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) | Donkie & contributors | **MIT** | Complementary references for manufacturers not covered by the other sources | Keep the upstream notice (`data/SpoolmanDB-LICENSE.txt`) |
+| [Open Filament Database](https://github.com/OpenFilamentCollective/open-filament-database) (OFD) | Open Filament Collective | **MIT** (data) | Broad manufacturer / material / colour / size catalogue, read from the official repository archive | Keep the upstream notice (`data/licenses/OFD-LICENSE.txt`). Logos in that repository remain their owners' trademarks (see below) |
+| [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) | Donkie & contributors | **MIT** | Complementary references for manufacturers not covered by the other sources | Keep the upstream notice (`data/licenses/SpoolmanDB-LICENSE.txt`) |
 | Polymaker US wholesale catalogue | Polymaker | Public Shopify product JSON; factual values | Product variants, article numbers, explicit colour HEX, packaging | Facts only; see "Factual data" |
 | [Bambu Studio profiles](https://github.com/bambulab/BambuStudio/tree/master/resources/profiles/BBL/filament) | Bambu Lab | Repository under **AGPL-3.0**; only facts are kept | Density, diameter and nozzle range of `Bambu … @base` profiles, plus the profile URL | No profile, G-code or printer setting is redistributed |
 | [SUNLU PLA product page](https://www.sunlu.com/products/pla-3d-printing-filament) | SUNLU | Public product page; factual values | Density, bed range, official colour codes of SUNLU PLA | Facts only |
 | [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) (optional source) | Polymaker (official) | **MIT** | OrcaSlicer profiles for the Snapmaker U1 (temperature overrides at export) | Keep the upstream notice |
-| [TheFilamentDB](https://thefilamentdb.issou.best/) (legacy, developer snapshot) | issou.best | **CC-BY 4.0** | Historical colour HEX of the curated brands (ROSA3D is absent from the snapshot: a warning, not a failure) | **Attribution required**: see `data/TheFilamentDB-ATTRIBUTION.txt` and below |
+| [TheFilamentDB](https://thefilamentdb.issou.best/) (legacy, developer snapshot) | issou.best | **CC-BY 4.0** | Historical colour HEX of the curated brands (ROSA3D is absent from the snapshot: a warning, not a failure) | **Attribution required**: see `data/licenses/TheFilamentDB-ATTRIBUTION.txt` and below |
 | [Printer list](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/data/printers.json) (optional, on click) | This project | **MIT** (repository file) | Printers/readers, firmwares and tag protocols shown in **Mon matériel** | Downloaded only on request; validated; installed only when newer than the bundled copy |
 | Manufacturer logos | Respective brands | **Trademarks**, not covered by any of the licences above | Identification of the selected brand in the interface | Identification only; removal on request ([TRADEMARKS.md](TRADEMARKS.md)) |
 
@@ -140,13 +140,13 @@ needs an existing family to attach to; it never creates references.
 
 ## Repository regression snapshot (not installed)
 
-`data/polymaker_db.json` keeps the original curated records. The additive
+`tests/fixtures/catalogues/polymaker_db.json` keeps the original curated records. The additive
 offline files are test fixtures and are excluded from installers:
 
 | Source | File | Source brands | References |
 |---|---|---:|---:|
-| OFD source tree | `data/catalogue_ofd.json` | 157 | 22,838 |
-| SpoolmanDB compiled catalogue | `data/catalogue_spoolman.json` | 14 | 599 |
+| OFD source tree | `tests/fixtures/catalogues/catalogue_ofd.json` | 157 | 22,838 |
+| SpoolmanDB compiled catalogue | `tests/fixtures/catalogues/catalogue_spoolman.json` | 14 | 599 |
 
 With the three curated brands the fixture exposes 174 source brand labels and
 24,521 references (165 manufacturers once product lines are folded, about
@@ -158,12 +158,12 @@ OFD snapshot: commit
 archive SHA-256 `6830802bd85f00c8979ea086414c2e1f3a76ec5d931c295bd779b72d3087bd6e`.
 SpoolmanDB snapshot: [`filaments.json`](https://donkie.github.io/SpoolmanDB/filaments.json),
 SHA-256 `06f1788582d110008bec27a81ecd98b2abc963d22adf7149802967cc7a721c0c`.
-Both collected on 2026-10-31; `data/catalogue_*_audit.json` record counts, hashes,
+Both collected on 2026-10-31; `tests/fixtures/catalogues/audits/catalogue_*_audit.json` record counts, hashes,
 rejected and incomplete records. Twenty OFD brand folders have no usable variant.
 
 ### Logos
 
-147 logos (118 PNG, 29 SVG) are listed in `data/brand_logos/manifest.json`
+147 provenance entries, sharing 141 unique logo images after exact-byte deduplication, are listed in `data/brands/manifest.json`
 with their hash, size and provenance; twenty-one OFD images were excluded
 (`.github/catalogue-logo-exclusions.json`) and 14 complementary manufacturers
 have none, so those brands show their name instead. **A transparent background
@@ -192,8 +192,8 @@ Colour HEX values derived from TheFilamentDB are licensed under
 > Values were normalized to six-digit HEX and matched to products by material
 > and colour name; no other change.
 
-The attribution is kept in `data/TheFilamentDB-ATTRIBUTION.txt`, here and in the
-application's About dialog. The developer snapshot `data/thefilamentdb.jsonl.gz`
+The attribution is kept in `data/licenses/TheFilamentDB-ATTRIBUTION.txt`, here and in the
+application's About dialog. The developer snapshot `tests/fixtures/legacy/thefilamentdb.jsonl.gz`
 is not bundled in installers.
 
 ## Curated colour enrichment (Prusament & ROSA3D)
@@ -230,7 +230,7 @@ manufacturers, so the no-deletion storage guard remains active. Partial enrichme
 that would invert a temperature range keeps the previous pair and records a conflict.
 Presentation grouping keeps diameter/grade/transparency distinctions; a normalized
 colour label is not permission to overwrite differing source HEX values. See
-[the corrective validation](archive/v0.3.0/VALIDATION-RETOURS-v0.3.0.md) for measurements and remaining gaps.
+[the corrective validation](https://github.com/ArN-LaB/Spoolscribe-/blob/5d652232e5b989028f13704ad6ca13b65724332b/docs/archive/v0.3.0/VALIDATION-RETOURS-v0.3.0.md) for measurements and remaining gaps.
 
 
 ### Coverage shown in the application

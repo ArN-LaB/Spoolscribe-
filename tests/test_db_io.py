@@ -208,7 +208,7 @@ class BundleTests(unittest.TestCase):
             source = bundle / "data/polymaker_db.json"
             source.write_text(json.dumps(small_db()))
             (bundle / "data/logo.svg").write_text("bundled logo")
-            target = user / "data/polymaker_db.json"
+            target = user / "tests/fixtures/catalogues/polymaker_db.json"
             with patch.multiple(core, _FROZEN=True, RESOURCE_DIR=str(bundle), DATA_DIR=str(user / "data"),
                                 DB_PATH=str(target), ORCA_DIR=str(user / "orca_profiles")):
                 core.load_db()

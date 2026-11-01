@@ -86,7 +86,7 @@ and steps to reproduce. See also [SECURITY.md](SECURITY.md) for private reports.
   provenance; a community source may only complete them.
 - A new manufacturer logo needs a transparent background and a recorded origin:
   add it through `.github/scripts/import_brand_logos.py` (review file + files),
-  never by copying an image into `data/brand_logos/`; `tests/test_logos.py`
+  never by copying an image into `data/brands/logos/`; `tests/test_logos.py`
   checks the result. Note the mark in [TRADEMARKS.md](../docs/TRADEMARKS.md).
 - A new printer or reader is a `data/printers.json` entry (group, reader,
   firmwares with the `openspool` flag, help), not code; cite a primary source

@@ -60,9 +60,9 @@ binaries: maintenance on `main` does not silently replace them or move the tag.
 
 ## Data and resources
 
-`src/spoolscribe/core.py` is the version authority. Source resources stay in
-`data/`, `scripts/` and `translations/`; frozen resources use `sys._MEIPASS`.
-Catalogue snapshots and all 48 `orca_profiles/` files are regression fixtures,
+`src/spoolscribe/core.py` is the version authority. Source resources are grouped in
+`data/`; workers remain in `scripts/`. frozen resources use `sys._MEIPASS`.
+The read-only catalogues, audits and all 48 `tests/fixtures/orca/` files are regression fixtures,
 excluded from installers. Workers write to the user folder.
 
 Before importing the package, isolate QA with `SPOOLSCRIBE_DATA_HOME` and
