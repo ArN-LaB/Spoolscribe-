@@ -139,8 +139,8 @@ class RestartInterfaceTests(unittest.TestCase):
         w=self.window
         path=Path(self.tmp.name)/'language-settings.json'
         core.export_settings(path)
-        document=json.loads(path.read_text());document['settings']['language']='zh_CN'
-        path.write_text(json.dumps(document))
+        document=json.loads(path.read_text(encoding='utf-8'));document['settings']['language']='zh_CN'
+        path.write_text(json.dumps(document),encoding='utf-8')
         with patch.object(QFileDialog,'getOpenFileName',return_value=(str(path),'JSON')),patch.object(w,'_offer_language_restart') as prompt:
             w._import_settings();prompt.assert_called_once()
         self.assertEqual(core.load_config()['language'],'zh_CN')
@@ -189,7 +189,7 @@ class RelaunchCommandTests(unittest.TestCase):
                 root=Path(os.environ['SPOOLSCRIBE_DATA_HOME'])
                 marker=root/'restart-stage.json'
                 if not marker.exists():
-                    marker.write_text(json.dumps({'parent':os.getpid(),'phase':1}))
+                    marker.write_text(json.dumps({'parent':os.getpid(),'phase':1}),encoding='utf-8')
                     core.save_config(dict(core.DEFAULT_CONFIG,language='fr',network_consent=False,favorite_brands=['Alpha']))
                 original=app_gui.MainWindow
                 class Window(original):
@@ -200,9 +200,9 @@ class RelaunchCommandTests(unittest.TestCase):
                     def _maybe_auto_update(self):
                         pass
                     def drive(self):
-                        state=json.loads(marker.read_text())
+                        state=json.loads(marker.read_text(encoding='utf-8'))
                         if state['phase']==1:
-                            state['phase']=2;marker.write_text(json.dumps(state))
+                            state['phase']=2;marker.write_text(json.dumps(state),encoding='utf-8')
                             def select(dialog):
                                 choice=dialog.findChild(QComboBox,'interface_language')
                                 choice.setCurrentIndex(choice.findData('es'))
@@ -218,8 +218,8 @@ class RelaunchCommandTests(unittest.TestCase):
                             (root/'result.json').write_text(json.dumps(dict(
                                 language=i18n.language(),preference=cfg['language'],
                                 pid=os.getpid(),parent=state['parent'],
-                                lock_pid=int(lock.read_text().splitlines()[0]),
-                                favourites=cfg['favorite_brands'])))
+                                lock_pid=int(lock.read_text(encoding='utf-8').splitlines()[0]),
+                                favourites=cfg['favorite_brands'])),encoding='utf-8')
                             self.close()
                 app_gui.MainWindow=Window
                 app_gui.__file__=__file__
@@ -232,7 +232,7 @@ class RelaunchCommandTests(unittest.TestCase):
             result=directory/'result.json';deadline=time.monotonic()+15
             while not result.exists() and time.monotonic()<deadline:time.sleep(.05)
             self.assertTrue(result.is_file(),'Replacement did not complete its startup')
-            data=json.loads(result.read_text())
+            data=json.loads(result.read_text(encoding='utf-8'))
             self.assertNotEqual(data['pid'],data['parent']);self.assertEqual(data['lock_pid'],data['pid'])
             self.assertEqual((data['language'],data['preference']),('es','es'))
             self.assertEqual(data['favourites'],['Alpha'])

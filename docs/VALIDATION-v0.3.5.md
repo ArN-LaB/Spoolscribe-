@@ -167,3 +167,19 @@ Recherche ciblée de clés privées, jetons et chemins personnels : aucun élém
 détecté dans cette sélection. Les SHA du commit et le statut du push sont vérifiés
 et communiqués au terme de l’opération Git, indépendamment des résultats de cette
 campagne locale.
+
+
+## Correctif CI Windows après le premier push
+
+L’exécution [41293604627](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41293604627)
+a réussi sur Linux 3.10/3.12 et macOS 3.12, mais a échoué sur Windows 3.12 :
+`test_catalogues_are_complete_with_identical_named_placeholders` lisait les sources
+UTF-8 avec l’encodage système cp1252. Erreur observée : `UnicodeDecodeError`,
+caractère `0x90`, dans `Path.read_text()` de `tests/test_v035.py`.
+
+Les lectures/écritures de texte des deux nouveaux fichiers de tests déclarent
+maintenant UTF-8, y compris le lanceur de fixture de redémarrage. Aucun test
+supprimé ou désactivé ; aucun changement de code applicatif ni de données.
+Le défaut cp1252 a été reproduit localement et l’analyse AST avec lecture UTF-8
+réussit. Suite locale Python 3.12 après correction : 267/267 tests réussis.
+Les résultats distants du correctif seront consignés dans le rapport CI séparé.

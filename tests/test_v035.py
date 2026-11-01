@@ -37,7 +37,7 @@ class TranslationTests(unittest.TestCase):
                     self.assertTrue(text.strip())
                     self.assertEqual(i18n.placeholders(source),i18n.placeholders(text))
         for filename in ('app_gui.py','ui_catalogue.py','ui_widgets.py','printer_presentations.py'):
-            for node in ast.walk(ast.parse((ROOT/filename).read_text())):
+            for node in ast.walk(ast.parse((ROOT/filename).read_text(encoding='utf-8'))):
                 if isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id=='tr' and node.args and isinstance(node.args[0],ast.Constant):
                     self.assertIn(node.args[0].value,messages,f'{filename}:{node.lineno}')
 
@@ -56,8 +56,8 @@ class TranslationTests(unittest.TestCase):
             target=Path(tmp)/'settings.json';core.export_settings(target)
             cfg['language']='auto';core.save_config(cfg);core.import_settings(target)
             self.assertEqual(core.load_config()['language'],'zh_CN')
-            document=json.loads(target.read_text());document['settings']['language']='unsupported'
-            target.write_text(json.dumps(document));before=Path(core.CONFIG_PATH).read_bytes()
+            document=json.loads(target.read_text(encoding='utf-8'));document['settings']['language']='unsupported'
+            target.write_text(json.dumps(document),encoding='utf-8');before=Path(core.CONFIG_PATH).read_bytes()
             with self.assertRaises(ValueError):core.import_settings(target)
             self.assertEqual(Path(core.CONFIG_PATH).read_bytes(),before)
 
@@ -72,7 +72,7 @@ class TranslationTests(unittest.TestCase):
         with Image.open(ROOT/'docs/images/spoolscribe-animated.gif') as image:
             self.assertGreater(image.n_frames,1)
             self.assertEqual(image.info['loop'],0)
-        self.assertIn('docs/images/spoolscribe-animated.gif',(ROOT/'README.md').read_text())
+        self.assertIn('docs/images/spoolscribe-animated.gif',(ROOT/'README.md').read_text(encoding='utf-8'))
 
 
 @unittest.skipUnless(fixture.HAS_QT,'PySide6 not installed')
