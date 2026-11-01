@@ -253,7 +253,33 @@ def main():
                         help="Préférer explicitement les valeurs Orca aux valeurs locales à l'export")
     parser.add_argument("--restore-db", nargs="?", const=DB_PATH + ".bak", metavar="SAUVEGARDE",
                         help="Restaurer explicitement une sauvegarde (défaut : .bak)")
+    parser.add_argument('--nfc-format', choices=('openspool','opentag3d'), default=None,
+                        help='Encodage du lecteur ; OpenSpool reste le défaut historique')
+    parser.add_argument('--printer', choices=tuple(core.printer_profiles.PROFILES))
+    parser.add_argument('--firmware', help='Identifiant de configuration lecteur/logiciel (ex. paxx12_openrfid, zmod, spoolsense)')
+    parser.add_argument('--opentag-output', choices=('nfctools-mobile','nfctools-desktop','ndef'))
+    parser.add_argument('--opentag-settings', metavar='JSON', help='Valeurs explicites OpenTag3D (cibles, masse, libellés courts)')
     args = parser.parse_args()
+    cfg=core.load_config()
+    args.nfc_format=args.nfc_format or (cfg.get('nfc_format') if cfg.get('nfc_format') in ('openspool','opentag3d') else 'openspool')
+    if args.nfc_format!='opentag3d' and (args.opentag_output or args.opentag_settings):parser.error('Ces options nécessitent --nfc-format opentag3d.')
+    args.opentag_output=args.opentag_output or (cfg.get('opentag3d_output') if cfg.get('opentag3d_output') in ('nfctools-mobile','nfctools-desktop','ndef') else 'nfctools-mobile')
+    explicit_opentag={}
+    if args.nfc_format=='opentag3d':
+        if args.export_format=='archive':parser.error('OpenTag3D : choisir --export-format nfc ; archive reste OpenSpool.')
+        reader=args.printer or cfg.get('printer_profile')
+        software=args.firmware or cfg.get('printer_firmware')
+        if reader not in core.printer_profiles.PROFILES or software not in [f['id'] for f in core.printer_profiles.PROFILES[reader]['firmwares']]:
+            parser.error('Précisez un lecteur et son logiciel OpenTag3D avec --printer et --firmware.')
+        if not core.printer_profiles.can_export(reader,software,'opentag3d'):
+            parser.error('Ce lecteur/logiciel ne déclare pas la lecture OpenTag3D.')
+        if args.opentag_settings:
+            try:
+                raw=Path(args.opentag_settings).read_bytes()
+                if len(raw)>16384:raise ValueError('Fichier de réglages trop volumineux.')
+                explicit_opentag=core.db_io.parse_json(raw)
+                core.validate_opentag_settings(explicit_opentag)
+            except (ValueError,OSError) as exc:parser.error(str(exc))
     if args.sources is not None:
         cfg = core.load_config()
         if args.sources != cfg["selected_sources"]:
@@ -300,7 +326,7 @@ def main():
                 "Fiche SKU: I inspect JSON avant export",
             ]
         print()
-        _print_box(f"SpoolScribe {core.APP_VERSION} — OpenSpool / NFC", lines, width=panel_w)
+        _print_box(f"SpoolScribe {core.APP_VERSION} — {args.nfc_format} / NFC", lines, width=panel_w)
         print()
 
     try:
@@ -428,9 +454,25 @@ def main():
             print(f"  └{'─' * W}┘")
 
             entry = db["_skus"][sku]
+            prepared_opentag=None
+            if args.nfc_format=='opentag3d':
+                settings=dict(core.opentag_settings(sku),**explicit_opentag)
+                for key,label in [('print_temp','Buse cible °C'),('bed_temp','Plateau cible °C'),('chamber_temp','Enceinte cible °C (0 si non chauffée)')]:
+                    if settings.get(key) is None:settings[key]=int(ask(label+' : '))
+                if entry.get('weight') is None and settings.get('weight') is None:
+                    settings['weight']=int(ask('Masse du filament en grammes : '))
+                prepared_opentag=core.prepare_opentag3d(sku,entry,view.product_data,settings=settings,
+                    tag_type=args.tag_type,reserved_bytes=args.reserve_bytes,output=args.opentag_output,
+                    use_orca_overrides=args.orca_overrides)
             while True:
                 confirm = ask(f"  Exporter ({args.export_format}) ? (O/n/I/Q) : ").lower()
                 if confirm in ("", "o", "y"):
+                    if prepared_opentag is not None:
+                        out=core.write_opentag3d(prepared_opentag,OUTPUT_DIR)
+                        try:core.save_opentag_settings(sku,settings)
+                        except OSError as exc:print('[AVERTISSEMENT] Réglages non mémorisés : '+str(exc))
+                        print('[OK] OpenTag3D : '+out)
+                        break
                     chosen = core.recommended_nfc(build_openspool(dict(entry, sku=sku), view.product_data, brand_meta=view.brand_meta,
                                                                  use_orca_overrides=args.orca_overrides), **nfc_options)
                     out = core_write_openspool(sku, entry, view.product_data,
@@ -441,6 +483,9 @@ def main():
                     print(f"[OK] Fichier généré : {os.path.basename(out)}")
                     break
                 if confirm in ("i", "info"):
+                    if prepared_opentag is not None:
+                        print(prepared_opentag.preview)
+                        continue
                     preview_entry = dict(entry)
                     preview_entry["sku"] = sku
                     payload = build_openspool(preview_entry, view.product_data, brand_meta=view.brand_meta,

@@ -36,7 +36,7 @@ DatabaseError = db_io.DatabaseError
 # APP_VERSION est la référence de version. spoolscribe.spec la lit ici ;
 # la CI vérifie que la version déclarée dans pyproject.toml reste alignée.
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.3.5"
+APP_VERSION = "0.4.0"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
@@ -179,7 +179,11 @@ DEFAULT_CONFIG = {
     "network_sources_revision": 0,
     "nfc_tag_type": "NTAG216",
     "nfc_profile": "auto",
+    "nfc_format": "openspool",
+    "opentag3d_output": "nfctools-mobile",
+    "opentag3d_settings": {},
     "printer_profile": "u1",
+    "printer_firmware": None,
     "selected_sources": ["polymaker", "ofd", "spoolman", "bambu", "sunlu"],
     "ui": {},
     "favorite_brands": [],
@@ -1426,8 +1430,20 @@ def import_settings(path):
     for key, value in incoming.items():
         if key in allowed and key not in ('network_consent', 'network_sources_revision', 'last_update'):
             cfg[key] = value
+    if cfg.get('nfc_format') not in ('openspool','opentag3d') or cfg.get('opentag3d_output') not in ('nfctools-mobile','nfctools-desktop','ndef'):
+        raise ValueError('Format NFC invalide')
+    settings=cfg.get('opentag3d_settings')
+    if not isinstance(settings,dict) or len(settings)>500:raise ValueError('Réglages OpenTag3D invalides')
+    for sku,values in settings.items():
+        if not isinstance(sku,str) or len(sku)>256:raise ValueError('Référence OpenTag3D invalide')
+        validate_opentag_settings(values)
+    if cfg['printer_profile'] in printer_profiles.PROFILES and printer_profiles.PROFILES[cfg['printer_profile']].get('hidden'):
+        cfg['printer_profile'],cfg['printer_firmware']=printer_profiles.resolve(cfg['printer_profile'],cfg.get('printer_firmware'))
     if cfg['printer_profile'] not in printer_profiles.PROFILES or cfg['nfc_tag_type'] not in NFC_CAPACITIES or cfg['nfc_profile'] not in NFC_PROFILES:
         raise ValueError('Choix imprimante/NFC invalide')
+    software=cfg.get('printer_firmware')
+    if software not in (None,'unknown') and software not in [f['id'] for f in printer_profiles.PROFILES[cfg['printer_profile']]['firmwares']]:
+        raise ValueError('Logiciel du lecteur invalide')
     if type(cfg['nfc_reserved_bytes']) is not int or not 0 <= cfg['nfc_reserved_bytes'] <= NFC_CAPACITIES[cfg['nfc_tag_type']]:
         raise ValueError('Réserve NFC invalide')
     if cfg['language'] not in ('auto','en','fr','es','zh_CN'):
@@ -1457,3 +1473,110 @@ def import_settings(path):
     save_config(cfg)
 
 NETWORK_SOURCES = [dict(name=meta['name'], license=('MIT' if key in ('ofd','spoolman','orca') else 'CC-BY 4.0' if key=='thefilamentdb' else 'Données factuelles fabricant'), host=meta['detail']) for key,meta in SOURCE_GROUPS.items()]
+
+# OpenTag3D is an independent wire format. The existing OpenSpool API stays unchanged.
+@dataclass(frozen=True)
+class OpenTagExport:
+    payload: bytes
+    data: bytes
+    filename: str
+    preview: str
+    size: dict
+
+
+def opentag_fields(entry, product_data, settings=None, *, use_orca_overrides=False):
+    from . import opentag3d
+    if not isinstance(entry,dict) or not isinstance(product_data,dict):raise ExportValidationError('Référence ou produit absent.')
+    hx=validate_hex(entry.get('hex'))
+    if not hx or db_io.implausible_color(entry):raise MissingColorError('Couleur représentative à confirmer avant l’export.')
+    suspect=db_io.implausible_physical(product_data)
+    if suspect:raise ExportValidationError('Caractéristiques à vérifier : '+' ; '.join(suspect))
+    src=dict(product_data)
+    orca_path=find_orca_profile(entry.get('product',''))
+    if orca_path:
+        try:
+            for key,value in load_orca_temps(orca_path).items():
+                if value is not None and (use_orca_overrides or src.get(key) is None):src[key]=value
+        except (ValueError,TypeError,OSError) as exc:raise ExportValidationError('Profil Orca inutilisable : '+str(exc)) from exc
+    fields=dict(material=src.get('type'),manufacturer=src.get('brand'),
+                diameter=src.get('diameter'),density=src.get('density'))
+    for key,source in [('min_print_temp','min_temp'),('max_print_temp','max_temp'),
+                       ('min_bed_temp','bed_min_temp'),('max_bed_temp','bed_max_temp')]:
+        if src.get(source) is not None:fields[key]=src[source]
+    alpha=entry.get('alpha','FF')
+    if not isinstance(alpha,str) or not re.fullmatch('[0-9A-Fa-f]{2}',alpha):raise ExportValidationError('Alpha explicite invalide.')
+    fields['color_1']=hx+alpha.upper()
+    additional=entry.get('additional_color_hexes',[])
+    source_colors=entry.get('source_colors')
+    if source_colors:
+        if not isinstance(source_colors,list) or any(not isinstance(c,str) or not re.fullmatch('[0-9A-F]{6}',c) for c in source_colors):
+            raise ExportValidationError('Couleurs source incompatibles ; aucune couleur n’est supprimée.')
+        if 'additional_color_hexes' not in entry:additional=list(dict.fromkeys(c for c in source_colors if c!=hx))
+    if not isinstance(additional,list) or any(not isinstance(c,str) or not re.fullmatch('[0-9A-F]{6}',c) for c in additional):
+        raise ExportValidationError('Couleurs supplémentaires invalides.')
+    if len(additional)>3:raise ExportValidationError('OpenTag3D : quatre couleurs au total maximum ; aucune couleur n’est supprimée.')
+    for i,h in enumerate(additional,2):fields['color_'+str(i)]=h+alpha.upper()
+    for dest,value in [('material_mod',src.get('subtype')),('color_name',entry.get('color_name')),
+                       ('weight',entry.get('weight')),('sku',entry.get('manufacturer_sku'))]:
+        if value is not None:fields[dest]=value
+    if settings is not None:
+        if not isinstance(settings,dict) or set(settings)-set(opentag3d.EDITABLE):
+            raise ExportValidationError('Réglages OpenTag3D invalides.')
+        fields.update(settings)
+    return fields
+
+
+def prepare_opentag3d(sku,entry,product_data,*,settings=None,tag_type='NTAG216',reserved_bytes=0,
+                      output='nfctools-mobile',use_orca_overrides=False):
+    from . import opentag3d
+    try:
+        fields=opentag_fields(entry,product_data,settings,use_orca_overrides=use_orca_overrides)
+        payload=opentag3d.encode(fields);size=opentag3d.budget(payload,tag_type,reserved_bytes)
+        data=opentag3d.export(payload,output)
+    except ValueError as exc:raise ExportValidationError(str(exc)) from exc
+    stem=openspool_filename(sku,entry.get('product',''),entry.get('color_name','')).removesuffix('_openspool.json')
+    filename=stem+'_opentag3d_'+output+('.ndef' if output=='ndef' else '.json')
+    preview=json.dumps({'format':'OpenTag3D','version':opentag3d.VERSION,
+        'mime':opentag3d.MIME.decode(),'fields':fields,'size':size,
+        'payload_hex':payload.hex().upper(),'ndef_hex':opentag3d.ndef(payload).hex().upper()},ensure_ascii=False,indent=2)
+    return OpenTagExport(payload,data,filename,preview,size)
+
+
+def write_opentag3d(export,output_dir):
+    if not isinstance(export,OpenTagExport):raise ExportValidationError('Export OpenTag3D non validé.')
+    directory=Path(output_dir).resolve();destination=directory/export.filename
+    if destination.resolve().parent!=directory:raise ExportValidationError('Chemin d’export invalide.')
+    db_io.atomic_write(destination,export.data)
+    return str(destination)
+
+
+def opentag_settings(sku):
+    values=load_config().get('opentag3d_settings',{})
+    result=values.get(sku,{}) if isinstance(values,dict) else {}
+    return dict(result) if isinstance(result,dict) else {}
+
+
+def save_opentag_settings(sku,settings):
+    validate_opentag_settings(settings)
+    cfg=load_config();all_values=cfg.get('opentag3d_settings',{})
+    if not isinstance(all_values,dict):all_values={}
+    cfg['opentag3d_settings']=dict(all_values,**{sku:dict(settings)})
+    save_config(cfg)
+
+
+def validate_opentag_settings(settings):
+    from . import opentag3d
+    from decimal import Decimal, InvalidOperation
+    if not isinstance(settings,dict) or set(settings)-set(opentag3d.EDITABLE):raise ValueError('Réglages OpenTag3D invalides.')
+    for key,value in settings.items():
+        if value is None:continue
+        _,length,kind=opentag3d.FIELDS[key]
+        if kind=='text':
+            if not isinstance(value,str) or len(value.encode('utf-8'))>length or any(ord(c)<32 or ord(c)==127 for c in value):
+                raise ValueError('Texte OpenTag3D invalide : '+key)
+        else:
+            if type(value) not in (int,float):raise ValueError('Nombre OpenTag3D invalide : '+key)
+            try:
+                number=Decimal(str(value));units=number/Decimal(kind)
+                if not number.is_finite() or units!=units.to_integral_value() or not 0<=units<256**length:raise ValueError('Valeur OpenTag3D non représentable : '+key)
+            except InvalidOperation as exc:raise ValueError('Valeur OpenTag3D invalide : '+key) from exc

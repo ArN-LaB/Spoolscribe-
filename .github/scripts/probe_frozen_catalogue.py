@@ -91,7 +91,7 @@ del entry_frame
 from spoolscribe import i18n
 languages=[]
 for code in ('auto',*i18n.LANGUAGES):
-    settings=core.load_config();settings['language']=code;core.save_config(settings)
+    settings=core.load_config();settings.update(language=code,printer_profile='u1',printer_firmware='paxx12',nfc_format='openspool');core.save_config(settings)
     window=window_class()
     try:
         window.resize(1100,800)
@@ -109,6 +109,34 @@ for code in ('auto',*i18n.LANGUAGES):
         else:
             assert i18n.language() == code
             languages.append(code)
+        window.printer.setCurrentIndex(window.printer.findData('u1'))
+        window.firmware.setCurrentIndex(window.firmware.findData('unknown'))
+        window.reader_buttons.buttons['integrated'].click()
+        window.software_buttons.buttons['modified'].click()
+        window.setup_buttons.buttons['paxx12_openrfid_generic'].click()
+        window.format_buttons.buttons['opentag3d'].click()
+        assert window.firmware.currentData()=='paxx12_openrfid_generic'
+        assert window.nfc_format.currentData()=='opentag3d'
+        assert window.setup_details.isHidden()
+        for printer,software,expected in [('u1','paxx12_openrfid_generic',2),('flashforge_ad5x','zmod',2),('bambu','spoolsense',2),('prusa_mk4','spoolsense',2),('prusa_core','stock',0)]:
+            window.printer.setCurrentIndex(window.printer.findData(printer))
+            window.firmware.setCurrentIndex(window.firmware.findData(software))
+            assert window.nfc_format.count()==expected
+            assert not window.configuration_source.isHidden()
+        window.printer.setCurrentIndex(window.printer.findData('opentag3d'))
+        assert window.nfc_format.currentData()=='opentag3d'
+        core.save_opentag_settings('TEST',dict(print_temp=210,bed_temp=60,chamber_temp=0,weight=1000))
+        for tag in core.NFC_CAPACITIES:
+            window.tag_choice.setCurrentIndex(window.tag_choice.findData(tag))
+            for output in ('nfctools-mobile','nfctools-desktop','ndef'):
+                window.opentag_output.setCurrentIndex(window.opentag_output.findData(output))
+                prepared=window._prepare_opentag()
+                out=core.write_opentag3d(prepared,core.OUTPUT_DIR)
+                assert Path(out).read_bytes()==prepared.data
+                assert prepared.size['occupied']==251 and prepared.size['remaining']>=0
+        window._refresh_inspector()
+        assert 'application/opentag3d' in window.inspector.toPlainText()
+        assert core.load_db()['_skus']['TEST']==e
     finally:
         window.close()
         window.deleteLater()
@@ -116,5 +144,8 @@ for code in ('auto',*i18n.LANGUAGES):
 result = {"version": core.APP_VERSION, "empty_first_install": True, "fixture_references": len(db["_skus"]),
           "approved_new_logos": len(manifest), "rendered_logos": rendered,
           "printer_photos":len(photo_manifest),"spool_artwork":True,"main_window_rendered":True,
+          "reader_configuration_checks":5,
+          "guided_setup_buttons":True,
+          "opentag3d":{"version":"2.004","outputs":3,"tags":list(core.NFC_CAPACITIES)},
           "automatic_language":automatic_language,"interface_languages":languages,"tag_exports": list(core.NFC_CAPACITIES), "offline": True}
 Path(os.environ["SPOOLSCRIBE_CATALOGUE_REPORT"]).write_text(json.dumps(result), encoding="utf-8")

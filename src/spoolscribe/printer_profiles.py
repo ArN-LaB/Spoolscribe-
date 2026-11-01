@@ -1,9 +1,7 @@
-"""Printer/reader catalogue: what each machine reads and what SpoolScribe can export for it.
+"""Documented printer + reader + software configurations, not brand-wide promises.
 
-The list lives in ``data/printers.json`` (bundled) and can be refreshed from the
-project repository into the user's data folder. Exporting a file is never
-writing a printer's tag; the ``openspool`` flag of the chosen firmware says
-whether the machine can read an OpenSpool NTAG at all.
+The legacy ``firmwares`` key remains compatible with saved settings and older
+clients. Each entry now describes a complete reading configuration and its effect.
 """
 from __future__ import annotations
 
@@ -12,8 +10,15 @@ import os
 from pathlib import Path
 from urllib.error import HTTPError
 
+EXPORT_FORMATS = ("openspool", "opentag3d")
+
 GROUP_ORDER = ("native", "external", "incompatible", "none")
-_LEGACY_IDS = {"u1_stock": ("u1", "stock")}
+_LEGACY_IDS = {"u1_stock": ("u1", "stock"),
+               "bambu_openspool": ("bambu", "openspool_network"),
+               "prusa": ("prusa_generic", "stock")}
+CONNECTIONS = ('integrated','usb','network','can','none','custom')
+FIRMWARE_KINDS = ('stock','modified','integration')
+EFFECTS = ('printer','inventory','standalone','none')
 DEFAULT = "u1"
 PRINTERS_URL = "https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/data/printers.json"
 
@@ -37,6 +42,8 @@ def user_path() -> Path | None:
 def validate_catalogue(doc) -> dict:
     if not isinstance(doc, dict) or doc.get("format") != "spoolscribe-printers" or doc.get("version") != 1:
         raise ValueError("Liste d'imprimantes : format inconnu.")
+    if 'configuration_schema' in doc and (type(doc['configuration_schema']) is not int or doc['configuration_schema']!=1):
+        raise ValueError('Schéma de configuration inconnu.')
     printers = doc.get("printers")
     if not isinstance(printers, list) or not printers:
         raise ValueError("Liste d'imprimantes vide.")
@@ -45,6 +52,8 @@ def validate_catalogue(doc) -> dict:
         if not isinstance(printer, dict) or not isinstance(printer.get("id"), str) or printer["id"] in seen:
             raise ValueError("Imprimante invalide ou dupliquée.")
         seen.add(printer["id"])
+        if 'hidden' in printer and type(printer['hidden']) is not bool:
+            raise ValueError('Profil historique invalide.')
         if printer.get("group") not in GROUP_ORDER or not isinstance(printer.get("label"), str):
             raise ValueError(f"Imprimante {printer['id']} : groupe ou libellé invalide.")
         firmwares = printer.get("firmwares")
@@ -53,6 +62,27 @@ def validate_catalogue(doc) -> dict:
             raise ValueError(f"Imprimante {printer['id']} : firmwares invalides.")
         if any("\x00" in str(v) or len(str(v)) > 2000 for v in printer.values() if isinstance(v, str)):
             raise ValueError("Texte d'imprimante invalide.")
+    for printer in printers:
+        ids=set()
+        for fw in printer['firmwares']:
+            if 'choice_label' in fw and (not isinstance(fw['choice_label'],str) or not fw['choice_label'] or len(fw['choice_label'])>120):
+                raise ValueError('Libellé de choix invalide.')
+            supported=fw.get('formats',['openspool'] if fw['openspool'] else [])
+            if (fw['id'] in ids or not isinstance(supported,list) or
+                any(x not in EXPORT_FORMATS for x in supported) or len(set(supported))!=len(supported)
+                or ('openspool' in supported)!=fw['openspool']):
+                raise ValueError('Formats de lecteur invalides.')
+            ids.add(fw['id'])
+            if 'connection' in fw or doc.get('configuration_schema') == 1 and not printer.get('hidden'):
+                read=fw.get('reader_formats')
+                if (fw.get('connection') not in CONNECTIONS or fw.get('firmware_kind') not in FIRMWARE_KINDS
+                    or fw.get('effect') not in EFFECTS or fw.get('evidence') not in ('documented','experimental','unverified')
+                    or not isinstance(read,list) or any(not isinstance(x,str) for x in read)
+                    or not set(supported).issubset(read) or (supported and (fw['evidence']=='unverified' or fw['effect']=='none'))
+                    or not isinstance(fw.get('reader'),str) or not isinstance(fw.get('notes'),str)
+                    or not isinstance(fw.get('url'),str) or not fw['url'].startswith('https://')
+                    or not isinstance(fw.get('checked'),str)):
+                    raise ValueError('Configuration de lecture invalide ou non documentée.')
     return doc
 
 
@@ -80,8 +110,9 @@ def _profiles() -> dict:
             "label": printer["label"], "vendor": printer.get("vendor", ""), "group": printer["group"],
             "reader": printer.get("reader", ""), "help": printer.get("help", ""),
             "fields": printer.get("fields", {}), "firmwares": firmwares,
-            # Compatibility: the printer "can export" when at least one firmware reads OpenSpool.
-            "nfc": any(f["openspool"] for f in firmwares),
+            "hidden": printer.get('hidden') is True,
+            # The printer can export when a firmware reads at least one supported format.
+            "nfc": any(f.get("formats",["openspool"] if f["openspool"] else []) for f in firmwares),
         }
     return out
 
@@ -111,8 +142,45 @@ def firmware(printer_id: str, firmware_id: str | None) -> dict:
     return next(f for f in PROFILES[printer_id]["firmwares"] if f["id"] == firmware_id)
 
 
-def can_export(printer_id: str, firmware_id: str | None = None) -> bool:
-    return bool(firmware(printer_id, firmware_id)["openspool"])
+def formats(printer_id: str, firmware_id: str | None = None) -> tuple[str, ...]:
+    printer_id,legacy=_LEGACY_IDS.get(printer_id,(printer_id,None))
+    firmware_id=legacy or firmware_id
+    if printer_id not in PROFILES or firmware_id is not None and firmware_id not in [f['id'] for f in PROFILES[printer_id]['firmwares']]:
+        return ()
+    fw=firmware(printer_id,firmware_id)
+    return tuple(fw.get('formats',['openspool'] if fw['openspool'] else []))
+
+
+def configuration(printer_id: str, firmware_id: str | None = None) -> dict:
+    """Description for presentation; old catalogues keep their historical API."""
+    printer_id,firmware_id=resolve(printer_id,firmware_id)
+    fw=dict(firmware(printer_id,firmware_id))
+    profile=PROFILES[printer_id]
+    fw.setdefault('connection','integrated' if profile['group'] in ('native','incompatible') else 'none' if profile['group']=='none' else 'custom')
+    fw.setdefault('firmware_kind','integration')
+    fw.setdefault('reader',profile.get('reader',''))
+    fw.setdefault('reader_formats',list(formats(printer_id,firmware_id)))
+    fw.setdefault('effect','standalone' if formats(printer_id,firmware_id) else 'none')
+    fw.setdefault('evidence','unverified')
+    return fw
+
+
+def categories(printer_id: str) -> set[str]:
+    """A printer may have both a proprietary original reader and an added one."""
+    result=set()
+    for fw in PROFILES[printer_id]['firmwares']:
+        c=configuration(printer_id,fw['id'])
+        if formats(printer_id,fw['id']):
+            result.update(('compatible',c['connection'],c['firmware_kind']))
+        elif c['reader_formats']:
+            result.add('rfid')
+    if 'compatible' not in result and 'rfid' not in result:result.add('none')
+    return result
+
+
+def can_export(printer_id: str, firmware_id: str | None = None, export_format=None) -> bool:
+    supported=formats(printer_id,firmware_id)
+    return export_format in supported if export_format is not None else bool(supported)
 
 
 def describe(printer_id: str, firmware_id: str | None = None) -> str:

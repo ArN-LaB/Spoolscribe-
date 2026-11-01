@@ -1,4 +1,4 @@
-# Ressources de l’application — v0.3.5
+# Ressources de l’application
 
 Ce dossier contient uniquement les ressources utilisées par SpoolScribe.
 Il ne contient ni catalogue de filaments utilisateur, ni ancien export, ni profil

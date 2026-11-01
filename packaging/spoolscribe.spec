@@ -102,7 +102,7 @@ a = Analysis(
     binaries=[],
     datas=datas,
     hiddenimports=[
-        "spoolscribe.core", "scripts.db_io", "scripts.catalogue_sources", "scripts.catalogue_merge", "scripts.official_sources", "scripts.app_updates", "spoolscribe.printer_profiles", "spoolscribe.ui_catalogue", "certifi",
+        "spoolscribe.core", "spoolscribe.opentag3d", "scripts.db_io", "scripts.catalogue_sources", "scripts.catalogue_merge", "scripts.official_sources", "scripts.app_updates", "spoolscribe.printer_profiles", "spoolscribe.ui_catalogue", "certifi",
         # Les scrapers dans scripts/ sont lancés via runpy depuis l'exe gelé ;
         # PyInstaller n'analyse pas leurs imports, on les déclare donc ici.
         "urllib", "urllib.request", "urllib.error", "urllib.parse",

@@ -926,7 +926,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.nfc_reserve.setToolTip(tr("Espace réservé à d'autres enregistrements NDEF ou données du logiciel d'écriture. À vérifier dans ce logiciel ; zéro ne prédit pas ses ajouts."))
         reserve_row.addWidget(self.nfc_reserve)
         advanced_layout.addLayout(reserve_row)
-        hardware_layout.addWidget(self.nfc_advanced)
+        self.setup_details.layout().addWidget(self.nfc_advanced)
         self.nfc_advanced.hide()
         self._build_hardware_dialog()
         self.nfc_note = QLabel()
@@ -940,6 +940,10 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.tag_type.currentIndexChanged.connect(self._nfc_changed)
         self.nfc_profile.currentIndexChanged.connect(self._nfc_changed)
         self.nfc_reserve.valueChanged.connect(self._nfc_changed)
+        self.btn_opentag_settings=QPushButton(tr('Préparer l’étiquette…'))
+        self.btn_opentag_settings.setFixedHeight(CONTROL_HEIGHT)
+        self.btn_opentag_settings.clicked.connect(self._complete_opentag_settings)
+        dl.addWidget(self.btn_opentag_settings);self.btn_opentag_settings.hide()
         self._wire_export_assistant()
 
         # Respiration au-dessus de l'action principale (la centre verticalement).
@@ -1654,6 +1658,19 @@ class MainWindow(CatalogueUx, QMainWindow):
             if view is None:
                 raise core.ExportValidationError(tr('Produit introuvable pour cette référence.'))
             entry = self.db["_skus"][self.current_sku]
+            if mode=='nfc' and self._opentag_selected():
+                if not self._complete_opentag_settings():return
+                prepared=self._prepare_opentag()
+                directory=QFileDialog.getExistingDirectory(self,tr('Choisir le dossier d’export'),core.export_directory())
+                if not directory:return
+                out=core.write_opentag3d(prepared,directory)
+                self._last_export_directory=directory
+                try:
+                    cfg=core.load_config();cfg['export_directory']=directory;core.save_config(cfg)
+                except OSError:self.status.showMessage(tr('Fichier exporté ; le dossier n’a pas pu être mémorisé.'),8000)
+                else:self.status.showMessage(tr('Export terminé : {v0}',v0=out),8000)
+                QMessageBox.information(self,tr('Export terminé'),tr('Fichier enregistré :\n{v0}',v0=out))
+                return
             export_options = self._nfc_options() if mode == "nfc" else dict(tag_type=self.tag_type.currentData(), profile="full", reserved_bytes=0)
             # Validate before opening a destination picker; cancellation writes nothing.
             core.serialize_openspool(self._build_payload(),mode=mode,**export_options)
@@ -1675,19 +1692,25 @@ class MainWindow(CatalogueUx, QMainWindow):
             QMessageBox.critical(self, "Erreur", tr("Échec de l'export :\n{v0}", v0=e))
 
     def _toggle_inspect(self):
+        if self._opentag_selected() and not self.inspector.isVisible():
+            if not self._complete_color() or not self._complete_opentag_settings():return
         if self.inspector.isVisible():
             self.inspector.setVisible(False)
-            self.btn_inspect.setText(tr('Voir le JSON'))
+            self.btn_inspect.setText(tr('Voir l’export') if self._opentag_selected() else tr('Voir le JSON'))
             self.detail_scroll.verticalScrollBar().setValue(getattr(self,"_inspect_scroll_before",0))
         else:
             self._inspect_scroll_before=self.detail_scroll.verticalScrollBar().value()
             self._refresh_inspector()
             self.inspector.setVisible(True)
-            self.btn_inspect.setText(tr('Masquer le JSON'))
+            self.btn_inspect.setText(tr('Masquer l’export') if self._opentag_selected() else tr('Masquer le JSON'))
             QTimer.singleShot(0,lambda:self.detail_scroll.ensureWidgetVisible(self.inspector) if self.inspector.isVisible() else None)
 
     def _refresh_inspector(self):
         try:
+            if self._opentag_selected():
+                prepared=self._prepare_opentag()
+                self.inspector.setPlainText(prepared.preview if self.opentag_output.currentData()=='ndef' else prepared.data.decode('utf-8'))
+                return
             payload = self._build_payload()
             if payload is not None:
                 text = core.serialize_openspool(payload, **self._nfc_options())

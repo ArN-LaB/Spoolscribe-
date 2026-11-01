@@ -11,3 +11,7 @@ It does NOT cover, and cannot grant rights over:
     Panchroma™, PolyTerra™, PolyLite™, Snapmaker®). See docs/TRADEMARKS.md.
 
 See docs/DATA_SOURCES.md and docs/TRADEMARKS.md for the full picture.
+
+OpenTag3D 2.004 interoperability: https://opentag3d.info/spec.html
+The SpoolScribe encoder is independently implemented from the standard field layout.
+No OpenTag3D website or OpenRFID implementation code is included in the application.

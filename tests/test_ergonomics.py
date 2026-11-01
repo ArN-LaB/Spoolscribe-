@@ -28,11 +28,11 @@ class ErgonomicsTests(unittest.TestCase):
         self.assertEqual(w.printer.currentData(),before)
         browser.search.setText('prusa');browser._choose()
         self.assertIsNotNone(browser.selected_index)
-        self.assertEqual(w.printer.itemData(browser.selected_index),'prusa')
+        self.assertEqual(w.printer.itemData(browser.selected_index),'prusa_core')
         def choose(dialog):
             dialog.search.setText('prusa');dialog._choose();return dialog.result()
         with patch.object(QDialog,'exec',choose):w.printer.showPopup()
-        self.assertEqual(w.printer.currentData(),'prusa')
+        self.assertEqual(w.printer.currentData(),'prusa_core')
 
     def test_printer_results_fit_when_resizing(self):
         from spoolscribe.ui_widgets import PrinterBrowser

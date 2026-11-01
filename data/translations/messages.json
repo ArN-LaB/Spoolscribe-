@@ -2478,5 +2478,1160 @@
     "en": "☕ Support the project · Buy Me a Coffee",
     "es": "☕ Apoyar el proyecto · Buy Me a Coffee",
     "zh_CN": "☕ 支持本项目 · Buy Me a Coffee"
+  },
+  "Préparer l’étiquette…": {
+    "en": "Prepare label…",
+    "es": "Preparar etiqueta…",
+    "zh_CN": "准备标签…"
+  },
+  "Voir l’export": {
+    "en": "Show export",
+    "es": "Ver exportación",
+    "zh_CN": "查看导出"
+  },
+  "Masquer l’export": {
+    "en": "Hide export",
+    "es": "Ocultar exportación",
+    "zh_CN": "隐藏导出"
+  },
+  "Format lu par votre matériel": {
+    "en": "Format read by your hardware",
+    "es": "Formato leído por tu equipo",
+    "zh_CN": "设备可读取的格式"
+  },
+  "Fichier pour le logiciel d’écriture": {
+    "en": "File for your writing app",
+    "es": "Archivo para la aplicación de escritura",
+    "zh_CN": "写入应用使用的文件"
+  },
+  "Préparer l’étiquette OpenTag3D": {
+    "en": "Prepare the OpenTag3D label",
+    "es": "Preparar la etiqueta OpenTag3D",
+    "zh_CN": "准备 OpenTag3D 标签"
+  },
+  "NFC Tools mobile (.json)": {
+    "en": "NFC Tools mobile (.json)",
+    "es": "NFC Tools móvil (.json)",
+    "zh_CN": "NFC Tools 手机版 (.json)"
+  },
+  "NFC Tools Desktop (.json)": {
+    "en": "NFC Tools Desktop (.json)",
+    "es": "NFC Tools Desktop (.json)",
+    "zh_CN": "NFC Tools 桌面版 (.json)"
+  },
+  "Message NDEF brut (.ndef)": {
+    "en": "Raw NDEF message (.ndef)",
+    "es": "Mensaje NDEF sin procesar (.ndef)",
+    "zh_CN": "原始 NDEF 消息 (.ndef)"
+  },
+  "Lecture NFC compatible disponible": {
+    "en": "Compatible NFC reading available",
+    "es": "Lectura NFC compatible disponible",
+    "zh_CN": "支持兼容的 NFC 读取"
+  },
+  "Ces valeurs servent à cette étiquette. Le catalogue source reste intact. Aucune température cible n’est déduite.": {
+    "en": "These values are for this label. The source catalogue stays unchanged. No target temperature is inferred.",
+    "es": "Estos valores son para esta etiqueta. El catálogo original se conserva. No se deducen temperaturas objetivo.",
+    "zh_CN": "这些数值用于此标签。源目录保持不变，不会推测目标温度。"
+  },
+  "Fabricant (nom court)": {
+    "en": "Manufacturer (short name)",
+    "es": "Fabricante (nombre corto)",
+    "zh_CN": "制造商（简称）"
+  },
+  "Matière (nom court)": {
+    "en": "Material (short name)",
+    "es": "Material (nombre corto)",
+    "zh_CN": "材料（简称）"
+  },
+  "Variante (facultatif)": {
+    "en": "Modifier (optional)",
+    "es": "Variante (opcional)",
+    "zh_CN": "变体（可选）"
+  },
+  "Nom de couleur (facultatif)": {
+    "en": "Colour name (optional)",
+    "es": "Nombre del color (opcional)",
+    "zh_CN": "颜色名称（可选）"
+  },
+  "Référence fabricant (facultatif)": {
+    "en": "Manufacturer reference (optional)",
+    "es": "Referencia del fabricante (opcional)",
+    "zh_CN": "制造商型号（可选）"
+  },
+  "Masse du filament (g)": {
+    "en": "Filament mass (g)",
+    "es": "Masa del filamento (g)",
+    "zh_CN": "耗材质量（克）"
+  },
+  "Températures pour l’étiquette : multiples de 5 °C. Une enceinte non chauffée vaut 0 °C seulement si vous le confirmez.": {
+    "en": "Label temperatures: multiples of 5 °C. Use 0 °C for an unheated chamber only if you confirm it.",
+    "es": "Temperaturas de la etiqueta: múltiplos de 5 °C. Indica 0 °C para una cámara sin calefacción solo si lo confirmas.",
+    "zh_CN": "标签温度须为 5 °C 的倍数。仅在确认腔体无需加热时填写 0 °C。"
+  },
+  "Température": {
+    "en": "Temperature",
+    "es": "Temperatura",
+    "zh_CN": "温度"
+  },
+  "Minimum": {
+    "en": "Minimum",
+    "es": "Mínimo",
+    "zh_CN": "最低"
+  },
+  "Cible": {
+    "en": "Target",
+    "es": "Objetivo",
+    "zh_CN": "目标"
+  },
+  "Maximum": {
+    "en": "Maximum",
+    "es": "Máximo",
+    "zh_CN": "最高"
+  },
+  "Buse (°C)": {
+    "en": "Nozzle (°C)",
+    "es": "Boquilla (°C)",
+    "zh_CN": "喷嘴 (°C)"
+  },
+  "Plateau (°C)": {
+    "en": "Bed (°C)",
+    "es": "Cama (°C)",
+    "zh_CN": "热床 (°C)"
+  },
+  "Enceinte (°C)": {
+    "en": "Chamber (°C)",
+    "es": "Cámara (°C)",
+    "zh_CN": "腔体 (°C)"
+  },
+  "OpenTag3D : {v0}/{v1} octets sur l’étiquette ; {v2} octets disponibles.": {
+    "en": "OpenTag3D: {v0}/{v1} bytes on the tag; {v2} bytes available.",
+    "es": "OpenTag3D: {v0}/{v1} bytes en la etiqueta; {v2} bytes disponibles.",
+    "zh_CN": "OpenTag3D：标签占用 {v0}/{v1} 字节，剩余 {v2} 字节。"
+  },
+  "Validation logicielle uniquement. Vérifiez l’import, l’écriture et la relecture avec votre matériel.": {
+    "en": "Software validation only. Check import, writing and read-back with your hardware.",
+    "es": "Solo validación de software. Comprueba la importación, escritura y lectura con tu equipo.",
+    "zh_CN": "仅完成软件验证。请使用实际设备检查导入、写入和回读。"
+  },
+  "OpenTag3D": {
+    "en": "OpenTag3D",
+    "es": "OpenTag3D",
+    "zh_CN": "OpenTag3D"
+  },
+  "Importez le profil dans NFC Tools. Le fichier JSON contient un enregistrement binaire OpenTag3D, pas un JSON OpenSpool.": {
+    "en": "Import the profile into NFC Tools. The JSON file contains a binary OpenTag3D record, not OpenSpool JSON.",
+    "es": "Importa el perfil en NFC Tools. El archivo JSON contiene un registro binario OpenTag3D, no JSON OpenSpool.",
+    "zh_CN": "将配置导入 NFC Tools。此 JSON 文件包含 OpenTag3D 二进制记录，并非 OpenSpool JSON。"
+  },
+  "Message NDEF brut : le logiciel d’écriture doit accepter ce format.": {
+    "en": "Raw NDEF message: your writing app must accept this format.",
+    "es": "Mensaje NDEF sin procesar: la aplicación de escritura debe aceptar este formato.",
+    "zh_CN": "原始 NDEF 消息：写入应用必须支持此格式。"
+  },
+  "Étiquette incomplète": {
+    "en": "Incomplete label",
+    "es": "Etiqueta incompleta",
+    "zh_CN": "标签信息不完整"
+  },
+  "Compatibles SpoolScribe · NFC": {
+    "en": "SpoolScribe compatible · NFC",
+    "es": "Compatibles con SpoolScribe · NFC",
+    "zh_CN": "兼容 SpoolScribe · NFC"
+  },
+  "Sans lecteur compatible": {
+    "en": "No compatible reader",
+    "es": "Sin lector compatible",
+    "zh_CN": "无兼容读取器"
+  },
+  "paxx12 avec détection OpenRFID": {
+    "en": "paxx12 with OpenRFID detection",
+    "es": "paxx12 con detección OpenRFID",
+    "zh_CN": "paxx12（OpenRFID 检测）"
+  },
+  "Lecteur OpenTag3D": {
+    "en": "OpenTag3D reader",
+    "es": "Lector OpenTag3D",
+    "zh_CN": "OpenTag3D 读取器"
+  },
+  "Logiciel lisant OpenTag3D": {
+    "en": "Software reading OpenTag3D",
+    "es": "Software compatible con OpenTag3D",
+    "zh_CN": "支持 OpenTag3D 的软件"
+  },
+  "Lecteur NFC NTAG215/216 compatible OpenTag3D": {
+    "en": "OpenTag3D-compatible NTAG215/216 NFC reader",
+    "es": "Lector NFC NTAG215/216 compatible con OpenTag3D",
+    "zh_CN": "兼容 OpenTag3D 的 NTAG215/216 NFC 读取器"
+  },
+  "Confirmez la prise en charge OpenTag3D dans le logiciel du lecteur.": {
+    "en": "Confirm OpenTag3D support in your reader software.",
+    "es": "Confirma la compatibilidad OpenTag3D en el software del lector.",
+    "zh_CN": "请确认读取器软件支持 OpenTag3D。"
+  },
+  "Export OpenTag3D pour un lecteur explicitement compatible. Un lecteur NFC seul ne garantit pas cette compatibilité.": {
+    "en": "OpenTag3D export for an explicitly compatible reader. NFC hardware alone does not guarantee support.",
+    "es": "Exportación OpenTag3D para un lector compatible. Tener NFC no garantiza esta compatibilidad.",
+    "zh_CN": "为明确兼容的读取器导出 OpenTag3D。仅具备 NFC 硬件并不保证兼容。"
+  },
+  "OpenTag3D est documenté pour la détection OpenRFID, pas pour le lecteur par défaut. Vérifiez le logiciel installé ; recette matérielle SpoolScribe non exécutée.": {
+    "en": "OpenTag3D is documented for OpenRFID detection, not the default reader. Check the installed software; SpoolScribe hardware acceptance has not been performed.",
+    "es": "OpenTag3D está documentado para OpenRFID, no para el lector predeterminado. Comprueba el software instalado; no se han realizado pruebas físicas de SpoolScribe.",
+    "zh_CN": "OpenTag3D 的支持文档针对 OpenRFID 检测，而非默认读取器。请核实所装软件；尚未进行 SpoolScribe 实机验收。"
+  },
+  "paxx12 — détection par défaut (OpenSpool)": {
+    "en": "paxx12 — default detection (OpenSpool)",
+    "es": "paxx12 — detección predeterminada (OpenSpool)",
+    "zh_CN": "paxx12 — 默认检测（OpenSpool）"
+  },
+  "2. Configuration de lecture": {
+    "en": "2. Reading setup",
+    "es": "2. Configuración de lectura",
+    "zh_CN": "2. 读取配置"
+  },
+  "3. Format à écrire sur l’étiquette": {
+    "en": "3. Format to write to the tag",
+    "es": "3. Formato para escribir en la etiqueta",
+    "zh_CN": "3. 写入标签的格式"
+  },
+  "Au moins une configuration exportable": {
+    "en": "At least one supported export setup",
+    "es": "Al menos una configuración exportable",
+    "zh_CN": "至少一种可导出的配置"
+  },
+  "Aucun format exportable pour cette configuration.": {
+    "en": "No export format for this setup.",
+    "es": "No hay formato exportable para esta configuración.",
+    "zh_CN": "此配置没有可导出的格式。"
+  },
+  "Aucun lecteur": {
+    "en": "No reader",
+    "es": "Sin lector",
+    "zh_CN": "无读卡器"
+  },
+  "Aucun lecteur configuré": {
+    "en": "No reader configured",
+    "es": "Sin lector configurado",
+    "zh_CN": "未配置读卡器"
+  },
+  "Aucune intégration confirmée": {
+    "en": "No confirmed integration",
+    "es": "Sin integración confirmada",
+    "zh_CN": "尚未确认的集成"
+  },
+  "Avec firmware constructeur": {
+    "en": "With manufacturer firmware",
+    "es": "Con firmware del fabricante",
+    "zh_CN": "使用原厂固件"
+  },
+  "Avec firmware modifié": {
+    "en": "With modified firmware",
+    "es": "Con firmware modificado",
+    "zh_CN": "使用修改版固件"
+  },
+  "Choisir mon installation actuelle…": {
+    "en": "Choose my current setup…",
+    "es": "Elegir mi instalación actual…",
+    "zh_CN": "选择当前配置…"
+  },
+  "Choisissez ensuite votre installation réelle. Le résultat peut se limiter à l’inventaire externe.": {
+    "en": "Then choose your actual setup. It may only update external inventory.",
+    "es": "Después elija su instalación real. Puede limitarse al inventario externo.",
+    "zh_CN": "然后选择实际配置。功能可能仅限于外部库存管理。"
+  },
+  "Choisissez le lecteur et le logiciel déjà configurés. Brancher un lecteur USB ne suffit pas à le faire reconnaître par le firmware.": {
+    "en": "Choose the reader and software already configured. Connecting a USB reader alone does not add firmware support.",
+    "es": "Elija el lector y el software ya configurados. Conectar un lector USB no basta para que el firmware lo reconozca.",
+    "zh_CN": "请选择已配置的读卡器和软件。仅插入 USB 读卡器并不代表固件能够识别它。"
+  },
+  "Configuration à préciser": {
+    "en": "Setup needed",
+    "es": "Configuración por indicar",
+    "zh_CN": "请指定配置"
+  },
+  "Documentation de cette configuration": {
+    "en": "Setup documentation",
+    "es": "Documentación de esta configuración",
+    "zh_CN": "此配置的文档"
+  },
+  "Données transmises à l’imprimante": {
+    "en": "Data sent to the printer",
+    "es": "Datos enviados a la impresora",
+    "zh_CN": "将数据传送至打印机"
+  },
+  "Fiches consultables ; aucune intégration de lecture confirmée.": {
+    "en": "Filament details available; no confirmed reader integration.",
+    "es": "Fichas disponibles; sin integración de lectura confirmada.",
+    "zh_CN": "可查看耗材资料；尚未确认读卡器集成。"
+  },
+  "Firmware constructeur conservé ; accessoires, mode LAN ou automatisations peuvent être requis.": {
+    "en": "Manufacturer firmware retained; accessories, LAN mode or automations may be needed.",
+    "es": "Se conserva el firmware original; pueden requerirse accesorios, modo LAN o automatizaciones.",
+    "zh_CN": "保留原厂固件；可能需要附件、局域网模式或自动化配置。"
+  },
+  "Firmware modifié": {
+    "en": "Modified firmware",
+    "es": "Firmware modificado",
+    "zh_CN": "修改版固件"
+  },
+  "Format d’origine non exporté": {
+    "en": "Original format not exported",
+    "es": "Formato original no exportado",
+    "zh_CN": "不支持导出的原始格式"
+  },
+  "Format non exporté par SpoolScribe": {
+    "en": "Format not exported by SpoolScribe",
+    "es": "Formato no exportado por SpoolScribe",
+    "zh_CN": "SpoolScribe 尚不支持导出此格式"
+  },
+  "Inventaire externe uniquement": {
+    "en": "External inventory only",
+    "es": "Solo inventario externo",
+    "zh_CN": "仅用于外部库存"
+  },
+  "Le format du lecteur d’origine n’est pas exporté ici. Une autre installation peut être proposée.": {
+    "en": "The original reader format is not exported here. Another setup may be listed.",
+    "es": "El formato del lector original no se exporta aquí. Puede haber otra instalación disponible.",
+    "zh_CN": "此处不导出原装读卡器的格式，但可能提供其他配置。"
+  },
+  "Le scanner transmet par réseau. Son câble USB peut ne servir qu’à l’alimentation.": {
+    "en": "The scanner sends data over the network. Its USB cable may only supply power.",
+    "es": "El escáner transmite por red. Su cable USB puede servir solo para alimentarlo.",
+    "zh_CN": "扫描器通过网络传送数据。USB 线可能仅用于供电。"
+  },
+  "Lecteur USB ajouté": {
+    "en": "Added USB reader",
+    "es": "Lector USB añadido",
+    "zh_CN": "外接 USB 读卡器"
+  },
+  "Lecteur réseau ajouté": {
+    "en": "Added network reader",
+    "es": "Lector de red añadido",
+    "zh_CN": "外接网络读卡器"
+  },
+  "Lecteur réseau (Wi-Fi / LAN)": {
+    "en": "Network reader (Wi-Fi / LAN)",
+    "es": "Lector de red (Wi-Fi / LAN)",
+    "zh_CN": "网络读卡器（Wi-Fi / 局域网）"
+  },
+  "Lecteur autonome / intégration à confirmer": {
+    "en": "Standalone reader / integration unconfirmed",
+    "es": "Lector autónomo / integración por confirmar",
+    "zh_CN": "独立读卡器 / 集成待确认"
+  },
+  "Lecteur intégré": {
+    "en": "Built-in reader",
+    "es": "Lector integrado",
+    "zh_CN": "内置读卡器"
+  },
+  "Lecteur intégré U1": {
+    "en": "U1 built-in reader",
+    "es": "Lector integrado U1",
+    "zh_CN": "U1 内置读卡器"
+  },
+  "Lecteur intégré U1 + OpenRFID": {
+    "en": "U1 built-in reader + OpenRFID",
+    "es": "Lector integrado U1 + OpenRFID",
+    "zh_CN": "U1 内置读卡器 + OpenRFID"
+  },
+  "Lecteur du fabricant": {
+    "en": "Manufacturer reader",
+    "es": "Lector del fabricante",
+    "zh_CN": "原厂读卡器"
+  },
+  "Lecteur AMS Bambu": {
+    "en": "Bambu AMS reader",
+    "es": "Lector AMS Bambu",
+    "zh_CN": "Bambu AMS 读卡器"
+  },
+  "Lecteur autonome OpenSpool": {
+    "en": "Standalone OpenSpool reader",
+    "es": "Lector OpenSpool autónomo",
+    "zh_CN": "独立 OpenSpool 读卡器"
+  },
+  "Lecteur autonome OpenTag3D": {
+    "en": "Standalone OpenTag3D reader",
+    "es": "Lector OpenTag3D autónomo",
+    "zh_CN": "独立 OpenTag3D 读卡器"
+  },
+  "Lecteur explicitement compatible · à confirmer": {
+    "en": "Explicitly compatible reader · confirm",
+    "es": "Lector expresamente compatible · confirmar",
+    "zh_CN": "明确兼容的读卡器 · 请确认"
+  },
+  "Lecture par le lecteur choisi": {
+    "en": "Read by the selected reader",
+    "es": "Lectura mediante el lector elegido",
+    "zh_CN": "由所选读卡器读取"
+  },
+  "Logiciel d’intégration ajouté": {
+    "en": "Added integration software",
+    "es": "Software de integración añadido",
+    "zh_CN": "附加集成软件"
+  },
+  "Module NFC non précisé": {
+    "en": "NFC module unspecified",
+    "es": "Módulo NFC sin especificar",
+    "zh_CN": "未指定 NFC 模块"
+  },
+  "Précisez votre installation dans « Modifier… ».": {
+    "en": "Specify your setup in “Edit…”.",
+    "es": "Indique su instalación en «Modificar…».",
+    "zh_CN": "请在“修改…”中指定配置。"
+  },
+  "Source documentaire ; aucun essai matériel SpoolScribe revendiqué.": {
+    "en": "Documentation source; no SpoolScribe hardware test claimed.",
+    "es": "Fuente documental; no se afirma una prueba física de SpoolScribe.",
+    "zh_CN": "文档来源；不代表已完成 SpoolScribe 硬件实测。"
+  },
+  "USB avec logiciel et pilote documentés ; pas de prise en charge universelle au branchement.": {
+    "en": "USB with documented software and driver; not universally plug-and-play.",
+    "es": "USB con software y controlador documentados; no es universalmente conectar y usar.",
+    "zh_CN": "USB 需要文档指定的软件和驱动，并非通用即插即用。"
+  },
+  "USB sur l’imprimante ou son hôte": {
+    "en": "USB on the printer or its host",
+    "es": "USB en la impresora o su equipo anfitrión",
+    "zh_CN": "打印机或其主机上的 USB"
+  },
+  "Accessoire constructeur sur bus CAN": {
+    "en": "Manufacturer CAN-bus accessory",
+    "es": "Accesorio del fabricante por bus CAN",
+    "zh_CN": "原厂 CAN 总线附件"
+  },
+  "Sans intégration NFC configurée": {
+    "en": "No NFC integration configured",
+    "es": "Sin integración NFC configurada",
+    "zh_CN": "未配置 NFC 集成"
+  },
+  "Équipement et firmware d’origine": {
+    "en": "Original hardware and firmware",
+    "es": "Equipo y firmware originales",
+    "zh_CN": "原装硬件和固件"
+  },
+  "Format d’origine non exporté ici. Aucun lecteur USB reconnu par ce firmware n’a été confirmé.": {
+    "en": "Original format not exported here. No USB reader supported by this firmware has been confirmed.",
+    "es": "El formato original no se exporta aquí. No se ha confirmado un lector USB reconocido por este firmware.",
+    "zh_CN": "此处不导出原始格式。尚未确认此固件支持的 USB 读卡器。"
+  },
+  "Choisissez le mode réellement activé dans paxx12, ou le logiciel constructeur.": {
+    "en": "Choose the detection mode enabled in paxx12, or the manufacturer firmware.",
+    "es": "Elija el modo de detección activado en paxx12 o el firmware original.",
+    "zh_CN": "请选择 paxx12 中实际启用的检测模式，或原厂固件。"
+  },
+  "Un lecteur ajouté nécessite FF_NFC et le firmware correspondant.": {
+    "en": "An added reader requires FF_NFC and the matching firmware.",
+    "es": "Un lector añadido requiere FF_NFC y el firmware correspondiente.",
+    "zh_CN": "外接读卡器需要 FF_NFC 及相应固件。"
+  },
+  "Le lecteur réseau envoie des informations à l’imprimante ; il ne modifie pas la lecture RFID de l’AMS.": {
+    "en": "The network reader sends data to the printer; it does not change the AMS RFID reader.",
+    "es": "El lector de red envía datos a la impresora; no modifica la lectura RFID del AMS.",
+    "zh_CN": "网络读卡器向打印机发送信息，但不改变 AMS 的 RFID 读取功能。"
+  },
+  "Klipper ou Spoolman seuls ne décodent pas tous les formats NFC.": {
+    "en": "Klipper or Spoolman alone do not decode every NFC format.",
+    "es": "Klipper o Spoolman por sí solos no decodifican todos los formatos NFC.",
+    "zh_CN": "仅有 Klipper 或 Spoolman 并不能解码所有 NFC 格式。"
+  },
+  "L’accessoire Prusa officiel lit OpenPrintTag ; ce format n’est pas encore exporté par SpoolScribe.": {
+    "en": "The official Prusa accessory reads OpenPrintTag; SpoolScribe does not yet export this format.",
+    "es": "El accesorio oficial Prusa lee OpenPrintTag; SpoolScribe aún no exporta este formato.",
+    "zh_CN": "Prusa 官方附件读取 OpenPrintTag；SpoolScribe 尚不能导出该格式。"
+  },
+  "SpoolSense peut suivre les bobines dans l’inventaire. Cette intégration ne renseigne pas le filament sur l’écran Prusa.": {
+    "en": "SpoolSense can track spools in inventory. This integration does not update filament on the Prusa screen.",
+    "es": "SpoolSense puede seguir bobinas en el inventario. Esta integración no actualiza el filamento en la pantalla Prusa.",
+    "zh_CN": "SpoolSense 可在库存中跟踪线盘，但此集成不会更新 Prusa 屏幕上的耗材信息。"
+  },
+  "Choisissez CORE One ou MK4/MMU3 si votre modèle est proposé. Aucun lecteur universel USB reconnu par tous les firmwares Prusa n’est établi.": {
+    "en": "Choose CORE One or MK4/MMU3 if listed. No universal USB reader supported by every Prusa firmware is established.",
+    "es": "Elija CORE One o MK4/MMU3 si aparece su modelo. No se ha establecido un lector USB universal para todos los firmwares Prusa.",
+    "zh_CN": "若有对应型号，请选择 CORE One 或 MK4/MMU3。尚未确认所有 Prusa 固件通用的 USB 读卡器。"
+  },
+  "Deux situations distinctes : firmware d’origine avec inventaire externe, ou Moonraker ajouté avec intégration à l’imprimante.": {
+    "en": "Two setups: original firmware with external inventory, or added Moonraker with printer integration.",
+    "es": "Dos casos: firmware original con inventario externo o Moonraker añadido con integración a la impresora.",
+    "zh_CN": "两种配置：原厂固件配合外部库存，或添加 Moonraker 后与打印机集成。"
+  },
+  "Dans paxx12, Filament Detection = Snapmaker. Ce mode lit OpenSpool ; OpenRFID est une autre option du même firmware.": {
+    "en": "In paxx12, set Filament Detection to Snapmaker. This mode reads OpenSpool; OpenRFID is another option in the same firmware.",
+    "es": "En paxx12, Filament Detection = Snapmaker. Este modo lee OpenSpool; OpenRFID es otra opción del mismo firmware.",
+    "zh_CN": "在 paxx12 中设置 Filament Detection = Snapmaker。此模式读取 OpenSpool；OpenRFID 是同一固件的另一选项。"
+  },
+  "Dans paxx12, Filament Detection = OpenRFID. OpenSpool et OpenTag3D sont deux formats lus par ce mode.": {
+    "en": "In paxx12, set Filament Detection to OpenRFID. This mode reads both OpenSpool and OpenTag3D.",
+    "es": "En paxx12, Filament Detection = OpenRFID. Este modo lee tanto OpenSpool como OpenTag3D.",
+    "zh_CN": "在 paxx12 中设置 Filament Detection = OpenRFID。此模式同时读取 OpenSpool 和 OpenTag3D。"
+  },
+  "Le firmware constructeur lit les tags Snapmaker. Aucun export OpenSpool ou OpenTag3D reconnu dans cette configuration.": {
+    "en": "Manufacturer firmware reads Snapmaker tags. OpenSpool and OpenTag3D exports are not recognized in this setup.",
+    "es": "El firmware original lee etiquetas Snapmaker. Esta configuración no reconoce las exportaciones OpenSpool ni OpenTag3D.",
+    "zh_CN": "原厂固件读取 Snapmaker 标签，此配置不识别导出的 OpenSpool 或 OpenTag3D。"
+  },
+  "Scanner SpoolSense 1.7.5+ ; paxx12 avec Filament Detection = External et API Moonraker accessible. Le scanner lit le tag puis transmet les données au canal choisi. Aucun lecteur USB générique branché sur la U1.": {
+    "en": "SpoolSense 1.7.5+ scanner; paxx12 with Filament Detection = External and accessible Moonraker API. The scanner sends tag data to the selected channel. This is not a generic USB reader plugged into the U1.",
+    "es": "Escáner SpoolSense 1.7.5+; paxx12 con Filament Detection = External y API Moonraker accesible. Envía los datos al canal elegido. No es un lector USB genérico conectado a la U1.",
+    "zh_CN": "需要 SpoolSense 1.7.5+ 扫描器；paxx12 设置 Filament Detection = External，并可访问 Moonraker API。扫描器将标签数据发送至所选通道，并非直接插入 U1 的通用 USB 读卡器。"
+  },
+  "Lecteur distant compatible avec l’API U1 ; paxx12 avec Filament Detection = External. Les lecteurs wasikuss/baze documentés ici annoncent OpenSpool, pas OpenTag3D.": {
+    "en": "Remote reader compatible with the U1 API; paxx12 with Filament Detection = External. The documented wasikuss/baze readers support OpenSpool, not OpenTag3D.",
+    "es": "Lector remoto compatible con la API U1; paxx12 con Filament Detection = External. Los lectores wasikuss/baze documentados admiten OpenSpool, no OpenTag3D.",
+    "zh_CN": "需要兼容 U1 API 的远程读卡器；paxx12 设置 Filament Detection = External。文档中的 wasikuss/baze 读卡器支持 OpenSpool，而非 OpenTag3D。"
+  },
+  "Le firmware Flashforge d’origine n’intègre pas le plugin FF_NFC.": {
+    "en": "Original Flashforge firmware does not include the FF_NFC plugin.",
+    "es": "El firmware original Flashforge no incluye el complemento FF_NFC.",
+    "zh_CN": "Flashforge 原厂固件不包含 FF_NFC 插件。"
+  },
+  "Installer Zmod et FF_NFC ; connecter un ACR122U ou PN532 USB compatible. Le plugin affecte la matière et la couleur au slot IFS. La recette OpenTag3D reste à effectuer avec SpoolScribe.": {
+    "en": "Install Zmod and FF_NFC; connect a compatible ACR122U or USB PN532. The plugin assigns material and color to an IFS slot. OpenTag3D still needs a SpoolScribe hardware test.",
+    "es": "Instale Zmod y FF_NFC; conecte un ACR122U o PN532 USB compatible. El complemento asigna material y color al slot IFS. Falta probar OpenTag3D físicamente con SpoolScribe.",
+    "zh_CN": "安装 Zmod 与 FF_NFC，并连接兼容的 ACR122U 或 USB PN532。插件将材料和颜色分配至 IFS 槽位。OpenTag3D 仍需进行 SpoolScribe 硬件实测。"
+  },
+  "AD5X uniquement. Kiln OS + FF_NFC et accès USB requis. Le projet annonce une intégration encore précoce ; parcours complet sur cette combinaison non validé matériellement.": {
+    "en": "AD5X only. Requires Kiln OS, FF_NFC and USB access. The integration is an early release; a complete hardware workflow has not been validated on this combination.",
+    "es": "Solo AD5X. Requiere Kiln OS, FF_NFC y acceso USB. La integración es temprana; no se ha validado físicamente el recorrido completo en esta combinación.",
+    "zh_CN": "仅适用于 AD5X。需要 Kiln OS、FF_NFC 和 USB 访问权限。该集成处于早期阶段，此组合的完整硬件流程尚未验证。"
+  },
+  "Le lecteur Wi-Fi LaneTag transmet au plugin FF_NFC installé sous Zmod. Ce lecteur ne se branche pas en USB sur l’imprimante.": {
+    "en": "The Wi-Fi LaneTag reader sends data to FF_NFC installed under Zmod. It does not plug into the printer over USB.",
+    "es": "El lector Wi-Fi LaneTag envía datos a FF_NFC instalado en Zmod. No se conecta por USB a la impresora.",
+    "zh_CN": "Wi-Fi LaneTag 读卡器将数据发送给 Zmod 下的 FF_NFC，并非通过 USB 连接打印机。"
+  },
+  "L’AMS utilise les tags Bambu. Il ne lit pas directement les NTAG215/216 exportés ici.": {
+    "en": "The AMS uses Bambu tags. It does not directly read the NTAG215/216 tags exported here.",
+    "es": "El AMS utiliza etiquetas Bambu. No lee directamente las NTAG215/216 exportadas aquí.",
+    "zh_CN": "AMS 使用 Bambu 标签，不直接读取此处导出的 NTAG215/216 标签。"
+  },
+  "X1Plus ne suffit pas à activer la lecture native des tags OpenSpool ou OpenTag3D par l’AMS.": {
+    "en": "X1Plus alone does not enable native AMS reading of OpenSpool or OpenTag3D tags.",
+    "es": "X1Plus por sí solo no permite que el AMS lea de forma nativa OpenSpool ni OpenTag3D.",
+    "zh_CN": "仅安装 X1Plus 不会使 AMS 原生读取 OpenSpool 或 OpenTag3D 标签。"
+  },
+  "Firmware Bambu avec accès LAN/MQTT autorisé (mode développeur selon version). Le lecteur externe envoie matière et couleur à l’AMS. Vérifiez le modèle et les restrictions de firmware.": {
+    "en": "Bambu firmware with permitted LAN/MQTT access (Developer Mode depending on version). The external reader sends material and color to the AMS. Check the model and firmware restrictions.",
+    "es": "Firmware Bambu con acceso LAN/MQTT permitido (modo desarrollador según versión). El lector externo envía material y color al AMS. Compruebe el modelo y las restricciones del firmware.",
+    "zh_CN": "需要允许 LAN/MQTT 访问的 Bambu 固件（开发者模式因版本而异）。外部读卡器向 AMS 发送材料和颜色。请核实型号及固件限制。"
+  },
+  "Mode LAN Only + Developer Mode, scanner avec écran TFT, MQTT, intégration Bambu Home Assistant, automatisations et Spoolman configurés. Le scanner transmet les informations au slot AMS ; aucun ajout USB direct.": {
+    "en": "Requires LAN Only + Developer Mode, a TFT-equipped scanner, MQTT, the Bambu Home Assistant integration, automations and Spoolman. The scanner sends data to an AMS slot; no direct USB addition.",
+    "es": "Requiere LAN Only + Developer Mode, escáner con TFT, MQTT, integración Bambu Home Assistant, automatizaciones y Spoolman. Envía datos al slot AMS; sin conexión USB directa.",
+    "zh_CN": "需要 LAN Only 和 Developer Mode、带 TFT 屏幕的扫描器、MQTT、Bambu Home Assistant 集成、自动化和 Spoolman。扫描器向 AMS 槽位发送数据，并非直接 USB 扩展。"
+  },
+  "Ancien choix générique. Sélectionnez votre intégration exacte ; la présence de Klipper ou Spoolman ne prouve pas la lecture OpenSpool.": {
+    "en": "Legacy generic choice. Select your exact integration; Klipper or Spoolman alone do not prove OpenSpool reading support.",
+    "es": "Opción genérica anterior. Elija su integración exacta; Klipper o Spoolman por sí solos no confirman la lectura de OpenSpool.",
+    "zh_CN": "这是旧版通用选项。请选择具体集成；仅有 Klipper 或 Spoolman 不能证明支持读取 OpenSpool。"
+  },
+  "Installer et configurer le middleware SpoolSense, Spoolman et les macros adaptées à votre Klipper/Moonraker. Le scanner communique par réseau ; son alimentation USB n’est pas une intégration USB de l’imprimante.": {
+    "en": "Install and configure SpoolSense middleware, Spoolman and the macros for your Klipper/Moonraker. The scanner uses the network; its USB power supply is not a printer USB integration.",
+    "es": "Instale y configure el middleware SpoolSense, Spoolman y las macros para su Klipper/Moonraker. El escáner usa la red; la alimentación USB no es una integración USB de la impresora.",
+    "zh_CN": "安装并配置 SpoolSense 中间件、Spoolman 及 Klipper/Moonraker 对应宏。扫描器通过网络通信，USB 供电并不表示打印机 USB 集成。"
+  },
+  "Ce parcours lit des références Spoolman (UID ou identifiant), pas un export de caractéristiques OpenSpool/OpenTag3D. Aucun encodeur de lien Spoolman ajouté.": {
+    "en": "This setup reads Spoolman references (UID or ID), not exported OpenSpool/OpenTag3D properties. No Spoolman link encoder has been added.",
+    "es": "Esta instalación lee referencias Spoolman (UID o ID), no propiedades exportadas OpenSpool/OpenTag3D. No se ha añadido un codificador de enlaces Spoolman.",
+    "zh_CN": "此配置读取 Spoolman 引用（UID 或 ID），而非导出的 OpenSpool/OpenTag3D 特性。此处未添加 Spoolman 链接编码器。"
+  },
+  "Accessoire officiel pour la famille CORE One, branché au port CAN xBuddy ; firmware 8.0+. Pas un lecteur USB. Non compatible INDX/MMU3 selon la fiche constructeur. OpenPrintTag est un format distinct, non exporté ici.": {
+    "en": "Official CORE One family accessory on the xBuddy CAN port; firmware 8.0+. Not USB. Manufacturer excludes INDX/MMU3. OpenPrintTag is a separate format, not exported here.",
+    "es": "Accesorio oficial de la familia CORE One en el puerto CAN xBuddy; firmware 8.0+. No es USB. El fabricante excluye INDX/MMU3. OpenPrintTag es otro formato, no exportado aquí.",
+    "zh_CN": "CORE One 系列官方附件连接 xBuddy CAN 端口，需要固件 8.0+，不是 USB。厂家说明不兼容 INDX/MMU3。OpenPrintTag 是独立格式，此处尚不能导出。"
+  },
+  "Aucun lecteur OpenTag3D/OpenSpool d’origine documenté ici.": {
+    "en": "No original OpenTag3D/OpenSpool reader is documented here.",
+    "es": "Aquí no se documenta un lector original OpenTag3D/OpenSpool.",
+    "zh_CN": "此处未找到原装 OpenTag3D/OpenSpool 读卡器的文档依据。"
+  },
+  "Inventaire et contrôles avant impression ; pas de mise à jour du matériau sur l’écran Prusa ni d’affectation de slot écrite dans le firmware. PrusaLink et automatisations requis ; intégration expérimentale.": {
+    "en": "Inventory and pre-print checks only; no filament update on the Prusa display or slot assignment written to firmware. Requires PrusaLink and automations; experimental integration.",
+    "es": "Solo inventario y comprobaciones previas; no actualiza el filamento en la pantalla Prusa ni los slots en el firmware. Requiere PrusaLink y automatizaciones; integración experimental.",
+    "zh_CN": "仅用于库存与打印前检查，不更新 Prusa 屏幕上的材料，也不向固件写入槽位分配。需要 PrusaLink 和自动化，集成处于实验阶段。"
+  },
+  "Modèle non précisé : aucune lecture NFC exportable confirmée.": {
+    "en": "Model unspecified: no confirmed exportable NFC reading setup.",
+    "es": "Modelo sin especificar: sin configuración de lectura NFC exportable confirmada.",
+    "zh_CN": "型号未指定：尚未确认可导出的 NFC 读取配置。"
+  },
+  "Les fiches restent consultables. Un lecteur branché au Mac sert à écrire les tags ; il ne rend pas l’imprimante compatible.": {
+    "en": "Filament details remain available. A reader connected to the Mac writes tags; it does not make the printer compatible.",
+    "es": "Las fichas siguen disponibles. Un lector conectado al Mac escribe etiquetas; no hace compatible a la impresora.",
+    "zh_CN": "仍可查看材料资料。连接 Mac 的读卡器用于写标签，并不会使打印机自动兼容。"
+  },
+  "Export pour le lecteur choisi. La liaison avec une imprimante n’est pas établie par ce choix générique.": {
+    "en": "Export for the selected reader. This generic choice does not establish a link to a printer.",
+    "es": "Exportación para el lector elegido. Esta opción genérica no confirma una conexión con una impresora.",
+    "zh_CN": "为所选读卡器导出。此通用选项不代表已建立与打印机的连接。"
+  },
+  "Le scanner peut lire les tags, mais le firmware Creality d’origine ne reçoit pas les données de bobine via cette intégration.": {
+    "en": "The scanner reads tags, but original Creality firmware does not receive spool data through this integration.",
+    "es": "El escáner lee etiquetas, pero el firmware original Creality no recibe datos de bobina mediante esta integración.",
+    "zh_CN": "扫描器可读取标签，但此集成不会将线盘数据传入 Creality 原厂固件。"
+  },
+  "K1/K1 Max avec root et Moonraker installés, middleware et macros SpoolSense configurés. Ce n’est pas un branchement USB pris en charge d’origine.": {
+    "en": "K1/K1 Max with root, installed Moonraker, configured SpoolSense middleware and macros. This is not a USB connection supported by original firmware.",
+    "es": "K1/K1 Max con root, Moonraker instalado, middleware y macros SpoolSense configurados. No es una conexión USB admitida por el firmware original.",
+    "zh_CN": "需要已 root 的 K1/K1 Max、Moonraker 及配置完成的 SpoolSense 中间件和宏，并非原厂固件支持的 USB 接入。"
+  },
+  "Intégré · paxx12 · mode Snapmaker": {
+    "en": "Built-in · paxx12 · Snapmaker mode",
+    "es": "Integrado · paxx12 · modo Snapmaker",
+    "zh_CN": "内置 · paxx12 · Snapmaker 模式"
+  },
+  "Intégré · paxx12 · mode OpenRFID": {
+    "en": "Built-in · paxx12 · OpenRFID mode",
+    "es": "Integrado · paxx12 · modo OpenRFID",
+    "zh_CN": "内置 · paxx12 · OpenRFID 模式"
+  },
+  "Intégré · paxx12 · OpenRFID (Generic)": {
+    "en": "Built-in · paxx12 · OpenRFID (Generic)",
+    "es": "Integrado · paxx12 · OpenRFID (Generic)",
+    "zh_CN": "内置 · paxx12 · OpenRFID (Generic)"
+  },
+  "Intégré · firmware Snapmaker d’origine": {
+    "en": "Built-in · original Snapmaker firmware",
+    "es": "Integrado · firmware original Snapmaker",
+    "zh_CN": "内置 · Snapmaker 原厂固件"
+  },
+  "Réseau · SpoolSense + paxx12 (External)": {
+    "en": "Network · SpoolSense + paxx12 (External)",
+    "es": "Red · SpoolSense + paxx12 (External)",
+    "zh_CN": "网络 · SpoolSense + paxx12 (External)"
+  },
+  "Réseau · lecteur ESP32 OpenSpool + paxx12": {
+    "en": "Network · ESP32 OpenSpool reader + paxx12",
+    "es": "Red · lector ESP32 OpenSpool + paxx12",
+    "zh_CN": "网络 · ESP32 OpenSpool 读卡器 + paxx12"
+  },
+  "USB · Zmod + FF_NFC": {
+    "en": "USB · Zmod + FF_NFC",
+    "es": "USB · Zmod + FF_NFC",
+    "zh_CN": "USB · Zmod + FF_NFC"
+  },
+  "USB · Kiln OS + FF_NFC": {
+    "en": "USB · Kiln OS + FF_NFC",
+    "es": "USB · Kiln OS + FF_NFC",
+    "zh_CN": "USB · Kiln OS + FF_NFC"
+  },
+  "Réseau · LaneTag + Zmod / FF_NFC": {
+    "en": "Network · LaneTag + Zmod / FF_NFC",
+    "es": "Red · LaneTag + Zmod / FF_NFC",
+    "zh_CN": "网络 · LaneTag + Zmod / FF_NFC"
+  },
+  "Intégration existante · format à vérifier": {
+    "en": "Existing integration · format unconfirmed",
+    "es": "Integración existente · formato por verificar",
+    "zh_CN": "现有集成 · 格式待确认"
+  },
+  "Réseau · SpoolSense + middleware": {
+    "en": "Network · SpoolSense + middleware",
+    "es": "Red · SpoolSense + middleware",
+    "zh_CN": "网络 · SpoolSense + 中间件"
+  },
+  "USB sur hôte Klipper · nfc2klipper": {
+    "en": "USB on Klipper host · nfc2klipper",
+    "es": "USB en el equipo Klipper · nfc2klipper",
+    "zh_CN": "Klipper 主机上的 USB · nfc2klipper"
+  },
+  "Intégré · X1Plus (X1 uniquement)": {
+    "en": "Built-in · X1Plus (X1 only)",
+    "es": "Integrado · X1Plus (solo X1)",
+    "zh_CN": "内置 · X1Plus（仅 X1）"
+  },
+  "Réseau · ESP32 OpenSpool + mode LAN": {
+    "en": "Network · ESP32 OpenSpool + LAN mode",
+    "es": "Red · ESP32 OpenSpool + modo LAN",
+    "zh_CN": "网络 · ESP32 OpenSpool + 局域网模式"
+  },
+  "Réseau · SpoolSense + Home Assistant": {
+    "en": "Network · SpoolSense + Home Assistant",
+    "es": "Red · SpoolSense + Home Assistant",
+    "zh_CN": "网络 · SpoolSense + Home Assistant"
+  },
+  "Accessoire CAN · firmware Prusa 8.0+": {
+    "en": "CAN accessory · Prusa firmware 8.0+",
+    "es": "Accesorio CAN · firmware Prusa 8.0+",
+    "zh_CN": "CAN 附件 · Prusa 固件 8.0+"
+  },
+  "Réseau · SpoolSense + PrusaLink / HA": {
+    "en": "Network · SpoolSense + PrusaLink / HA",
+    "es": "Red · SpoolSense + PrusaLink / HA",
+    "zh_CN": "网络 · SpoolSense + PrusaLink / HA"
+  },
+  "Réseau · SpoolSense · inventaire seul": {
+    "en": "Network · SpoolSense · inventory only",
+    "es": "Red · SpoolSense · solo inventario",
+    "zh_CN": "网络 · SpoolSense · 仅库存"
+  },
+  "Réseau · SpoolSense + root / Moonraker": {
+    "en": "Network · SpoolSense + root / Moonraker",
+    "es": "Red · SpoolSense + root / Moonraker",
+    "zh_CN": "网络 · SpoolSense + root / Moonraker"
+  },
+  "FF_NFC + ACR122U ou PN532 USB": {
+    "en": "FF_NFC + ACR122U or USB PN532",
+    "es": "FF_NFC + ACR122U o PN532 USB",
+    "zh_CN": "FF_NFC + ACR122U 或 USB PN532"
+  },
+  "Lecteur distant ESP32-C3 + PN532": {
+    "en": "Remote ESP32-C3 + PN532 reader",
+    "es": "Lector remoto ESP32-C3 + PN532",
+    "zh_CN": "远程 ESP32-C3 + PN532 读卡器"
+  },
+  "Lecteur USB + service nfc2klipper": {
+    "en": "USB reader + nfc2klipper service",
+    "es": "Lector USB + servicio nfc2klipper",
+    "zh_CN": "USB 读卡器 + nfc2klipper 服务"
+  },
+  "LaneTag ESP32 + module NFC": {
+    "en": "LaneTag ESP32 + NFC module",
+    "es": "LaneTag ESP32 + módulo NFC",
+    "zh_CN": "LaneTag ESP32 + NFC 模块"
+  },
+  "Scanner SpoolSense": {
+    "en": "SpoolSense scanner",
+    "es": "Escáner SpoolSense",
+    "zh_CN": "SpoolSense 扫描器"
+  },
+  "Scanner SpoolSense ESP32 + PN532/PN5180": {
+    "en": "SpoolSense ESP32 + PN532/PN5180 scanner",
+    "es": "Escáner SpoolSense ESP32 + PN532/PN5180",
+    "zh_CN": "SpoolSense ESP32 + PN532/PN5180 扫描器"
+  },
+  "Scanner SpoolSense + middleware + Moonraker": {
+    "en": "SpoolSense scanner + middleware + Moonraker",
+    "es": "Escáner SpoolSense + middleware + Moonraker",
+    "zh_CN": "SpoolSense 扫描器 + 中间件 + Moonraker"
+  },
+  "Snapmaker U1": {
+    "en": "Snapmaker U1",
+    "es": "Snapmaker U1",
+    "zh_CN": "Snapmaker U1"
+  },
+  "Flashforge AD5X": {
+    "en": "Flashforge AD5X",
+    "es": "Flashforge AD5X",
+    "zh_CN": "Flashforge AD5X"
+  },
+  "Klipper / Moonraker (Voron, Sovol, RatRig…)": {
+    "en": "Klipper / Moonraker (Voron, Sovol, RatRig…)",
+    "es": "Klipper / Moonraker (Voron, Sovol, RatRig…)",
+    "zh_CN": "Klipper / Moonraker（Voron、Sovol、RatRig…）"
+  },
+  "Bambu Lab X1 / P1 / A1 / H2 (AMS)": {
+    "en": "Bambu Lab X1 / P1 / A1 / H2 (AMS)",
+    "es": "Bambu Lab X1 / P1 / A1 / H2 (AMS)",
+    "zh_CN": "Bambu Lab X1 / P1 / A1 / H2 (AMS)"
+  },
+  "ESP32 + PN532 + OpenSpool": {
+    "en": "ESP32 + PN532 + OpenSpool",
+    "es": "ESP32 + PN532 + OpenSpool",
+    "zh_CN": "ESP32 + PN532 + OpenSpool"
+  },
+  "SpoolSense 1.7.0+ + Home Assistant": {
+    "en": "SpoolSense 1.7.0+ + Home Assistant",
+    "es": "SpoolSense 1.7.0+ + Home Assistant",
+    "zh_CN": "SpoolSense 1.7.0+ + Home Assistant"
+  },
+  "Creality K2 / K2 Plus / Hi (CFS)": {
+    "en": "Creality K2 / K2 Plus / Hi (CFS)",
+    "es": "Creality K2 / K2 Plus / Hi (CFS)",
+    "zh_CN": "Creality K2 / K2 Plus / Hi (CFS)"
+  },
+  "Anycubic Kobra S1 / Kobra 3 (ACE Pro)": {
+    "en": "Anycubic Kobra S1 / Kobra 3 (ACE Pro)",
+    "es": "Anycubic Kobra S1 / Kobra 3 (ACE Pro)",
+    "zh_CN": "Anycubic Kobra S1 / Kobra 3 (ACE Pro)"
+  },
+  "Elegoo Centauri Carbon 2 (CANVAS)": {
+    "en": "Elegoo Centauri Carbon 2 (CANVAS)",
+    "es": "Elegoo Centauri Carbon 2 (CANVAS)",
+    "zh_CN": "Elegoo Centauri Carbon 2 (CANVAS)"
+  },
+  "QIDI Plus4 / Q2 / Max4 (QIDI Box)": {
+    "en": "QIDI Plus4 / Q2 / Max4 (QIDI Box)",
+    "es": "QIDI Plus4 / Q2 / Max4 (QIDI Box)",
+    "zh_CN": "QIDI Plus4 / Q2 / Max4 (QIDI Box)"
+  },
+  "UltiMaker 3 / S-series (Material Station)": {
+    "en": "UltiMaker 3 / S-series (Material Station)",
+    "es": "UltiMaker 3 / S-series (Material Station)",
+    "zh_CN": "UltiMaker 3 / S-series (Material Station)"
+  },
+  "Raise3D Pro3 HS": {
+    "en": "Raise3D Pro3 HS",
+    "es": "Raise3D Pro3 HS",
+    "zh_CN": "Raise3D Pro3 HS"
+  },
+  "MakerBot METHOD": {
+    "en": "MakerBot METHOD",
+    "es": "MakerBot METHOD",
+    "zh_CN": "MakerBot METHOD"
+  },
+  "XYZprinting da Vinci": {
+    "en": "XYZprinting da Vinci",
+    "es": "XYZprinting da Vinci",
+    "zh_CN": "XYZprinting da Vinci"
+  },
+  "Flashforge Creator 5": {
+    "en": "Flashforge Creator 5",
+    "es": "Flashforge Creator 5",
+    "zh_CN": "Flashforge Creator 5"
+  },
+  "Prusa CORE One / CORE One L": {
+    "en": "Prusa CORE One / CORE One L",
+    "es": "Prusa CORE One / CORE One L",
+    "zh_CN": "Prusa CORE One / CORE One L"
+  },
+  "Prusa OpenPrintTag Upgrade": {
+    "en": "Prusa OpenPrintTag Upgrade",
+    "es": "Prusa OpenPrintTag Upgrade",
+    "zh_CN": "Prusa OpenPrintTag Upgrade"
+  },
+  "Prusa MK4 / MK4S / MMU3": {
+    "en": "Prusa MK4 / MK4S / MMU3",
+    "es": "Prusa MK4 / MK4S / MMU3",
+    "zh_CN": "Prusa MK4 / MK4S / MMU3"
+  },
+  "SpoolSense + PrusaLink + Home Assistant": {
+    "en": "SpoolSense + PrusaLink + Home Assistant",
+    "es": "SpoolSense + PrusaLink + Home Assistant",
+    "zh_CN": "SpoolSense + PrusaLink + Home Assistant"
+  },
+  "Prusa · autre modèle ou modèle à préciser": {
+    "en": "Prusa · other or unspecified model",
+    "es": "Prusa · otro modelo o modelo por indicar",
+    "zh_CN": "Prusa · 其他型号或待指定型号"
+  },
+  "Creality K1 / K1 Max · Moonraker ajouté": {
+    "en": "Creality K1 / K1 Max · added Moonraker",
+    "es": "Creality K1 / K1 Max · Moonraker añadido",
+    "zh_CN": "Creality K1 / K1 Max · 已添加 Moonraker"
+  },
+  "SpoolSense + middleware + Moonraker": {
+    "en": "SpoolSense + middleware + Moonraker",
+    "es": "SpoolSense + middleware + Moonraker",
+    "zh_CN": "SpoolSense + middleware + Moonraker"
+  },
+  "Impression multicolore avec IFS. Lecteur USB ou réseau ajouté avec FF_NFC sous Zmod ou Kiln OS.": {
+    "en": "Multicolor printing with IFS. Add a USB or network reader with FF_NFC under Zmod or Kiln OS.",
+    "es": "Impresión multicolor con IFS. Lector USB o de red añadido con FF_NFC en Zmod o Kiln OS.",
+    "zh_CN": "IFS 多色打印。可在 Zmod 或 Kiln OS 下通过 FF_NFC 添加 USB 或网络读卡器。"
+  },
+  "Quatre têtes. Lecteur USB ou réseau ajouté avec FF_NFC sous Zmod ; Kiln OS n’est pas annoncé pour ce modèle.": {
+    "en": "Four toolheads. Add a USB or network reader with FF_NFC under Zmod; Kiln OS is not listed for this model.",
+    "es": "Cuatro cabezales. Lector USB o de red añadido con FF_NFC en Zmod; Kiln OS no se anuncia para este modelo.",
+    "zh_CN": "四个工具头。在 Zmod 下通过 FF_NFC 添加 USB 或网络读卡器；该型号未列出 Kiln OS 支持。"
+  },
+  "Accessoire officiel OpenPrintTag branché au bus CAN xBuddy, avec firmware Prusa 8.0+. Ce format n’est pas encore exporté ici.": {
+    "en": "Official OpenPrintTag accessory on the xBuddy CAN bus, with Prusa firmware 8.0+. This format is not yet exported here.",
+    "es": "Accesorio oficial OpenPrintTag por bus CAN xBuddy, con firmware Prusa 8.0+. Este formato aún no se exporta aquí.",
+    "zh_CN": "官方 OpenPrintTag 附件连接 xBuddy CAN 总线，需要 Prusa 固件 8.0+。此处尚不能导出该格式。"
+  },
+  "Un scanner réseau peut suivre les bobines dans l’inventaire. Il ne remplace pas une lecture de tag par le firmware Prusa.": {
+    "en": "A network scanner can track spools in inventory. This does not replace tag reading by Prusa firmware.",
+    "es": "Un escáner de red puede seguir bobinas en el inventario. No sustituye la lectura de etiquetas por el firmware Prusa.",
+    "zh_CN": "网络扫描器可在库存中跟踪线盘，但不等同于 Prusa 固件读取标签。"
+  },
+  "Intégration expérimentale": {
+    "en": "Experimental integration",
+    "es": "Integración experimental",
+    "zh_CN": "实验性集成"
+  },
+  "Compatibilité à vérifier": {
+    "en": "Compatibility unconfirmed",
+    "es": "Compatibilidad por verificar",
+    "zh_CN": "兼容性待确认"
+  },
+  "Sur hôte Klipper · nfc2klipper": {
+    "en": "On Klipper host · nfc2klipper",
+    "es": "En equipo Klipper · nfc2klipper",
+    "zh_CN": "Klipper 主机 · nfc2klipper"
+  },
+  "PN532 UART sur hôte Klipper + nfc2klipper": {
+    "en": "UART PN532 on Klipper host + nfc2klipper",
+    "es": "PN532 UART en equipo Klipper + nfc2klipper",
+    "zh_CN": "Klipper 主机上的 UART PN532 + nfc2klipper"
+  },
+  "Service sur hôte Klipper, exemple documenté PN532 en UART. Références Spoolman et ancien OpenTag3D v0.12 expérimental ; lecture 2.004 non confirmée. Aucun export pour ce parcours.": {
+    "en": "Service on Klipper host; documented example uses UART PN532. Spoolman references and experimental old OpenTag3D v0.12; 2.004 reading unconfirmed. No export for this setup.",
+    "es": "Servicio en el equipo Klipper; el ejemplo documentado usa PN532 UART. Referencias Spoolman y OpenTag3D v0.12 antiguo experimental; lectura 2.004 sin confirmar. Sin exportación para esta instalación.",
+    "zh_CN": "服务运行于 Klipper 主机；文档示例使用 UART PN532。支持 Spoolman 引用及实验性的旧版 OpenTag3D v0.12，尚未确认读取 2.004。此配置不提供导出。"
+  },
+  "Format lu, non exporté": {
+    "en": "Read format not exported",
+    "es": "Formato leído no exportado",
+    "zh_CN": "可读取但尚不能导出的格式"
+  },
+  "Un lecteur utilise un format non exporté ici. Une autre installation peut être proposée.": {
+    "en": "A reader uses a format not exported here. Another setup may be listed.",
+    "es": "Un lector utiliza un formato no exportado aquí. Puede haber otra instalación disponible.",
+    "zh_CN": "某读卡器使用此处尚不能导出的格式，可能提供其他配置。"
+  },
+  "OpenRFID (force generic vendor) lit OpenSpool et OpenTag3D. La marque devient Generic pour que la bobine apparaisse dans Snapmaker Orca.": {
+    "en": "OpenRFID (force generic vendor) reads OpenSpool and OpenTag3D. It labels the brand Generic so the spool appears in Snapmaker Orca.",
+    "es": "OpenRFID (force generic vendor) lee OpenSpool y OpenTag3D. Usa la marca Generic para que la bobina aparezca en Snapmaker Orca.",
+    "zh_CN": "OpenRFID (force generic vendor) 读取 OpenSpool 和 OpenTag3D，并将品牌标为 Generic，使线盘显示在 Snapmaker Orca 中。"
+  },
+  "Sans lecteur ajouté": {
+    "en": "No added reader",
+    "es": "Sin lector añadido",
+    "zh_CN": "未添加读卡器"
+  },
+  "Sans accessoire OpenPrintTag installé, aucun lecteur de bobine n’est configuré ici.": {
+    "en": "Without the OpenPrintTag accessory installed, no spool reader is configured here.",
+    "es": "Sin el accesorio OpenPrintTag instalado, no hay lector de bobina configurado aquí.",
+    "zh_CN": "未安装 OpenPrintTag 附件时，此处没有配置线盘读卡器。"
+  },
+  "Sans scanner ajouté ni intégration configurée, les fiches restent consultables uniquement.": {
+    "en": "Without an added scanner and configured integration, only filament details are available.",
+    "es": "Sin escáner añadido e integración configurada, solo se pueden consultar las fichas.",
+    "zh_CN": "未添加扫描器或配置集成时，仅可查看耗材资料。"
+  },
+  "Export possible · firmware constructeur": {
+    "en": "Export available · manufacturer firmware",
+    "es": "Exportación posible · firmware original",
+    "zh_CN": "可导出 · 原厂固件"
+  },
+  "Export possible · firmware modifié": {
+    "en": "Export available · modified firmware",
+    "es": "Exportación posible · firmware modificado",
+    "zh_CN": "可导出 · 修改版固件"
+  },
+  "2. Composez votre installation": {
+    "en": "2. Build your setup",
+    "es": "2. Componga su instalación",
+    "zh_CN": "2. 选择设备配置"
+  },
+  "Votre lecteur": {
+    "en": "Your reader",
+    "es": "Su lector",
+    "zh_CN": "您的读卡器"
+  },
+  "Le logiciel de l’imprimante": {
+    "en": "Your printer software",
+    "es": "El software de la impresora",
+    "zh_CN": "打印机软件"
+  },
+  "L’installation que vous utilisez": {
+    "en": "The setup you use",
+    "es": "La instalación que utiliza",
+    "zh_CN": "您正在使用的配置"
+  },
+  "Prérequis et détails": {
+    "en": "Requirements and details",
+    "es": "Requisitos y detalles",
+    "zh_CN": "前提条件与详情"
+  },
+  "3. Votre étiquette": {
+    "en": "3. Your tag",
+    "es": "3. Su etiqueta",
+    "zh_CN": "3. 您的标签"
+  },
+  "Téléphone · NFC Tools": {
+    "en": "Phone · NFC Tools",
+    "es": "Teléfono · NFC Tools",
+    "zh_CN": "手机 · NFC Tools"
+  },
+  "Ordinateur · NFC Tools": {
+    "en": "Computer · NFC Tools",
+    "es": "Ordenador · NFC Tools",
+    "zh_CN": "电脑 · NFC Tools"
+  },
+  "Autre logiciel (expert)": {
+    "en": "Other software (advanced)",
+    "es": "Otro software (experto)",
+    "zh_CN": "其他软件（高级）"
+  },
+  "Lecteur USB": {
+    "en": "USB reader",
+    "es": "Lector USB",
+    "zh_CN": "USB 读卡器"
+  },
+  "Lecteur Wi-Fi / réseau": {
+    "en": "Wi-Fi / network reader",
+    "es": "Lector Wi-Fi / de red",
+    "zh_CN": "Wi-Fi / 网络读卡器"
+  },
+  "Accessoire constructeur": {
+    "en": "Manufacturer accessory",
+    "es": "Accesorio del fabricante",
+    "zh_CN": "原厂附件"
+  },
+  "Sans lecteur": {
+    "en": "No reader",
+    "es": "Sin lector",
+    "zh_CN": "无读卡器"
+  },
+  "Autre lecteur": {
+    "en": "Other reader",
+    "es": "Otro lector",
+    "zh_CN": "其他读卡器"
+  },
+  "Logiciel d’origine": {
+    "en": "Original software",
+    "es": "Software original",
+    "zh_CN": "原厂软件"
+  },
+  "Logiciel modifié": {
+    "en": "Modified software",
+    "es": "Software modificado",
+    "zh_CN": "修改版软件"
+  },
+  "Logiciel ajouté": {
+    "en": "Added software",
+    "es": "Software añadido",
+    "zh_CN": "附加软件"
+  },
+  "Composez votre installation avec les boutons ci-dessus.": {
+    "en": "Build your setup using the buttons above.",
+    "es": "Componga su instalación con los botones de arriba.",
+    "zh_CN": "请使用上方按钮选择设备配置。"
+  },
+  "Aucun format d’étiquette exportable ici. Les fiches restent consultables.": {
+    "en": "No tag format can be exported here. Filament details remain available.",
+    "es": "Aquí no se puede exportar un formato de etiqueta. Las fichas siguen disponibles.",
+    "zh_CN": "此配置没有可导出的标签格式，但仍可查看耗材资料。"
+  },
+  "La bobine pourra être identifiée dans l’imprimante.": {
+    "en": "The spool can be identified in the printer.",
+    "es": "La bobina podrá identificarse en la impresora.",
+    "zh_CN": "线盘可在打印机中被识别。"
+  },
+  "Suivi dans l’inventaire externe ; l’écran de l’imprimante reste inchangé.": {
+    "en": "Tracked in external inventory; the printer screen is unchanged.",
+    "es": "Seguimiento en el inventario externo; la pantalla de la impresora no cambia.",
+    "zh_CN": "在外部库存中跟踪；打印机屏幕保持不变。"
+  },
+  "Étiquette pour votre lecteur ; liaison à l’imprimante à vérifier.": {
+    "en": "Tag for your reader; printer connection needs checking.",
+    "es": "Etiqueta para su lector; hay que comprobar la conexión con la impresora.",
+    "zh_CN": "为您的读卡器生成标签；与打印机的连接需另行确认。"
+  },
+  "Étiquette : {v0} · {v1}": {
+    "en": "Tag: {v0} · {v1}",
+    "es": "Etiqueta: {v0} · {v1}",
+    "zh_CN": "标签：{v0} · {v1}"
+  },
+  "Fichier : {v0}": {
+    "en": "File: {v0}",
+    "es": "Archivo: {v0}",
+    "zh_CN": "文件：{v0}"
+  },
+  "paxx12 · mode Snapmaker": {
+    "en": "paxx12 · Snapmaker mode",
+    "es": "paxx12 · modo Snapmaker",
+    "zh_CN": "paxx12 · Snapmaker 模式"
+  },
+  "paxx12 · OpenRFID": {
+    "en": "paxx12 · OpenRFID",
+    "es": "paxx12 · OpenRFID",
+    "zh_CN": "paxx12 · OpenRFID"
+  },
+  "paxx12 · OpenRFID Generic": {
+    "en": "paxx12 · OpenRFID Generic",
+    "es": "paxx12 · OpenRFID Generic",
+    "zh_CN": "paxx12 · OpenRFID Generic"
+  },
+  "Lecteur OpenSpool distant": {
+    "en": "Remote OpenSpool reader",
+    "es": "Lector OpenSpool remoto",
+    "zh_CN": "远程 OpenSpool 读卡器"
+  },
+  "Autre installation": {
+    "en": "Other setup",
+    "es": "Otra instalación",
+    "zh_CN": "其他配置"
+  },
+  "Accessoire Prusa installé": {
+    "en": "Prusa accessory installed",
+    "es": "Accesorio Prusa instalado",
+    "zh_CN": "已安装 Prusa 附件"
+  },
+  "Équipement d’origine": {
+    "en": "Original equipment",
+    "es": "Equipo original",
+    "zh_CN": "原装设备"
+  },
+  "Imprimante multicolore avec quatre emplacements de filament.": {
+    "en": "Multicolor printer with four filament slots.",
+    "es": "Impresora multicolor con cuatro posiciones de filamento.",
+    "zh_CN": "带有四个耗材槽位的多色打印机。"
+  },
+  "Quatre têtes pour changer de matière ou de couleur.": {
+    "en": "Four toolheads for switching material or color.",
+    "es": "Cuatro cabezales para cambiar de material o color.",
+    "zh_CN": "四个工具头可用于切换材料或颜色。"
+  },
+  "Imprimante fermée. La reconnaissance des bobines dépend de l’accessoire installé.": {
+    "en": "Enclosed printer. Spool identification depends on the accessory installed.",
+    "es": "Impresora cerrada. La identificación de bobinas depende del accesorio instalado.",
+    "zh_CN": "封闭式打印机。线盘识别功能取决于安装的附件。"
+  },
+  "Imprimante à portique ouvert, avec changement de filament via MMU3 selon votre équipement.": {
+    "en": "Open-frame printer, with filament changes through MMU3 if fitted.",
+    "es": "Impresora de pórtico abierto, con cambio de filamento mediante MMU3 según el equipo.",
+    "zh_CN": "开放式框架打印机，可根据配置使用 MMU3 更换耗材。"
+  },
+  "Prusa · autre modèle": {
+    "en": "Prusa · other model",
+    "es": "Prusa · otro modelo",
+    "zh_CN": "Prusa · 其他型号"
+  },
+  "Choisissez votre modèle s’il est proposé ; sinon, vérifiez les possibilités avec sa documentation.": {
+    "en": "Choose your model if listed; otherwise check its documentation.",
+    "es": "Elija su modelo si aparece; de lo contrario, consulte su documentación.",
+    "zh_CN": "若列出了您的型号，请选择它；否则请查看相应文档。"
+  },
+  "Voron, Sovol, RatRig et autres montages. Choisissez ensuite le lecteur que vous utilisez.": {
+    "en": "Voron, Sovol, RatRig and other builds. Then choose the reader you use.",
+    "es": "Voron, Sovol, RatRig y otros montajes. Después elija el lector que utiliza.",
+    "zh_CN": "Voron、Sovol、RatRig 等机型。然后选择您使用的读卡器。"
+  },
+  "Imprimante fermée. La reconnaissance des bobines dépend du lecteur et du logiciel choisis.": {
+    "en": "Enclosed printer. Spool identification depends on the selected reader and software.",
+    "es": "Impresora cerrada. La identificación de bobinas depende del lector y software elegidos.",
+    "zh_CN": "封闭式打印机。线盘识别功能取决于所选读卡器和软件。"
+  },
+  "SpoolSense": {
+    "en": "SpoolSense",
+    "es": "SpoolSense",
+    "zh_CN": "SpoolSense"
+  },
+  "Zmod + FF_NFC": {
+    "en": "Zmod + FF_NFC",
+    "es": "Zmod + FF_NFC",
+    "zh_CN": "Zmod + FF_NFC"
+  },
+  "Kiln OS + FF_NFC": {
+    "en": "Kiln OS + FF_NFC",
+    "es": "Kiln OS + FF_NFC",
+    "zh_CN": "Kiln OS + FF_NFC"
+  },
+  "LaneTag + FF_NFC": {
+    "en": "LaneTag + FF_NFC",
+    "es": "LaneTag + FF_NFC",
+    "zh_CN": "LaneTag + FF_NFC"
+  },
+  "nfc2klipper": {
+    "en": "nfc2klipper",
+    "es": "nfc2klipper",
+    "zh_CN": "nfc2klipper"
+  },
+  "X1Plus (X1 uniquement)": {
+    "en": "X1Plus (X1 uniquement)",
+    "es": "X1Plus (X1 uniquement)",
+    "zh_CN": "X1Plus (X1 uniquement)"
+  },
+  "SpoolSense + Moonraker": {
+    "en": "SpoolSense + Moonraker",
+    "es": "SpoolSense + Moonraker",
+    "zh_CN": "SpoolSense + Moonraker"
+  },
+  "NDEF brut (expert)": {
+    "en": "Raw NDEF (advanced)",
+    "es": "NDEF sin procesar (experto)",
+    "zh_CN": "原始 NDEF（高级）"
   }
 }

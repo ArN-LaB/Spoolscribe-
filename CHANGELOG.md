@@ -13,6 +13,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### v0.4.0 — OpenTag3D (in development)
+
+- Describe printer setups by built-in, USB or network reader, firmware and
+  actual effect (printer or external inventory). Clarify paxx12 OpenRFID/Generic
+  modes, add scoped FF_NFC USB and SpoolSense integrations, and distinguish the
+  Prusa CORE One CAN accessory from other Prusa models and USB readers.
+
+- Add an independent OpenTag3D 2.004 encoder, with NFC Tools mobile/Desktop
+  profiles and raw NDEF messages for NTAG215/216. Keep existing OpenSpool exports unchanged.
+- Restrict format choices to the selected reader/software. Distinguish U1 default
+  paxx12 detection from OpenRFID; do not enable native Bambu or OpenPrintTag export.
+- Ask for explicit target temperatures, chamber heating and filament mass. Reject
+  unrepresentable values and long UTF-8 labels; never truncate colours or guess targets.
+- Save per-reference label settings and restore reader/software/format/writer preferences.
+- Add offline codec, CLI and Qt export tests; extend frozen probes to both tags,
+  all three containers and all four interface languages. Physical NFC acceptance remains pending.
+- Clarify that documented printer setups are not exhaustive hardware certification;
+  welcome successful tests and problems through a dedicated compatibility Issue form.
+
+
 ### v0.3.5 repository maintenance
 
 - Separate runtime resources into application/UI/brand/printer/translation/licence

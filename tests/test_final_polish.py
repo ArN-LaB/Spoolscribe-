@@ -22,12 +22,16 @@ class FinalPolishTests(unittest.TestCase):
             for item in visible:
                 profile=printer_profiles.PROFILES[w.printer.itemData(item.data(Qt.UserRole))]
                 if key=='compatible':self.assertTrue(profile['nfc'])
-                elif key=='rfid':self.assertEqual(profile['group'],'incompatible');self.assertFalse(profile['nfc'])
+                elif key=='rfid':
+                    # An original unsupported reader may coexist with an added compatible reader.
+                    self.assertTrue(any(f.get('reader_formats') and not f.get('formats') for f in profile['firmwares']))
                 else:self.assertFalse(profile['nfc']);self.assertNotEqual(profile['group'],'incompatible')
         browser.category.setCurrentIndex(browser.category.findData('rfid'));browser.search.setText('prusa')
         self.assertEqual(sum(not browser.list.item(i).isHidden() for i in range(browser.list.count())),1)
         browser.category.setCurrentIndex(browser.category.findData('compatible'))
-        self.assertTrue(browser.empty.isVisibleTo(browser))
+        visible=[browser.list.item(i) for i in range(browser.list.count()) if not browser.list.item(i).isHidden()]
+        self.assertEqual([w.printer.itemData(item.data(Qt.UserRole)) for item in visible],['prusa_mk4'])
+        self.assertEqual(printer_profiles.configuration('prusa_mk4','spoolsense')['effect'],'inventory')
 
     def test_settings_have_no_native_baseline(self):
         from PySide6.QtWidgets import QDialog,QTabWidget

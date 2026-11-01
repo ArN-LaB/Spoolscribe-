@@ -8,7 +8,7 @@ from . import core
 from .i18n import tr
 from . import printer_profiles
 from .printer_profiles import PROFILES
-from .ui_widgets import WrapLabel, PrinterCard, FavoriteBrandList, PrinterPicker, report_metrics, CONTROL_HEIGHT
+from .ui_widgets import WrapLabel, PrinterCard, FavoriteBrandList, PrinterPicker, ChoiceButtons, report_metrics, CONTROL_HEIGHT
 
 
 class ClearableTable(QTableWidget):
@@ -440,14 +440,19 @@ class CatalogueUx:
             try:
                 previous_language=core.load_config().get('language','auto')
                 core.import_settings(path)
-                self._restore_ui_preferences()
                 cfg=core.load_config()
+                self._restore_ui_preferences()
+                self._store_config(cfg)
                 for combo,key in ((self.printer,'printer_profile'),(self.tag_type,'nfc_tag_type'),(self.nfc_profile,'nfc_profile')):
                     combo.blockSignals(True);combo.setCurrentIndex(max(0,combo.findData(cfg[key])));combo.blockSignals(False)
                 self.tag_choice.blockSignals(True);self.tag_choice.setCurrentIndex(max(0,self.tag_choice.findData(cfg['nfc_tag_type'])));self.tag_choice.blockSignals(False)
                 self.nfc_reserve.blockSignals(True);self.nfc_reserve.setMaximum(core.NFC_CAPACITIES[cfg['nfc_tag_type']]);self.nfc_reserve.setValue(cfg['nfc_reserved_bytes']);self.nfc_reserve.blockSignals(False)
                 self._refresh_nfc_default_btn()
                 self.extra_fields.setChecked(bool(cfg.get('show_extra_fields')))
+                self._fill_firmware_combo(cfg['printer_profile'],cfg.get('printer_firmware'))
+                self._firmware_printer=cfg['printer_profile']
+                for combo,key in ((self.nfc_format,'nfc_format'),(self.opentag_output,'opentag3d_output')):
+                    combo.blockSignals(True);combo.setCurrentIndex(combo.findData(cfg[key]));combo.blockSignals(False)
                 self._printer_changed()
                 self._fill_sidebar()
                 self._refresh_nfc_capacity()
@@ -643,41 +648,139 @@ class CatalogueUx:
         self.printer.setCurrentIndex(max(0,self.printer.findData(printer_id)));layout.addWidget(self.printer)
         self.printer_card=PrinterCard();layout.addWidget(self.printer_card)
         self.reader_info=QLabel();self.reader_info.setWordWrap(True);self.reader_info.setObjectName('fieldvalue');self.reader_info.hide()
-        self.firmware_label=QLabel(tr('2. Logiciel installé'));layout.addWidget(self.firmware_label)
+        self.firmware_label=QLabel(tr('2. Configuration de lecture'));layout.addWidget(self.firmware_label)
         self.firmware=QComboBox();layout.addWidget(self.firmware)
-        self._fill_firmware_combo(printer_id,cfg.get('printer_firmware') if cfg.get('printer_profile')!='u1_stock' else firmware_id)
-        self.printer_help=WrapLabel();layout.addWidget(self.printer_help)
+        self._fill_firmware_combo(printer_id,firmware_id if printer_id!=cfg.get('printer_profile') else cfg.get('printer_firmware'))
+        layout.addWidget(QLabel(tr('2. Composez votre installation')))
+        layout.addWidget(QLabel(tr('Votre lecteur')))
+        self.reader_buttons=ChoiceButtons();layout.addWidget(self.reader_buttons)
+        self.software_label=QLabel(tr('Le logiciel de l’imprimante'));layout.addWidget(self.software_label)
+        self.software_buttons=ChoiceButtons();layout.addWidget(self.software_buttons)
+        self.setup_label=QLabel(tr('L’installation que vous utilisez'));layout.addWidget(self.setup_label)
+        self.setup_buttons=ChoiceButtons();layout.addWidget(self.setup_buttons)
+        self.setup_result=WrapLabel();self.setup_result.setObjectName('hardwareSummary');self.setup_result.setStyleSheet('font-weight:600;')
+        self.setup_details_toggle=QToolButton();self.setup_details_toggle.setText(tr('Prérequis et détails'));self.setup_details_toggle.setCheckable(True)
+        self.setup_details_toggle.setFixedHeight(CONTROL_HEIGHT)
+        self.setup_details=QWidget();details_layout=QVBoxLayout(self.setup_details);details_layout.setContentsMargins(0,0,0,0)
+        self.connection_info=WrapLabel();self.connection_info.setObjectName('fieldvalue');details_layout.addWidget(self.connection_info)
+        self.printer_help=WrapLabel();details_layout.addWidget(self.printer_help)
+        self.configuration_source=QPushButton(tr('Documentation de cette configuration'))
+        self.configuration_source.setFixedHeight(CONTROL_HEIGHT)
+        self.configuration_source.clicked.connect(self._open_configuration_source);details_layout.addWidget(self.configuration_source)
+        self.setup_details.hide();self.setup_details_toggle.toggled.connect(self.setup_details.setVisible)
+        self.format_label=QLabel(tr('3. Votre étiquette'));layout.addWidget(self.format_label)
+        self.nfc_format=QComboBox(self.hardware_page);self.nfc_format.hide()
+        self.format_buttons=ChoiceButtons();layout.addWidget(self.format_buttons)
+        self.writer_label=QLabel(tr('Fichier pour le logiciel d’écriture'));layout.addWidget(self.writer_label)
+        self.opentag_output=QComboBox(self.hardware_page)
+        for label,key in [(tr('NFC Tools mobile (.json)'),'nfctools-mobile'),(tr('NFC Tools Desktop (.json)'),'nfctools-desktop'),(tr('Message NDEF brut (.ndef)'),'ndef')]:
+            self.opentag_output.addItem(label,key)
+        self.opentag_output.setCurrentIndex(max(0,self.opentag_output.findData(cfg.get('opentag3d_output','nfctools-mobile'))))
+        self.opentag_output.hide()
+        self.writer_buttons=ChoiceButtons();self.writer_buttons.setChoices([(tr('Téléphone · NFC Tools'),'nfctools-mobile'),(tr('Ordinateur · NFC Tools'),'nfctools-desktop'),(tr('Autre logiciel (expert)'),'ndef')]);layout.addWidget(self.writer_buttons)
+        self.writer_expert=self.writer_buttons.buttons['ndef'];self.writer_expert.setText(tr('NDEF brut (expert)'))
+        self.writer_buttons.grid.removeWidget(self.writer_expert);details_layout.addWidget(self.writer_expert)
+        self._guide_printer=None;self._guided_reader=None;self._guided_kind=None
+        self.reader_buttons.choiceChanged.connect(lambda key:self._choose_setup_part('reader',key))
+        self.software_buttons.choiceChanged.connect(lambda key:self._choose_setup_part('software',key))
+        self.setup_buttons.choiceChanged.connect(lambda key:self.firmware.setCurrentIndex(self.firmware.findData(key)))
+        self.format_buttons.choiceChanged.connect(lambda key:self.nfc_format.setCurrentIndex(self.nfc_format.findData(key)))
+        self.writer_buttons.choiceChanged.connect(lambda key:self.opentag_output.setCurrentIndex(self.opentag_output.findData(key)))
         self.extra_fields=QCheckBox(tr('Afficher aussi les références, la provenance et la masse'));self.extra_fields.hide()  # conservé pour les réglages importés
         row=QHBoxLayout();self.tag_label=QLabel(tr('Étiquette NFC'));row.addWidget(self.tag_label)
         self.tag_choice=QComboBox();self.tag_choice.addItem('NTAG216','NTAG216');self.tag_choice.addItem('NTAG215','NTAG215')
-        self.tag_choice.setCurrentIndex(max(0,self.tag_choice.findData(core.nfc_defaults(cfg)['tag_type'])));row.addWidget(self.tag_choice,1)
-        self.nfc_default_btn=QToolButton();self.nfc_default_btn.setAccessibleName(tr('Définir ce choix d’étiquette par défaut'));row.addWidget(self.nfc_default_btn)
-        self.advanced_toggle=QToolButton();self.advanced_toggle.setText(tr('Réglages avancés'));self.advanced_toggle.setCheckable(True);row.addWidget(self.advanced_toggle);layout.addLayout(row)
+        self.tag_choice.setCurrentIndex(max(0,self.tag_choice.findData(core.nfc_defaults(cfg)['tag_type'])));row.addWidget(self.tag_choice,1);layout.addLayout(row)
+        actions=QHBoxLayout();actions.setSpacing(8)
+        self.nfc_default_btn=QToolButton();self.nfc_default_btn.setAccessibleName(tr('Définir ce choix d’étiquette par défaut'));actions.addWidget(self.nfc_default_btn,1)
+        self.advanced_toggle=QToolButton();self.advanced_toggle.setText(tr('Réglages avancés'));self.advanced_toggle.setCheckable(True);actions.addWidget(self.advanced_toggle,1)
+        for button in (self.nfc_default_btn,self.advanced_toggle):button.setFixedHeight(CONTROL_HEIGHT);button.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
+        details_layout.addLayout(actions)
+        layout.addWidget(self.setup_details_toggle);layout.addWidget(self.setup_details)
 
     def _fill_printer_combo(self):
         current=self.printer.currentData()
         self.printer.blockSignals(True);self.printer.clear()
         # People choose their machine, not a protocol category.
         for key,profile in sorted(PROFILES.items(), key=lambda item:item[1]['label'].casefold()):
+            if profile.get('hidden'):continue
             self.printer.addItem(tr(profile['label']),key)
         if current:self.printer.setCurrentIndex(max(0,self.printer.findData(current)))
         self.printer.blockSignals(False)
 
+    def _sync_setup_buttons(self):
+        """Render the saved configuration as additive, plain-language choices."""
+        if not hasattr(self,'reader_buttons'):return
+        pid=self.printer.currentData()
+        if pid not in PROFILES:
+            self.reader_buttons.setChoices([]);self.software_buttons.hide();self.setup_buttons.hide();return
+        if self._guide_printer!=pid:
+            self._guide_printer=pid;self._guided_reader=None;self._guided_kind=None
+            self.setup_details_toggle.setChecked(False)
+        selected=next((c for c in PROFILES[pid]['firmwares'] if c['id']==self.firmware.currentData()),None)
+        configurations=[printer_profiles.configuration(pid,c['id']) for c in PROFILES[pid]['firmwares']]
+        if selected:
+            current=printer_profiles.configuration(pid,selected['id'])
+            self._guided_reader=current['connection'];self._guided_kind=current['firmware_kind']
+        labels={'integrated':tr('Lecteur intégré'),'usb':tr('Lecteur USB'),
+                'network':tr('Lecteur Wi-Fi / réseau'),'can':tr('Accessoire constructeur'),
+                'none':tr('Sans lecteur'),'custom':tr('Autre lecteur')}
+        self.reader_buttons.setChoices((labels[key],key) for key in printer_profiles.CONNECTIONS if any(c['connection']==key for c in configurations))
+        self.reader_buttons.setChoice(self._guided_reader)
+        candidates=[c for c in configurations if c['connection']==self._guided_reader]
+        kinds=[key for key in printer_profiles.FIRMWARE_KINDS if any(c['firmware_kind']==key for c in candidates)]
+        if len(kinds)==1:self._guided_kind=kinds[0]
+        labels={'stock':tr('Logiciel d’origine'),'modified':tr('Logiciel modifié'),'integration':tr('Logiciel ajouté')}
+        self.software_buttons.setChoices((labels[key],key) for key in kinds)
+        self.software_buttons.setChoice(self._guided_kind)
+        self.software_label.setVisible(bool(candidates));self.software_buttons.setVisible(bool(candidates))
+        matches=[c for c in candidates if c['firmware_kind']==self._guided_kind]
+        self.setup_buttons.setChoices((tr(c.get('choice_label',c['label'])),c['id']) for c in matches)
+        self.setup_buttons.setChoice(selected['id'] if selected else None)
+        self.setup_label.setVisible(bool(matches));self.setup_buttons.setVisible(bool(matches))
+        self.setup_details_toggle.setVisible(bool(selected))
+        if not selected:self.setup_details_toggle.setChecked(False)
+
+    def _choose_setup_part(self,part,key):
+        if part=='reader':self._guided_reader=key;self._guided_kind=None
+        else:self._guided_kind=key
+        # A route never confirms an installed reader/plugin by inference.
+        index=self.firmware.findData('unknown')
+        if index>=0:self.firmware.setCurrentIndex(index)
+        self._sync_setup_buttons()
+
+    def _refresh_setup_result(self):
+        if not hasattr(self,'setup_result'):return
+        pid=self.printer.currentData()
+        if pid not in PROFILES or self.firmware.currentData()=='unknown':
+            self.setup_result.setText(tr('Composez votre installation avec les boutons ci-dessus.'));return
+        cfg=printer_profiles.configuration(pid,self.firmware.currentData())
+        title=tr(PROFILES[pid]['label'])+' · '+tr(cfg.get('choice_label',cfg['label']))
+        if not self._can_export_for_printer():
+            effect=tr('Aucun format d’étiquette exportable ici. Les fiches restent consultables.')
+        else:
+            effect={'printer':tr('La bobine pourra être identifiée dans l’imprimante.'),
+                    'inventory':tr('Suivi dans l’inventaire externe ; l’écran de l’imprimante reste inchangé.'),
+                    'standalone':tr('Étiquette pour votre lecteur ; liaison à l’imprimante à vérifier.')}[cfg['effect']]
+            effect+='\n'+tr('Étiquette : {v0} · {v1}',v0=self.tag_choice.currentData(),v1=self.nfc_format.currentText())
+            if self._opentag_selected():
+                button=self.writer_buttons.buttons.get(self.opentag_output.currentData())
+                if button:effect+='\n'+tr('Fichier : {v0}',v0=button.text())
+        self.setup_result.setText(title+'\n'+effect)
+
     def _fill_firmware_combo(self,printer_id,firmware_id=None):
         self.firmware.blockSignals(True);self.firmware.clear()
-        if len(PROFILES[printer_id]['firmwares'])>1 and any(f['openspool'] for f in PROFILES[printer_id]['firmwares']):
-            self.firmware.addItem(tr('Choisir le logiciel installé…'),'unknown')
+        if len(PROFILES[printer_id]['firmwares'])>1:
+            self.firmware.addItem(tr('Choisir mon installation actuelle…'),'unknown')
         for fw in PROFILES[printer_id]['firmwares']:
-            label = {'paxx12':tr('J’ai installé le firmware paxx12'), 'stock':tr('Logiciel d’origine du fabricant')}.get(fw['id'],fw['label'])
-            self.firmware.addItem(tr(label),fw['id'])
+            self.firmware.addItem(tr(fw['label']),fw['id'])
         self.firmware.setCurrentIndex(max(0,self.firmware.findData(firmware_id)))
-        several=self.firmware.count()>1 and any(f['openspool'] for f in PROFILES[printer_id]['firmwares'])
-        self.firmware.setVisible(several);self.firmware_label.setVisible(several)
+        self.firmware.hide();self.firmware_label.hide()
         self.firmware.blockSignals(False)
 
     def _build_hardware_dialog(self):
         self.hardware_dialog=QDialog(self);self.hardware_dialog.setWindowTitle(tr('Mon imprimante et mes étiquettes'))
-        self.hardware_dialog.resize(640,530)
+        available=self.app.primaryScreen().availableGeometry().height() if self.app.primaryScreen() else 900
+        self.hardware_dialog.resize(680,min(760,max(480,available-40)))
         self.hardware_dialog.setMinimumSize(480,300)
         lay=QVBoxLayout(self.hardware_dialog)
         intro=WrapLabel(tr('Retrouvez votre imprimante, puis vérifiez comment elle reconnaît vos bobines.'))
@@ -687,6 +790,9 @@ class CatalogueUx:
         self.hardware_scroll.setWidget(self.hardware_page);lay.addWidget(self.hardware_scroll,1)
         self.hardware_page.layout().setSizeConstraint(QVBoxLayout.SetMinAndMaxSize)
         self.hardware_page.layout().setAlignment(Qt.AlignTop)
+        self.setup_result_panel=QFrame();self.setup_result_panel.setObjectName('metricTile')
+        result_layout=QVBoxLayout(self.setup_result_panel);result_layout.setContentsMargins(10,8,10,8);result_layout.addWidget(self.setup_result)
+        lay.addWidget(self.setup_result_panel)
         for control in self.hardware_page.findChildren(QComboBox):
             control.setFixedHeight(CONTROL_HEIGHT);control.setMinimumWidth(0)
             control.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon);control.setMinimumContentsLength(12)
@@ -703,7 +809,7 @@ class CatalogueUx:
     def _refresh_printers_origin(self):
         catalogue=printer_profiles.load_catalogue()
         origin=tr('liste téléchargée') if catalogue.get('_origin')=='user' else tr('liste embarquée')
-        self.printers_origin.setText(tr('Imprimantes : {v0}, version du {v1}', v0=origin, v1=catalogue.get('updated', '?')))
+        self.printers_origin.setText(tr('Imprimantes : {v0}, version du {v1}', v0=origin, v1=str(catalogue.get('updated', '?'))[:10]))
 
     def _open_hardware(self):
         self._refresh_printer_card()
@@ -722,7 +828,7 @@ class CatalogueUx:
             self.printers_origin.setText(tr('Aucune nouvelle liste publiée pour cette version. La liste embarquée reste disponible.'))
             self.printers_origin.setToolTip(tr('Le fichier de référence n’est pas encore publié sur la branche main (HTTP 404).'))
             return
-        self._fill_printer_combo();self._printer_changed();self._refresh_printers_origin()
+        self._fill_printer_combo();self._firmware_printer=None;self._printer_changed();self._refresh_printers_origin()
         self.status.showMessage(tr('Liste des imprimantes du {v0} installée ({v1} entrées).', v0=catalogue.get('updated', '?'), v1=len(catalogue['printers'])),8000)
 
     def _references_text(self,sku):
@@ -751,6 +857,8 @@ class CatalogueUx:
         self.advanced_toggle.toggled.connect(self.nfc_advanced.setVisible)
         self.tag_choice.currentIndexChanged.connect(lambda: self.tag_type.setCurrentIndex(self.tag_type.findData(self.tag_choice.currentData())))
         self.tag_type.currentIndexChanged.connect(lambda: self.tag_choice.setCurrentIndex(self.tag_choice.findData(self.tag_type.currentData())))
+        self.nfc_format.currentIndexChanged.connect(self._format_changed)
+        self.opentag_output.currentIndexChanged.connect(self._format_changed)
         self._firmware_printer=None
         self.printer.currentIndexChanged.connect(self._printer_changed)
         self.firmware.currentIndexChanged.connect(self._printer_changed)
@@ -785,37 +893,81 @@ class CatalogueUx:
         self._refresh_nfc_default_btn()
 
     def _printer_changed(self,*_):
+        if self.printer.currentData() not in PROFILES:
+            self.nfc_format.blockSignals(True);self.nfc_format.clear();self.nfc_format.blockSignals(False)
+            self.configuration_source.hide()
+            if hasattr(self,'btn_generate'):self.btn_generate.setEnabled(False)
+            self._sync_setup_buttons();self._refresh_setup_result()
+            return
         printer_id=self.printer.currentData() or printer_profiles.DEFAULT
         if self.sender() is self.printer or self.firmware.count()==0 or self._firmware_printer!=printer_id:
-            self._fill_firmware_combo(printer_id,core.load_config().get('printer_firmware') if self._firmware_printer is None else None)
+            saved=core.load_config();wanted=None
+            if self._firmware_printer is None:
+                saved_printer,saved_software=printer_profiles.resolve(saved.get('printer_profile'),saved.get('printer_firmware'))
+                if saved_printer==printer_id:
+                    wanted=saved_software if saved_printer!=saved.get('printer_profile') else saved.get('printer_firmware')
+            self._fill_firmware_combo(printer_id,wanted)
         self._firmware_printer=printer_id
         cfg=core.load_config();cfg['printer_profile']=printer_id;cfg['printer_firmware']=self.firmware.currentData()
         if hasattr(self,'status'):self._store_config(cfg)
-        profile=PROFILES[printer_id];fw=printer_profiles.firmware(printer_id,self.firmware.currentData())
+        profile=PROFILES[printer_id];fw=printer_profiles.configuration(printer_id,self.firmware.currentData())
         self.reader_info.setText(tr('Lecteur : {v0}',v0=tr(profile.get('reader') or 'Aucun')))
         if self.firmware.currentData()=='unknown':
-            text=tr('Précisez le logiciel installé pour vérifier la lecture des étiquettes. En cas de doute, consultez les informations de votre imprimante.')
-        elif fw['openspool']:
-            text=tr('Export NFC disponible avec cette configuration. Écrivez ensuite le fichier sur votre étiquette avec une application NFC.')
-            if profile['group']=='external':text=tr('Un lecteur externe compatible OpenSpool est nécessaire. Le lecteur d’origine de l’imprimante ne suffit pas.')
+            text=tr('Choisissez le lecteur et le logiciel déjà configurés. Brancher un lecteur USB ne suffit pas à le faire reconnaître par le firmware.')
+            self.connection_info.clear()
         else:
-            text=tr('Fiches consultables. Cette configuration ne lit pas les étiquettes créées par SpoolScribe.')
+            text=tr(fw.get('notes',''))
+            route={'integrated':tr('Lecteur intégré'),'usb':tr('USB sur l’imprimante ou son hôte'),'network':tr('Lecteur réseau (Wi-Fi / LAN)'),
+                   'can':tr('Accessoire constructeur sur bus CAN'),'none':tr('Aucun lecteur configuré'),'custom':tr('Lecteur autonome / intégration à confirmer')}[fw['connection']]
+            kind={'stock':tr('Firmware constructeur'),'modified':tr('Firmware modifié'),'integration':tr('Logiciel d’intégration ajouté')}[fw['firmware_kind']]
+            self.connection_info.setText(route+' · '+kind+'\n'+tr(fw['reader']))
+            if fw['evidence']=='experimental':self.connection_info.setText(self.connection_info.text()+' · '+tr('Intégration expérimentale'))
+            elif fw['evidence']=='unverified':self.connection_info.setText(self.connection_info.text()+' · '+tr('Compatibilité à vérifier'))
         self.printer_help.setText(text)
-        self.printer_help.setVisible(not fw['openspool'] or self.firmware.currentData()=='unknown')
+        self.printer_help.setVisible(bool(text))
         self.printer_help.setToolTip(tr(profile['help'])+'\n'+tr(fw.get('notes',''))+'\n'+tr(profile.get('reader','')))
+        self.configuration_source.setVisible(self.firmware.currentData()!='unknown' and bool(fw.get('url','').startswith('https://')))
+        self.configuration_source.setToolTip(tr('Source documentaire ; aucun essai matériel SpoolScribe revendiqué.'))
+        supported=() if self.firmware.currentData()=='unknown' else printer_profiles.formats(printer_id,self.firmware.currentData())
+        previous=self.nfc_format.currentData() or cfg.get('nfc_format','openspool')
+        self.nfc_format.blockSignals(True);self.nfc_format.clear()
+        for value,label in [('openspool','OpenSpool 1.0'),('opentag3d','OpenTag3D 2.004')]:
+            if value in supported:self.nfc_format.addItem(label,value)
+        self.nfc_format.setCurrentIndex(max(0,self.nfc_format.findData(previous)));self.nfc_format.blockSignals(False)
+        selected=self.nfc_format.currentData()
+        if selected and cfg.get('nfc_format')!=selected:
+            cfg['nfc_format']=selected
+            if hasattr(self,'status'):self._store_config(cfg)
         self._refresh_printer_card()
         self.tag_label.setVisible(fw['openspool']);self.tag_choice.setVisible(fw['openspool'])
         self.nfc_default_btn.setVisible(fw['openspool']);self.advanced_toggle.setVisible(fw['openspool'])
         if not fw['openspool'] and hasattr(self,'nfc_advanced'):self.nfc_advanced.hide()
         elif hasattr(self,'nfc_advanced'):self.nfc_advanced.setVisible(self.advanced_toggle.isChecked())
         self._printer_field_help()
+        self._sync_setup_buttons()
         if hasattr(self,'btn_generate'):self._refresh_nfc_capacity()
+        if hasattr(self,'inspector') and self.inspector.isVisible():self._refresh_inspector()
 
     def _refresh_printer_card(self):
+        if self.printer.currentData() not in PROFILES:return
         profile=PROFILES[self.printer.currentData()]
         fw=printer_profiles.firmware(self.printer.currentData(),self.firmware.currentData())
-        badge=tr('Logiciel à préciser') if self.firmware.currentData()=='unknown' else tr('Lecture OpenSpool disponible') if fw['openspool'] else tr('Consultation des fiches uniquement')
-        self.printer_card.update_profile(profile,badge,fw['openspool'],getattr(self,'_tok',{}).get('dark',False))
+        can=self.firmware.currentData()!='unknown' and printer_profiles.can_export(self.printer.currentData(),self.firmware.currentData())
+        cfg=printer_profiles.configuration(self.printer.currentData(),self.firmware.currentData())
+        if self.firmware.currentData()=='unknown':badge=tr('Configuration à préciser')
+        elif can:
+            badge={'printer':tr('Données transmises à l’imprimante'),
+                   'inventory':tr('Inventaire externe uniquement'),
+                   'standalone':tr('Lecture par le lecteur choisi')}[cfg['effect']]
+        elif cfg['reader_formats']:badge=tr('Format non exporté par SpoolScribe')
+        else:badge=tr('Consultation des fiches uniquement')
+        self.printer_card.update_profile(profile,badge,can,getattr(self,'_tok',{}).get('dark',False))
+        self.printer_card.status.hide()  # The composed result is shown once, below the choices.
+
+    def _open_configuration_source(self):
+        if self.firmware.currentData()=='unknown':return
+        url=printer_profiles.configuration(self.printer.currentData(),self.firmware.currentData()).get('url','')
+        if url.startswith('https://'):QDesktopServices.openUrl(QUrl(url))
 
     def _printer_field_help(self):
         if not hasattr(self,'printer'):return
@@ -837,7 +989,7 @@ class CatalogueUx:
         pass  # références et provenance sont toujours visibles dans la fiche
 
     def _can_export_for_printer(self):
-        return self.firmware.currentData()!='unknown' and printer_profiles.can_export(self.printer.currentData() or printer_profiles.DEFAULT,self.firmware.currentData())
+        return bool(self.printer.currentData() in PROFILES and self.nfc_format.currentData() and self.firmware.currentData()!='unknown' and printer_profiles.can_export(self.printer.currentData(),self.firmware.currentData(),self.nfc_format.currentData()))
 
     def _nfc_options(self):
         payload=self._build_payload()
@@ -849,18 +1001,36 @@ class CatalogueUx:
         printer_id=self.printer.currentData() or printer_profiles.DEFAULT
         # Without an OpenSpool export, the tag controls are hidden, not merely greyed.
         for widget in (self.tag_label,self.tag_choice,self.nfc_default_btn,self.advanced_toggle):widget.setVisible(can)
+        is_opentag=self._opentag_selected()
+        self.format_label.setVisible(can);self.nfc_format.hide();self.format_buttons.setVisible(can)
+        self.format_buttons.setChoices((self.nfc_format.itemText(i),self.nfc_format.itemData(i)) for i in range(self.nfc_format.count()))
+        self.format_buttons.setChoice(self.nfc_format.currentData())
+        self.writer_label.setVisible(can and is_opentag);self.opentag_output.hide();self.writer_buttons.setVisible(can and is_opentag)
+        self.writer_buttons.setChoice(self.opentag_output.currentData())
+        self.writer_expert.setVisible(can and is_opentag)
+        self._refresh_setup_result()
+        self.nfc_profile.setVisible(not is_opentag)
+        if hasattr(self,'btn_opentag_settings'):self.btn_opentag_settings.setVisible(can and is_opentag and bool(self.current_sku))
+        if hasattr(self,'btn_inspect'):
+            self.btn_inspect.setText(tr('Masquer l’export') if self.inspector.isVisible() else tr('Voir l’export')) if is_opentag else self.btn_inspect.setText(tr('Masquer le JSON') if self.inspector.isVisible() else tr('Voir le JSON'))
         self.nfc_advanced.setVisible(can and self.advanced_toggle.isChecked())
         summary=tr(PROFILES[printer_id]['label'])
-        if can:summary+=f' · {self.tag_choice.currentData()}'
+        if can:summary+=f' · {self.tag_choice.currentData()} · {self.nfc_format.currentText()}'
         else:summary+=tr(' · consultation des fiches')
         if hasattr(self,'hardware_summary'):self.hardware_summary.setText(summary)
         self.btn_generate.setEnabled(can and bool(self.current_sku) and not self._variant_needs_choice() and not (self.worker and self.worker.isRunning()))
         if hasattr(self,'btn_inspect'):self.btn_inspect.setEnabled(can and bool(self.current_sku))
         if not can:
             self.nfc_note.setText(tr('Utilisez ces informations dans votre logiciel de préparation d’impression.'))
-            self.nfc_capacity.setText(tr('Précisez le logiciel de votre imprimante dans « Modifier… ».') if self.firmware.currentData()=='unknown' else tr('Cette configuration ne reconnaît pas les étiquettes SpoolScribe.'));return
+            self.nfc_capacity.setText(tr('Précisez votre installation dans « Modifier… ».') if self.firmware.currentData()=='unknown' else tr('Aucun format exportable pour cette configuration.'));return
         if not self.current_sku:return
         try:
+            if is_opentag:
+                prepared=self._prepare_opentag()
+                self.nfc_note.setText(tr('Importez le profil dans NFC Tools. Le fichier JSON contient un enregistrement binaire OpenTag3D, pas un JSON OpenSpool.') if self.opentag_output.currentData()!='ndef' else tr('Message NDEF brut : le logiciel d’écriture doit accepter ce format.'))
+                self.nfc_capacity.setText(tr('OpenTag3D : {v0}/{v1} octets sur l’étiquette ; {v2} octets disponibles.',v0=prepared.size['occupied'],v1=prepared.size['capacity'],v2=prepared.size['remaining']))
+                self.nfc_capacity.setToolTip(tr('Validation logicielle uniquement. Vérifiez l’import, l’écriture et la relecture avec votre matériel.'))
+                return
             payload=self._build_payload()
             if payload is None:return
             options=self._nfc_options();text=core.serialize_openspool(payload,**options)
@@ -1069,3 +1239,74 @@ class CatalogueUx:
         self.provenance_box.setVisible(visible)
         if visible and hasattr(self,'detail_scroll'):
             QTimer.singleShot(0,lambda:self.detail_scroll.ensureWidgetVisible(self.provenance_box) if self.provenance_box.isVisible() else None)
+
+    def _opentag_selected(self):
+        return hasattr(self,'nfc_format') and self.nfc_format.currentData()=='opentag3d'
+
+    def _format_changed(self,*_):
+        if not hasattr(self,'nfc_advanced'):return
+        value=self.nfc_format.currentData()
+        if value:
+            cfg=core.load_config();cfg['nfc_format']=value
+            cfg['opentag3d_output']=self.opentag_output.currentData();self._store_config(cfg)
+        self._refresh_nfc_capacity()
+        if hasattr(self,'inspector') and self.inspector.isVisible():self._refresh_inspector()
+
+    def _prepare_opentag(self,settings=None):
+        view=core.get_sku_view(self.db,self.current_sku)
+        if view is None:raise core.ExportValidationError(tr('Produit introuvable pour cette référence.'))
+        if self._variant_needs_choice():raise core.ExportValidationError(tr('Comparez les pastilles de couleur et choisissez la teinte de votre bobine.'))
+        return core.prepare_opentag3d(self.current_sku,dict(self.db['_skus'][self.current_sku],sku=self.current_sku),
+            view.product_data,settings=core.opentag_settings(self.current_sku) if settings is None else settings,
+            tag_type=self.tag_type.currentData(),reserved_bytes=self.nfc_reserve.value(),
+            output=self.opentag_output.currentData(),use_orca_overrides=core.load_config().get('orca_overrides') is True)
+
+    def _complete_opentag_settings(self,*_):
+        if not self.current_sku or self._variant_needs_choice():return False
+        view=core.get_sku_view(self.db,self.current_sku)
+        if view is None:return False
+        try:
+            values=core.opentag_fields(self.db['_skus'][self.current_sku],view.product_data,
+                core.opentag_settings(self.current_sku),use_orca_overrides=core.load_config().get('orca_overrides') is True)
+        except ValueError as exc:
+            QMessageBox.warning(self,tr('OpenTag3D'),str(exc));return False
+        dialog=QDialog(self);dialog.setWindowTitle(tr('Préparer l’étiquette OpenTag3D'));dialog.resize(600,580)
+        lay=QVBoxLayout(dialog);lay.setContentsMargins(16,16,16,16);lay.setSpacing(12)
+        lay.addWidget(WrapLabel(tr('Ces valeurs servent à cette étiquette. Le catalogue source reste intact. Aucune température cible n’est déduite.')))
+        fields={};form=QGridLayout();form.setHorizontalSpacing(12);form.setVerticalSpacing(8);form.setColumnStretch(1,1)
+        for key,label in [('manufacturer',tr('Fabricant (nom court)')),('material',tr('Matière (nom court)')),
+                          ('material_mod',tr('Variante (facultatif)')),('color_name',tr('Nom de couleur (facultatif)')),
+                          ('sku',tr('Référence fabricant (facultatif)')),('weight',tr('Masse du filament (g)'))]:
+            edit=QLineEdit(str(values.get(key,'')));edit.setObjectName('opentag_'+key);edit.setFixedHeight(CONTROL_HEIGHT)
+            row=form.rowCount();form.addWidget(QLabel(label),row,0);form.addWidget(edit,row,1);fields[key]=edit
+        lay.addLayout(form)
+        lay.addWidget(WrapLabel(tr('Températures pour l’étiquette : multiples de 5 °C. Une enceinte non chauffée vaut 0 °C seulement si vous le confirmez.')))
+        grid=QGridLayout();grid.setHorizontalSpacing(8);grid.setVerticalSpacing(8)
+        for col,label in enumerate([tr('Température'),tr('Minimum'),tr('Cible'),tr('Maximum')]):grid.addWidget(QLabel(label),0,col)
+        for row,label,keys in [(1,tr('Buse (°C)'),('min_print_temp','print_temp','max_print_temp')),
+                               (2,tr('Plateau (°C)'),('min_bed_temp','bed_temp','max_bed_temp')),
+                               (3,tr('Enceinte (°C)'),(None,'chamber_temp',None))]:
+            grid.addWidget(QLabel(label),row,0)
+            for col,key in enumerate(keys,1):
+                if key:
+                    edit=QLineEdit(str(values.get(key,'')));edit.setObjectName('opentag_'+key)
+                    edit.setFixedHeight(CONTROL_HEIGHT);edit.setMinimumWidth(0);grid.addWidget(edit,row,col);fields[key]=edit
+                grid.setColumnStretch(col,1)
+        lay.addLayout(grid)
+        buttons=QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+        save=buttons.button(QDialogButtonBox.Save);save.setText(tr('Enregistrer'))
+        cancel=buttons.button(QDialogButtonBox.Cancel);cancel.setText(tr('Annuler'))
+        for button in [save,cancel]:button.setFixedHeight(CONTROL_HEIGHT)
+        def accept():
+            try:
+                numbers={'weight','print_temp','min_print_temp','max_print_temp','bed_temp','min_bed_temp','max_bed_temp','chamber_temp'}
+                settings={key:(float(edit.text().strip().replace(',','.')) if edit.text().strip() else None) if key in numbers else edit.text().strip() for key,edit in fields.items()}
+                self._prepare_opentag(settings)
+                core.save_opentag_settings(self.current_sku,settings)
+            except (ValueError,OSError) as exc:
+                QMessageBox.warning(dialog,tr('Étiquette incomplète'),str(exc));return
+            dialog.accept()
+        save.clicked.connect(accept);cancel.clicked.connect(dialog.reject);lay.addWidget(buttons)
+        result=dialog.exec()==QDialog.Accepted
+        if result:self._refresh_nfc_capacity()
+        return result

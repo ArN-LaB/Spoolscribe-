@@ -34,3 +34,8 @@ ils ne décrivent pas la version actuelle.
 
 Les tests automatisés et les sondes des exécutables ne remplacent pas une recette
 visuelle humaine ni une écriture/relecture NFC sur une imprimante réelle.
+
+## In development: v0.4.0
+
+[Reader setup guide](PRINTER-CONFIGURATIONS.md) · [OpenTag3D export guide](OPENTAG3D.md) · [Validation status](validation/v0.4.0.md).
+Stable downloads and their historical validation remain v0.3.5.

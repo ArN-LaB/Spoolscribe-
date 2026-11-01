@@ -18,6 +18,20 @@
 
 **Current stable: [v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).**
 
+**Next version, in development:** v0.4.0 adds OpenTag3D 2.004 exports alongside
+OpenSpool, with reader-specific format choices and NFC Tools profiles.
+[OpenTag3D guide](docs/OPENTAG3D.md) · [Printer and reader setups](docs/PRINTER-CONFIGURATIONS.md). The downloads below
+remain the published v0.3.5 builds.
+
+**Help verify real-world setups.** The v0.4.0 printer list describes documented
+configurations, not a hardware-tested certification. Automated tests check the
+software and exported data; testing every printer, reader and firmware combination
+would require access to all of that equipment. Physical NFC writing and printer
+read-back have not been validated by this project for these additions.
+[Share a successful test or report a problem in Issues](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose)
+with your printer model, reader, firmware/plugin versions, tag type, export format
+and what happened. Your feedback will help improve the compatibility list and fix problems.
+
 **SpoolScribe prepares the JSON file.** A separate NFC writing app, such as
 [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us), writes it to your NTAG215 or
 NTAG216. Your printer or external reader needs to support **OpenSpool**.
