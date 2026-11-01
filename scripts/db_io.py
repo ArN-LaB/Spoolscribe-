@@ -244,25 +244,49 @@ def atomic_write(path: str | Path, data: bytes, *, before_replace: Callable[[], 
 STALE_LOCK_SECONDS = 15 * 60
 
 
-def _lock_is_stale(lock: Path) -> bool:
-    """A lock left by a dead or interrupted writer must not block the user forever.
+def _pid_is_alive(pid: int) -> bool | None:
+    """Read process state without signalling it; None means access is uncertain."""
+    if pid == os.getpid():
+        return True
+    if os.name == "posix":
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except OSError:
+            return None
+        return True
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+        kernel.OpenProcess.restype = wintypes.HANDLE
+        kernel.WaitForSingleObject.argtypes = (wintypes.HANDLE, wintypes.DWORD)
+        kernel.WaitForSingleObject.restype = wintypes.DWORD
+        kernel.CloseHandle.argtypes = (wintypes.HANDLE,)
+        kernel.CloseHandle.restype = wintypes.BOOL
+        handle = kernel.OpenProcess(0x00100000, False, pid)  # SYNCHRONIZE only
+        if not handle:
+            return False if ctypes.get_last_error() == 87 else None  # no such PID
+        try:
+            state = kernel.WaitForSingleObject(handle, 0)
+            return {0: False, 0x102: True}.get(state)  # exited / still running
+        finally:
+            kernel.CloseHandle(handle)
+    return None
 
-    POSIX checks the recorded PID; elsewhere (Windows has no harmless signal 0)
-    only an old lock is considered abandoned.
-    """
+
+def _lock_is_stale(lock: Path) -> bool:
+    """Recover a dead writer on every OS; never expire a known live writer."""
     try:
         age = time.time() - lock.stat().st_mtime
         pid = int(lock.read_text(encoding="ascii").strip() or 0)
     except (OSError, ValueError):
         return False
-    if os.name == "posix" and pid > 0 and pid != os.getpid():
-        try:
-            os.kill(pid, 0)
-        except ProcessLookupError:
-            return True
-        except PermissionError:
-            return False
-        return age > STALE_LOCK_SECONDS
+    if pid > 0:
+        # An unknown process state is not proof that the writer has stopped.
+        return _pid_is_alive(pid) is False
     return age > STALE_LOCK_SECONDS
 
 

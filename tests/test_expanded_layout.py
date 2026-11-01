@@ -58,10 +58,22 @@ class ExpandedLayoutTests(unittest.TestCase):
     def test_printer_rows_do_not_grow_after_narrow_wide_narrow_sequence(self):
         from ui_widgets import PrinterBrowser
         browser=PrinterBrowser(self.window.printer,self.window);self.addCleanup(browser.close);browser.show()
+        narrow_heights=None
         for width in (440,900,440,700,440):
             browser.resize(width,480);self.window.app.processEvents();self.window.app.processEvents()
             rects=[browser.list.visualItemRect(browser.list.item(i)) for i in range(browser.list.count())]
-            self.assertTrue(all(80<=r.height()<=160 for r in rects))
+            # Native font metrics differ (notably Segoe UI on Windows).
+            # Check content fit and repeatable reflow, rather than a Mac pixel cap.
+            for i,rect in enumerate(rects):
+                from PySide6.QtWidgets import QStyleOptionViewItem
+                option=QStyleOptionViewItem();option.font=browser.list.font()
+                expected=browser.delegate.sizeHint(option,browser.list.model().index(i,0))
+                self.assertEqual(rect.height(),expected.height())
+                self.assertGreaterEqual(rect.height(),88)
+            heights=[r.height() for r in rects]
+            if width==440:
+                if narrow_heights is not None:self.assertEqual(heights,narrow_heights)
+                narrow_heights=heights
             self.assertTrue(all(r.width()<=browser.list.viewport().width() for r in rects))
 
     def test_printer_card_surface_stays_readable_on_light_theme(self):

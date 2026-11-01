@@ -1124,6 +1124,18 @@ class MainWindow(CatalogueUx, QMainWindow):
                            + f"QLabel#sourceStatus[success=true] {{ color:{accent}; }}"
                            + f"QLabel#fieldvalue {{ color:{t['text']}; }}")
 
+        # Equal actions must accommodate the largest native font/size hint.
+        # Stretch factors alone do not override QToolButton's minimum size.
+        actions=(self.btn_edit_physical,self.provenance_toggle)
+        for button in actions:button.ensurePolished()
+        width=max(button.minimumSizeHint().width() for button in actions)
+        for button in actions:button.setMinimumWidth(width)
+        if hasattr(self,'reset_filters'):
+            buttons=(self.reset_filters,self.brand_favorites_only,self.favorites_only)
+            for button in buttons:button.ensurePolished()
+            width=max(button.minimumSizeHint().width() for button in buttons)
+            for button in buttons:button.setMinimumWidth(width)
+            self.sidebar.setFixedWidth(max(220,2*width+14))
         self._align_detail_footer()
         # Titre de la fiche : contraste fort, indépendant du palette OS.
         if hasattr(self, "title"):

@@ -73,7 +73,7 @@ class ExportPersonalUiTests(unittest.TestCase):
         with patch('app_gui.QFileDialog.getExistingDirectory',return_value=str(folder)),patch('app_gui.QMessageBox.information') as message:
             w._generate();files=list(folder.glob('*.json'));self.assertEqual(len(files),1)
             self.assertEqual(core.load_config()['export_directory'],str(folder))
-            self.assertEqual(message.call_args.args[1],'Export terminé');self.assertIn(str(files[0]),message.call_args.args[2])
+            self.assertEqual(message.call_args.args[1],'Export terminé');self.assertEqual(Path(message.call_args.args[2].split('\n',1)[1]).resolve(),files[0].resolve())
             self.assertEqual(files[0].read_text(),core.serialize_openspool(w._build_payload(),**w._nfc_options()))
 
     def test_export_folder_cancellation_creates_nothing_and_does_not_confirm(self):

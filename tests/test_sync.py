@@ -110,6 +110,42 @@ class LockTests(unittest.TestCase):
             self.assertFalse(lock.exists())
             self.assertTrue(path.exists())
 
+    def test_real_child_process_state_and_abandoned_lock(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'db.json'
+            lock = Path(str(path) + '.lock')
+            process = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'])
+            try:
+                lock.write_text(str(process.pid))
+                os.utime(lock, (0, 0))
+                with self.assertRaises(db_io.DatabaseError):
+                    db_io.save_db(small_db(), path)
+                self.assertTrue(lock.exists())
+            finally:
+                process.terminate()
+                process.wait(timeout=10)
+            db_io.save_db(small_db(), path)
+            self.assertFalse(lock.exists())
+
+    def test_uncertain_process_state_never_removes_a_lock(self):
+        with tempfile.TemporaryDirectory() as directory:
+            lock = Path(directory) / 'db.json.lock'
+            lock.write_text('1234')
+            os.utime(lock, (0, 0))
+            with patch.object(db_io, '_pid_is_alive', return_value=None):
+                self.assertFalse(db_io._lock_is_stale(lock))
+            self.assertTrue(lock.exists())
+
+    def test_an_old_lock_of_a_live_process_still_blocks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'db.json'
+            lock = Path(str(path) + '.lock')
+            lock.write_text(str(os.getpid()))
+            os.utime(lock, (0, 0))
+            with self.assertRaises(db_io.DatabaseError):
+                db_io.save_db(small_db(), path)
+            self.assertTrue(lock.exists())
+
     def test_a_fresh_lock_of_a_live_process_still_blocks(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'db.json'
