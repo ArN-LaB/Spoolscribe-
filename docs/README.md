@@ -7,6 +7,8 @@ archives Windows x64, macOS Apple Silicon et Linux x64 et leurs SHA-256.
 ## Références actuelles
 
 - [Guide et installation](../README.md) ; [changelog](../CHANGELOG.md).
+- [Développement, ligne de commande et packaging](DEVELOPMENT.md).
+- [Présentation et règles du dépôt](REPOSITORY-MAINTENANCE.md).
 - [Formats et compatibilité NFC](FORMATS-NFC.md) ; [format des données](DATA_FORMAT.md).
 - [Sources et couverture du catalogue](DATA_SOURCES.md) ; [confidentialité](PRIVACY.md).
 - [Imprimantes et lecteurs](wiki/Printers-and-Readers.md) ; [visuels et provenance](PRINTER_VISUALS.md).

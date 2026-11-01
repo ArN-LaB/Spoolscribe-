@@ -1,47 +1,39 @@
-# Security Policy
+# Security policy
 
-SpoolScribe is a small hobby project, but security reports are taken seriously.
+SpoolScribe runs locally, but downloaded data and exported files still need care.
+Security reports are welcome; please keep vulnerability details private.
 
 ## Supported versions
 
-The latest release on the `main` branch is the only supported version.
+The [latest stable GitHub Release](https://github.com/ArN-LaB/Spoolscribe-/releases/latest)
+is the supported version. `main` may include changes for the next release.
 
-## Reporting a vulnerability
+## Report privately
 
-Please **do not open a public issue** for security-sensitive reports.
+Use **[Report a vulnerability](https://github.com/ArN-LaB/Spoolscribe-/security/advisories/new)**
+or open the repository's **Security** tab and select that option. Private
+vulnerability reporting is enabled for this repository.
 
-Instead, use GitHub's private reporting:
+Please include what happened, its impact, your app version and OS, and minimal
+steps to reproduce. Redact credentials, personal catalogue contents and private
+network details. A small synthetic example is preferable to a personal database.
 
-1. Go to the repository's **Security** tab.
-2. Click **"Report a vulnerability"** (GitHub Private Vulnerability Reporting).
+If the private form is unavailable, open an issue titled `SECURITY` to request a
+private channel, without disclosing the vulnerability. This is a hobby project
+without a response-time guarantee; confirmed security issues take priority.
 
-If that is unavailable, open a regular issue titled `SECURITY` **without
-technical details** and ask for a private channel.
+## Scope
 
-Please include, when possible:
+| Area | Behaviour and relevant concerns |
+|---|---|
+| Network | Outbound HTTPS GET after explicit consent; downloaded data, redirects, size limits and source validation matter. No server or inbound listening port. |
+| Local storage | The app stores a catalogue, preferences, backups and exports in the user folder. Safe paths, atomic writes and preservation of local changes matter. |
+| Update workers | Bundled scripts process external data. Script allowlisting and avoidance of command injection matter. |
+| NFC exports | The app prepares JSON; it does not program tag memory, modify firmware or associate hardware UIDs. |
 
-- A description of the issue and its impact.
-- Steps to reproduce.
-- The affected file(s) / version.
+See [network transparency](../docs/PRIVACY.md), [data sources](../docs/DATA_SOURCES.md)
+and [storage/data format](../docs/DATA_FORMAT.md).
 
-You can expect an initial response within a reasonable time. Fixes for
-confirmed issues are prioritized.
-
-## Scope & threat model
-
-SpoolScribe:
-
-- Runs locally as a desktop app.
-- Makes **outbound HTTPS GET requests only**, and only after explicit user
-  consent (see [PRIVACY.md](../docs/PRIVACY.md)).
-- Does **not** run a server, open ports, or accept inbound connections.
-- Stores only a small local config file (consent + preferences).
-
-Relevant concerns include: unsafe handling of downloaded data, path traversal
-when writing output files, or command injection in the update pipeline. Reports
-in these areas are especially welcome.
-
-## Out of scope
-
-- The security of third-party data sources (see ../docs/DATA_SOURCES.md).
-- The Snapmaker U1 firmware fork and any RFID hardware.
+The security of third-party source services, printer firmware and RFID hardware
+is outside this repository's control. Report vulnerabilities in those projects
+to their respective maintainers.

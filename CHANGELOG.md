@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > public release. Their highlights are preserved below under *Development
 > history* for reference.
 
+## [Unreleased]
+
+### Documentation and repository maintenance
+
+- Shorter visual README with real catalogue screenshots, direct downloads and a beginner workflow; developer details move to `docs/DEVELOPMENT.md`.
+- Refresh contributor/security guidance and the bug-report template; keep the standard MIT licence and contributor covenant.
+- Update the GitHub repository description/topics and protect `main` with PRs and the four CI checks.
+- Validate Dependabot PR #3 (checkout 7.0.1 / setup-python 7.1.0, still SHA-pinned) on all four test configurations and all three builds before merging.
+
 ## [0.3.0] - 2026-11-01
 
 ### Stable release
