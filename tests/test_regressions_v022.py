@@ -105,7 +105,7 @@ class SourceRegressionTests(unittest.TestCase):
                 record, code = self.run_source(module, {"filaments": []})
                 failed = subprocess.CompletedProcess([], code, stdout=db_io.STEP_PREFIX + json.dumps(record), stderr="")
                 good = subprocess.CompletedProcess([], 0, stdout=db_io.STEP_PREFIX + '{"status":"unchanged"}', stderr="")
-                with patch.multiple(core, DB_PATH=str(self.db_path), DATA_HOME=str(self.root)), \
+                with patch.multiple(core, DB_PATH=str(self.db_path), DATA_HOME=str(self.root), CONFIG_PATH=str(self.root / "config.json")), \
                      patch("core._run_step_process", side_effect=[failed] + [good] * (len(core.UPDATE_PIPELINE) - 1)):
                     results = core.run_update_pipeline(consent=True)
                 self.assertEqual(core.update_status(results), "partial")

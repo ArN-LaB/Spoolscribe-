@@ -35,6 +35,7 @@ def _package_compatible(a, b):
 
 
 def merge_fields(target, incoming, source, rank, conflicts, prefix):
+    before = copy.deepcopy(target)
     provenance=target.get('_field_sources',{})
     for key,value in incoming.items():
         if key.startswith('_') or key in ('source','source_id','source_path','product'):continue
@@ -62,6 +63,17 @@ def merge_fields(target, incoming, source, rank, conflicts, prefix):
         elif target[key]!=value and value is not None:
             conflicts.append(f'{prefix}.{key}')
     if provenance: target['_field_sources']=provenance
+    # A partial source must not combine half of a new range with half of an
+    # older/user range and make the whole database unsavable. Keep that pair.
+    for low, high in (('min_temp', 'max_temp'), ('bed_min_temp', 'bed_max_temp')):
+        if target.get(low) is not None and target.get(high) is not None and target[low] > target[high]:
+            for key in (low, high):
+                if key in before: target[key] = before[key]
+                else: target.pop(key, None)
+                previous = before.get('_field_sources', {}).get(key)
+                if previous is not None: provenance[key] = previous
+                else: provenance.pop(key, None)
+            conflicts.append(f'{prefix}.{low}/{high} (plage incohérente, valeurs conservées)')
 
 
 def family_keys(entry, product):
@@ -77,6 +89,9 @@ def family_keys(entry, product):
 
 def merge_catalogue(local, incoming, source, rank=10):
     result=copy.deepcopy(local);conflicts=[];pending=[]
+    product_users={}
+    for entry in result['_skus'].values():
+        key=entry.get('product');product_users[key]=product_users.get(key,0)+1
     by_identity={}
     for sku,e in result['_skus'].items():
         p=result['_products'].get(e.get('product'),{})
@@ -123,9 +138,38 @@ def merge_catalogue(local, incoming, source, rank=10):
             canonical=matches[0];target=result['_skus'][canonical];pkey=target['product']
             # A historical orphan reference (product record missing) is healed
             # with the matching source product instead of aborting the refresh.
-            result['_products'].setdefault(pkey,{})
-            merge_fields(result['_products'][pkey],p,source,rank,conflicts,'_products.'+pkey)
+            current=result['_products'].setdefault(pkey,{})
+            previous_identity=identity(target,current,canonical)
+            previous_families=family_keys(target,current)
+            updated=copy.deepcopy(current)
+            merge_fields(updated,p,source,rank,conflicts,'_products.'+pkey)
+            physical=('diameter','density','min_temp','max_temp','bed_min_temp','bed_max_temp','type')
+            if product_users.get(pkey,0)>1 and any(updated.get(k)!=current.get(k) for k in physical):
+                # A historical product can be shared by 1.75 and 2.85 mm SKUs.
+                # Updating one article must not change all the others. Retain
+                # the old record and give this reference a stable private product.
+                old_key=pkey
+                base='@reference/'+canonical
+                pkey=base
+                index=1
+                while pkey in result['_products'] and pkey!=target['product']:
+                    pkey=base+f'/{index}';index+=1
+                updated.setdefault('display_name',current.get('display_name',old_key))
+                target['product']=pkey
+                product_users[old_key]-=1
+                product_users[pkey]=1
+            result['_products'][pkey]=updated
             merge_fields(target,e,source,rank,conflicts,'_skus.'+canonical)
+            # Later records in this same refresh must see the updated identity.
+            for index,key in [(by_identity,previous_identity),
+                              *[(family_index,k) for k in previous_families],
+                              *([(article_index,previous_identity[:3])] if previous_identity[0]=='article' else [])]:
+                if canonical in index.get(key,[]):index[key].remove(canonical)
+            current_identity=identity(target,updated,canonical)
+            by_identity.setdefault(current_identity,[]).append(canonical)
+            if current_identity[0]=='article':article_index.setdefault(current_identity[:3],[]).append(canonical)
+            for key in family_keys(target,updated):
+                if canonical not in family_index.setdefault(key,[]):family_index[key].append(canonical)
             if canonical != sku:
                 # Every absorbed source record stays traceable, not only the last one.
                 aliases=target.setdefault('_source_aliases',{})
@@ -137,6 +181,7 @@ def merge_catalogue(local, incoming, source, rank=10):
             pkey=e['product'];result['_products'].setdefault(pkey,{})
             merge_fields(result['_products'][pkey],p,source,rank,conflicts,'_products.'+pkey)
             result['_skus'][sku]=copy.deepcopy(e)
+            product_users[pkey]=product_users.get(pkey,0)+1
             result['_skus'][sku]['_field_sources']={k:dict(source=source,rank=rank,value=copy.deepcopy(v)) for k,v in e.items() if not k.startswith('_')}
             by_identity.setdefault(ident,[]).append(sku)
             if ident[0]=="article":article_index.setdefault(ident[:3],[]).append(sku)

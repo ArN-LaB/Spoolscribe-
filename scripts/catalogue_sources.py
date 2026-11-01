@@ -195,7 +195,7 @@ def adapt_ofd(files: dict[str, bytes], *, source_digest: str, logos: dict | None
             if product_line and brand_name in result["_brands"]:
                 meta = None  # the manufacturer's own metadata wins over a line folder
             website = brand.get("website")
-            if isinstance(website, str) and website.strip():
+            if meta is not None and isinstance(website, str) and website.strip():
                 meta["website"] = website if website.startswith("https://") else "https://" + website.removeprefix("http://")
             if meta is not None:
                 approved = (logos or {}).get(brand_uuid)
@@ -263,11 +263,14 @@ def normalize_brand_lines(db):
         for name in list(brands):
             maker, line = manufacturer_of(name)
             if line is not None:
-                meta = brands.pop(name)
+                # Keep the historical key: storage deliberately refuses deletion,
+                # and older exports may still refer to this metadata.
+                meta = brands[name]
                 target = brands.setdefault(maker, {"name": maker})
                 for key, value in meta.items():
-                    if key not in ("name", "logo_path", "logo", "logo_url", "logo_source", "source_slug", "source_id"):
+                    if key not in ("name", "logo_path", "logo", "logo_url", "logo_source", "source_slug", "source_id", "_alias_of"):
                         target.setdefault(key, value)
+                meta['_alias_of'] = maker
     return changed
 
 

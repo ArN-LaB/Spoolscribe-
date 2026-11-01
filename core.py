@@ -181,6 +181,10 @@ DEFAULT_CONFIG = {
     "printer_profile": "u1",
     "selected_sources": ["polymaker", "ofd", "spoolman", "bambu", "sunlu"],
     "ui": {},
+    "favorite_brands": [],
+    "favorite_filaments": [],
+    "preferred_weight_g": 1000,
+    "preferred_packaging": "any",
     "show_extra_fields": False,
     "nfc_reserved_bytes": 0,
 }
@@ -445,7 +449,9 @@ def app_logo_abs_path() -> Optional[str]:
     for base in (DATA_HOME, RESOURCE_DIR):
         root = Path(base).resolve()
         candidate = (root / rel).resolve()
-        if candidate.is_relative_to(root / "data") and candidate.is_file():
+        # PyInstaller macOS places data in Resources and links Frameworks/data
+        # to it. Compare resolved paths on both sides, keeping escape checks.
+        if candidate.is_relative_to((root / "data").resolve()) and candidate.is_file():
             return str(candidate)
     return None
 
@@ -493,15 +499,16 @@ def logo_abs_path(db: dict, brand: str = "Polymaker") -> Optional[str]:
         logo = (meta.get("logo") or "").strip()
         if logo:
             logo_path = logo if ("/" in logo or os.sep in logo) else f"data/{logo}"
-    if not logo_path:
-        return None
-    rel = logo_path.replace("/", os.sep)
-    # Données inscriptibles (mises à jour) d'abord, puis bundle en repli.
-    for base in (DATA_HOME, RESOURCE_DIR):
-        root = Path(base).resolve()
-        candidate = (root / rel).resolve()
-        if candidate.is_relative_to(root / "data") and candidate.is_file():
-            return str(candidate)
+    # Historical artwork is shipped independently of the downloaded metadata.
+    legacy = {'polymaker':'data/polymaker_logo.svg','prusament':'data/prusament_logo.png','rosa3d':'data/rosa3d_logo.png'}.get(catalogue_sources.brand_key(brand or ''))
+    for path in dict.fromkeys(p for p in (logo_path, legacy) if p):
+        rel = path.replace("/", os.sep)
+        # Données inscriptibles (mises à jour) d'abord, puis bundle en repli.
+        for base in (DATA_HOME, RESOURCE_DIR):
+            root = Path(base).resolve()
+            candidate = (root / rel).resolve()
+            if candidate.is_relative_to((root / "data").resolve()) and candidate.is_file():
+                return str(candidate)
     return None
 
 
@@ -640,6 +647,10 @@ def list_skus(db: dict) -> list[dict]:
             "quality": " ; ".join(issues) or "Export possible",
             "source_id": e.get("source_id", ""),
             "manufacturer_sku": e.get("manufacturer_sku", ""),
+            "alpha": e.get("alpha"),
+            "source_colors": e.get("source_colors", []),
+            "source_traits": e.get("source_traits", {}),
+            "spool_refill": e.get("spool_refill"),
             "_hex_rank": hex_info.get("rank", 0) if e.get("hex") else -1,
         }
         # Normalised once here, not for every keystroke and every row.
@@ -692,33 +703,48 @@ def fmt_int(value: int) -> str:
     return f"{value:,}".replace(",", "\u202f")
 
 
-def group_filaments(rows: list[dict]) -> list[dict]:
-    """Une ligne par filament (fabricant + produit + couleur) ; les conditionnements deviennent des variantes.
+def filament_identity(row: dict) -> tuple:
+    """Presentation identity, not a destructive merge or an assertion of equivalence.
 
-    Le HEX retenu est celui de meilleure provenance (utilisateur > fabricant >
-    communauté > inconnu), puis le plus fréquent. Les lignes gardent toutes les
-    clés d'une référence ; ``variants`` liste chaque référence regroupée.
+    Only punctuation/trademarks and a leading manufacturer name in the colour
+    are normalized. Grades, diameter, transparency and multicolours stay distinct.
     """
+    from scripts.catalogue_merge import normalized
+    brand = catalogue_sources.brand_key(row.get("brand", ""))
+    product = normalized(row.get("product"))
+    if product.startswith(brand): product = product[len(brand):]
+    color = display_color(row)
+    return (brand, product, normalized(color), normalized(row.get("material")),
+            row.get("diameter"), row.get("alpha"), tuple(row.get("source_colors") or []),
+            tuple(sorted((row.get("source_traits") or {}).items())))
+
+
+def display_color(row: dict) -> str:
+    color = str(row.get("color_name") or "").strip()
+    brand = str(row.get("brand") or "").strip()
+    if brand:
+        color = re.sub(r"^" + re.escape(brand) + r"(?:[™®]?[\s:–-]+)", "", color, flags=re.I)
+    return color
+
+
+def group_filaments(rows: list[dict]) -> list[dict]:
+    """Group display variants, preserving every source reference and its values."""
     groups: dict[tuple, list[dict]] = {}
     for row in rows:
-        key = (_search_key(row.get("brand")), _search_key(row.get("product")), _search_key(row.get("color_name")))
-        groups.setdefault(key, []).append(row)
+        groups.setdefault(filament_identity(row), []).append(row)
     out = []
-    for members in groups.values():
+    for identity_key, members in groups.items():
         ranked = sorted(members, key=lambda r: (-r.get("_hex_rank", 0), not r.get("ready"), r["sku"]))
-        best = ranked[0]
-        hexes = [r["hex"] for r in members if r.get("hex")]
-        chosen = best.get("hex")
-        if chosen is None and hexes:
-            chosen = max(set(hexes), key=hexes.count)
-        primary = next((r for r in ranked if r.get("hex") == chosen), best)
+        primary = ranked[0]
         group = dict(primary)
-        group["variants"] = [{"sku": r["sku"], "reference": r["reference"], "weight": r.get("weight"),
-                              "diameter": r.get("diameter"), "hex": r.get("hex"), "ready": r.get("ready"),
-                              "quality": r.get("quality"), "manufacturer_sku": r.get("manufacturer_sku", "")}
-                             for r in sorted(members, key=lambda r: (r.get("diameter") or 0, r.get("weight") or 0, r["sku"]))]
+        group["filament_id"] = hashlib.sha256(json.dumps(identity_key, ensure_ascii=False).encode()).hexdigest()
+        group["color_name"] = display_color(primary)
+        group["variants"] = [dict(r) for r in sorted(members, key=lambda r: (r.get("diameter") or 0, r.get("weight") or 0, r["sku"]))]
         group["variant_count"] = len(members)
-        group["hex_variants"] = len(set(hexes))
+        group["hex_variants"] = len({r["hex"] for r in members if r.get("hex")})
+        if group["hex_variants"] > 1:
+            group["ready"] = False
+            group["quality"] = "Teintes à vérifier — choisir une référence"
         group["_search"] = " ".join(_row_search(r) for r in members)
         out.append(group)
     return out
@@ -1235,7 +1261,7 @@ def run_update_pipeline(
     try:
         cfg = load_config()
         cfg["last_update_attempt"] = now
-        cfg["last_update_status"] = status
+        cfg["last_update_status"] = update_status(results)
         save_config(cfg)
     except OSError:
         pass
@@ -1281,6 +1307,22 @@ def recommended_nfc(payload, tag_type="NTAG216", profile="auto", reserved_bytes=
 
 
 NFC_PROFILES = ("auto", "essential", "full")
+
+
+def preferred_packaging(variants: list[dict], cfg: dict, fallback: str) -> dict:
+    """Prefer an existing package only. Callers handle colour ambiguity first."""
+    current = next((v for v in variants if v['sku'] == fallback), variants[0] if variants else None)
+    if current is None:
+        raise ValueError('Aucun conditionnement disponible')
+    weight = cfg.get('preferred_weight_g', 1000)
+    form = cfg.get('preferred_packaging', 'any')
+    candidates = [v for v in variants if weight and v.get('weight') == weight] if type(weight) is int else []
+    if not candidates:
+        return current
+    wanted = {'spool': False, 'refill': True}.get(form)
+    matching = [v for v in candidates if v.get('spool_refill') is wanted] if wanted is not None else candidates
+    pool = matching or candidates
+    return next((v for v in pool if v['sku'] == fallback), pool[0])
 
 
 def nfc_defaults(cfg: Optional[dict] = None) -> dict:
@@ -1339,10 +1381,17 @@ def import_settings(path):
     selected_pipeline(cfg['selected_sources'])
     if not isinstance(cfg['ui'],dict):raise ValueError('Présentation invalide')
     ui=cfg['ui']
-    for key in ('brand','material','quality','search','sort1','sort2','view','header','geometry'):
+    for key in ('brand','material','quality','search','brand_search','sort1','sort2','view','header','geometry'):
         if key in ui and (not isinstance(ui[key],str) or len(ui[key])>20000):raise ValueError('Présentation invalide')
     for key in ('auto_update','orca_overrides','show_extra_fields'):
         if type(cfg[key]) is not bool:raise ValueError('Option invalide')
+    if type(cfg['preferred_weight_g']) is not int or not 0 <= cfg['preferred_weight_g'] <= 20000 or cfg['preferred_packaging'] not in ('any','spool','refill'):
+        raise ValueError('Conditionnement préféré invalide')
+    for key, limit in (("favorite_brands", 500), ("favorite_filaments", 5000)):
+        value = cfg.get(key)
+        if not isinstance(value, list) or len(value) > limit or any(not isinstance(v, str) or len(v) > 256 for v in value):
+            raise ValueError("Favoris invalides")
+        cfg[key] = list(dict.fromkeys(value))
     if 'recent_brands' in cfg and (not isinstance(cfg['recent_brands'],list) or len(cfg['recent_brands'])>20 or any(not isinstance(v,str) for v in cfg['recent_brands'])):
         raise ValueError('Fabricants récents invalides')
     # Import never grants or widens network authorization silently.
