@@ -78,9 +78,15 @@ assert not spool_icon(None,112,2).isNull()
 # Construct the actual UI from the frozen imports, with synthetic data only.
 # No startup consent dialog or source refresh can run in this smoke check.
 core.save_config(dict(core.load_config(),network_consent=False,printer_firmware='paxx12'))
-from app_gui import MainWindow, configure_application
-configure_application(app)
-window = MainWindow()
+# PyInstaller's entry script is __main__, not an importable app_gui module;
+# runpy temporarily owns __main__ here. Use the entry frame already on the stack.
+entry_frame = sys._getframe()
+while entry_frame is not None and 'MainWindow' not in entry_frame.f_globals:
+    entry_frame = entry_frame.f_back
+assert entry_frame is not None, 'Frozen entry point not found'
+entry_frame.f_globals['configure_application'](app)
+window = entry_frame.f_globals['MainWindow']()
+del entry_frame
 try:
     window.resize(1100,800)
     window.show()
