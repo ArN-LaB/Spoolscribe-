@@ -20,6 +20,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update the GitHub repository description/topics and protect `main` with PRs and the four CI checks.
 - Validate Dependabot PR #3 (checkout 7.0.1 / setup-python 7.1.0, still SHA-pinned) on all four test configurations and all three builds before merging.
 
+## [0.3.5] - Unreleased
+
+### Interface
+
+- English, French, Spanish and Simplified Chinese interface. Follow the computer's
+  preferred language, fall back to English, or save an explicit choice in Settings
+  → Interface, with a Restart now / Later prompt after saving or importing a
+  different choice. Restart is deferred during updates, and spawning happens
+  after releasing the old instance lock.
+- Read native macOS UI preferences when Qt returns a POSIX/English locale; declare
+  the four bundle localizations and show the effective automatic language.
+- Manufacturer and material filters now narrow each other's choices and counts.
+  Reset restores the choices while keeping saved manufacturers and filament favourites.
+- Rename the refresh action to “Refresh catalogue”; retain its position beside
+  search and give the search clear action a centred, theme-aware icon and hit area.
+- Fit translated table headers after restoring a layout from another language.
+- Restore the animated README logo using a local GIF exported from the original SVG.
+
+### Compatibility
+
+- Catalogue identities, personal copies and favourite IDs remain language-independent.
+  OpenSpool JSON and the 1,008 historical export contract remain unchanged.
+- Embed translations in all builds and exercise the four languages in the frozen
+  GUI probe. This prepared version has not yet been published; see the local
+  [validation record](docs/VALIDATION-v0.3.5.md) for checks actually performed.
+
 ## [0.3.0] - 2026-11-01
 
 ### Stable release

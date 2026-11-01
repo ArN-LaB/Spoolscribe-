@@ -185,3 +185,20 @@ SUNLU page) that only add facts to families the catalogues already contain.
 - [x] Printer compatibility filters, native transparent photos, aligned secondary controls and About support link (local seventh pass; human acceptance pending).
 
 - [x] Export destination/confirmation, fixed-size JSON inspection, isolated @suffix personal copies and sourced NFC format explanation (local eighth pass; human acceptance pending).
+
+
+## v0.3.5 — interface languages and linked filters (prepared locally)
+
+- [x] English, French, Spanish and Simplified Chinese UI, with OS detection and English fallback.
+- [x] Persistent language override, applied on restart; included in settings files.
+- [x] Manufacturer/material facet intersection and compatible choice counts.
+- [x] Clear-search affordance and explicit catalogue-refresh label.
+- [x] Restore the animated README logo without an external image host.
+- [ ] Native-speaker acceptance of translations.
+- [ ] Four-configuration CI matrix and three release builds on the final commit.
+- [ ] Human desktop acceptance and physical NFC read-back (not inferred from automation).
+
+See [v0.3.5 validation](VALIDATION-v0.3.5.md). Existing roadmap and historical
+validation entries above retain their original scope.
+
+- [x] v0.3.5 follow-up: native macOS UI-language detection, declared bundle languages and Restart now / Later after saving/importing a language. Real source-process relaunch tested with isolated settings.

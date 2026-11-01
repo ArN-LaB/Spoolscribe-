@@ -73,3 +73,7 @@ offers restoration when its database is unreadable. See
 | `orca_profiles/` | Official [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) OrcaSlicer profiles for the Snapmaker U1 (temperature overrides). |
 | `docs/` | Documentation; `docs/archive/` holds superseded validation reports. |
 
+
+## UI languages
+
+The v0.3.5 interface uses [bundled translations](../translations/README.md). Add display text with `i18n.tr`, keeping catalogue identities and payloads outside translation. The standard test suite checks locale fallback, placeholders, language persistence and crossed manufacturer/material filters. The existing frozen-app probe now renders all four languages.

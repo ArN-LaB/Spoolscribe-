@@ -1,0 +1,2482 @@
+{
+  "\nConditionnements : ": {
+    "en": "\nSpool options: ",
+    "es": "\nPresentaciones: ",
+    "zh_CN": "\n规格："
+  },
+  "\nCouleurs fournies par la source : ": {
+    "en": "\nSource colours: ",
+    "es": "\nColores de la fuente: ",
+    "zh_CN": "\n来源提供的颜色："
+  },
+  "\nRéférence fabricant : {v0}": {
+    "en": "\nManufacturer reference: {v0}",
+    "es": "\nReferencia del fabricante: {v0}",
+    "zh_CN": "\n制造商型号：{v0}"
+  },
+  "\n⚠ Teintes différentes selon la source ; la mieux documentée est affichée.": {
+    "en": "\n⚠ Sources disagree on the shade; showing the best documented value.",
+    "es": "\n⚠ Las fuentes difieren en el tono; se muestra el mejor documentado.",
+    "zh_CN": "\n⚠ 不同来源色调不一致，现显示依据最充分的值。"
+  },
+  "    Mise à jour : {v0}": {
+    "en": "    Refresh: {v0}",
+    "es": "    Actualización: {v0}",
+    "zh_CN": "    更新：{v0}"
+  },
+  "    Valeurs locales conservées : {v0}": {
+    "en": "    Local values kept: {v0}",
+    "es": "    Valores locales conservados: {v0}",
+    "zh_CN": "    保留的本地参数：{v0}"
+  },
+  " Catalogue non exhaustif.": {
+    "en": " Catalogue coverage is not exhaustive.",
+    "es": " El catálogo no es exhaustivo.",
+    "zh_CN": " 目录并非涵盖所有产品。"
+  },
+  " Pas un catalogue complet de couleurs.": {
+    "en": " Not a complete colour catalogue.",
+    "es": " No es un catálogo completo de colores.",
+    "zh_CN": " 不包含完整的颜色目录。"
+  },
+  " Sources injoignables ; base locale conservée.": {
+    "en": " Sources unavailable; local catalogue kept.",
+    "es": " Fuentes no disponibles; catálogo local conservado.",
+    "zh_CN": " 来源无法访问，已保留本地目录。"
+  },
+  " octets": {
+    "en": " bytes",
+    "es": " bytes",
+    "zh_CN": " 字节"
+  },
+  " · consultation des fiches": {
+    "en": " · reference sheets",
+    "es": " · consulta de fichas",
+    "zh_CN": " · 查看资料"
+  },
+  " · réserve {v0} o": {
+    "en": " · {v0} bytes reserved",
+    "es": " · {v0} bytes reservados",
+    "zh_CN": " · 预留 {v0} 字节"
+  },
+  " · {v0} fabricants importés": {
+    "en": " · {v0} manufacturers imported",
+    "es": " · {v0} fabricantes importados",
+    "zh_CN": " · 已导入 {v0} 个制造商"
+  },
+  " · {v0} fiches incomplètes": {
+    "en": " · {v0} incomplete records",
+    "es": " · {v0} fichas incompletas",
+    "zh_CN": " · {v0} 条不完整资料"
+  },
+  "%d/%m/%Y à %H:%M": {
+    "en": "%Y-%m-%d at %H:%M",
+    "es": "%d/%m/%Y a las %H:%M",
+    "zh_CN": "%Y-%m-%d %H:%M"
+  },
+  "1. Quelle imprimante utilisez-vous ?": {
+    "en": "1. Which printer do you use?",
+    "es": "1. ¿Qué impresora utiliza?",
+    "zh_CN": "1. 您使用哪款打印机？"
+  },
+  "2. Logiciel installé": {
+    "en": "2. Installed firmware",
+    "es": "2. Firmware instalado",
+    "zh_CN": "2. 已安装的固件"
+  },
+  "4 têtes indépendantes · volume 270 × 270 × 270 mm. Changement d’outil pour l’impression multicolore.": {
+    "en": "4 independent toolheads · 270 × 270 × 270 mm build volume. Tool changing for multicolour printing.",
+    "es": "4 cabezales independientes · volumen 270 × 270 × 270 mm. Cambio de herramientas para impresión multicolor.",
+    "zh_CN": "4 个独立工具头 · 成型尺寸 270 × 270 × 270 mm。通过换头实现多色打印。"
+  },
+  "Accordez d’abord l’autorisation réseau (Actualiser le catalogue → sources) pour contacter GitHub.": {
+    "en": "Allow network access first (Refresh catalogue → sources) to contact GitHub.",
+    "es": "Permita primero el acceso a la red (Actualizar catálogo → fuentes) para contactar con GitHub.",
+    "zh_CN": "请先授权网络访问（更新目录 → 来源），再连接 GitHub。"
+  },
+  "Actualisation au lancement": {
+    "en": "Refresh on startup",
+    "es": "Actualizar al iniciar",
+    "zh_CN": "启动时更新"
+  },
+  "Actualisation du catalogue": {
+    "en": "Catalogue refresh",
+    "es": "Actualización del catálogo",
+    "zh_CN": "目录更新"
+  },
+  "Actualisation impossible": {
+    "en": "Refresh failed",
+    "es": "No se pudo actualizar",
+    "zh_CN": "更新失败"
+  },
+  "Actualisation interrompue": {
+    "en": "Refresh interrupted",
+    "es": "Actualización interrumpida",
+    "zh_CN": "更新已中断"
+  },
+  "Actualisation échouée": {
+    "en": "Refresh failed",
+    "es": "Actualización fallida",
+    "zh_CN": "更新失败"
+  },
+  "Actualiser la liste": {
+    "en": "Refresh list",
+    "es": "Actualizar lista",
+    "zh_CN": "更新列表"
+  },
+  "Actualiser le catalogue": {
+    "en": "Refresh catalogue",
+    "es": "Actualizar catálogo",
+    "zh_CN": "更新目录"
+  },
+  "Actualiser maintenant": {
+    "en": "Refresh now",
+    "es": "Actualizar ahora",
+    "zh_CN": "立即更新"
+  },
+  "Actualisez le catalogue à votre rythme. La dernière base locale reste disponible en cas d’échec.": {
+    "en": "Choose when to refresh. Your last local catalogue stays available if a refresh fails.",
+    "es": "Elija cuándo actualizar. El último catálogo local sigue disponible si falla la actualización.",
+    "zh_CN": "选择更新频率。更新失败时，仍可使用上次的本地目录。"
+  },
+  "Actualisée": {
+    "en": "Updated",
+    "es": "Actualizada",
+    "zh_CN": "已更新"
+  },
+  "Afficher aussi les références, la provenance et la masse": {
+    "en": "Also show references, sources and weight",
+    "es": "Mostrar también referencias, fuentes y peso",
+    "zh_CN": "同时显示型号、来源和重量"
+  },
+  "Afficher mes fabricants favoris": {
+    "en": "Show my favourite manufacturers",
+    "es": "Mostrar mis fabricantes favoritos",
+    "zh_CN": "显示收藏的制造商"
+  },
+  "Afficher mes filaments favoris": {
+    "en": "Show my favourite filaments",
+    "es": "Mostrar mis filamentos favoritos",
+    "zh_CN": "显示收藏的耗材"
+  },
+  "Ajouter aux favoris": {
+    "en": "Add to favourites",
+    "es": "Añadir a favoritos",
+    "zh_CN": "添加到收藏"
+  },
+  "Ajouter ce filament aux favoris": {
+    "en": "Add this filament to favourites",
+    "es": "Añadir este filamento a favoritos",
+    "zh_CN": "收藏此耗材"
+  },
+  "Alpha facultatif : 00 transparent, FF opaque ; vide pour conserver": {
+    "en": "Optional alpha: 00 transparent, FF opaque; leave blank to keep",
+    "es": "Alfa opcional: 00 transparente, FF opaco; vacío para conservar",
+    "zh_CN": "可选 Alpha：00 为透明，FF 为不透明；留空则保留原值"
+  },
+  "Ancien complément local, sans catalogue ROSA3D.": {
+    "en": "Legacy local supplement; no ROSA3D catalogue.",
+    "es": "Complemento local antiguo; sin catálogo ROSA3D.",
+    "zh_CN": "历史本地补充数据，不含 ROSA3D 目录。"
+  },
+  "Annulation demandée : l'étape en cours s'interrompt…": {
+    "en": "Cancellation requested: stopping the current step…",
+    "es": "Cancelación solicitada: deteniendo el paso actual…",
+    "zh_CN": "已请求取消：正在停止当前步骤…"
+  },
+  "Annuler": {
+    "en": "Cancel",
+    "es": "Cancelar",
+    "zh_CN": "取消"
+  },
+  "Annulée": {
+    "en": "Cancelled",
+    "es": "Cancelada",
+    "zh_CN": "已取消"
+  },
+  "Aperçu / identification": {
+    "en": "Preview / identification",
+    "es": "Vista previa / identificación",
+    "zh_CN": "预览 / 识别"
+  },
+  "Aperçu de la bobine": {
+    "en": "Spool preview",
+    "es": "Vista previa de bobina",
+    "zh_CN": "线盘预览"
+  },
+  "Après enregistrement, vous pourrez redémarrer maintenant ou plus tard.": {
+    "en": "After saving, you can restart now or later.",
+    "es": "Tras guardar, podrá reiniciar ahora o más tarde.",
+    "zh_CN": "保存后，可选择立即重启或稍后重启。"
+  },
+  "Architecture CoreXY · impression à filament · système multicolore CANVAS selon équipement.": {
+    "en": "CoreXY architecture · filament printing · CANVAS multicolour depending on equipment.",
+    "es": "Arquitectura CoreXY · filamento · multicolor CANVAS según equipo.",
+    "zh_CN": "CoreXY 架构 · 耗材打印 · 根据配置支持 CANVAS 多色系统。"
+  },
+  "Attendez la fin de la mise à jour avant de modifier ou exporter la fiche.": {
+    "en": "Wait for the refresh to finish before editing or exporting.",
+    "es": "Espere a que termine la actualización antes de editar o exportar.",
+    "zh_CN": "请等待更新完成后再编辑或导出。"
+  },
+  "Aucun": {
+    "en": "None",
+    "es": "Ninguno",
+    "zh_CN": "无"
+  },
+  "Aucun filament sélectionné": {
+    "en": "No filament selected",
+    "es": "Ningún filamento seleccionado",
+    "zh_CN": "尚未选择耗材"
+  },
+  "Aucune imprimante trouvée. Essayez une autre marque ou un autre modèle.": {
+    "en": "No printers found. Try another brand or model.",
+    "es": "No se encontraron impresoras. Pruebe otra marca o modelo.",
+    "zh_CN": "未找到打印机。请尝试其他品牌或型号。"
+  },
+  "Aucune nouvelle liste publiée pour cette version. La liste embarquée reste disponible.": {
+    "en": "No new list is published for this version. The bundled list is still available.",
+    "es": "No hay lista nueva para esta versión. La lista incluida sigue disponible.",
+    "zh_CN": "此版本暂无新列表，仍可使用内置列表。"
+  },
+  "Aucune synchronisation enregistrée.": {
+    "en": "No catalogue refresh recorded.",
+    "es": "No hay actualizaciones registradas.",
+    "zh_CN": "暂无目录更新记录。"
+  },
+  "Automatique — format compact": {
+    "en": "Automatic — compact format",
+    "es": "Automático — formato compacto",
+    "zh_CN": "自动 — 紧凑格式"
+  },
+  "Automatique — langue de l’ordinateur": {
+    "en": "Automatic — computer language",
+    "es": "Automático — idioma del equipo",
+    "zh_CN": "自动 — 跟随系统语言"
+  },
+  "Automatique — {v0}": {
+    "en": "Automatic — {v0}",
+    "es": "Automático — {v0}",
+    "zh_CN": "自动 — {v0}"
+  },
+  "Automatique — {v0} (système)": {
+    "en": "Automatic — {v0} (system)",
+    "es": "Automático — {v0} (sistema)",
+    "zh_CN": "自动 — {v0}（系统）"
+  },
+  "Autoriser les mises à jour réseau ?": {
+    "en": "Allow network updates?",
+    "es": "¿Permitir actualizaciones por red?",
+    "zh_CN": "允许联网更新？"
+  },
+  "Autre lecteur OpenSpool": {
+    "en": "Other OpenSpool reader",
+    "es": "Otro lector OpenSpool",
+    "zh_CN": "其他 OpenSpool 读卡器"
+  },
+  "Avec bobine": {
+    "en": "With spool",
+    "es": "Con bobina",
+    "zh_CN": "含线盘"
+  },
+  "Avec les descriptifs et le logo": {
+    "en": "Include descriptions and logo",
+    "es": "Incluir descripciones y logo",
+    "zh_CN": "包含描述和徽标"
+  },
+  "BUSE": {
+    "en": "NOZZLE",
+    "es": "BOQUILLA",
+    "zh_CN": "喷嘴"
+  },
+  "Bambu Lab + lecteur OpenSpool externe (ESP32, MQTT)": {
+    "en": "Bambu Lab + external OpenSpool reader (ESP32, MQTT)",
+    "es": "Bambu Lab + lector OpenSpool externo (ESP32, MQTT)",
+    "zh_CN": "Bambu Lab + 外部 OpenSpool 读卡器（ESP32、MQTT）"
+  },
+  "Bambu Lab + lecteur externe": {
+    "en": "Bambu Lab + external reader",
+    "es": "Bambu Lab + lector externo",
+    "zh_CN": "Bambu Lab + 外部读卡器"
+  },
+  "Bambu Lab officiel": {
+    "en": "Bambu Lab · official",
+    "es": "Bambu Lab · oficial",
+    "zh_CN": "Bambu Lab · 官方"
+  },
+  "Bambu Lab — fabricant": {
+    "en": "Bambu Lab — manufacturer",
+    "es": "Bambu Lab — fabricante",
+    "zh_CN": "Bambu Lab — 制造商"
+  },
+  "Basculez entre vue liste et grille en haut à droite.": {
+    "en": "Switch between list and grid above the catalogue.",
+    "es": "Cambie entre lista y cuadrícula encima del catálogo.",
+    "zh_CN": "在目录上方切换列表或网格视图。"
+  },
+  "Base : {v0} filaments · {v1} ⓘ": {
+    "en": "Catalogue: {v0} filaments · {v1} ⓘ",
+    "es": "Catálogo: {v0} filamentos · {v1} ⓘ",
+    "zh_CN": "目录：{v0} 种耗材 · {v1} ⓘ"
+  },
+  "Base déjà actualisée récemment ; « Actualiser le catalogue » permet de la relancer.": {
+    "en": "Recently refreshed. Use “Refresh catalogue” to run it again.",
+    "es": "Actualizado recientemente. Use «Actualizar catálogo» para repetir.",
+    "zh_CN": "最近已更新。可点击“更新目录”再次更新。"
+  },
+  "Base illisible": {
+    "en": "Cannot read database",
+    "es": "Base de datos ilegible",
+    "zh_CN": "无法读取数据库"
+  },
+  "Bobine": {
+    "en": "Spool",
+    "es": "Bobina",
+    "zh_CN": "线盘"
+  },
+  "Bobines": {
+    "en": "Spools",
+    "es": "Bobinas",
+    "zh_CN": "线盘"
+  },
+  "Buse": {
+    "en": "Nozzle",
+    "es": "Boquilla",
+    "zh_CN": "喷嘴"
+  },
+  "Buse max. °C": {
+    "en": "Max. nozzle °C",
+    "es": "Boquilla máx. °C",
+    "zh_CN": "喷嘴最高温度 °C"
+  },
+  "Buse min. °C": {
+    "en": "Min. nozzle °C",
+    "es": "Boquilla mín. °C",
+    "zh_CN": "喷嘴最低温度 °C"
+  },
+  "CARACTÉRISTIQUES": {
+    "en": "PROPERTIES",
+    "es": "PROPIEDADES",
+    "zh_CN": "参数"
+  },
+  "CORE One : enceinte fermée ; MK4S : portique ouvert ; XL : changement d’outils selon équipement. Préparation avec PrusaSlicer.": {
+    "en": "CORE One: enclosed; MK4S: open frame; XL: tool changing depending on equipment. Prepare prints in PrusaSlicer.",
+    "es": "CORE One: cerrada; MK4S: abierta; XL: cambio de herramientas según equipo. Preparación con PrusaSlicer.",
+    "zh_CN": "CORE One：封闭式；MK4S：开放式框架；XL：根据配置支持换头。使用 PrusaSlicer 准备打印。"
+  },
+  "Calcul de masse du trancheur": {
+    "en": "Slicer weight calculation",
+    "es": "Cálculo de peso del laminador",
+    "zh_CN": "切片软件重量计算"
+  },
+  "Calculs du trancheur ; non utilisé par le mapping U1 consulté": {
+    "en": "Slicer calculations; not used by the reviewed U1 mapping",
+    "es": "Cálculos del laminador; no usado por el mapeo U1 consultado",
+    "zh_CN": "用于切片软件计算；已查阅的 U1 映射未使用此字段"
+  },
+  "Caractéristiques et couleurs PLA des fiches SUNLU déjà présentes.": {
+    "en": "Official PLA properties and colours for existing SUNLU records.",
+    "es": "Propiedades y colores PLA de las fichas SUNLU existentes.",
+    "zh_CN": "补充已有 SUNLU 资料的 PLA 参数和颜色。"
+  },
+  "Caractéristiques locales du produit": {
+    "en": "Personal filament properties",
+    "es": "Propiedades personales del filamento",
+    "zh_CN": "个人耗材参数"
+  },
+  "Caractéristiques officielles des fiches Bambu déjà présentes.": {
+    "en": "Official properties for existing Bambu records.",
+    "es": "Propiedades oficiales de las fichas Bambu existentes.",
+    "zh_CN": "补充已有 Bambu 资料的官方参数。"
+  },
+  "Caractéristiques à compléter": {
+    "en": "Properties needed",
+    "es": "Faltan propiedades",
+    "zh_CN": "待补充参数"
+  },
+  "Caractéristiques à vérifier": {
+    "en": "Properties need review",
+    "es": "Propiedades por revisar",
+    "zh_CN": "参数待核实"
+  },
+  "Catalogue": {
+    "en": "Catalogue",
+    "es": "Catálogo",
+    "zh_CN": "目录"
+  },
+  "Catalogue de nombreux fabricants.": {
+    "en": "Catalogue covering many manufacturers.",
+    "es": "Catálogo de numerosos fabricantes.",
+    "zh_CN": "涵盖多个制造商的目录。"
+  },
+  "Catalogue et couleurs du fabricant.": {
+    "en": "Manufacturer catalogue and colours.",
+    "es": "Catálogo y colores del fabricante.",
+    "zh_CN": "制造商目录和颜色。"
+  },
+  "Catalogue historique": {
+    "en": "Legacy catalogue",
+    "es": "Catálogo histórico",
+    "zh_CN": "历史目录"
+  },
+  "Catalogue multi-fabricants OFD": {
+    "en": "Multi-manufacturer catalogue · OFD",
+    "es": "Catálogo de fabricantes · OFD",
+    "zh_CN": "多制造商目录 · OFD"
+  },
+  "Catégorie de compatibilité": {
+    "en": "Compatibility category",
+    "es": "Categoría de compatibilidad",
+    "zh_CN": "兼容性分类"
+  },
+  "Certaines données manquent": {
+    "en": "Some data is missing",
+    "es": "Faltan algunos datos",
+    "zh_CN": "缺少部分数据"
+  },
+  "Certaines sources restent à actualiser": {
+    "en": "Some sources still need refreshing",
+    "es": "Algunas fuentes necesitan actualizarse",
+    "zh_CN": "部分来源尚待更新"
+  },
+  "Cette action va télécharger des données depuis Internet.\nAucune donnée personnelle n'est envoyée.\n\nSources contactées :": {
+    "en": "This downloads data from the internet.\nNo personal data is sent.\n\nSources contacted:",
+    "es": "Se descargarán datos de Internet.\nNo se envían datos personales.\n\nFuentes consultadas:",
+    "zh_CN": "此操作将从互联网下载数据。\n不会发送任何个人数据。\n\n访问的来源："
+  },
+  "Cette configuration ne reconnaît pas les étiquettes SpoolScribe.": {
+    "en": "This setup cannot read SpoolScribe tags.",
+    "es": "Esta configuración no reconoce etiquetas SpoolScribe.",
+    "zh_CN": "此配置无法识别 SpoolScribe 标签。"
+  },
+  "Changer la langue": {
+    "en": "Change language",
+    "es": "Cambiar idioma",
+    "zh_CN": "更改语言"
+  },
+  "Charger des réglages": {
+    "en": "Load settings",
+    "es": "Cargar ajustes",
+    "zh_CN": "加载设置"
+  },
+  "Charger des réglages…": {
+    "en": "Load settings…",
+    "es": "Cargar ajustes…",
+    "zh_CN": "加载设置…"
+  },
+  "Choisir": {
+    "en": "Choose",
+    "es": "Elegir",
+    "zh_CN": "选择"
+  },
+  "Choisir d’abord une teinte ci-dessus…": {
+    "en": "Choose a shade above first…",
+    "es": "Elija primero un tono arriba…",
+    "zh_CN": "请先选择上方的色调…"
+  },
+  "Choisir le dossier d’export": {
+    "en": "Choose export folder",
+    "es": "Elegir carpeta de exportación",
+    "zh_CN": "选择导出文件夹"
+  },
+  "Choisir le logiciel installé…": {
+    "en": "Choose the installed firmware…",
+    "es": "Elija el firmware instalado…",
+    "zh_CN": "选择已安装的固件…"
+  },
+  "Choisir les colonnes affichées": {
+    "en": "Choose visible columns",
+    "es": "Elegir columnas visibles",
+    "zh_CN": "选择显示的列"
+  },
+  "Choisir les colonnes affichées (aussi par clic droit sur un en-tête)": {
+    "en": "Choose columns (also available by right-clicking a header)",
+    "es": "Elegir columnas (también con clic derecho en una cabecera)",
+    "zh_CN": "选择列（也可右键点击列标题）"
+  },
+  "Choisir les sources et actualiser la base": {
+    "en": "Choose sources and refresh the catalogue",
+    "es": "Elegir fuentes y actualizar el catálogo",
+    "zh_CN": "选择来源并更新目录"
+  },
+  "Choisir mon imprimante": {
+    "en": "Choose my printer",
+    "es": "Elegir mi impresora",
+    "zh_CN": "选择打印机"
+  },
+  "Choisir ou rechercher une imprimante": {
+    "en": "Choose or search for a printer",
+    "es": "Elegir o buscar impresora",
+    "zh_CN": "选择或搜索打印机"
+  },
+  "Choisir…": {
+    "en": "Choose…",
+    "es": "Elegir…",
+    "zh_CN": "选择…"
+  },
+  "Choisissez au moins une source.": {
+    "en": "Choose at least one source.",
+    "es": "Elija al menos una fuente.",
+    "zh_CN": "请至少选择一个来源。"
+  },
+  "Choisissez la teinte de votre bobine ci-dessus.": {
+    "en": "Choose your spool's shade above.",
+    "es": "Elija el tono de su bobina arriba.",
+    "zh_CN": "请在上方选择线盘的色调。"
+  },
+  "Choisissez les sources du catalogue. Vos corrections restent prioritaires.": {
+    "en": "Choose catalogue sources. Your corrections always take priority.",
+    "es": "Elija las fuentes. Sus correcciones siempre tienen prioridad.",
+    "zh_CN": "选择目录来源。您的修改始终优先保留。"
+  },
+  "Choisissez un filament.": {
+    "en": "Choose a filament.",
+    "es": "Elija un filamento.",
+    "zh_CN": "请选择耗材。"
+  },
+  "Choisissez une référence dans la liste": {
+    "en": "Choose a filament from the list",
+    "es": "Elija un filamento de la lista",
+    "zh_CN": "请从列表中选择耗材"
+  },
+  "Choix NFC par défaut : {v0}.": {
+    "en": "Default NFC settings: {v0}.",
+    "es": "Ajustes NFC por defecto: {v0}.",
+    "zh_CN": "默认 NFC 设置：{v0}。"
+  },
+  "Choix du profil filament": {
+    "en": "Filament profile choice",
+    "es": "Selección del perfil de filamento",
+    "zh_CN": "选择耗材配置"
+  },
+  "Choix par défaut : {v0}": {
+    "en": "Default: {v0}",
+    "es": "Predeterminado: {v0}",
+    "zh_CN": "默认选项：{v0}"
+  },
+  "Choix par défaut non enregistré : {v0}": {
+    "en": "Default not saved: {v0}",
+    "es": "No se guardó el valor por defecto: {v0}",
+    "zh_CN": "默认选项未保存：{v0}"
+  },
+  "Clic : tri principal, second clic : inverser. Maj + clic ou clic droit : tri secondaire et colonnes.": {
+    "en": "Click to sort, click again to reverse. Shift-click or right-click for secondary sorting and columns.",
+    "es": "Clic para ordenar; otro clic invierte el orden. Mayús + clic o clic derecho para el orden secundario y las columnas.",
+    "zh_CN": "点击排序，再次点击倒序。Shift + 点击或右键可设置次要排序和显示列。"
+  },
+  "Code et documentation · GitHub": {
+    "en": "Code and documentation · GitHub",
+    "es": "Código y documentación · GitHub",
+    "zh_CN": "代码和文档 · GitHub"
+  },
+  "Colonnes": {
+    "en": "Columns",
+    "es": "Columnas",
+    "zh_CN": "列"
+  },
+  "Colonnes affichées": {
+    "en": "Visible columns",
+    "es": "Columnas visibles",
+    "zh_CN": "显示的列"
+  },
+  "Comparez les pastilles de couleur et choisissez la teinte de votre bobine.": {
+    "en": "Compare the swatches and choose your spool's shade.",
+    "es": "Compare las muestras y elija el tono de su bobina.",
+    "zh_CN": "请比较色块并选择与线盘相符的色调。"
+  },
+  "Compatibilité du filament avec l'imprimante": {
+    "en": "Filament compatibility with the printer",
+    "es": "Compatibilidad del filamento con la impresora",
+    "zh_CN": "耗材与打印机的兼容性"
+  },
+  "Compatibles SpoolScribe · OpenSpool": {
+    "en": "SpoolScribe compatible · OpenSpool",
+    "es": "Compatibles con SpoolScribe · OpenSpool",
+    "zh_CN": "兼容 SpoolScribe · OpenSpool"
+  },
+  "Complétez les données signalées avant l’export.": {
+    "en": "Complete the highlighted data before exporting.",
+    "es": "Complete los datos indicados antes de exportar.",
+    "zh_CN": "导出前请补全标记的数据。"
+  },
+  "Complétude des champs OpenSpool de la fiche ; ce filtre ne note pas la qualité du filament.": {
+    "en": "Completeness of the record's OpenSpool fields, not a rating of filament quality.",
+    "es": "Integridad de los campos OpenSpool de la ficha, no la calidad del filamento.",
+    "zh_CN": "表示资料中 OpenSpool 字段的完整程度，与耗材品质无关。"
+  },
+  "Connexion sécurisée impossible": {
+    "en": "Secure connection failed",
+    "es": "Falló la conexión segura",
+    "zh_CN": "安全连接失败"
+  },
+  "Consentement non enregistré": {
+    "en": "Permission not saved",
+    "es": "Permiso no guardado",
+    "zh_CN": "授权未保存"
+  },
+  "Consultation des fiches uniquement": {
+    "en": "Reference sheets only",
+    "es": "Solo consulta de fichas",
+    "zh_CN": "仅可查看耗材资料"
+  },
+  "Consultez le profil de votre modèle dans le trancheur.": {
+    "en": "Check your model's profile in your slicer.",
+    "es": "Consulte el perfil de su modelo en el laminador.",
+    "zh_CN": "请在切片软件中查看您所用型号的配置。"
+  },
+  "Copie personnelle enregistrée ; la référence source est conservée.": {
+    "en": "Personal copy saved; the source record is kept.",
+    "es": "Copia personal guardada; la ficha original se conserva.",
+    "zh_CN": "个人副本已保存，原始资料已保留。"
+  },
+  "Couleur": {
+    "en": "Colour",
+    "es": "Color",
+    "zh_CN": "颜色"
+  },
+  "Couleur annoncée : #{v0}. Comparez avec votre bobine ; l’écran ne garantit pas une couleur exacte.": {
+    "en": "Reported colour: #{v0}. Compare with your spool; screen colours are approximate.",
+    "es": "Color indicado: #{v0}. Compare con su bobina; el color en pantalla es aproximado.",
+    "zh_CN": "来源颜色：#{v0}。请与线盘比较，屏幕显示的颜色仅供参考。"
+  },
+  "Couleur invalide : six caractères HEX requis.": {
+    "en": "Invalid colour: enter six HEX characters.",
+    "es": "Color no válido: introduzca seis caracteres HEX.",
+    "zh_CN": "颜色无效：请输入 6 位 HEX 字符。"
+  },
+  "Couleur source #": {
+    "en": "Source colour #",
+    "es": "Color de origen #",
+    "zh_CN": "来源颜色 #"
+  },
+  "Couleur à préciser": {
+    "en": "Colour needed",
+    "es": "Falta el color",
+    "zh_CN": "待补充颜色"
+  },
+  "Couleur à préciser : aucune teinte choisie": {
+    "en": "Colour needed: no shade selected",
+    "es": "Falta el color: ningún tono seleccionado",
+    "zh_CN": "待补充颜色：尚未选择色调"
+  },
+  "Couleur à renseigner": {
+    "en": "Colour needed",
+    "es": "Falta el color",
+    "zh_CN": "待补充颜色"
+  },
+  "Couleur à vérifier": {
+    "en": "Colour needs review",
+    "es": "Color por revisar",
+    "zh_CN": "颜色待核实"
+  },
+  "Couleurs multiples incompatibles avec OpenSpool": {
+    "en": "Multiple colours incompatible with OpenSpool",
+    "es": "Colores múltiples incompatibles con OpenSpool",
+    "zh_CN": "多色信息与 OpenSpool 不兼容"
+  },
+  "Couleurs à préciser": {
+    "en": "Colours needed",
+    "es": "Colores por indicar",
+    "zh_CN": "待补充颜色"
+  },
+  "Croissant ↑": {
+    "en": "Ascending ↑",
+    "es": "Ascendente ↑",
+    "zh_CN": "升序 ↑"
+  },
+  "Ctrl+E : exporter pour NFC": {
+    "en": "Ctrl+E: export for NFC",
+    "es": "Ctrl+E: exportar para NFC",
+    "zh_CN": "Ctrl+E：导出 NFC 文件"
+  },
+  "Ctrl+F : rechercher": {
+    "en": "Ctrl+F: search",
+    "es": "Ctrl+F: buscar",
+    "zh_CN": "Ctrl+F：搜索"
+  },
+  "Ctrl+U : choisir les sources et mettre à jour": {
+    "en": "Ctrl+U: choose sources and refresh",
+    "es": "Ctrl+U: elegir fuentes y actualizar",
+    "zh_CN": "Ctrl+U：选择来源并更新"
+  },
+  "DENSITÉ": {
+    "en": "DENSITY",
+    "es": "DENSIDAD",
+    "zh_CN": "密度"
+  },
+  "DIAMÈTRE": {
+    "en": "DIAMETER",
+    "es": "DIÁMETRO",
+    "zh_CN": "直径"
+  },
+  "Densité": {
+    "en": "Density",
+    "es": "Densidad",
+    "zh_CN": "密度"
+  },
+  "Densité g/cm³": {
+    "en": "Density g/cm³",
+    "es": "Densidad g/cm³",
+    "zh_CN": "密度 g/cm³"
+  },
+  "Dernière actualisation complète : ": {
+    "en": "Last complete refresh: ",
+    "es": "Última actualización completa: ",
+    "zh_CN": "上次完整更新："
+  },
+  "Dernière tentative : ": {
+    "en": "Last attempt: ",
+    "es": "Último intento: ",
+    "zh_CN": "上次尝试："
+  },
+  "Diamètre": {
+    "en": "Diameter",
+    "es": "Diámetro",
+    "zh_CN": "直径"
+  },
+  "Diamètre mm": {
+    "en": "Diameter mm",
+    "es": "Diámetro mm",
+    "zh_CN": "直径 mm"
+  },
+  "Données complètes": {
+    "en": "Complete data",
+    "es": "Datos completos",
+    "zh_CN": "数据完整"
+  },
+  "Dossier d'export": {
+    "en": "Export folder",
+    "es": "Carpeta de exportación",
+    "zh_CN": "导出文件夹"
+  },
+  "Dossier d’export": {
+    "en": "Export folder",
+    "es": "Carpeta de exportación",
+    "zh_CN": "导出文件夹"
+  },
+  "Double extrusion · filaments 2,85 mm. La Material Station gère plusieurs bobines sur les modèles S compatibles ; elle ne convient pas à toutes les machines de la gamme.": {
+    "en": "Dual extrusion · 2.85 mm filament. Material Station handles multiple spools on compatible S models, not every model in the range.",
+    "es": "Doble extrusión · filamento de 2,85 mm. Material Station gestiona varias bobinas en modelos S compatibles, no en toda la gama.",
+    "zh_CN": "双挤出 · 2.85 mm 耗材。Material Station 可在兼容的 S 系列机型上管理多个线盘，并非适用于所有机型。"
+  },
+  "Download profils Orca": {
+    "en": "Download Orca profiles",
+    "es": "Descargar perfiles Orca",
+    "zh_CN": "下载 Orca 配置"
+  },
+  "Décroissant ↓": {
+    "en": "Descending ↓",
+    "es": "Descendente ↓",
+    "zh_CN": "降序 ↓"
+  },
+  "Définir ce choix d’étiquette par défaut": {
+    "en": "Make this tag choice the default",
+    "es": "Usar esta etiqueta por defecto",
+    "zh_CN": "将此标签选项设为默认"
+  },
+  "Définir par défaut": {
+    "en": "Set as default",
+    "es": "Usar por defecto",
+    "zh_CN": "设为默认"
+  },
+  "Délai dépassé — réessayer plus tard": {
+    "en": "Timed out — try again later",
+    "es": "Tiempo agotado — reintente más tarde",
+    "zh_CN": "请求超时 — 请稍后重试"
+  },
+  "Dépend du plateau sélectionné dans Bambu Studio": {
+    "en": "Depends on the bed selected in Bambu Studio",
+    "es": "Depende de la cama elegida en Bambu Studio",
+    "zh_CN": "取决于 Bambu Studio 中选择的热床"
+  },
+  "Désactivé : vos corrections locales restent prioritaires. Le fichier JSON permet de vérifier les valeurs exportées.": {
+    "en": "Off: your local corrections take priority. Preview JSON to check exported values.",
+    "es": "Desactivado: sus correcciones tienen prioridad. Consulte el JSON para comprobar los valores.",
+    "zh_CN": "关闭时优先使用您的本地修改。可通过 JSON 预览检查导出的参数。"
+  },
+  "Détail technique": {
+    "en": "Technical details",
+    "es": "Detalles técnicos",
+    "zh_CN": "技术详情"
+  },
+  "Détails et sources": {
+    "en": "Details and sources",
+    "es": "Detalles y fuentes",
+    "zh_CN": "详情和来源"
+  },
+  "Effacer": {
+    "en": "Clear",
+    "es": "Borrar",
+    "zh_CN": "清除"
+  },
+  "Effacer la recherche": {
+    "en": "Clear search",
+    "es": "Borrar búsqueda",
+    "zh_CN": "清除搜索"
+  },
+  "Effacer les filtres et la sélection. Vos favoris restent enregistrés.": {
+    "en": "Clear filters and selection. Your saved favourites are kept.",
+    "es": "Borrar filtros y selección. Sus favoritos se conservan.",
+    "zh_CN": "清除筛选和选择，保留已保存的收藏。"
+  },
+  "Enregistrer": {
+    "en": "Save",
+    "es": "Guardar",
+    "zh_CN": "保存"
+  },
+  "Enregistrer les réglages": {
+    "en": "Save settings",
+    "es": "Guardar ajustes",
+    "zh_CN": "保存设置"
+  },
+  "Enregistrer les réglages…": {
+    "en": "Save settings to file…",
+    "es": "Guardar ajustes en archivo…",
+    "zh_CN": "保存设置到文件…"
+  },
+  "Enregistrer seulement": {
+    "en": "Save only",
+    "es": "Solo guardar",
+    "zh_CN": "仅保存"
+  },
+  "Enregistrer {v0} pour les prochains exports et lancements.\nDéfaut actuel : {v1}. Sans enregistrement, ce choix ne vaut que pour cette session.": {
+    "en": "Save {v0} for future exports and launches.\nCurrent default: {v1}. Otherwise this choice applies only to this session.",
+    "es": "Guardar {v0} para futuras exportaciones e inicios.\nPredeterminado actual: {v1}. Sin guardar, solo se aplica a esta sesión.",
+    "zh_CN": "保存 {v0}，用于以后的导出和启动。\n当前默认值：{v1}。如不保存，此选项仅适用于本次会话。"
+  },
+  "Enregistrez une copie personnelle de cette bobine. La référence source reste intacte.\nLe suffixe apparaît après @. Valeur inconnue : laissez la case vide.": {
+    "en": "Save a personal copy of this spool. The source record is kept unchanged.\nThe suffix follows @. Leave unknown values blank.",
+    "es": "Guarde una copia personal de esta bobina. La ficha original se conserva.\nEl sufijo sigue a @. Deje vacíos los valores desconocidos.",
+    "zh_CN": "保存此线盘的个人副本，保留原始资料不变。\n后缀位于 @ 之后。未知值请留空。"
+  },
+  "Erreur de mise à jour": {
+    "en": "Refresh error",
+    "es": "Error de actualización",
+    "zh_CN": "更新错误"
+  },
+  "Espace restant : {v0} octets. Le logiciel d’écriture peut ajouter des données ; vérifiez sa taille finale.": {
+    "en": "{v0} bytes remaining. Your NFC writer may add data; check the final size.",
+    "es": "Quedan {v0} bytes. La app NFC puede añadir datos; compruebe el tamaño final.",
+    "zh_CN": "剩余 {v0} 字节。写入软件可能添加数据，请检查最终大小。"
+  },
+  "Espace réservé à d'autres enregistrements NDEF ou données du logiciel d'écriture. À vérifier dans ce logiciel ; zéro ne prédit pas ses ajouts.": {
+    "en": "Space for other NDEF records or writer data. Check the writer's final size; zero does not account for any additions.",
+    "es": "Espacio para otros registros NDEF o datos de la app. Compruebe el tamaño final; cero no incluye sus posibles añadidos.",
+    "zh_CN": "为其他 NDEF 记录或写入软件数据预留空间。请检查最终大小；设为零并不代表软件不会添加数据。"
+  },
+  "Essentiel": {
+    "en": "Essential",
+    "es": "Esencial",
+    "zh_CN": "基本信息"
+  },
+  "Exemple : Kobra S1": {
+    "en": "Example: Kobra S1",
+    "es": "Ejemplo: Kobra S1",
+    "zh_CN": "示例：Kobra S1"
+  },
+  "Exemple : QIDI Plus4": {
+    "en": "Example: QIDI Plus4",
+    "es": "Ejemplo: QIDI Plus4",
+    "zh_CN": "示例：QIDI Plus4"
+  },
+  "Exemple : X1 Carbon": {
+    "en": "Example: X1 Carbon",
+    "es": "Ejemplo: X1 Carbon",
+    "zh_CN": "示例：X1 Carbon"
+  },
+  "Export": {
+    "en": "Export",
+    "es": "Exportación",
+    "zh_CN": "导出"
+  },
+  "Export NFC disponible avec cette configuration. Écrivez ensuite le fichier sur votre étiquette avec une application NFC.": {
+    "en": "NFC export is available. Use an NFC writing app to write the file to your tag.",
+    "es": "Exportación NFC disponible. Utilice una app NFC para escribir el archivo en la etiqueta.",
+    "zh_CN": "此配置支持 NFC 导出。请使用 NFC 写入软件将文件写入标签。"
+  },
+  "Export OpenSpool conservateur : tous les paramètres d'impression sont requis par SpoolScribe. Leur utilisation dépend du lecteur.": {
+    "en": "Conservative OpenSpool export: SpoolScribe requires all printing parameters. How they are used depends on the reader.",
+    "es": "Exportación OpenSpool conservadora: SpoolScribe exige todos los parámetros. Su uso depende del lector.",
+    "zh_CN": "保守的 OpenSpool 导出：SpoolScribe 要求所有打印参数。实际使用方式取决于读卡器。"
+  },
+  "Export OpenSpool pour le lecteur FF_NFC sous firmware communautaire. Vérifiez la documentation du lecteur.": {
+    "en": "OpenSpool export for FF_NFC with community firmware. Check the reader's documentation.",
+    "es": "Exportación OpenSpool para FF_NFC con firmware comunitario. Consulte la documentación del lector.",
+    "zh_CN": "为使用社区固件的 FF_NFC 导出 OpenSpool。请查看读卡器文档。"
+  },
+  "Export impossible : {v0}": {
+    "en": "Cannot export: {v0}",
+    "es": "No se puede exportar: {v0}",
+    "zh_CN": "无法导出：{v0}"
+  },
+  "Export possible": {
+    "en": "Complete data",
+    "es": "Datos completos",
+    "zh_CN": "数据完整"
+  },
+  "Export terminé": {
+    "en": "Export complete",
+    "es": "Exportación completada",
+    "zh_CN": "导出完成"
+  },
+  "Export terminé : {v0}": {
+    "en": "Export complete: {v0}",
+    "es": "Exportación completada: {v0}",
+    "zh_CN": "导出完成：{v0}"
+  },
+  "Exporter pour NFC": {
+    "en": "Export for NFC",
+    "es": "Exportar para NFC",
+    "zh_CN": "导出 NFC 文件"
+  },
+  "Exporter une archive JSON…": {
+    "en": "Export JSON archive…",
+    "es": "Exportar archivo JSON…",
+    "zh_CN": "导出 JSON 存档…"
+  },
+  "FABRICANTS": {
+    "en": "MANUFACTURERS",
+    "es": "FABRICANTES",
+    "zh_CN": "制造商"
+  },
+  "FAVORIS": {
+    "en": "FAVOURITES",
+    "es": "FAVORITOS",
+    "zh_CN": "收藏"
+  },
+  "FILTRES": {
+    "en": "FILTERS",
+    "es": "FILTROS",
+    "zh_CN": "筛选"
+  },
+  "Fabricant": {
+    "en": "Manufacturer",
+    "es": "Fabricante",
+    "zh_CN": "制造商"
+  },
+  "Fabricants": {
+    "en": "Manufacturers",
+    "es": "Fabricantes",
+    "zh_CN": "制造商"
+  },
+  "Fabricants complémentaires SpoolmanDB": {
+    "en": "Additional manufacturers · SpoolmanDB",
+    "es": "Fabricantes adicionales · SpoolmanDB",
+    "zh_CN": "补充制造商 · SpoolmanDB"
+  },
+  "Fabricants supplémentaires absents du catalogue principal.": {
+    "en": "Additional manufacturers not in the main catalogue.",
+    "es": "Fabricantes adicionales ausentes del catálogo principal.",
+    "zh_CN": "补充主目录中未收录的制造商。"
+  },
+  "Famille da Vinci : capacités et consommables variables selon le modèle. Les caractéristiques techniques de votre version restent à confirmer.": {
+    "en": "da Vinci range: capabilities and consumables vary by model. Confirm the specifications of your exact version.",
+    "es": "Gama da Vinci: capacidades y consumibles según modelo. Confirme las especificaciones de su versión.",
+    "zh_CN": "da Vinci 系列的功能和耗材因型号而异。请确认您所用版本的具体规格。"
+  },
+  "Fermer": {
+    "en": "Close",
+    "es": "Cerrar",
+    "zh_CN": "关闭"
+  },
+  "Fiche de référence pour Bambu Studio : matière, couleur et profil filament. SpoolScribe ne génère pas de tag RFID Bambu reconnu par l'AMS. Pour un tag OpenSpool, voir « Bambu Lab + lecteur OpenSpool externe ».": {
+    "en": "Reference sheet for Bambu Studio: material, colour and filament profile. SpoolScribe cannot generate Bambu RFID tags recognised by the AMS. For OpenSpool, choose “Bambu Lab + external OpenSpool reader”.",
+    "es": "Ficha para Bambu Studio: material, color y perfil. SpoolScribe no genera etiquetas Bambu RFID reconocidas por AMS. Para OpenSpool, elija «Bambu Lab + lector OpenSpool externo».",
+    "zh_CN": "Bambu Studio 参考资料：材料、颜色和耗材配置。SpoolScribe 无法生成 AMS 识别的 Bambu RFID 标签。如需 OpenSpool，请选择“Bambu Lab + 外部 OpenSpool 读卡器”。"
+  },
+  "Fiche de référence pour Creality Print. Aucun tag SpoolScribe n'est reconnu par le CFS.": {
+    "en": "Reference sheet for Creality Print. CFS does not recognise SpoolScribe tags.",
+    "es": "Ficha para Creality Print. CFS no reconoce etiquetas SpoolScribe.",
+    "zh_CN": "Creality Print 参考资料。CFS 不识别 SpoolScribe 标签。"
+  },
+  "Fiche de référence pour PrusaSlicer. Un NTAG215/216 OpenSpool ne remplace pas un tag OpenPrintTag ; encodeur OpenPrintTag non implémenté.": {
+    "en": "Reference sheet for PrusaSlicer. An OpenSpool NTAG215/216 is not an OpenPrintTag; OpenPrintTag encoding is not implemented.",
+    "es": "Ficha para PrusaSlicer. Un NTAG215/216 OpenSpool no sustituye a OpenPrintTag; su codificador no está implementado.",
+    "zh_CN": "PrusaSlicer 参考资料。OpenSpool NTAG215/216 不能替代 OpenPrintTag；尚未实现 OpenPrintTag 编码。"
+  },
+  "Fiche de référence pour le trancheur. Aucun tag n'est lu par cette imprimante.": {
+    "en": "Reference sheet for your slicer. This printer does not read tags.",
+    "es": "Ficha para su laminador. Esta impresora no lee etiquetas.",
+    "zh_CN": "切片软件参考资料。此打印机不读取标签。"
+  },
+  "Fiche de référence seulement.": {
+    "en": "Reference sheet only.",
+    "es": "Solo ficha de referencia.",
+    "zh_CN": "仅供查看参考资料。"
+  },
+  "Fiche de référence. Aucun tag SpoolScribe n'est reconnu.": {
+    "en": "Reference sheet. SpoolScribe tags are not recognised.",
+    "es": "Ficha de referencia. No se reconocen etiquetas SpoolScribe.",
+    "zh_CN": "参考资料。不识别 SpoolScribe 标签。"
+  },
+  "Fiche de référence. Un tag OpenSpool n'est pas interprété par l'ACE Pro.": {
+    "en": "Reference sheet. ACE Pro cannot interpret an OpenSpool tag.",
+    "es": "Ficha de referencia. ACE Pro no interpreta etiquetas OpenSpool.",
+    "zh_CN": "参考资料。ACE Pro 无法解析 OpenSpool 标签。"
+  },
+  "Fiches consultables ; aucune lecture NFC OpenSpool disponible avec cette configuration.": {
+    "en": "Reference sheets available; this setup cannot read OpenSpool NFC tags.",
+    "es": "Fichas consultables; esta configuración no lee etiquetas NFC OpenSpool.",
+    "zh_CN": "可查看耗材资料；此配置无法读取 OpenSpool NFC 标签。"
+  },
+  "Fiches consultables. Cette configuration ne lit pas les étiquettes créées par SpoolScribe.": {
+    "en": "Reference sheets available. This setup cannot read SpoolScribe tags.",
+    "es": "Fichas consultables. Esta configuración no lee etiquetas de SpoolScribe.",
+    "zh_CN": "可查看耗材资料。此配置无法读取 SpoolScribe 创建的标签。"
+  },
+  "Fichier avec descriptifs et logo.": {
+    "en": "File with descriptions and logo.",
+    "es": "Archivo con descripciones y logo.",
+    "zh_CN": "包含描述和徽标的文件。"
+  },
+  "Fichier compact, adapté à votre étiquette.": {
+    "en": "Compact file sized for your tag.",
+    "es": "Archivo compacto adaptado a su etiqueta.",
+    "zh_CN": "适合标签容量的紧凑文件。"
+  },
+  "Fichier enregistré :\n{v0}": {
+    "en": "File saved:\n{v0}",
+    "es": "Archivo guardado:\n{v0}",
+    "zh_CN": "文件已保存：\n{v0}"
+  },
+  "Fichier exporté ; le dossier n’a pas pu être mémorisé.": {
+    "en": "File exported; the folder could not be remembered.",
+    "es": "Archivo exportado; no se pudo recordar la carpeta.",
+    "zh_CN": "文件已导出，但无法保存文件夹设置。"
+  },
+  "Fichier local : {v0}": {
+    "en": "Local file: {v0}",
+    "es": "Archivo local: {v0}",
+    "zh_CN": "本地文件：{v0}"
+  },
+  "Filaments": {
+    "en": "Filaments",
+    "es": "Filamentos",
+    "zh_CN": "耗材"
+  },
+  "Filtrer les fabricants…": {
+    "en": "Find a manufacturer…",
+    "es": "Buscar fabricante…",
+    "zh_CN": "查找制造商…"
+  },
+  "Filtrer les matières…": {
+    "en": "Find a material…",
+    "es": "Buscar material…",
+    "zh_CN": "查找材料…"
+  },
+  "Filtrer par fabricant": {
+    "en": "Filter by manufacturer",
+    "es": "Filtrar por fabricante",
+    "zh_CN": "按制造商筛选"
+  },
+  "Filtrer par matière": {
+    "en": "Filter by material",
+    "es": "Filtrar por material",
+    "zh_CN": "按材料筛选"
+  },
+  "Firmware communautaire ; le lecteur FF_NFC lit les tags OpenSpool.": {
+    "en": "Community firmware; the FF_NFC reader reads OpenSpool tags.",
+    "es": "Firmware comunitario; FF_NFC lee etiquetas OpenSpool.",
+    "zh_CN": "社区固件；FF_NFC 读卡器可读取 OpenSpool 标签。"
+  },
+  "Firmware constructeur": {
+    "en": "Manufacturer firmware",
+    "es": "Firmware del fabricante",
+    "zh_CN": "制造商固件"
+  },
+  "Firmware constructeur + mode développeur": {
+    "en": "Manufacturer firmware + developer mode",
+    "es": "Firmware del fabricante + modo desarrollador",
+    "zh_CN": "制造商固件 + 开发者模式"
+  },
+  "Firmware constructeur 8.0+": {
+    "en": "Manufacturer firmware 8.0+",
+    "es": "Firmware del fabricante 8.0+",
+    "zh_CN": "制造商固件 8.0+"
+  },
+  "Firmware ouvert paxx12 (OpenSpool)": {
+    "en": "paxx12 open firmware (OpenSpool)",
+    "es": "Firmware abierto paxx12 (OpenSpool)",
+    "zh_CN": "paxx12 开源固件（OpenSpool）"
+  },
+  "Format": {
+    "en": "Packaging",
+    "es": "Presentación",
+    "zh_CN": "包装"
+  },
+  "Format Anycubic non chiffré mais différent d'OpenSpool.": {
+    "en": "Unencrypted Anycubic format, different from OpenSpool.",
+    "es": "Formato Anycubic sin cifrar, diferente de OpenSpool.",
+    "zh_CN": "未加密的 Anycubic 格式，与 OpenSpool 不同。"
+  },
+  "Format UltiMaker, différent d'OpenSpool.": {
+    "en": "UltiMaker format, different from OpenSpool.",
+    "es": "Formato UltiMaker, diferente de OpenSpool.",
+    "zh_CN": "UltiMaker 格式，与 OpenSpool 不同。"
+  },
+  "Format binaire Elegoo, différent d'OpenSpool.": {
+    "en": "Elegoo binary format, different from OpenSpool.",
+    "es": "Formato binario Elegoo, diferente de OpenSpool.",
+    "zh_CN": "Elegoo 二进制格式，与 OpenSpool 不同。"
+  },
+  "Gamme d’imprimantes à filament. Exemple METHOD XL : double extrusion ; les capacités et équipements diffèrent selon la version exacte.": {
+    "en": "Filament printer range. METHOD XL example: dual extrusion; capabilities and equipment vary by exact version.",
+    "es": "Gama de impresoras de filamento. Ejemplo METHOD XL: doble extrusión; capacidades según versión.",
+    "zh_CN": "耗材打印机系列。例如 METHOD XL 支持双挤出；功能和配置因具体版本而异。"
+  },
+  "HEX représentatif (6 caractères)": {
+    "en": "Representative HEX (6 characters)",
+    "es": "HEX representativo (6 caracteres)",
+    "zh_CN": "代表性 HEX 颜色（6 位）"
+  },
+  "Identification : facultatif": {
+    "en": "Identification: optional",
+    "es": "Identificación: opcional",
+    "zh_CN": "识别：可选"
+  },
+  "Identification : requis": {
+    "en": "Identification: required",
+    "es": "Identificación: obligatorio",
+    "zh_CN": "识别：必需"
+  },
+  "Import profils Orca": {
+    "en": "Import Orca profiles",
+    "es": "Importar perfiles Orca",
+    "zh_CN": "导入 Orca 配置"
+  },
+  "Impossible d'ouvrir le dossier :\n{v0}": {
+    "en": "Cannot open folder:\n{v0}",
+    "es": "No se puede abrir la carpeta:\n{v0}",
+    "zh_CN": "无法打开文件夹：\n{v0}"
+  },
+  "Impression FFF · double tête à relevage électronique · filaments 1,75 mm. Les paramètres du matériau restent à préparer dans le trancheur.": {
+    "en": "FFF printing · dual electronically lifting heads · 1.75 mm filament. Prepare material settings in your slicer.",
+    "es": "Impresión FFF · doble cabezal de elevación electrónica · filamento de 1,75 mm. Prepare los parámetros en el laminador.",
+    "zh_CN": "FFF 打印 · 双电子升降工具头 · 1.75 mm 耗材。材料参数仍需在切片软件中设置。"
+  },
+  "Impression multicolore avec ACE Pro selon équipement. Kobra S1 : enceinte fermée, volume 250 × 250 × 250 mm.": {
+    "en": "Multicolour with ACE Pro depending on equipment. Kobra S1: enclosed, 250 × 250 × 250 mm build volume.",
+    "es": "Multicolor con ACE Pro según equipo. Kobra S1: cerrada, volumen 250 × 250 × 250 mm.",
+    "zh_CN": "根据配置通过 ACE Pro 实现多色打印。Kobra S1：封闭式，成型尺寸 250 × 250 × 250 mm。"
+  },
+  "Impression à filament multicolore. Le lecteur FF_NFC et le logiciel communautaire sont des équipements supplémentaires.": {
+    "en": "Multicolour filament printing. The FF_NFC reader and community firmware are additional equipment.",
+    "es": "Impresión multicolor. El lector FF_NFC y el firmware comunitario son equipos adicionales.",
+    "zh_CN": "多色耗材打印。FF_NFC 读卡器和社区固件需另行配置。"
+  },
+  "Imprimante sans lecteur (Snapmaker Artisan/J1, Flashforge AD5M, Phrozen Arco, Zortrax, Kingroon…)": {
+    "en": "Printer without a reader (Snapmaker Artisan/J1, Flashforge AD5M, Phrozen Arco, Zortrax, Kingroon…)",
+    "es": "Impresora sin lector (Snapmaker Artisan/J1, Flashforge AD5M, Phrozen Arco, Zortrax, Kingroon…)",
+    "zh_CN": "无读卡器的打印机（Snapmaker Artisan/J1、Flashforge AD5M、Phrozen Arco、Zortrax、Kingroon…）"
+  },
+  "Imprimante sans lecteur de bobine": {
+    "en": "Printer without spool reader",
+    "es": "Impresora sin lector de bobina",
+    "zh_CN": "无线盘读卡器的打印机"
+  },
+  "Imprimante sous Klipper": {
+    "en": "Klipper printer",
+    "es": "Impresora con Klipper",
+    "zh_CN": "Klipper 打印机"
+  },
+  "Imprimantes : {v0}, version du {v1}": {
+    "en": "Printers: {v0}, dated {v1}",
+    "es": "Impresoras: {v0}, versión del {v1}",
+    "zh_CN": "打印机：{v0}，版本日期 {v1}"
+  },
+  "Imprimantes à filament associées au système CFS selon équipement. Les volumes et matériaux acceptés varient selon le modèle.": {
+    "en": "Filament printers with CFS depending on equipment. Build volumes and supported materials vary by model.",
+    "es": "Impresoras de filamento con CFS según equipo. Volúmenes y materiales varían según modelo.",
+    "zh_CN": "根据配置搭配 CFS 的耗材打印机。成型尺寸和支持的材料因型号而异。"
+  },
+  "Imprimantes à filament, avec AMS selon modèle. Exemple illustré : X1 Carbon, volume 256 × 256 × 256 mm.": {
+    "en": "Filament printers, with AMS depending on the model. Shown: X1 Carbon, 256 × 256 × 256 mm build volume.",
+    "es": "Impresoras de filamento, con AMS según modelo. Imagen: X1 Carbon, volumen 256 × 256 × 256 mm.",
+    "zh_CN": "耗材打印机，部分型号配备 AMS。图示：X1 Carbon，成型尺寸 256 × 256 × 256 mm。"
+  },
+  "Imprimantes à filament, système QIDI Box selon équipement. Le profil d’impression et les capacités dépendent du modèle.": {
+    "en": "Filament printers with QIDI Box depending on equipment. Print profiles and capabilities vary by model.",
+    "es": "Impresoras de filamento con QIDI Box según equipo. Perfiles y capacidades dependen del modelo.",
+    "zh_CN": "根据配置搭配 QIDI Box 的耗材打印机。打印配置和功能取决于型号。"
+  },
+  "Inconnu": {
+    "en": "Unknown",
+    "es": "Desconocido",
+    "zh_CN": "未知"
+  },
+  "Indifférent": {
+    "en": "Either format",
+    "es": "Indistinto",
+    "zh_CN": "不限包装"
+  },
+  "Information facultative de la fiche": {
+    "en": "Optional reference information",
+    "es": "Información opcional de la ficha",
+    "zh_CN": "可选资料信息"
+  },
+  "Information stockée ; ne règle pas automatiquement la buse": {
+    "en": "Stored information; does not automatically set nozzle temperature",
+    "es": "Información guardada; no ajusta automáticamente la boquilla",
+    "zh_CN": "已存储信息；不会自动设置喷嘴温度"
+  },
+  "Information stockée ; ne règle pas automatiquement le plateau": {
+    "en": "Stored information; does not automatically set bed temperature",
+    "es": "Información guardada; no ajusta automáticamente la cama",
+    "zh_CN": "已存储信息；不会自动设置热床温度"
+  },
+  "Interface": {
+    "en": "Interface",
+    "es": "Interfaz",
+    "zh_CN": "界面"
+  },
+  "Interrompt la synchronisation ; la base locale reste celle d'avant.": {
+    "en": "Stop the refresh; keep the previous local catalogue.",
+    "es": "Detener la actualización y conservar el catálogo local anterior.",
+    "zh_CN": "停止更新并保留原有本地目录。"
+  },
+  "JSON : {v0} octets UTF-8 ; occupation NFC : {v1}/{v2} octets (un enregistrement MIME).": {
+    "en": "JSON: {v0} UTF-8 bytes; NFC usage: {v1}/{v2} bytes (one MIME record).",
+    "es": "JSON: {v0} bytes UTF-8; uso NFC: {v1}/{v2} bytes (un registro MIME).",
+    "zh_CN": "JSON：{v0} 个 UTF-8 字节；NFC 占用：{v1}/{v2} 字节（一个 MIME 记录）。"
+  },
+  "J’ai installé le firmware paxx12": {
+    "en": "I installed paxx12 firmware",
+    "es": "He instalado el firmware paxx12",
+    "zh_CN": "我已安装 paxx12 固件"
+  },
+  "L'AMS ignore OpenSpool, OpenTag3D et OpenPrintTag.": {
+    "en": "AMS ignores OpenSpool, OpenTag3D and OpenPrintTag.",
+    "es": "AMS ignora OpenSpool, OpenTag3D y OpenPrintTag.",
+    "zh_CN": "AMS 不识别 OpenSpool、OpenTag3D 和 OpenPrintTag。"
+  },
+  "L'AMS ne lit pas le tag ; le lecteur externe envoie le filament à l'imprimante par MQTT.": {
+    "en": "AMS does not read the tag; the external reader sends filament data to the printer via MQTT.",
+    "es": "AMS no lee la etiqueta; el lector externo envía datos a la impresora por MQTT.",
+    "zh_CN": "AMS 不读取此标签；外部读卡器通过 MQTT 将耗材数据发送到打印机。"
+  },
+  "La couleur est inconnue. Choisissez explicitement un HEX représentatif.\nUne couleur transparente ou multicolore ne sera pas remplacée automatiquement par du noir.": {
+    "en": "The colour is unknown. Choose a representative HEX colour.\nTransparent or multicolour filament will never be automatically replaced with black.",
+    "es": "El color es desconocido. Elija un color HEX representativo.\nUn filamento transparente o multicolor nunca se sustituye automáticamente por negro.",
+    "zh_CN": "颜色未知。请选择有代表性的 HEX 颜色。\n透明或多色耗材不会被自动替换为黑色。"
+  },
+  "La langue a été enregistrée. Redémarrer SpoolScribe pour l’appliquer ?": {
+    "en": "Language saved. Restart SpoolScribe to apply it?",
+    "es": "Idioma guardado. ¿Reiniciar SpoolScribe para aplicarlo?",
+    "zh_CN": "语言已保存。是否重启 SpoolScribe 以应用更改？"
+  },
+  "La lecture dépend du logiciel installé ou d’un lecteur externe.": {
+    "en": "Reading tags depends on the installed firmware or an external reader.",
+    "es": "La lectura depende del firmware instalado o de un lector externo.",
+    "zh_CN": "能否读取标签取决于已安装的固件或外部读卡器。"
+  },
+  "La relance a échoué. Vos réglages sont enregistrés ; vous pouvez fermer puis rouvrir SpoolScribe.\n{v0}": {
+    "en": "Relaunch failed. Your settings are saved; you can close and reopen SpoolScribe.\n{v0}",
+    "es": "No se pudo relanzar. Sus ajustes están guardados; puede cerrar y volver a abrir SpoolScribe.\n{v0}",
+    "zh_CN": "重新启动失败。设置已保存，您可以关闭并重新打开 SpoolScribe。\n{v0}"
+  },
+  "Langue de l’interface": {
+    "en": "Interface language",
+    "es": "Idioma de la interfaz",
+    "zh_CN": "界面语言"
+  },
+  "Langues du système : {v0}. Si elles ne sont pas prises en charge : anglais.": {
+    "en": "System languages: {v0}. Unsupported languages fall back to English.",
+    "es": "Idiomas del sistema: {v0}. Los idiomas no disponibles usan inglés.",
+    "zh_CN": "系统语言：{v0}。不支持的语言将回退为英语。"
+  },
+  "Le changement de langue sera appliqué au prochain lancement.": {
+    "en": "Language changes take effect when you restart the app.",
+    "es": "El cambio de idioma se aplicará al reiniciar la aplicación.",
+    "zh_CN": "更改语言将在下次启动时生效。"
+  },
+  "Le fichier de référence n’est pas encore publié sur la branche main (HTTP 404).": {
+    "en": "The reference file is not yet on main (HTTP 404).",
+    "es": "El archivo de referencia aún no está en main (HTTP 404).",
+    "zh_CN": "参考文件尚未发布到 main 分支（HTTP 404）。"
+  },
+  "Le lecteur transmet le tag à Spoolman ; le format compris dépend du module choisi. Vérifiez sa documentation.": {
+    "en": "The reader sends the tag to Spoolman; supported formats depend on the module. Check its documentation.",
+    "es": "El lector envía la etiqueta a Spoolman; el formato depende del módulo. Consulte su documentación.",
+    "zh_CN": "读卡器将标签发送到 Spoolman；支持的格式取决于所选模块。请查看其文档。"
+  },
+  "Le tag OpenSpool est lu par le lecteur externe, pas par l'AMS. Bambu Studio garde son profil filament.": {
+    "en": "The external reader reads OpenSpool, not AMS. Bambu Studio keeps its own filament profile.",
+    "es": "El lector externo lee OpenSpool, no AMS. Bambu Studio conserva su perfil de filamento.",
+    "zh_CN": "OpenSpool 标签由外部读卡器读取，而非 AMS。Bambu Studio 保留其耗材配置。"
+  },
+  "Lecteur : {v0}": {
+    "en": "Reader: {v0}",
+    "es": "Lector: {v0}",
+    "zh_CN": "读卡器：{v0}"
+  },
+  "Lecteur NFC communautaire (FF_NFC)": {
+    "en": "Community NFC reader (FF_NFC)",
+    "es": "Lector NFC comunitario (FF_NFC)",
+    "zh_CN": "社区 NFC 读卡器（FF_NFC）"
+  },
+  "Lecteur NFC externe (SpoolSense, nfc2klipper, Happy Hare…)": {
+    "en": "External NFC reader (SpoolSense, nfc2klipper, Happy Hare…)",
+    "es": "Lector NFC externo (SpoolSense, nfc2klipper, Happy Hare…)",
+    "zh_CN": "外部 NFC 读卡器（SpoolSense、nfc2klipper、Happy Hare…）"
+  },
+  "Lecteur NFC-V ISO 15693 optionnel (CORE One) ; firmware 8.0 lit OpenPrintTag": {
+    "en": "Optional NFC-V ISO 15693 reader (CORE One); firmware 8.0 reads OpenPrintTag",
+    "es": "Lector NFC-V ISO 15693 opcional (CORE One); firmware 8.0 lee OpenPrintTag",
+    "zh_CN": "可选 NFC-V ISO 15693 读卡器（CORE One）；固件 8.0 支持 OpenPrintTag"
+  },
+  "Lecteur OpenSpool": {
+    "en": "OpenSpool reader",
+    "es": "Lector OpenSpool",
+    "zh_CN": "OpenSpool 读卡器"
+  },
+  "Lecteur OpenSpool quelconque": {
+    "en": "Any OpenSpool reader",
+    "es": "Cualquier lector OpenSpool",
+    "zh_CN": "任意 OpenSpool 读卡器"
+  },
+  "Lecture OpenSpool disponible": {
+    "en": "OpenSpool reading available",
+    "es": "Lectura OpenSpool disponible",
+    "zh_CN": "支持读取 OpenSpool"
+  },
+  "Les fiches non actualisées restent disponibles. Vous pouvez réessayer plus tard.": {
+    "en": "Records that could not be refreshed stay available. Try again later.",
+    "es": "Las fichas no actualizadas siguen disponibles. Puede intentarlo más tarde.",
+    "zh_CN": "未更新的资料仍然可用，您可以稍后重试。"
+  },
+  "Les sources proposent plusieurs teintes. Laquelle correspond à votre bobine ?": {
+    "en": "Sources list different shades. Which matches your spool?",
+    "es": "Las fuentes indican distintos tonos. ¿Cuál coincide con su bobina?",
+    "zh_CN": "不同来源提供了多种色调。哪种与您的线盘相符？"
+  },
+  "Les tags NTAG ne sont pas lus par le CFS.": {
+    "en": "CFS cannot read NTAG tags.",
+    "es": "CFS no lee etiquetas NTAG.",
+    "zh_CN": "CFS 无法读取 NTAG 标签。"
+  },
+  "Leur lecteur RFID/NFC ne lit pas les fichiers OpenSpool de SpoolScribe.": {
+    "en": "Their RFID/NFC reader cannot read SpoolScribe's OpenSpool files.",
+    "es": "Su lector RFID/NFC no lee los archivos OpenSpool de SpoolScribe.",
+    "zh_CN": "这些 RFID/NFC 读卡器无法读取 SpoolScribe 的 OpenSpool 文件。"
+  },
+  "Liste des imprimantes": {
+    "en": "Printer list",
+    "es": "Lista de impresoras",
+    "zh_CN": "打印机列表"
+  },
+  "Liste des imprimantes du {v0} installée ({v1} entrées).": {
+    "en": "Printer list dated {v0} installed ({v1} entries).",
+    "es": "Lista del {v0} instalada ({v1} entradas).",
+    "zh_CN": "已安装 {v0} 的打印机列表（{v1} 条）。"
+  },
+  "Lit les tags OpenSpool depuis la version 0.9.4 ; matière et couleur identifient le filament, la marque est facultative.": {
+    "en": "Reads OpenSpool from version 0.9.4; material and colour identify the filament, brand is optional.",
+    "es": "Lee OpenSpool desde 0.9.4; material y color identifican el filamento, la marca es opcional.",
+    "zh_CN": "从 0.9.4 版本起可读取 OpenSpool；材料和颜色用于识别耗材，品牌为可选。"
+  },
+  "Logiciel d’origine du fabricant": {
+    "en": "Original manufacturer firmware",
+    "es": "Firmware original del fabricante",
+    "zh_CN": "制造商原厂固件"
+  },
+  "Logiciel à préciser": {
+    "en": "Select firmware",
+    "es": "Indique el firmware",
+    "zh_CN": "请选择固件"
+  },
+  "L’autorisation réseau a été retirée. Réactivez-la dans « Sources de la base » pour contacter GitHub.": {
+    "en": "Network permission was revoked. Enable it in Catalogue sources to contact GitHub.",
+    "es": "Se retiró el permiso de red. Actívelo en Fuentes del catálogo para contactar con GitHub.",
+    "zh_CN": "网络权限已撤销。请在“目录来源”中重新启用后再访问 GitHub。"
+  },
+  "MATIÈRES": {
+    "en": "MATERIALS",
+    "es": "MATERIALES",
+    "zh_CN": "材料"
+  },
+  "Ma bobine habituelle": {
+    "en": "My usual spool",
+    "es": "Mi bobina habitual",
+    "zh_CN": "常用线盘"
+  },
+  "Manuellement seulement": {
+    "en": "Manually only",
+    "es": "Solo manualmente",
+    "zh_CN": "仅手动更新"
+  },
+  "Marque": {
+    "en": "Brand",
+    "es": "Marca",
+    "zh_CN": "品牌"
+  },
+  "Marque ou matière absente": {
+    "en": "Brand or material missing",
+    "es": "Falta marca o material",
+    "zh_CN": "缺少品牌或材料"
+  },
+  "Marque ou modèle : Snapmaker, Prusa, X1…": {
+    "en": "Brand or model: Snapmaker, Prusa, X1…",
+    "es": "Marca o modelo: Snapmaker, Prusa, X1…",
+    "zh_CN": "品牌或型号：Snapmaker、Prusa、X1…"
+  },
+  "Masquer le JSON": {
+    "en": "Hide JSON",
+    "es": "Ocultar JSON",
+    "zh_CN": "隐藏 JSON"
+  },
+  "Masse": {
+    "en": "Weight",
+    "es": "Peso",
+    "zh_CN": "重量"
+  },
+  "Masse g": {
+    "en": "Weight g",
+    "es": "Peso g",
+    "zh_CN": "重量 g"
+  },
+  "Masse non précisée": {
+    "en": "Weight not specified",
+    "es": "Peso no indicado",
+    "zh_CN": "未注明重量"
+  },
+  "Matière": {
+    "en": "Material",
+    "es": "Material",
+    "zh_CN": "材料"
+  },
+  "Mise à jour annulée (réseau refusé).": {
+    "en": "Refresh cancelled (network permission denied).",
+    "es": "Actualización cancelada (sin permiso de red).",
+    "zh_CN": "更新已取消（未授权网络访问）。"
+  },
+  "Mise à jour annulée — {v0}/{v1} étapes terminées ; base locale conservée.": {
+    "en": "Refresh cancelled — {v0}/{v1} steps completed; local catalogue kept.",
+    "es": "Actualización cancelada — {v0}/{v1} pasos completados; catálogo local conservado.",
+    "zh_CN": "更新已取消 — 已完成 {v0}/{v1} 步；已保留本地目录。"
+  },
+  "Mise à jour application": {
+    "en": "App update",
+    "es": "Actualizar aplicación",
+    "zh_CN": "应用更新"
+  },
+  "Mise à jour de l’application…": {
+    "en": "Check for app updates…",
+    "es": "Buscar actualizaciones de la app…",
+    "zh_CN": "检查应用更新…"
+  },
+  "Mise à jour des données — accès réseau": {
+    "en": "Catalogue refresh — network access",
+    "es": "Actualizar datos — acceso a la red",
+    "zh_CN": "更新目录 — 网络访问"
+  },
+  "Mise à jour en cours…": {
+    "en": "Refreshing catalogue…",
+    "es": "Actualizando catálogo…",
+    "zh_CN": "正在更新目录…"
+  },
+  "Mise à jour {v0} — {v1}/{v2} étapes OK.": {
+    "en": "Refresh {v0} — {v1}/{v2} steps successful.",
+    "es": "Actualización {v0} — {v1}/{v2} pasos correctos.",
+    "zh_CN": "更新{v0} — {v1}/{v2} 步成功。"
+  },
+  "Modifier…": {
+    "en": "Edit…",
+    "es": "Editar…",
+    "zh_CN": "编辑…"
+  },
+  "Mon imprimante et mes étiquettes": {
+    "en": "My printer and tags",
+    "es": "Mi impresora y mis etiquetas",
+    "zh_CN": "我的打印机和标签"
+  },
+  "Mon matériel…": {
+    "en": "My hardware…",
+    "es": "Mi equipo…",
+    "zh_CN": "我的设备…"
+  },
+  "NFC ISO 14443-A intégré (NTAG21x)": {
+    "en": "Built-in ISO 14443-A NFC (NTAG21x)",
+    "es": "NFC ISO 14443-A integrado (NTAG21x)",
+    "zh_CN": "内置 ISO 14443-A NFC（NTAG21x）"
+  },
+  "NFC NTAG213 au format Anycubic": {
+    "en": "NFC NTAG213 in Anycubic format",
+    "es": "NFC NTAG213 en formato Anycubic",
+    "zh_CN": "Anycubic 格式的 NFC NTAG213"
+  },
+  "NFC NTAG213, spécification Elegoo publiée": {
+    "en": "NFC NTAG213, published Elegoo specification",
+    "es": "NFC NTAG213, especificación Elegoo publicada",
+    "zh_CN": "NFC NTAG213，Elegoo 已公布规格"
+  },
+  "NFC NTAG216 au format UltiMaker (GUID Cura)": {
+    "en": "NFC NTAG216 in UltiMaker format (Cura GUID)",
+    "es": "NFC NTAG216 en formato UltiMaker (GUID Cura)",
+    "zh_CN": "UltiMaker 格式的 NFC NTAG216（Cura GUID）"
+  },
+  "NFC propriétaire (DRM)": {
+    "en": "Proprietary NFC (DRM)",
+    "es": "NFC propietario (DRM)",
+    "zh_CN": "专有 NFC（DRM）"
+  },
+  "Ne change pas la lecture des tags.": {
+    "en": "Does not change tag support.",
+    "es": "No cambia la lectura de etiquetas.",
+    "zh_CN": "不改变标签读取支持情况。"
+  },
+  "Ne lit que les tags Snapmaker (MIFARE Classic 1K). Un tag OpenSpool n'est pas reconnu.": {
+    "en": "Reads only Snapmaker tags (MIFARE Classic 1K). OpenSpool tags are not recognised.",
+    "es": "Solo lee etiquetas Snapmaker (MIFARE Classic 1K). No reconoce OpenSpool.",
+    "zh_CN": "仅读取 Snapmaker 标签（MIFARE Classic 1K）。不识别 OpenSpool 标签。"
+  },
+  "Non disponible dans cette application.": {
+    "en": "Not available in this app.",
+    "es": "No disponible en esta aplicación.",
+    "zh_CN": "此应用中不可用。"
+  },
+  "Non fourni": {
+    "en": "Not supplied",
+    "es": "No facilitado",
+    "zh_CN": "未提供"
+  },
+  "Non fournie": {
+    "en": "Not supplied",
+    "es": "No facilitada",
+    "zh_CN": "未提供"
+  },
+  "Non renseignée": {
+    "en": "Not specified",
+    "es": "Sin indicar",
+    "zh_CN": "未注明"
+  },
+  "Nouvelle version disponible": {
+    "en": "New version available",
+    "es": "Nueva versión disponible",
+    "zh_CN": "有新版本可用"
+  },
+  "Open Filament Database": {
+    "en": "Open Filament Database",
+    "es": "Open Filament Database",
+    "zh_CN": "Open Filament Database"
+  },
+  "Open Filament Database — communauté": {
+    "en": "Open Filament Database — community",
+    "es": "Open Filament Database — comunidad",
+    "zh_CN": "Open Filament Database — 社区"
+  },
+  "OpenPrintTag utilise des tags ISO 15693 et un format CBOR : un NTAG215/216 OpenSpool n'est pas lu.": {
+    "en": "OpenPrintTag uses ISO 15693 tags and CBOR: it cannot read OpenSpool NTAG215/216.",
+    "es": "OpenPrintTag usa etiquetas ISO 15693 y CBOR: no lee NTAG215/216 OpenSpool.",
+    "zh_CN": "OpenPrintTag 使用 ISO 15693 标签和 CBOR 格式，无法读取 OpenSpool NTAG215/216。"
+  },
+  "OpenSpool (ESP32 + PN532) → imprimante via MQTT en mode développeur": {
+    "en": "OpenSpool (ESP32 + PN532) → printer via MQTT in developer mode",
+    "es": "OpenSpool (ESP32 + PN532) → impresora por MQTT en modo desarrollador",
+    "zh_CN": "OpenSpool（ESP32 + PN532）→ 在开发者模式下通过 MQTT 连接打印机"
+  },
+  "OpenSpool : matière et couleur identifient le filament. Le profil du trancheur reste nécessaire pour imprimer. Vérifiez la version du firmware.": {
+    "en": "OpenSpool identifies filament by material and colour. A slicer profile is still required. Check your firmware version.",
+    "es": "OpenSpool identifica el filamento por material y color. Sigue siendo necesario un perfil del laminador. Compruebe el firmware.",
+    "zh_CN": "OpenSpool 通过材料和颜色识别耗材。打印仍需要切片配置，请检查固件版本。"
+  },
+  "Ouvrir buymeacoffee.com/arn_lab dans votre navigateur": {
+    "en": "Open buymeacoffee.com/arn_lab in your browser",
+    "es": "Abrir buymeacoffee.com/arn_lab en el navegador",
+    "zh_CN": "在浏览器中打开 buymeacoffee.com/arn_lab"
+  },
+  "Ouvrir la liste illustrée et rechercher une marque ou un modèle": {
+    "en": "Open the illustrated list and find a brand or model",
+    "es": "Abrir la lista ilustrada y buscar marca o modelo",
+    "zh_CN": "打开图文列表，查找品牌或型号"
+  },
+  "Ouvrir le téléchargement officiel": {
+    "en": "Open official download",
+    "es": "Abrir descarga oficial",
+    "zh_CN": "打开官方下载"
+  },
+  "PLATEAU": {
+    "en": "BED",
+    "es": "CAMA",
+    "zh_CN": "热床"
+  },
+  "Par défaut ✓": {
+    "en": "Default ✓",
+    "es": "Predeterminado ✓",
+    "zh_CN": "默认 ✓"
+  },
+  "Par défaut, vos corrections locales restent prioritaires. Activez cette option pour utiliser les paramètres Orca disponibles.": {
+    "en": "Your local corrections take priority by default. Enable this to use available Orca settings.",
+    "es": "Por defecto se priorizan sus correcciones. Active esta opción para usar los valores Orca disponibles.",
+    "zh_CN": "默认优先使用您的本地修改。启用此项可使用已有的 Orca 参数。"
+  },
+  "Paramètre du trancheur": {
+    "en": "Slicer setting",
+    "es": "Parámetro del laminador",
+    "zh_CN": "切片软件参数"
+  },
+  "Paramètre à adapter dans votre trancheur": {
+    "en": "Adjust this setting in your slicer",
+    "es": "Adapte este valor en su laminador",
+    "zh_CN": "请在切片软件中调整此参数"
+  },
+  "Paramètres": {
+    "en": "Settings",
+    "es": "Preferencias",
+    "zh_CN": "设置"
+  },
+  "Paramètres Polymaker pour OrcaSlicer et Snapmaker U1.": {
+    "en": "Polymaker settings for OrcaSlicer and Snapmaker U1.",
+    "es": "Ajustes Polymaker para OrcaSlicer y Snapmaker U1.",
+    "zh_CN": "适用于 OrcaSlicer 和 Snapmaker U1 的 Polymaker 参数。"
+  },
+  "Paramètres enregistrés. Le conditionnement préféré s’applique aux fiches sans choix manuel.": {
+    "en": "Settings saved. Preferred packaging applies to records without a manual choice.",
+    "es": "Preferencias guardadas. La presentación preferida se aplica si no hay selección manual.",
+    "zh_CN": "设置已保存。偏好包装适用于未手动选择规格的资料。"
+  },
+  "Paramètres non enregistrés": {
+    "en": "Settings not saved",
+    "es": "Preferencias no guardadas",
+    "zh_CN": "设置未保存"
+  },
+  "Paramètres…": {
+    "en": "Settings…",
+    "es": "Preferencias…",
+    "zh_CN": "设置…"
+  },
+  "Pas de lecteur de bobine.": {
+    "en": "No spool reader.",
+    "es": "Sin lector de bobina.",
+    "zh_CN": "没有线盘读卡器。"
+  },
+  "Pas encore effectuée": {
+    "en": "Not yet performed",
+    "es": "Aún no realizada",
+    "zh_CN": "尚未执行"
+  },
+  "Personnel, U1…": {
+    "en": "Personal, U1…",
+    "es": "Personal, U1…",
+    "zh_CN": "个人、U1…"
+  },
+  "Place suffisante sur l’étiquette.": {
+    "en": "Fits on your tag.",
+    "es": "Cabe en su etiqueta.",
+    "zh_CN": "标签容量足够。"
+  },
+  "Plateau": {
+    "en": "Bed",
+    "es": "Cama",
+    "zh_CN": "热床"
+  },
+  "Plateau max. °C": {
+    "en": "Max. bed °C",
+    "es": "Cama máx. °C",
+    "zh_CN": "热床最高温度 °C"
+  },
+  "Plateau min. °C": {
+    "en": "Min. bed °C",
+    "es": "Cama mín. °C",
+    "zh_CN": "热床最低温度 °C"
+  },
+  "Plus tard": {
+    "en": "Later",
+    "es": "Más tarde",
+    "zh_CN": "稍后"
+  },
+  "Polymaker officiel": {
+    "en": "Polymaker · official",
+    "es": "Polymaker · oficial",
+    "zh_CN": "Polymaker · 官方"
+  },
+  "Polymaker — fabricant": {
+    "en": "Polymaker — manufacturer",
+    "es": "Polymaker — fabricante",
+    "zh_CN": "Polymaker — 制造商"
+  },
+  "Polymaker — profils Orca officiels": {
+    "en": "Polymaker — official Orca profiles",
+    "es": "Polymaker — perfiles Orca oficiales",
+    "zh_CN": "Polymaker — 官方 Orca 配置"
+  },
+  "Portée, compteurs et limites de cette source": {
+    "en": "Coverage, counts and limitations of this source",
+    "es": "Cobertura, recuentos y límites de esta fuente",
+    "zh_CN": "此来源的覆盖范围、数量和限制"
+  },
+  "Priorité : vos corrections, puis les fabricants. Décocher une source conserve les fiches déjà téléchargées.": {
+    "en": "Your corrections take priority, then manufacturer data. Unchecking a source keeps its downloaded records.",
+    "es": "Primero sus correcciones, después los fabricantes. Desmarcar una fuente conserva las fichas descargadas.",
+    "zh_CN": "先保留您的修改，再采用制造商数据。取消勾选来源会保留已下载的资料。"
+  },
+  "Produit": {
+    "en": "Product",
+    "es": "Producto",
+    "zh_CN": "产品"
+  },
+  "Produit absent : export impossible.": {
+    "en": "Product missing: cannot export.",
+    "es": "Producto ausente: no se puede exportar.",
+    "zh_CN": "缺少产品信息，无法导出。"
+  },
+  "Produit introuvable pour cette référence.": {
+    "en": "No product found for this reference.",
+    "es": "No se encontró un producto para esta referencia.",
+    "zh_CN": "未找到此型号的产品。"
+  },
+  "Profils Orca · import": {
+    "en": "Orca profiles · import",
+    "es": "Perfiles Orca · importación",
+    "zh_CN": "Orca 配置 · 导入"
+  },
+  "Profils Orca · téléchargement": {
+    "en": "Orca profiles · download",
+    "es": "Perfiles Orca · descarga",
+    "zh_CN": "Orca 配置 · 下载"
+  },
+  "Protocole propriétaire.": {
+    "en": "Proprietary protocol.",
+    "es": "Protocolo propietario.",
+    "zh_CN": "专有协议。"
+  },
+  "Précisez le logiciel de votre imprimante dans « Modifier… ».": {
+    "en": "Select your printer's firmware in “Edit…”.",
+    "es": "Indique el firmware de su impresora en «Editar…».",
+    "zh_CN": "请在“编辑…”中选择打印机固件。"
+  },
+  "Précisez le logiciel installé pour vérifier la lecture des étiquettes. En cas de doute, consultez les informations de votre imprimante.": {
+    "en": "Select the installed firmware to check tag support. If unsure, check your printer's information.",
+    "es": "Indique el firmware instalado para comprobar la lectura. Si tiene dudas, consulte su impresora.",
+    "zh_CN": "请选择已安装的固件以确认标签支持情况。如不确定，请查看打印机信息。"
+  },
+  "Préférence {v0:g} kg indisponible pour cette fiche.": {
+    "en": "Your preferred {v0:g} kg size is unavailable for this record.",
+    "es": "El tamaño preferido de {v0:g} kg no está disponible en esta ficha.",
+    "zh_CN": "此资料没有您偏好的 {v0:g} kg 规格。"
+  },
+  "Préférer les valeurs Orca à l’export": {
+    "en": "Prefer Orca values when exporting",
+    "es": "Preferir valores Orca al exportar",
+    "zh_CN": "导出时优先使用 Orca 参数"
+  },
+  "Préparation de la synchronisation…": {
+    "en": "Preparing catalogue refresh…",
+    "es": "Preparando la actualización…",
+    "zh_CN": "正在准备目录更新…"
+  },
+  "Prépare des données OpenSpool / NFC pour le Snapmaker U1 à firmware ouvert et d'autres lecteurs OpenSpool. Catalogue multi-fabricants téléchargé depuis des sources publiques, couleur, températures et densité. Le fichier exporté peut ensuite être écrit sur une étiquette NFC avec une application dédiée.\n\nProjet hobby, non affilié aux fabricants de filaments ni à Snapmaker. Code sous licence MIT.\n\nDonnées : Open Filament Database (MIT) · SpoolmanDB (MIT) · TheFilamentDB (CC-BY 4.0) · pages publiques des fabricants.\nLes logos restent la propriété de leurs marques respectives ; ils sont affichés à titre d'identification seulement (voir docs/TRADEMARKS.md).": {
+    "en": "Prepares OpenSpool / NFC data for the Snapmaker U1 with open firmware and other OpenSpool readers. Multi-manufacturer catalogue from public sources, with colour, temperature and density information. Use a separate NFC app to write the exported file to a tag.\n\nHobby project, not affiliated with filament manufacturers or Snapmaker. MIT-licensed code.\n\nData: Open Filament Database (MIT) · SpoolmanDB (MIT) · TheFilamentDB (CC-BY 4.0) · public manufacturer pages.\nLogos remain the property of their owners and are shown for identification only (see docs/TRADEMARKS.md).",
+    "es": "Prepara datos OpenSpool / NFC para Snapmaker U1 con firmware abierto y otros lectores OpenSpool. Catálogo de fabricantes de fuentes públicas, con color, temperaturas y densidad. Utilice una app NFC independiente para escribir el archivo exportado en la etiqueta.\n\nProyecto personal, sin afiliación a fabricantes ni a Snapmaker. Código con licencia MIT.\n\nDatos: Open Filament Database (MIT) · SpoolmanDB (MIT) · TheFilamentDB (CC-BY 4.0) · páginas públicas de fabricantes.\nLos logos pertenecen a sus marcas y se muestran solo para identificación (véase docs/TRADEMARKS.md).",
+    "zh_CN": "为使用开源固件的 Snapmaker U1 及其他 OpenSpool 读卡器准备 OpenSpool / NFC 数据。多制造商目录来自公开来源，包含颜色、温度和密度信息。请使用独立的 NFC 软件将导出文件写入标签。\n\n个人爱好项目，与耗材制造商或 Snapmaker 无关联。代码采用 MIT 许可。\n\n数据：Open Filament Database（MIT）· SpoolmanDB（MIT）· TheFilamentDB（CC-BY 4.0）· 制造商公开网页。\n徽标归各自品牌所有，仅用于识别（见 docs/TRADEMARKS.md）。"
+  },
+  "Présélection utilisée si elle existe. Vous pouvez la modifier dans la fiche.": {
+    "en": "Preselected when available. You can change it on the filament card.",
+    "es": "Se preselecciona si existe. Puede cambiarla en la ficha.",
+    "zh_CN": "可用时自动选择。您可以在耗材卡片中更改。"
+  },
+  "Prêtes à exporter": {
+    "en": "Complete records",
+    "es": "Fichas completas",
+    "zh_CN": "完整资料"
+  },
+  "Puis trier par cette colonne (2)": {
+    "en": "Then sort by this column (2)",
+    "es": "Después por esta columna (2)",
+    "zh_CN": "其次按此列排序（2）"
+  },
+  "Quelle teinte correspond à votre bobine ?": {
+    "en": "Which shade matches your spool?",
+    "es": "¿Qué tono corresponde a su bobina?",
+    "zh_CN": "哪种色调与您的线盘相符？"
+  },
+  "RFID / NFC non compatibles SpoolScribe": {
+    "en": "RFID / NFC not compatible with SpoolScribe",
+    "es": "RFID / NFC no compatibles con SpoolScribe",
+    "zh_CN": "不兼容 SpoolScribe 的 RFID / NFC"
+  },
+  "RFID ISO 15693 propriétaire": {
+    "en": "Proprietary ISO 15693 RFID",
+    "es": "RFID ISO 15693 propietario",
+    "zh_CN": "专有 ISO 15693 RFID"
+  },
+  "RFID MIFARE Classic (bobines QIDI)": {
+    "en": "MIFARE Classic RFID (QIDI spools)",
+    "es": "RFID MIFARE Classic (bobinas QIDI)",
+    "zh_CN": "MIFARE Classic RFID（QIDI 线盘）"
+  },
+  "RFID MIFARE Classic chiffré et signé (bobines Bambu)": {
+    "en": "Encrypted and signed MIFARE Classic RFID (Bambu spools)",
+    "es": "RFID MIFARE Classic cifrado y firmado (bobinas Bambu)",
+    "zh_CN": "加密并签名的 MIFARE Classic RFID（Bambu 线盘）"
+  },
+  "RFID MIFARE Classic propriétaire (bobines Creality)": {
+    "en": "Proprietary MIFARE Classic RFID (Creality spools)",
+    "es": "RFID MIFARE Classic propietario (bobinas Creality)",
+    "zh_CN": "专有 MIFARE Classic RFID（Creality 线盘）"
+  },
+  "RFID propriétaire": {
+    "en": "Proprietary RFID",
+    "es": "RFID propietario",
+    "zh_CN": "专有 RFID"
+  },
+  "Rapport de synchronisation…": {
+    "en": "Refresh report…",
+    "es": "Informe de actualización…",
+    "zh_CN": "更新报告…"
+  },
+  "Recharge": {
+    "en": "Refill",
+    "es": "Recarga",
+    "zh_CN": "补充装"
+  },
+  "Rechercher : fabricant, matière, référence, couleur…": {
+    "en": "Search: manufacturer, material, reference, colour…",
+    "es": "Buscar: fabricante, material, referencia, color…",
+    "zh_CN": "搜索制造商、材料、型号、颜色…"
+  },
+  "Redémarrage impossible": {
+    "en": "Could not restart",
+    "es": "No se pudo reiniciar",
+    "zh_CN": "无法重启"
+  },
+  "Redémarrer maintenant": {
+    "en": "Restart now",
+    "es": "Reiniciar ahora",
+    "zh_CN": "立即重启"
+  },
+  "Restauration impossible": {
+    "en": "Restore failed",
+    "es": "No se pudo restaurar",
+    "zh_CN": "恢复失败"
+  },
+  "Retirer ce filament des favoris": {
+    "en": "Remove this filament from favourites",
+    "es": "Quitar este filamento de favoritos",
+    "zh_CN": "取消收藏此耗材"
+  },
+  "Retirer des favoris": {
+    "en": "Remove from favourites",
+    "es": "Quitar de favoritos",
+    "zh_CN": "取消收藏"
+  },
+  "Retirer le tri secondaire": {
+    "en": "Remove secondary sort",
+    "es": "Quitar orden secundario",
+    "zh_CN": "取消次要排序"
+  },
+  "Retirer l’autorisation réseau": {
+    "en": "Revoke network permission",
+    "es": "Retirar permiso de red",
+    "zh_CN": "撤销网络权限"
+  },
+  "Retour aux sources": {
+    "en": "Back to sources",
+    "es": "Volver a fuentes",
+    "zh_CN": "返回来源"
+  },
+  "Retrouvez votre imprimante, puis vérifiez comment elle reconnaît vos bobines.": {
+    "en": "Find your printer, then check how it identifies your spools.",
+    "es": "Busque su impresora y compruebe cómo identifica las bobinas.",
+    "zh_CN": "找到打印机，然后查看它如何识别线盘。"
+  },
+  "Référence": {
+    "en": "Reference",
+    "es": "Referencia",
+    "zh_CN": "型号"
+  },
+  "Référence interne": {
+    "en": "Internal reference",
+    "es": "Referencia interna",
+    "zh_CN": "内部编号"
+  },
+  "Référence interne : ": {
+    "en": "Internal reference: ",
+    "es": "Referencia interna: ",
+    "zh_CN": "内部编号："
+  },
+  "Référence interne : {v0}": {
+    "en": "Internal reference: {v0}",
+    "es": "Referencia interna: {v0}",
+    "zh_CN": "内部编号：{v0}"
+  },
+  "Références": {
+    "en": "References",
+    "es": "Referencias",
+    "zh_CN": "型号"
+  },
+  "Références : {v0}    Fabricants : {v1}    Produits : {v2}    HEX à préciser : {v3}    Mise à jour complète : {v4}": {
+    "en": "References: {v0}    Manufacturers: {v1}    Products: {v2}    Colours needed: {v3}    Complete refresh: {v4}",
+    "es": "Referencias: {v0}    Fabricantes: {v1}    Productos: {v2}    Colores por indicar: {v3}    Actualización completa: {v4}",
+    "zh_CN": "型号：{v0}    制造商：{v1}    产品：{v2}    待补充颜色：{v3}    完整更新：{v4}"
+  },
+  "Références conservées": {
+    "en": "References kept",
+    "es": "Referencias conservadas",
+    "zh_CN": "已保留记录"
+  },
+  "Réglage du profil Bambu Studio": {
+    "en": "Bambu Studio profile setting",
+    "es": "Ajuste del perfil Bambu Studio",
+    "zh_CN": "Bambu Studio 配置参数"
+  },
+  "Réglage du profil PrusaSlicer": {
+    "en": "PrusaSlicer profile setting",
+    "es": "Ajuste del perfil PrusaSlicer",
+    "zh_CN": "PrusaSlicer 配置参数"
+  },
+  "Réglage selon le plateau": {
+    "en": "Adjust for your bed",
+    "es": "Ajustar según la cama",
+    "zh_CN": "根据热床调整"
+  },
+  "Réglages": {
+    "en": "Settings",
+    "es": "Ajustes",
+    "zh_CN": "设置"
+  },
+  "Réglages avancés": {
+    "en": "Advanced settings",
+    "es": "Ajustes avanzados",
+    "zh_CN": "高级设置"
+  },
+  "Réglages non enregistrés : {v0}": {
+    "en": "Settings not saved: {v0}",
+    "es": "Ajustes no guardados: {v0}",
+    "zh_CN": "设置未保存：{v0}"
+  },
+  "Réserve pour l'application d'écriture": {
+    "en": "Space reserved for the NFC writer",
+    "es": "Espacio reservado para la app NFC",
+    "zh_CN": "为 NFC 写入软件预留空间"
+  },
+  "SUNLU officiel": {
+    "en": "SUNLU · official",
+    "es": "SUNLU · oficial",
+    "zh_CN": "SUNLU · 官方"
+  },
+  "SUNLU — fabricant": {
+    "en": "SUNLU — manufacturer",
+    "es": "SUNLU — fabricante",
+    "zh_CN": "SUNLU — 制造商"
+  },
+  "Sans lecteur OpenSpool": {
+    "en": "No OpenSpool reader",
+    "es": "Sin lector OpenSpool",
+    "zh_CN": "无 OpenSpool 读卡器"
+  },
+  "Selon la fiche": {
+    "en": "Use record default",
+    "es": "Según la ficha",
+    "zh_CN": "按资料默认值"
+  },
+  "Selon le lecteur": {
+    "en": "Depends on the reader",
+    "es": "Según el lector",
+    "zh_CN": "取决于读卡器"
+  },
+  "Source": {
+    "en": "Source",
+    "es": "Fuente",
+    "zh_CN": "来源"
+  },
+  "Source analysée : {v0} références": {
+    "en": "Source analysed: {v0} references",
+    "es": "Fuente analizada: {v0} referencias",
+    "zh_CN": "已分析来源：{v0} 条记录"
+  },
+  "Source injoignable": {
+    "en": "Source unavailable",
+    "es": "Fuente no disponible",
+    "zh_CN": "来源无法访问"
+  },
+  "Sources du catalogue": {
+    "en": "Catalogue sources",
+    "es": "Fuentes del catálogo",
+    "zh_CN": "目录来源"
+  },
+  "Sources du catalogue…": {
+    "en": "Catalogue sources…",
+    "es": "Fuentes del catálogo…",
+    "zh_CN": "目录来源…"
+  },
+  "SpoolScribe est déjà ouvert pour ce dossier de données.\nUtilisez la fenêtre existante.": {
+    "en": "SpoolScribe is already open for this data folder.\nUse the existing window.",
+    "es": "SpoolScribe ya está abierto para esta carpeta de datos.\nUtilice la ventana existente.",
+    "zh_CN": "SpoolScribe 已打开此数据文件夹。\n请使用现有窗口。"
+  },
+  "SpoolScribe {v0} est disponible.\nTéléchargez le paquet de votre système et remplacez l’application. Vos données et réglages restent dans le dossier utilisateur.": {
+    "en": "SpoolScribe {v0} is available.\nDownload the package for your system and replace the app. Your data and settings stay in your user folder.",
+    "es": "SpoolScribe {v0} está disponible.\nDescargue el paquete de su sistema y sustituya la app. Sus datos y ajustes permanecen en la carpeta de usuario.",
+    "zh_CN": "SpoolScribe {v0} 已发布。\n请下载适合系统的安装包并替换应用。数据和设置保留在用户文件夹中。"
+  },
+  "SpoolmanDB — communauté": {
+    "en": "SpoolmanDB — community",
+    "es": "SpoolmanDB — comunidad",
+    "zh_CN": "SpoolmanDB — 社区"
+  },
+  "Spécification officielle QIDI, différente d'OpenSpool.": {
+    "en": "Official QIDI specification, different from OpenSpool.",
+    "es": "Especificación oficial QIDI, diferente de OpenSpool.",
+    "zh_CN": "QIDI 官方规格，与 OpenSpool 不同。"
+  },
+  "Stockage et valeurs conservées": {
+    "en": "Storage and protected values",
+    "es": "Almacenamiento y valores conservados",
+    "zh_CN": "存储和保留的参数"
+  },
+  "Suffixe @": {
+    "en": "Suffix @",
+    "es": "Sufijo @",
+    "zh_CN": "后缀 @"
+  },
+  "Suivant →": {
+    "en": "Next →",
+    "es": "Siguiente →",
+    "zh_CN": "下一页 →"
+  },
+  "Survolez un champ pour connaître son usage pour cette imprimante. Les températures restent à adapter au plateau et au trancheur.": {
+    "en": "Hover over a field to see how this printer uses it. Adapt temperatures to your bed and slicer.",
+    "es": "Pase sobre un campo para ver su uso. Adapte las temperaturas a su cama y laminador.",
+    "zh_CN": "悬停查看此打印机如何使用各字段。温度仍需根据热床和切片软件调整。"
+  },
+  "Survolez une ligne pour afficher son étoile, ou utilisez le clic droit. Les favoris gardent une étoile pleine.": {
+    "en": "Hover over a row to show its star, or right-click. Favourites keep a filled star.",
+    "es": "Pase sobre una fila para ver su estrella, o haga clic derecho. Los favoritos conservan una estrella llena.",
+    "zh_CN": "悬停在行上显示收藏星标，也可右键操作。已收藏项保持实心星标。"
+  },
+  "Synchronisation au démarrage désactivée par le refus réseau. Ouvrez « Sources » pour la réactiver.": {
+    "en": "Startup refresh is off because network access was denied. Open Sources to enable it.",
+    "es": "La actualización al iniciar está desactivada por falta de permiso. Abra Fuentes para activarla.",
+    "zh_CN": "未获网络授权，启动时更新已关闭。请打开“来源”重新启用。"
+  },
+  "Synchronisation en cours": {
+    "en": "Catalogue refresh in progress",
+    "es": "Actualización en curso",
+    "zh_CN": "正在更新目录"
+  },
+  "Sélectionnez une fiche pour calculer sa taille NFC.": {
+    "en": "Select a record to calculate its NFC size.",
+    "es": "Seleccione una ficha para calcular su tamaño NFC.",
+    "zh_CN": "请选择资料以计算 NFC 文件大小。"
+  },
+  "Tapez 3–4 lettres du fabricant…": {
+    "en": "Type a few letters of the manufacturer…",
+    "es": "Escriba unas letras del fabricante…",
+    "zh_CN": "输入制造商名称的前几个字…"
+  },
+  "Teinte {v0}": {
+    "en": "Shade {v0}",
+    "es": "Tono {v0}",
+    "zh_CN": "色调 {v0}"
+  },
+  "Teintes à vérifier": {
+    "en": "Check colour shades",
+    "es": "Revisar tonos",
+    "zh_CN": "待核实色调"
+  },
+  "Teintes à vérifier — choisir une référence": {
+    "en": "Check shades — choose a reference",
+    "es": "Revisar tonos — elija una referencia",
+    "zh_CN": "请核实色调 — 选择型号"
+  },
+  "Terminé": {
+    "en": "Done",
+    "es": "Listo",
+    "zh_CN": "完成"
+  },
+  "TheFilamentDB — complément historique": {
+    "en": "TheFilamentDB — legacy supplement",
+    "es": "TheFilamentDB — complemento histórico",
+    "zh_CN": "TheFilamentDB — 历史补充"
+  },
+  "Tous les fabricants": {
+    "en": "All manufacturers",
+    "es": "Todos los fabricantes",
+    "zh_CN": "所有制造商"
+  },
+  "Toutes les fiches": {
+    "en": "All records",
+    "es": "Todas las fichas",
+    "zh_CN": "所有资料"
+  },
+  "Toutes les imprimantes et lecteurs": {
+    "en": "All printers and readers",
+    "es": "Todas las impresoras y lectores",
+    "zh_CN": "所有打印机和读卡器"
+  },
+  "Toutes les marques": {
+    "en": "All brands",
+    "es": "Todas las marcas",
+    "zh_CN": "所有品牌"
+  },
+  "Toutes les matières": {
+    "en": "All materials",
+    "es": "Todos los materiales",
+    "zh_CN": "所有材料"
+  },
+  "Toutes les matières  ({v0})": {
+    "en": "All materials  ({v0})",
+    "es": "Todos los materiales  ({v0})",
+    "zh_CN": "所有材料（{v0}）"
+  },
+  "Trancheur ; non utilisé par le mapping U1 consulté": {
+    "en": "Slicer; not used by the reviewed U1 mapping",
+    "es": "Laminador; no usado por el mapeo U1 consultado",
+    "zh_CN": "用于切片软件；已查阅的 U1 映射未使用此字段"
+  },
+  "Tri principal (1)": {
+    "en": "Sort first (1)",
+    "es": "Orden principal (1)",
+    "zh_CN": "首要排序（1）"
+  },
+  "Télécharger la liste des imprimantes depuis le dépôt SpoolScribe": {
+    "en": "Download the printer list from the SpoolScribe repository",
+    "es": "Descargar la lista del repositorio SpoolScribe",
+    "zh_CN": "从 SpoolScribe 仓库下载打印机列表"
+  },
+  "Un lecteur externe compatible OpenSpool est nécessaire. Le lecteur d’origine de l’imprimante ne suffit pas.": {
+    "en": "An external OpenSpool reader is required. The printer's original reader is not sufficient.",
+    "es": "Se necesita un lector OpenSpool externo. El lector original de la impresora no es suficiente.",
+    "zh_CN": "需要外部 OpenSpool 读卡器；打印机原装读卡器无法满足要求。"
+  },
+  "Un lecteur externe identifie la bobine. La prise en charge des champs du fichier dépend du lecteur et de son logiciel.": {
+    "en": "An external reader identifies the spool. Supported file fields depend on the reader and its firmware.",
+    "es": "Un lector externo identifica la bobina. Los campos admitidos dependen del lector y su firmware.",
+    "zh_CN": "外部读卡器识别线盘。支持哪些文件字段取决于读卡器及其固件。"
+  },
+  "Un lecteur externe reste possible (voir Klipper + Spoolman).": {
+    "en": "An external reader is still possible (see Klipper + Spoolman).",
+    "es": "Es posible usar un lector externo (véase Klipper + Spoolman).",
+    "zh_CN": "仍可使用外部读卡器（参见 Klipper + Spoolman）。"
+  },
+  "Une actualisation est en cours. Redémarrez après sa fin ; votre choix reste enregistré.": {
+    "en": "A refresh is running. Restart after it finishes; your choice is saved.",
+    "es": "Hay una actualización en curso. Reinicie cuando termine; su elección está guardada.",
+    "zh_CN": "正在更新。请在更新完成后重启；您的选择已保存。"
+  },
+  "Une autre instance utilise les données. Votre choix de langue reste enregistré.": {
+    "en": "Another instance is using the data. Your language choice is saved.",
+    "es": "Otra instancia está usando los datos. Su elección de idioma está guardada.",
+    "zh_CN": "另一实例正在使用数据。您的语言选择已保存。"
+  },
+  "Une fois par jour": {
+    "en": "Once a day",
+    "es": "Una vez al día",
+    "zh_CN": "每天一次"
+  },
+  "Une fois par semaine": {
+    "en": "Once a week",
+    "es": "Una vez por semana",
+    "zh_CN": "每周一次"
+  },
+  "Une synchronisation est en cours. Quitter quand même ?\nL’étape en cours est interrompue ; la base locale reste celle d’avant.": {
+    "en": "A catalogue refresh is running. Quit anyway?\nThe current step will stop; the previous catalogue will be kept.",
+    "es": "Hay una actualización en curso. ¿Salir de todas formas?\nSe detendrá el paso actual y se conservará el catálogo anterior.",
+    "zh_CN": "目录正在更新，仍要退出吗？\n当前步骤将中断，并保留原有本地目录。"
+  },
+  "Utilisez ces informations dans votre logiciel de préparation d’impression.": {
+    "en": "Use this information in your slicer.",
+    "es": "Utilice estos datos en su laminador.",
+    "zh_CN": "请在切片软件中使用这些信息。"
+  },
+  "Utilisez la fiche pour retrouver la matière, la couleur et les paramètres à reporter dans votre trancheur. Le modèle reste à choisir dans ce dernier.": {
+    "en": "Use the reference sheet for material, colour and settings to enter in your slicer. Choose your printer model in the slicer.",
+    "es": "Consulte material, color y parámetros para introducir en el laminador. Elija el modelo de impresora en él.",
+    "zh_CN": "在参考资料中查找材料、颜色和参数，并填入切片软件。打印机型号仍需在切片软件中选择。"
+  },
+  "Valeurs du fichier NFC": {
+    "en": "NFC file values",
+    "es": "Valores del archivo NFC",
+    "zh_CN": "NFC 文件参数"
+  },
+  "Valeurs locales conservées lors de la fusion :\n": {
+    "en": "Local values kept during merging:\n",
+    "es": "Valores locales conservados al combinar:\n",
+    "zh_CN": "合并时保留的本地参数：\n"
+  },
+  "Validation / sauvegarde finale": {
+    "en": "Final validation / save",
+    "es": "Validación / guardado final",
+    "zh_CN": "最终验证 / 保存"
+  },
+  "Voir le JSON": {
+    "en": "Show JSON",
+    "es": "Ver JSON",
+    "zh_CN": "查看 JSON"
+  },
+  "Voron, Sovol SV08, RatRig et autres montages. Les capacités viennent de votre machine ; le lecteur et son intégration Spoolman sont à configurer séparément.": {
+    "en": "Voron, Sovol SV08, RatRig and other builds. Capabilities depend on your machine; configure the reader and Spoolman integration separately.",
+    "es": "Voron, Sovol SV08, RatRig y otros montajes. Las capacidades dependen de la máquina; configure por separado el lector y Spoolman.",
+    "zh_CN": "Voron、Sovol SV08、RatRig 等机型。功能取决于您的机器；读卡器及 Spoolman 集成需要单独配置。"
+  },
+  "Votre application est à jour.": {
+    "en": "Your app is up to date.",
+    "es": "Su aplicación está al día.",
+    "zh_CN": "应用已是最新版本。"
+  },
+  "Votre catalogue": {
+    "en": "Your catalogue",
+    "es": "Su catálogo",
+    "zh_CN": "您的目录"
+  },
+  "Votre catalogue est à jour": {
+    "en": "Your catalogue is up to date",
+    "es": "Su catálogo está al día",
+    "zh_CN": "目录已是最新"
+  },
+  "Votre imprimante": {
+    "en": "Your printer",
+    "es": "Su impresora",
+    "zh_CN": "您的打印机"
+  },
+  "Votre imprimante Bambu reste la même. Un lecteur ESP32 + PN532 lit l’étiquette puis transmet les informations par MQTT ; l’AMS ne lit pas cette étiquette.": {
+    "en": "Your Bambu printer stays the same. An ESP32 + PN532 reads the tag and sends data via MQTT; AMS cannot read this tag.",
+    "es": "Su impresora Bambu no cambia. Un ESP32 + PN532 lee la etiqueta y transmite por MQTT; AMS no lee esta etiqueta.",
+    "zh_CN": "Bambu 打印机保持不变。ESP32 + PN532 读取标签并通过 MQTT 发送信息；AMS 无法读取此标签。"
+  },
+  "Votre version : {v0}\nVersion publique : {v1}\n": {
+    "en": "Your version: {v0}\nPublished version: {v1}\n",
+    "es": "Su versión: {v0}\nVersión publicada: {v1}\n",
+    "zh_CN": "当前版本：{v0}\n已发布版本：{v1}\n"
+  },
+  "Vous utilisez une version de développement plus récente.": {
+    "en": "You are using a newer development version.",
+    "es": "Utiliza una versión de desarrollo más reciente.",
+    "zh_CN": "您正在使用较新的开发版本。"
+  },
+  "Vue grille": {
+    "en": "Grid view",
+    "es": "Vista de cuadrícula",
+    "zh_CN": "网格视图"
+  },
+  "Vue liste": {
+    "en": "List view",
+    "es": "Vista de lista",
+    "zh_CN": "列表视图"
+  },
+  "Vérification de la version publiée sur GitHub…": {
+    "en": "Checking the published version on GitHub…",
+    "es": "Comprobando la versión publicada en GitHub…",
+    "zh_CN": "正在检查 GitHub 上的已发布版本…"
+  },
+  "Vérification impossible. Votre liste actuelle est conservée.": {
+    "en": "Could not check for updates. Your current list is kept.",
+    "es": "No se pudo comprobar. Se conserva su lista actual.",
+    "zh_CN": "无法检查更新，已保留当前列表。"
+  },
+  "Vérifiez la documentation du lecteur.": {
+    "en": "Check the reader's documentation.",
+    "es": "Consulte la documentación del lector.",
+    "zh_CN": "请查看读卡器文档。"
+  },
+  "X1Plus (X1 seulement)": {
+    "en": "X1Plus (X1 only)",
+    "es": "X1Plus (solo X1)",
+    "zh_CN": "X1Plus（仅限 X1）"
+  },
+  "actualisation partielle": {
+    "en": "partially updated",
+    "es": "actualización parcial",
+    "zh_CN": "部分更新"
+  },
+  "actualisation échouée": {
+    "en": "refresh failed",
+    "es": "actualización fallida",
+    "zh_CN": "更新失败"
+  },
+  "actualisée": {
+    "en": "up to date",
+    "es": "actualizada",
+    "zh_CN": "已更新"
+  },
+  "essentiel recommandé": {
+    "en": "essential recommended",
+    "es": "esencial recomendado",
+    "zh_CN": "推荐基本信息"
+  },
+  "i": {
+    "en": "i",
+    "es": "i",
+    "zh_CN": "i"
+  },
+  "liste embarquée": {
+    "en": "bundled list",
+    "es": "lista incluida",
+    "zh_CN": "内置列表"
+  },
+  "liste téléchargée": {
+    "en": "downloaded list",
+    "es": "lista descargada",
+    "zh_CN": "已下载列表"
+  },
+  "ou utilisez la barre de recherche.": {
+    "en": "or use the search field.",
+    "es": "o utilice el buscador.",
+    "zh_CN": "或使用搜索栏。"
+  },
+  "réf. fabricant {v0}": {
+    "en": "manufacturer ref. {v0}",
+    "es": "ref. fabricante {v0}",
+    "zh_CN": "制造商型号 {v0}"
+  },
+  "{v0}\n\nRestaurer {v1} ?\nLe fichier actuel sera conservé séparément.": {
+    "en": "{v0}\n\nRestore {v1}?\nThe current file will be kept separately.",
+    "es": "{v0}\n\n¿Restaurar {v1}?\nEl archivo actual se guardará por separado.",
+    "zh_CN": "{v0}\n\n恢复 {v1}？\n当前文件将另行保留。"
+  },
+  "{v0} cond.": {
+    "en": "{v0} options",
+    "es": "{v0} opciones",
+    "zh_CN": "{v0} 种规格"
+  },
+  "{v0} filaments trouvés": {
+    "en": "{v0} filaments found",
+    "es": "{v0} filamentos encontrados",
+    "zh_CN": "找到 {v0} 种耗材"
+  },
+  "{v0} rapprochements à confirmer, sans ajout de doublons.": {
+    "en": "{v0} matches await confirmation; no duplicates added.",
+    "es": "{v0} coincidencias pendientes; no se añaden duplicados.",
+    "zh_CN": "{v0} 项匹配待确认，未添加重复项。"
+  },
+  "{v0} réf.": {
+    "en": "{v0} refs.",
+    "es": "{v0} refs.",
+    "zh_CN": "{v0} 条型号"
+  },
+  "{v0} références attendent un rapprochement fiable et restent hors de la liste.": {
+    "en": "{v0} references await a reliable match and are kept out of the list.",
+    "es": "{v0} referencias esperan una coincidencia fiable y no aparecen en la lista.",
+    "zh_CN": "{v0} 条记录等待可靠匹配，暂不显示在列表中。"
+  },
+  "{v0} valeurs prioritaires conservées face à une autre source.": {
+    "en": "{v0} higher-priority values kept over another source.",
+    "es": "{v0} valores prioritarios conservados frente a otra fuente.",
+    "zh_CN": "已保留 {v0} 个优先参数，未被其他来源覆盖。"
+  },
+  "{v0} — produit introuvable": {
+    "en": "{v0} — product not found",
+    "es": "{v0} — producto no encontrado",
+    "zh_CN": "{v0} — 未找到产品"
+  },
+  "{v0}–{v1} sur {v2}": {
+    "en": "{v0}–{v1} of {v2}",
+    "es": "{v0}–{v1} de {v2}",
+    "zh_CN": "第 {v0}–{v1} 项，共 {v2} 项"
+  },
+  "À chaque lancement": {
+    "en": "Every launch",
+    "es": "En cada inicio",
+    "zh_CN": "每次启动"
+  },
+  "À compléter": {
+    "en": "Needs more data",
+    "es": "Datos incompletos",
+    "zh_CN": "待补充"
+  },
+  "À jour": {
+    "en": "Up to date",
+    "es": "Al día",
+    "zh_CN": "已是最新"
+  },
+  "À propos de SpoolScribe": {
+    "en": "About SpoolScribe",
+    "es": "Acerca de SpoolScribe",
+    "zh_CN": "关于 SpoolScribe"
+  },
+  "À renseigner dans l'AMS": {
+    "en": "Enter in AMS",
+    "es": "Introducir en AMS",
+    "zh_CN": "在 AMS 中填写"
+  },
+  "À renseigner dans le profil/AMS": {
+    "en": "Enter in the profile/AMS",
+    "es": "Introducir en el perfil/AMS",
+    "zh_CN": "在配置/AMS 中填写"
+  },
+  "À vérifier": {
+    "en": "Needs review",
+    "es": "Por revisar",
+    "zh_CN": "待核实"
+  },
+  "ÉTAT DES DONNÉES": {
+    "en": "DATA COMPLETENESS",
+    "es": "ESTADO DE LOS DATOS",
+    "zh_CN": "数据完整度"
+  },
+  "Échap : désélectionner": {
+    "en": "Escape: deselect",
+    "es": "Esc: quitar selección",
+    "zh_CN": "Esc：取消选择"
+  },
+  "Échec de l'export :\n{v0}": {
+    "en": "Export failed:\n{v0}",
+    "es": "Error al exportar:\n{v0}",
+    "zh_CN": "导出失败：\n{v0}"
+  },
+  "Échec de l’actualisation": {
+    "en": "Refresh failed",
+    "es": "Error al actualizar",
+    "zh_CN": "更新失败"
+  },
+  "Étapes réussies": {
+    "en": "Successful steps",
+    "es": "Pasos correctos",
+    "zh_CN": "成功步骤"
+  },
+  "État des données": {
+    "en": "Data completeness",
+    "es": "Estado de los datos",
+    "zh_CN": "数据完整度"
+  },
+  "État des sources, dernière synchronisation et corrections conservées": {
+    "en": "Source status, last refresh and protected corrections",
+    "es": "Estado de fuentes, última actualización y correcciones conservadas",
+    "zh_CN": "来源状态、上次更新和保留的修改"
+  },
+  "État du catalogue": {
+    "en": "Catalogue status",
+    "es": "Estado del catálogo",
+    "zh_CN": "目录状态"
+  },
+  "Étiquette NFC": {
+    "en": "NFC tag",
+    "es": "Etiqueta NFC",
+    "zh_CN": "NFC 标签"
+  },
+  "Évolution : {v0:+,} références.": {
+    "en": "Change: {v0:+,} references.",
+    "es": "Cambio: {v0:+,} referencias.",
+    "zh_CN": "变化：{v0:+,} 条记录。"
+  },
+  "à compléter": {
+    "en": "needs more data",
+    "es": "datos incompletos",
+    "zh_CN": "待补充"
+  },
+  "à synchroniser": {
+    "en": "awaiting refresh",
+    "es": "pendiente de actualizar",
+    "zh_CN": "等待更新"
+  },
+  "← Précédent": {
+    "en": "← Previous",
+    "es": "← Anterior",
+    "zh_CN": "← 上一页"
+  },
+  "★ Favori": {
+    "en": "★ Favourite",
+    "es": "★ Favorito",
+    "zh_CN": "★ 已收藏"
+  },
+  "☆ Favori": {
+    "en": "☆ Favourite",
+    "es": "☆ Favorito",
+    "zh_CN": "☆ 收藏"
+  },
+  "☕ Soutenir le projet · Buy Me a Coffee": {
+    "en": "☕ Support the project · Buy Me a Coffee",
+    "es": "☕ Apoyar el proyecto · Buy Me a Coffee",
+    "zh_CN": "☕ 支持本项目 · Buy Me a Coffee"
+  }
+}

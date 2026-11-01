@@ -2,12 +2,59 @@
 from functools import lru_cache
 import re
 from PySide6.QtCore import Qt, QRectF, QSize, Signal, QEvent
-from PySide6.QtGui import QColor, QPainter, QPen, QFont, QPixmap, QIcon, QRadialGradient, QLinearGradient, QPainterPath
+from PySide6.QtGui import QPalette, QColor, QPainter, QPen, QFont, QPixmap, QIcon, QRadialGradient, QLinearGradient, QPainterPath
 from PySide6.QtWidgets import (QLabel, QWidget, QFrame, QHBoxLayout, QVBoxLayout, QSizePolicy, QGridLayout,
     QListWidget, QListWidgetItem, QStyledItemDelegate, QStyle, QComboBox, QDialog, QLineEdit,
     QDialogButtonBox, QScrollArea, QStyleOptionComboBox)
 
+from i18n import tr
+
 CONTROL_HEIGHT = 32
+
+
+class SearchField(QLineEdit):
+    """A clear action with a stable hit area, centred independently of native QSS."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        from PySide6.QtWidgets import QToolButton
+        self.clear_button = QToolButton(self)
+        self.clear_button.setObjectName('searchClear')
+        self.clear_button.setCursor(Qt.PointingHandCursor)
+        self.clear_button.setToolTip(tr('Effacer la recherche'))
+        self.clear_button.setAccessibleName(tr('Effacer la recherche'))
+        self.clear_button.setFixedSize(24, 24)
+        self.clear_button.setAutoRaise(True)
+        self.clear_button.setStyleSheet('QToolButton#searchClear { border:none; padding:0; margin:0; background:transparent; }')
+        self.clear_button.clicked.connect(self._clear_search)
+        self.textChanged.connect(lambda text: self.clear_button.setVisible(bool(text)))
+        self.setTextMargins(0, 0, 30, 0)
+        self.clear_button.hide()
+        self._refresh_clear_icon()
+
+    def setClearButtonEnabled(self, enabled):
+        # Do not let Qt introduce its own platform-dependent trailing action.
+        super().setClearButtonEnabled(False)
+
+    def _clear_search(self):
+        self.clear(); self.setFocus(Qt.OtherFocusReason)
+
+    def _refresh_clear_icon(self):
+        dpr = self.devicePixelRatioF()
+        canvas = QPixmap(round(18*dpr), round(18*dpr)); canvas.setDevicePixelRatio(dpr); canvas.fill(Qt.transparent)
+        painter = QPainter(canvas); painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(QPen(self.palette().color(QPalette.PlaceholderText), 1.8, Qt.SolidLine, Qt.RoundCap))
+        painter.drawLine(5, 5, 13, 13); painter.drawLine(13, 5, 5, 13); painter.end()
+        self.clear_button.setIcon(QIcon(canvas)); self.clear_button.setIconSize(QSize(18,18))
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.clear_button.move(self.width()-self.clear_button.width()-5, (self.height()-self.clear_button.height())//2)
+
+    def changeEvent(self, event):
+        super().changeEvent(event)
+        if event.type() in (QEvent.PaletteChange, QEvent.StyleChange) and hasattr(self, 'clear_button'):
+            self._refresh_clear_icon()
+
 
 
 class DetailScrollArea(QScrollArea):
@@ -78,15 +125,15 @@ class PrinterBrowser(QDialog):
         super().__init__(parent)
         import printer_profiles
         from printer_presentations import presentation
-        self.setWindowTitle('Choisir mon imprimante');self.resize(620,540);self.setMinimumSize(440,320)
+        self.setWindowTitle(tr('Choisir mon imprimante'));self.resize(620,540);self.setMinimumSize(440,320)
         self.selected_index=None;self._cards=[]
         body=QVBoxLayout(self);body.setContentsMargins(16,16,16,16);body.setSpacing(12)
-        title=QLabel('Votre imprimante');font=title.font();font.setPointSizeF(font.pointSizeF()+3);font.setBold(True);title.setFont(font);body.addWidget(title)
-        self.search=QLineEdit();self.search.setPlaceholderText('Marque ou modèle : Snapmaker, Prusa, X1…');self.search.setClearButtonEnabled(True);self.search.setFixedHeight(CONTROL_HEIGHT);body.addWidget(self.search)
-        self.category=QComboBox();self.category.setAccessibleName('Catégorie de compatibilité');self.category.setFixedHeight(CONTROL_HEIGHT)
-        for label,key in (('Toutes les imprimantes et lecteurs','all'),('Compatibles SpoolScribe · OpenSpool','compatible'),('RFID / NFC non compatibles SpoolScribe','rfid'),('Sans lecteur OpenSpool','none')):self.category.addItem(label,key)
+        title=QLabel(tr('Votre imprimante'));font=title.font();font.setPointSizeF(font.pointSizeF()+3);font.setBold(True);title.setFont(font);body.addWidget(title)
+        self.search=QLineEdit();self.search.setPlaceholderText(tr('Marque ou modèle : Snapmaker, Prusa, X1…'));self.search.setClearButtonEnabled(True);self.search.setFixedHeight(CONTROL_HEIGHT);body.addWidget(self.search)
+        self.category=QComboBox();self.category.setAccessibleName(tr('Catégorie de compatibilité'));self.category.setFixedHeight(CONTROL_HEIGHT)
+        for label,key in ((tr('Toutes les imprimantes et lecteurs'),'all'),(tr('Compatibles SpoolScribe · OpenSpool'),'compatible'),(tr('RFID / NFC non compatibles SpoolScribe'),'rfid'),(tr('Sans lecteur OpenSpool'),'none')):self.category.addItem(label,key)
         body.addWidget(self.category)
-        self.category_hint=WrapLabel('La lecture dépend du logiciel installé ou d’un lecteur externe.');self.category_hint.setObjectName('fieldvalue');body.addWidget(self.category_hint)
+        self.category_hint=WrapLabel(tr('La lecture dépend du logiciel installé ou d’un lecteur externe.'));self.category_hint.setObjectName('fieldvalue');body.addWidget(self.category_hint)
         self.list=QListWidget();self.list.setSpacing(4);self.list.setObjectName('printerChoices');body.addWidget(self.list,1)
         self.entries={}
         for i in range(combo.count()):
@@ -96,8 +143,8 @@ class PrinterBrowser(QDialog):
             item.setData(Qt.UserRole+2,category);self.entries[i]=info;self.list.addItem(item)
             if i==combo.currentIndex():self.list.setCurrentItem(item)
         self.delegate=PrinterChoiceDelegate(self.entries,self.list);self.list.setItemDelegate(self.delegate)
-        self.empty=QLabel('Aucune imprimante trouvée. Essayez une autre marque ou un autre modèle.');self.empty.setWordWrap(True);self.empty.hide();body.addWidget(self.empty)
-        buttons=QDialogButtonBox(QDialogButtonBox.Cancel|QDialogButtonBox.Ok);buttons.button(QDialogButtonBox.Cancel).setText('Annuler');buttons.button(QDialogButtonBox.Ok).setText('Choisir')
+        self.empty=QLabel(tr('Aucune imprimante trouvée. Essayez une autre marque ou un autre modèle.'));self.empty.setWordWrap(True);self.empty.hide();body.addWidget(self.empty)
+        buttons=QDialogButtonBox(QDialogButtonBox.Cancel|QDialogButtonBox.Ok);buttons.button(QDialogButtonBox.Cancel).setText(tr('Annuler'));buttons.button(QDialogButtonBox.Ok).setText(tr('Choisir'))
         for button in buttons.buttons():button.setFixedHeight(CONTROL_HEIGHT)
         buttons.rejected.connect(self.reject);buttons.accepted.connect(self._choose);body.addWidget(buttons)
         self.list.itemDoubleClicked.connect(lambda *_:self._choose())
@@ -111,8 +158,8 @@ class PrinterBrowser(QDialog):
         return super().eventFilter(watched,event)
     def _filter(self,text):
         visible=[]
-        self.category_hint.setText({'rfid':'Leur lecteur RFID/NFC ne lit pas les fichiers OpenSpool de SpoolScribe.',
-            'none':'Fiches consultables ; aucune lecture NFC OpenSpool disponible avec cette configuration.'}.get(self.category.currentData(),'La lecture dépend du logiciel installé ou d’un lecteur externe.'))
+        self.category_hint.setText({'rfid':tr('Leur lecteur RFID/NFC ne lit pas les fichiers OpenSpool de SpoolScribe.'),
+            'none':tr('Fiches consultables ; aucune lecture NFC OpenSpool disponible avec cette configuration.')}.get(self.category.currentData(),tr('La lecture dépend du logiciel installé ou d’un lecteur externe.')))
         for i in range(self.list.count()):
             item=self.list.item(i);category=self.category.currentData()
             item.setHidden(text.casefold().strip() not in item.data(Qt.UserRole+1) or category!='all' and item.data(Qt.UserRole+2)!=category)
@@ -129,7 +176,7 @@ def report_metrics(values):
     for i,(label,value) in enumerate(values):
         tile=QFrame();tile.setObjectName('metricTile');body=QVBoxLayout(tile);body.setContentsMargins(12,10,12,10)
         number=QLabel(str(value));number.setObjectName('reportMetricValue');font=number.font();font.setPointSizeF(font.pointSizeF()+5);font.setBold(True);number.setFont(font)
-        caption=WrapLabel(label);caption.setObjectName('fieldvalue');body.addWidget(number);body.addWidget(caption);grid.addWidget(tile,i//3,i%3)
+        caption=WrapLabel(tr(label));caption.setObjectName('fieldvalue');body.addWidget(number);body.addWidget(caption);grid.addWidget(tile,i//3,i%3)
     for col in range(3):grid.setColumnStretch(col,1)
     return panel
 
@@ -223,10 +270,10 @@ def spool_icon(hex_color, size=112, dpr=1, dark=False):
 class SpoolPreview(QWidget):
     def __init__(self,parent=None):
         super().__init__(parent);self.hex_color=None;self.dark=False
-        self.setFixedSize(128,136);self.setAccessibleName('Aperçu de la bobine')
+        self.setFixedSize(128,136);self.setAccessibleName(tr('Aperçu de la bobine'))
     def set_filament(self, hex_color, dark=False):
         self.hex_color=hex_color;self.dark=dark
-        self.setToolTip('Couleur source #'+hex_color if hex_color else 'Couleur à préciser : aucune teinte choisie')
+        self.setToolTip(tr('Couleur source #')+hex_color if hex_color else tr('Couleur à préciser : aucune teinte choisie'))
         self.update()
     def paintEvent(self,event):
         painter=QPainter(self);paint_spool(painter,QRectF(self.rect()),self.hex_color,self.dark);painter.end()
@@ -237,9 +284,9 @@ class MetricGrid(QWidget):
     def __init__(self,parent=None):
         super().__init__(parent);grid=QGridLayout(self);grid.setContentsMargins(0,0,0,0);grid.setSpacing(8)
         self.values={};self.labels={}
-        for i,(key,title) in enumerate((('Nozzle','BUSE'),('Bed','PLATEAU'),('Diamètre','DIAMÈTRE'),('Densité','DENSITÉ'))):
+        for i,(key,title) in enumerate((('Nozzle','BUSE'),('Bed','PLATEAU'),('Diamètre',tr('DIAMÈTRE')),('Densité',tr('DENSITÉ')))):
             tile=QFrame();tile.setObjectName('metricTile');body=QVBoxLayout(tile);body.setContentsMargins(12,10,12,10);body.setSpacing(3)
-            label=QLabel(title);label.setObjectName('metricLabel');label.setProperty('field_key',key)
+            label=QLabel(tr(title));label.setObjectName('metricLabel');label.setProperty('field_key',key)
             value=WrapLabel('—');value.setObjectName('metricValue');font=value.font();font.setPointSize(14);font.setBold(True);value.setFont(font)
             body.addWidget(label);body.addWidget(value);grid.addWidget(tile,i//2,i%2)
             self.values[key]=value;self.labels[key]=label

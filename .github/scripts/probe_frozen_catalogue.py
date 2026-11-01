@@ -85,21 +85,35 @@ while entry_frame is not None and 'MainWindow' not in entry_frame.f_globals:
     entry_frame = entry_frame.f_back
 assert entry_frame is not None, 'Frozen entry point not found'
 entry_frame.f_globals['configure_application'](app)
-window = entry_frame.f_globals['MainWindow']()
+window_class = entry_frame.f_globals['MainWindow']
 del entry_frame
-try:
-    window.resize(1100,800)
-    window.show()
-    window._show_detail('TEST')
-    app.processEvents()
-    assert window.isVisible() and window.current_sku == 'TEST'
-    assert window.btn_generate.isEnabled(), 'Fixture export must be available'
-    assert not window.grab().isNull(), 'Frozen UI must render'
-finally:
-    window.close()
-    app.processEvents()
+import i18n
+languages=[]
+for code in ('auto',*i18n.LANGUAGES):
+    settings=core.load_config();settings['language']=code;core.save_config(settings)
+    window=window_class()
+    try:
+        window.resize(1100,800)
+        window.show()
+        window._show_detail('TEST')
+        app.processEvents()
+        assert window.isVisible() and window.current_sku == 'TEST'
+        assert window.btn_generate.isEnabled(), 'Fixture export must be available'
+        assert window.update_btn.text() == i18n.tr('Actualiser le catalogue')
+        assert not window.grab().isNull(), 'Frozen UI must render'
+        if code=='auto':
+            expected=i18n.resolve_language('auto',i18n.system_ui_languages())
+            assert i18n.language()==expected
+            automatic_language=expected
+        else:
+            assert i18n.language() == code
+            languages.append(code)
+    finally:
+        window.close()
+        window.deleteLater()
+        app.processEvents()
 result = {"version": core.APP_VERSION, "empty_first_install": True, "fixture_references": len(db["_skus"]),
           "approved_new_logos": len(manifest), "rendered_logos": rendered,
           "printer_photos":len(photo_manifest),"spool_artwork":True,"main_window_rendered":True,
-          "tag_exports": list(core.NFC_CAPACITIES), "offline": True}
+          "automatic_language":automatic_language,"interface_languages":languages,"tag_exports": list(core.NFC_CAPACITIES), "offline": True}
 Path(os.environ["SPOOLSCRIBE_CATALOGUE_REPORT"]).write_text(json.dumps(result), encoding="utf-8")

@@ -37,7 +37,7 @@ class GuiTests(unittest.TestCase):
         # GUI fixtures explicitly stay offline; a delayed startup timer must not
         # open the first-run consent dialog during another widget interaction.
         # The real restore/startup test below still exercises the actual timer.
-        core.save_config(dict(core.DEFAULT_CONFIG, printer_firmware="paxx12", network_consent=False))
+        core.save_config(dict(core.DEFAULT_CONFIG, language='fr', printer_firmware="paxx12", network_consent=False))
         errors = patch("app_gui.QMessageBox.critical", side_effect=lambda *args, **kwargs:
                        self.fail(f"Dialogue d'erreur inattendu : {args[-1]}"))
         errors.start()

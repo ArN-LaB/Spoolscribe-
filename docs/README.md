@@ -32,3 +32,7 @@ ultérieures. Ils ne constituent pas des copies divergentes de la documentation.
 
 Les tests hors écran et les sondes des exécutables ne remplacent pas une recette
 visuelle humaine ni l’écriture/relecture d’une étiquette NFC sur une imprimante réelle.
+
+## Prepared v0.3.5
+
+[Validation and limits](VALIDATION-v0.3.5.md) · [Interface languages](../translations/README.md). This work is local until explicitly integrated and published.

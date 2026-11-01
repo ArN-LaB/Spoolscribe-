@@ -161,6 +161,9 @@ if sys.platform == "darwin":
             "CFBundleShortVersionString": APP_VERSION,
             "CFBundleVersion": APP_VERSION,
             "NSHighResolutionCapable": True,
+            # Languages are handled manually by the bundled JSON catalogue.
+            "CFBundleDevelopmentRegion": "en",
+            "CFBundleLocalizations": ["en", "fr", "es", "zh-Hans"],
             "LSApplicationCategoryType": "public.app-category.utilities",
         },
     )

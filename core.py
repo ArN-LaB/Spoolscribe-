@@ -36,7 +36,7 @@ DatabaseError = db_io.DatabaseError
 # APP_VERSION est la référence de version. spoolscribe.spec la lit ici ;
 # la CI vérifie que la version déclarée dans pyproject.toml reste alignée.
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.3.0"
+APP_VERSION = "0.3.5"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
@@ -168,6 +168,7 @@ UPDATE_INTERVAL_CHOICES = ((0, "À chaque lancement"), (1, "Une fois par jour"),
                            (7, "Une fois par semaine"), (-1, "Manuellement seulement"))
 
 DEFAULT_CONFIG = {
+    "language": "auto",
     "network_consent": None,    # None = jamais demandé ; True/False = choix explicite
     "auto_update": False,       # conservé pour les anciens réglages ; la cadence fait foi
     "update_interval_days": 1,
@@ -1424,6 +1425,8 @@ def import_settings(path):
         raise ValueError('Choix imprimante/NFC invalide')
     if type(cfg['nfc_reserved_bytes']) is not int or not 0 <= cfg['nfc_reserved_bytes'] <= NFC_CAPACITIES[cfg['nfc_tag_type']]:
         raise ValueError('Réserve NFC invalide')
+    if cfg['language'] not in ('auto','en','fr','es','zh_CN'):
+        raise ValueError('Langue inconnue')
     selected_pipeline(cfg['selected_sources'])
     if not isinstance(cfg['ui'],dict):raise ValueError('Présentation invalide')
     ui=cfg['ui']
