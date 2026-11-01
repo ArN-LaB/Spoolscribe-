@@ -21,7 +21,7 @@ class SourceLayoutTests(unittest.TestCase):
                                     cwd=directory, env=env, capture_output=True, text=True, timeout=20)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn('--restore-db', result.stdout)
-            self.assertFalse((Path(directory) / 'data/polymaker_db.json').exists())
+            self.assertFalse((Path(directory) / 'tests/fixtures/catalogues/polymaker_db.json').exists())
 
     def test_source_gui_restarts_as_a_package_with_resource_imports_available(self):
         entry = ROOT / 'src/spoolscribe/app_gui.py'

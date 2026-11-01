@@ -14,7 +14,7 @@ embarquées pour éviter tout chargement réseau à l’ouverture de la fiche.
 | QIDI Plus4 / Q2 / Max4 | Plus4, explicitement indiquée comme exemple | [Page QIDI Plus4](https://qidi3d.com/products/plus4-3d-printer) et son image produit | Aucun volume ou équipement de la Plus4 n’est généralisé à toute la famille. |
 
 Les fichiers, URL exactes, SHA-256 et noms illustrés sont consignés dans
-[data/printer_photos/manifest.json](../data/printer_photos/manifest.json).
+[data/printers/photos/manifest.json](../data/printers/photos/manifest.json).
 Les marques et visuels restent la propriété de leurs ayants droit ; leur présence
 sert à identifier les machines et ne signifie aucune affiliation. La licence du
 code de SpoolScribe ne transforme pas ces visuels en créations sous licence MIT.

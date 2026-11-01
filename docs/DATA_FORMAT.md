@@ -123,7 +123,7 @@ la liste des imprimantes…**) carries an `updated` date at least as recent.
 `printer_profiles.can_export(printer, firmware)` is the only test used to show
 the tag controls and allow an OpenSpool export.
 
-## Logo manifest (`data/brand_logos/manifest.json`)
+## Logo manifest (`data/brands/manifest.json`)
 
 One entry per reviewed logo, keyed by the OFD brand UUID (or a slug for a logo
 imported from another source): `name`, `path`, `sha256`, `width`, `height`;
@@ -172,8 +172,10 @@ python .github/scripts/build_catalogue_snapshot.py \
   --output /path/to/reviewed-data --review /path/to/contact-sheets
 ```
 
-Review the audit reports and every logo contact sheet before copying the files
-into `data/`. Do not replace the historical catalogue or the Orca profiles. The
+Review the audit reports and every logo contact sheet before copying the generated
+`data/` resources and `tests/fixtures/catalogues/` snapshots from the empty review
+directory. Keep their roles separate; do not replace the historical catalogue or
+the Orca profiles. Identical artwork is shared, retaining every manifest entry. The
 tool needs the build dependencies (Pillow/PySide6); runtime adapters use the
 standard library only. Tests use local data and deny network access.
 
@@ -192,7 +194,7 @@ The UI persists both favorite filters and the manufacturer-search text. Spool
 artwork is computed from the selected HEX and is display-only. For ambiguous
 colours it stays neutral; package preference is not colour confirmation.
 
-`data/printer_photos/manifest.json` records file names, source URLs, hashes and
+`data/printers/photos/manifest.json` records file names, source URLs, hashes and
 illustrated models for reviewed UI artwork. It is separate from the filament
 catalogue and from `data/printers.json` compatibility flags. These additional
 images are bundled, never downloaded automatically by the running app.

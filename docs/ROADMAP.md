@@ -44,5 +44,5 @@ See [release validation](validation/v0.3.5.md) and [changelog](../CHANGELOG.md).
 Keep the application offline-first, consent-gated and free of telemetry/accounts.
 Do not duplicate Spoolman, migrate RFID associations or change printer firmware.
 
-The [previous detailed roadmap](archive/v0.3.0/ROADMAP-before-v0.3.5.md) preserves
+The [previous detailed roadmap](https://github.com/ArN-LaB/Spoolscribe-/blob/5d652232e5b989028f13704ad6ca13b65724332b/docs/archive/v0.3.0/ROADMAP-before-v0.3.5.md) preserves
 the v0.2.x/v0.3.0 history and screen-feedback campaigns.

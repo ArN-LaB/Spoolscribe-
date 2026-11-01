@@ -146,7 +146,7 @@ jobs:
           import os, pathlib, subprocess, sys
           sys.path.insert(0, str(pathlib.Path.cwd()))  # shell: python runs a script in RUNNER_TEMP
           from spoolscribe.packaging_rules import include_resource
-          tracked = subprocess.check_output(['git', 'ls-files', '-z', '--', 'data', 'scripts', 'orca_profiles', 'translations'])
+          tracked = subprocess.check_output(['git', 'ls-files', '-z', '--', 'data', 'scripts'])
           expected = {name: subprocess.check_output(['git', 'show', 'HEAD:' + name])
                       for name in tracked.decode('utf-8').split(chr(0)) if name and include_resource(name)}
           if sys.platform == 'darwin':
@@ -154,14 +154,14 @@ jobs:
               # rglob on Frameworks does not descend through those symlinks.
               base = pathlib.Path('dist/SpoolScribe.app/Contents/Resources')
               actual = {p.relative_to(base).as_posix() for p in base.rglob('*') if p.is_file()
-                        and p.relative_to(base).parts[0] in ('data', 'scripts', 'orca_profiles', 'translations')}
+                        and p.relative_to(base).parts[0] in ('data', 'scripts')}
               read = lambda name: (base / name).read_bytes()
           else:
               from PyInstaller.archive.readers import CArchiveReader
               binary = pathlib.Path('dist') / ('SpoolScribe.exe' if os.name == 'nt' else 'SpoolScribe')
               reader = CArchiveReader(str(binary))
               names = {name.replace('\\', '/'): name for name in reader.toc}
-              actual = {name for name in names if name.startswith(('data/', 'scripts/', 'orca_profiles/', 'translations/'))}
+              actual = {name for name in names if name.startswith(('data/', 'scripts/'))}
               read = lambda name: reader.extract(names[name])
           assert actual == set(expected), f'Unexpected or missing bundled resources: {sorted(actual ^ set(expected))[:10]}'
           for name, raw in expected.items():

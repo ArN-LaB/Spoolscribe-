@@ -20,6 +20,7 @@ db = core.load_db()
 assert not db["_skus"], "Installer must start without catalogue data"
 assert not (Path(core.RESOURCE_DIR) / "data/polymaker_db.json").exists()
 assert not (Path(core.RESOURCE_DIR) / "data/catalogue_ofd.json").exists()
+assert not (Path(core.RESOURCE_DIR) / "tests").exists()
 assert not (Path(core.RESOURCE_DIR) / "orca_profiles").exists()
 assert "ofd" in catalogue_sources.SOURCE_ADAPTERS
 from scripts import catalogue_merge, official_sources, app_updates
@@ -38,7 +39,7 @@ for tag in core.NFC_CAPACITIES:
     assert Path(output).read_text(encoding="utf-8")==text
     assert core.nfc_size(text,tag_type=tag).fits
 assert core.load_db()["_skus"]["TEST"]==e
-manifest = db_io.parse_json((Path(core.RESOURCE_DIR) / "data/brand_logos/manifest.json").read_bytes())
+manifest = db_io.parse_json((Path(core.RESOURCE_DIR) / "data/brands/manifest.json").read_bytes())
 for item in manifest.values():
     assert hashlib.sha256((Path(core.RESOURCE_DIR) / item["path"]).read_bytes()).hexdigest() == item["sha256"]
     assert core.logo_abs_path(db, item['name']), f"Bundled logo path rejected: {item['name']}"
@@ -66,9 +67,9 @@ for brand in ('Polymaker', 'Prusament', 'ROSA3D'):
     rendered.append(brand)
 from spoolscribe.printer_presentations import presentation
 from spoolscribe import printer_profiles
-photo_manifest=json.loads((Path(core.RESOURCE_DIR)/'data/printer_photos/manifest.json').read_text())
+photo_manifest=json.loads((Path(core.RESOURCE_DIR)/'data/printers/photos/manifest.json').read_text())
 for key,info in photo_manifest.items():
-    path=Path(core.RESOURCE_DIR)/'data/printer_photos'/info['file']
+    path=Path(core.RESOURCE_DIR)/'data/printers/photos'/info['file']
     assert hashlib.sha256(path.read_bytes()).hexdigest()==info['sha256']
     assert not QPixmap(str(path)).isNull(), f'Printer photo not decoded: {key}'
     assert presentation(printer_profiles.PROFILES[key]).get('photo')

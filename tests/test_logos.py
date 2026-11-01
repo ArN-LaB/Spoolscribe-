@@ -8,7 +8,7 @@ import unittest
 from tests.support import ROOT
 
 HAS_PIL = importlib.util.find_spec("PIL") is not None
-MANIFEST = ROOT / "data/brand_logos/manifest.json"
+MANIFEST = ROOT / "data/brands/manifest.json"
 
 
 class LogoTests(unittest.TestCase):

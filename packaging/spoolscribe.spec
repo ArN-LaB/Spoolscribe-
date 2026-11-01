@@ -53,9 +53,9 @@ _v = tuple(int(p) for p in (APP_VERSION.split(".") + ["0", "0", "0", "0"])[:4])
 # Windows veut un .ico, macOS un .icns ; Linux n'utilise pas d'icône d'exe.
 _icon = None
 if sys.platform == "win32":
-    _cands = ("data/app.ico",)
+    _cands = ("data/app/app.ico",)
 elif sys.platform == "darwin":
-    _cands = ("data/app.icns",)
+    _cands = ("data/app/app.icns",)
 else:
     _cands = ()
 for _candidate in _cands:

@@ -552,7 +552,7 @@ class CatalogueUx:
             font=check.font();font.setBold(True);check.setFont(font)
             check.setToolTip(meta['detail']);head=QHBoxLayout();head.addWidget(check,1)
             more=QToolButton();more.setText(tr('i'));more.setCheckable(True);more.setToolTip(tr('Portée, compteurs et limites de cette source'));head.addWidget(more);row.addLayout(head)
-            available=key!='thefilamentdb' or (Path(core.RESOURCE_DIR)/'data/thefilamentdb.jsonl.gz').is_file()
+            available=key!='thefilamentdb' or core.resource_paths.legacy_snapshot_path(core.RESOURCE_DIR, core.DATA_HOME).is_file()
             if not available:check.setChecked(False);check.setEnabled(False)
             results=[last[labels[name]] for name in meta['scripts'] if labels.get(name) in last]
             text=descriptions[key]

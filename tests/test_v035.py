@@ -63,8 +63,8 @@ class TranslationTests(unittest.TestCase):
 
     def test_translations_are_in_public_build_resources_but_no_catalogue(self):
         files=resources(ROOT)
-        self.assertIn('translations/messages.json',files)
-        self.assertNotIn('data/polymaker_db.json',files)
+        self.assertIn('data/translations/messages.json',files)
+        self.assertNotIn('tests/fixtures/catalogues/polymaker_db.json',files)
         self.assertNotIn('docs/images/spoolscribe-animated.gif',files)
 
     def test_readme_logo_is_a_real_animation(self):

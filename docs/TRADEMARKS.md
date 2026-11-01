@@ -26,9 +26,9 @@ Use of these names does not imply any endorsement by the trademark holders.
 
 ## Brand assets (logos)
 
-The application bundles reviewed manufacturer logos (`data/brand_logos/`,
+The application bundles reviewed manufacturer logos (`data/brands/logos/`,
 136 files listed in `manifest.json`) and three historical ones
-(`data/polymaker_logo.svg`, `data/prusament_logo.png`, `data/rosa3d_logo.png`).
+(`data/brands/logos/polymaker-lines.svg`, `data/brands/logos/prusament.svg`, `data/brands/logos/rosa3d.png`).
 Most come from the Open Filament Database repository, whose MIT licence covers
 its data files but **does not waive the trademark rights** of the brands
 depicted; logos imported from a manufacturer's own site or press kit record
@@ -51,9 +51,11 @@ owner's.
 
 Trademark holders who want a mark or a logo removed can open an issue; the
 asset will be removed from the repository and the next build, and its brand
-will fall back to a text label. Remove `data/brand_logos/<file>` and its
-`manifest.json` entry (or add the brand to the exclusion file) to build your
-own copy without it.
+will fall back to a text label. Remove the brand's entry from
+`data/brands/manifest.json`; delete its image only when no remaining entry uses
+that shared file. The repository check reports unreferenced files. For legacy
+fallback artwork, also remove the corresponding alias in `scripts/resource_paths.py`
+and the explicit fallback in the packaging list.
 
 
 ## Printer product images

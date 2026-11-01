@@ -17,10 +17,6 @@ output/
 *.json.concurrent-*
 *.json.lock
 
-# Caches de données régénérés par les scripts de mise à jour
-data/wholesale_raw.json
-data/wiki_hex.json
-
 # Config utilisateur créée au runtime (vit dans le dossier OS, filet de sécurité)
 config.json
 

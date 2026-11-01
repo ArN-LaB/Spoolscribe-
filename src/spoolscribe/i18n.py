@@ -77,7 +77,7 @@ def system_ui_languages():
 @lru_cache(maxsize=1)
 def catalogue():
     root = Path(getattr(sys, '_MEIPASS', Path(__file__).resolve().parents[2]))
-    return json.loads((root / 'translations' / 'messages.json').read_text(encoding='utf-8'))
+    return json.loads((root / 'data' / 'translations' / 'messages.json').read_text(encoding='utf-8'))
 
 
 def language():

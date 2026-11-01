@@ -18,7 +18,8 @@ if _RESOURCE not in sys.path:
 from scripts.db_io import (
     atomic_write, parse_json, run_step, SourceUnavailable, PartialUpdate, orca_values
 )
-_DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
+from scripts.resource_paths import user_data_home
+_DATA_HOME = user_data_home()
 ORCA_DIR   = os.path.join(_DATA_HOME, "orca_profiles")
 
 INDEX_URL  = "https://raw.githubusercontent.com/polymaker3d/Polymaker-Preset/main/index.json"

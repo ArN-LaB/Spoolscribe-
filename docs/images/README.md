@@ -19,6 +19,6 @@ Documentation images are excluded from application bundles.
 
 ## Animated logo
 
-`spoolscribe-animated.gif` restores the animated spool in the README. It is a deterministic export of `data/spoolscribe_logo_animated.svg`, not a screenshot or new logo. Regenerate with `python .github/scripts/render_readme_logo.py` (development dependencies). 75 frames, 3-second loop; no remote image dependency.
+`spoolscribe-animated.gif` restores the animated spool in the README. It is a deterministic export of `data/app/spoolscribe_logo_animated.svg`, not a screenshot or new logo. Regenerate with `python .github/scripts/render_readme_logo.py` (development dependencies). 75 frames, 3-second loop; no remote image dependency.
 
 Regenerate both actual English-interface captures with `python .github/scripts/render_readme_screenshots.py` (build/development dependencies). The app version, catalogue source and selected SKU are printed for each image.

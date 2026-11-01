@@ -24,10 +24,10 @@ def main():
         from spoolscribe import core, app_gui
         from scripts.catalogue_merge import merge_catalogue
         from PySide6.QtWidgets import QApplication
-        database = json.loads((ROOT / 'data/polymaker_db.json').read_text(encoding='utf-8'))
+        database = json.loads((ROOT / 'tests/fixtures/catalogues/polymaker_db.json').read_text(encoding='utf-8'))
         for name, source, rank in [('catalogue_ofd.json', 'Open Filament Database', 20),
                                    ('catalogue_spoolman.json', 'SpoolmanDB', 10)]:
-            incoming = json.loads((ROOT / 'data' / name).read_text(encoding='utf-8'))
+            incoming = json.loads((ROOT / 'tests/fixtures/catalogues' / name).read_text(encoding='utf-8'))
             database, _ = merge_catalogue(database, incoming, source, rank)
         core.save_db(database)
         core.save_config(dict(core.DEFAULT_CONFIG, language='en', network_consent=False,

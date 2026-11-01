@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import hashlib
+import sys
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -43,6 +45,25 @@ def check(root=ROOT):
         errors.append('local installer points to obsolete spec')
     if list(root.glob('*.py')) or list(root.glob('*.spec')):
         errors.append('application/build modules must be grouped below src/ or packaging/')
+    sys.path.insert(0, str(root/'src'))
+    from spoolscribe.packaging_rules import resources
+    try:
+        declared = set(resources(root))
+        actual = {p.relative_to(root).as_posix() for p in (root/'data').rglob('*')
+                  if p.is_file() and not p.name.startswith('.') and p.suffix != '.md'}
+        errors.extend('Unregistered data asset: '+name for name in sorted(actual-declared))
+        seen = {}
+        for name in sorted(actual):
+            if Path(name).suffix not in ('.png','.svg','.webp','.ico','.icns'):continue
+            digest=hashlib.sha256((root/name).read_bytes()).hexdigest()
+            if digest in seen:errors.append('Duplicate image bytes: '+name+' = '+seen[digest])
+            seen[digest]=name
+        fixture=json.loads((root/'tests/fixtures/manifest.json').read_text(encoding='utf-8'))
+        for name, entry in fixture['files'].items():
+            if hashlib.sha256((root/name).read_bytes()).hexdigest()!=entry['sha256']:
+                errors.append('Historical fixture changed: '+name)
+    except (OSError,ValueError,KeyError) as exc:
+        errors.append('Data layout: '+str(exc))
     return {'version': version, 'markdown': sum(p.suffix == '.md' for p in files),
             'local_links': links, 'errors': errors}
 

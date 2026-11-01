@@ -18,7 +18,8 @@
 - [Développement, commandes et compilation](DEVELOPMENT.md).
 - [Structure du dépôt et maintenance](REPOSITORY.md).
 - [Contrat des données et de l’export](DATA_FORMAT.md).
-- [Langues de l’interface](../translations/README.md).
+- [Ressources de l’application](../data/README.md) · [Jeux de référence](../tests/fixtures/README.md).
+- [Langues de l’interface](../data/translations/README.md).
 - [Captures et logo animé : provenance et régénération](images/README.md).
 - [Validation de v0.3.5 et publication](validation/v0.3.5.md).
 - [Installation personnelle macOS](LOCAL_MACOS_INSTALL.md).
@@ -27,8 +28,8 @@
 
 ## Historique
 
-Les [archives](archive/README.md) conservent les audits, retours UX et journaux des
-versions précédentes. Leurs nombres de tests et états de publication sont datés ;
+L’[index historique](archive/README.md) donne accès aux audits, retours UX et journaux des
+versions précédentes dans leurs commits Git immuables. Leurs nombres de tests et états de publication sont datés ;
 ils ne décrivent pas la version actuelle.
 
 Les tests automatisés et les sondes des exécutables ne remplacent pas une recette

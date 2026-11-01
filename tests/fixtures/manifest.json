@@ -1,0 +1,222 @@
+{
+  "description": "Read-only historical catalogue and Orca fixtures; content unchanged by layout migration.",
+  "files": {
+    "tests/fixtures/catalogues/catalogue_ofd.json": {
+      "previous_path": "data/catalogue_ofd.json",
+      "sha256": "4f3d057a03fa6a55a41cb135e23f3483c63b27566f4a80db5dec87b7d3496fed"
+    },
+    "tests/fixtures/catalogues/audits/catalogue_ofd_audit.json": {
+      "previous_path": "data/catalogue_ofd_audit.json",
+      "sha256": "e77a638ecbcf5973801acff28d2b4966e56c204ba99ffba52473192760585a93"
+    },
+    "tests/fixtures/catalogues/catalogue_spoolman.json": {
+      "previous_path": "data/catalogue_spoolman.json",
+      "sha256": "884608bff8bab1d18293b2bfa2c526b099a4116c4417f7aa0975a655702c37b1"
+    },
+    "tests/fixtures/catalogues/audits/catalogue_spoolman_audit.json": {
+      "previous_path": "data/catalogue_spoolman_audit.json",
+      "sha256": "81a63041f7f4da94a6d3f66bf37faa924251e2dcecfbec9a8a2a2e0e95184d7d"
+    },
+    "tests/fixtures/catalogues/polymaker_db.json": {
+      "previous_path": "data/polymaker_db.json",
+      "sha256": "ddf48fbbaf9addf3c8751e6d69ea2daae0d061d8bb2a595f4b62d1fcb164cc35"
+    },
+    "tests/fixtures/legacy/thefilamentdb.jsonl.gz": {
+      "previous_path": "data/thefilamentdb.jsonl.gz",
+      "sha256": "f2e88e208fe2d04712e868a0100b6d875c1f2128f7beda6d013748063ce79fde"
+    },
+    "tests/fixtures/orca/Fiberon ASA-CF08 @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon ASA-CF08 @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "e84bbf09cbedffe19217e1600ad477b711b11407c2d96647a975993691ba480c"
+    },
+    "tests/fixtures/orca/Fiberon PA12-CF10 @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon PA12-CF10 @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "059c311e4926fd1b18af4216932ba6ef230028c9b766c03b1040dc0561392252"
+    },
+    "tests/fixtures/orca/Fiberon PA6-CF20 @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon PA6-CF20 @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "0e38ca1d6dd7af120b1ee40f355406386365eda02f5834a4f28d30f283c0660f"
+    },
+    "tests/fixtures/orca/Fiberon PA6-GF25 @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon PA6-GF25 @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "50cc2e0fd7411a128ee18cafc409e620ef768863ecc924fea22e1198e556daeb"
+    },
+    "tests/fixtures/orca/Fiberon PA612-CF15 @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon PA612-CF15 @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "2a5906ea736b59f06e718922cf9a9f7a9f8b078804b80bae6fb0048be8ff7558"
+    },
+    "tests/fixtures/orca/Fiberon PA612-ESD @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon PA612-ESD @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "9218c529c86f8f48eb5339c21a4fcc0dd2d37ea89e969f86fddc483b8d0a38e7"
+    },
+    "tests/fixtures/orca/Fiberon PET-CF17 @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon PET-CF17 @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "d195e3d9d44b7f653a38d50963d422a9eee9c34b21ca282665cbdddf97a13d96"
+    },
+    "tests/fixtures/orca/Fiberon PET-GF15 @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon PET-GF15 @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "b19f8fa473bb2a8a9903381553eb6d2149a345ef00b10dc1e0bbf7852b8d810a"
+    },
+    "tests/fixtures/orca/Fiberon PETG-ESD @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon PETG-ESD @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "9d8f598c345f584cc22a3e5db5c1969c17e1580c04285488d9f26ec28512072c"
+    },
+    "tests/fixtures/orca/Fiberon PETG-rCF08 @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon PETG-rCF08 @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "dde40ee049fa391dfc939ded79217ceaf0e51fbe45b53a3e19aa1629295ff193"
+    },
+    "tests/fixtures/orca/Fiberon PPS-GF20 @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Fiberon PPS-GF20 @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "84e7919f61908958c351fcc205c23906c6982adc37d8e39bbeebfa7ac9e9ce74"
+    },
+    "tests/fixtures/orca/Panchroma CoPE @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma CoPE @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "beb6c48a68360f8b9325e03081315a80416dff991a41da692e4c0e0724f42fff"
+    },
+    "tests/fixtures/orca/Panchroma PLA @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "aad0eed75283aed4504b2d709a017683107684ecdd418e85fb8c19f1f222bd46"
+    },
+    "tests/fixtures/orca/Panchroma PLA Celestial @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Celestial @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "8316ab6c82c5619723569a21bbd54bca39d14e903b49feafb23084a766de9cc0"
+    },
+    "tests/fixtures/orca/Panchroma PLA Galaxy @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Galaxy @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "fbf77d88ad0996b869bd4f60936d51faa12f38d4946ce4f2cca07422fca8a2f7"
+    },
+    "tests/fixtures/orca/Panchroma PLA Glow @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Glow @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "24dc02de70a4226f2b43605ec40863d6fa2e3f7e08bd75b85ed0b347a3bf05f1"
+    },
+    "tests/fixtures/orca/Panchroma PLA Luminous @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Luminous @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "72c55d3664300d79069e557d909e141cf90887a2fb19739631f543eff83a9ef7"
+    },
+    "tests/fixtures/orca/Panchroma PLA Marble @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Marble @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "021a92d874ee2ae2440b6845178e0bc2ee142fac6506e36af05780c46cab8d5a"
+    },
+    "tests/fixtures/orca/Panchroma PLA Matte @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Matte @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "4f1452c079c336c23876fca8efd9b4eddaa942922d03c9ea2aa16e976dbf528e"
+    },
+    "tests/fixtures/orca/Panchroma PLA Metallic @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Metallic @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "9f9958807846f2596a628087e30faeedc7a96d3414ef93aae00bca26e49d1059"
+    },
+    "tests/fixtures/orca/Panchroma PLA Neon @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Neon @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "51a0832dbf8c33a4fbf4989f908b7ef0f79a286c591f47613522646b104424b1"
+    },
+    "tests/fixtures/orca/Panchroma PLA Satin @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Satin @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "95e388679e246184448ef51237e733ec46750831db10338604348e30d19ee7da"
+    },
+    "tests/fixtures/orca/Panchroma PLA Silk @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Silk @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "48841d87501a6c76a5660a19bdde79aadea01114d9ab06c399cd806cea3bb2f5"
+    },
+    "tests/fixtures/orca/Panchroma PLA Starlight @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Starlight @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "af6a4af3c2e4a5b0bd78bf7fdf1124f9a10e5b6118d0c88d876c41bd4c112262"
+    },
+    "tests/fixtures/orca/Panchroma PLA Translucent @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA Translucent @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "467bacafe60be9c6f5b9655464f1023447e0ad52044b1b2a704fad1de609b2cd"
+    },
+    "tests/fixtures/orca/Panchroma PLA UV Shift @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Panchroma PLA UV Shift @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "5642634193bd1357dc89fab0c21083bfc7e2b562a443bfdf74bf6a73357e22df"
+    },
+    "tests/fixtures/orca/PolyLite CosPLA @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite CosPLA @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "05e749eb81ed3cec8b8b41b93ad0e3799765c9cd029affdbbe4787f87f511053"
+    },
+    "tests/fixtures/orca/PolyLite PETG @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PETG @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "fc9f52be92b01272878963bacf1efa6b994fd9d71593b3423f5638d550801765"
+    },
+    "tests/fixtures/orca/PolyLite PETG Translucent @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PETG Translucent @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "02839abe0422ec067bce62cfeb0fb09d2c0f1bd912d7392ce12c940877e045b0"
+    },
+    "tests/fixtures/orca/PolyLite PLA @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PLA @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "e5c5ad45ecae554d33efd6ed6928c35b0f74856478959de73c7a060de2356eea"
+    },
+    "tests/fixtures/orca/PolyLite PLA Galaxy @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PLA Galaxy @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "69e6ceaac9e90994d207e1eb0fba74c645dd9d1dc68f67f1be319f6ba7bb45d1"
+    },
+    "tests/fixtures/orca/PolyLite PLA Glow @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PLA Glow @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "278311f22f982d4fdee7a0fbee584bbdda2b20797973a57a69636363734082ef"
+    },
+    "tests/fixtures/orca/PolyLite PLA Luminous @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PLA Luminous @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "c7f528000ea838edebba5cade30639e3ebe935ffa9e233c03af1be49571c18b3"
+    },
+    "tests/fixtures/orca/PolyLite PLA Neon @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PLA Neon @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "6d539e91fe42ec587de3d4ce0a6ffdca561b64a68c864d334b9d755e7f57f01f"
+    },
+    "tests/fixtures/orca/PolyLite PLA Pro @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PLA Pro @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "95c9e27179ae57522e10e0db0cca2d60a881aaf8f1a765393a192b027d91386f"
+    },
+    "tests/fixtures/orca/PolyLite PLA Pro Metallic @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PLA Pro Metallic @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "1bc560b8e40147ae98e438af14f964aaa958cbcd8812a4ff64c6497aa23bac92"
+    },
+    "tests/fixtures/orca/PolyLite PLA Starlight @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PLA Starlight @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "39322e0020aa66aa5eab9e2599d08c773bc5859d45d9f63933b4f444495a1852"
+    },
+    "tests/fixtures/orca/PolyLite PLA Translucent @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyLite PLA Translucent @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "109412af8ecc6d905ddeca4383071ca36ac692fcbae3d7c17356088307192218"
+    },
+    "tests/fixtures/orca/PolyTerra PLA @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyTerra PLA @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "5717b6f9e1b060f112a71cc800a32f4fadd361f947d728b44d4aee3e58b53b51"
+    },
+    "tests/fixtures/orca/PolyTerra PLA Marble @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyTerra PLA Marble @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "90258ecb92eb7dce30a881a70e8570fb2e6bfba8c4381fda96ff6a8cec60313c"
+    },
+    "tests/fixtures/orca/PolyTerra PLA+ @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/PolyTerra PLA+ @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "f16c0687bea0b533e41e1d35df8d9dee710546a5f478ea81fedf3b5abc22f6fc"
+    },
+    "tests/fixtures/orca/Polymaker HT-PLA @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Polymaker HT-PLA @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "430e270dffafab8160cc7c6bba63025ad27d89dd806791f01d1da4ab3c59c4a8"
+    },
+    "tests/fixtures/orca/Polymaker HT-PLA-GF @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Polymaker HT-PLA-GF @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "df32dc8df5944ba22b8cb5325537caf80f40ba82ba2fc730b68e4b8ee92a2e77"
+    },
+    "tests/fixtures/orca/Polymaker PETG @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Polymaker PETG @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "754551fc7b26d2c83b75bb4965656b7b00ce54bc883698a23ccd62b477f2475e"
+    },
+    "tests/fixtures/orca/Polymaker PETG Galaxy @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Polymaker PETG Galaxy @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "450d17f93e138251267d630014430c1ec58cebb6c3fe531c7bf931104811ce47"
+    },
+    "tests/fixtures/orca/Polymaker PLA @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Polymaker PLA @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "96705cbe186df5b21e4a6a5a6926c9e33d2492bf9c05ca2da6ced06858fad89f"
+    },
+    "tests/fixtures/orca/Polymaker PLA Pro @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Polymaker PLA Pro @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "856a16b06b6f692d7418737b541608f7e3c07cbe661b7af32d3ecc9f17f74bbd"
+    },
+    "tests/fixtures/orca/Polymaker PLA Pro Metallic @Snapmaker U1 - OrcaSlicer.json": {
+      "previous_path": "orca_profiles/Polymaker PLA Pro Metallic @Snapmaker U1 - OrcaSlicer.json",
+      "sha256": "b53de982cffba395145cad1af93510b54e25f4e2a6d342ca21dbe980a9ab9991"
+    }
+  },
+  "base_commit": "5d652232e5b989028f13704ad6ca13b65724332b"
+}

@@ -4,8 +4,8 @@ Development tool. Input: a sources.json produced during logo review (list of
 {"slug", "brand", "file", "url", "source_kind", ...}) plus the downloaded files.
 Each logo is normalised (SVG sanitised and cropped to its artwork, raster
 converted to RGBA with a uniform background made transparent, trimmed and
-bounded), written to data/brand_logos/<slug>.<ext> and recorded in
-data/brand_logos/manifest.json with its provenance. ``--retouch-existing``
+bounded), written to data/brands/logos/<slug>.<ext> and recorded in
+data/brands/manifest.json with its provenance. ``--retouch-existing``
 reprocesses the raster logos already listed so every one has a transparent
 background. Nothing is downloaded here.
 """
@@ -26,8 +26,8 @@ sys.path.insert(0, str(ROOT / ".github" / "scripts"))
 from scripts.catalogue_sources import brand_key  # noqa: E402
 import build_catalogue_snapshot as snapshot  # noqa: E402
 
-LOGO_DIR = ROOT / "data" / "brand_logos"
-MANIFEST = LOGO_DIR / "manifest.json"
+LOGO_DIR = ROOT / "data" / "brands" / "logos"
+MANIFEST = LOGO_DIR.parent / "manifest.json"
 TOLERANCE = 34  # per-channel distance accepted as "same background"
 
 
@@ -103,6 +103,10 @@ def record(manifest: dict, key: str, name: str, path: Path, data: bytes, image, 
     if source:
         entry["logo_source"] = {k: source[k] for k in ("url", "source_kind", "licence_note", "retrieved") if source.get(k)}
     manifest[key] = entry
+    for other_key, other in manifest.items():
+        if other_key != key and other.get("path") == entry["path"]:
+            for field in ("sha256", "width", "height", "transparent_background"):
+                other[field] = entry[field]
 
 
 def main():

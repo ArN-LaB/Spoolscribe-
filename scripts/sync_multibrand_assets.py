@@ -23,7 +23,8 @@ if _RESOURCE not in sys.path:
 from scripts.db_io import (
     load_db, save_db, atomic_write, run_step, PartialUpdate, SourceUnavailable
 )
-_DATA_HOME = os.environ.get("SPOOLSCRIBE_DATA_HOME") or _RESOURCE
+from scripts.resource_paths import user_data_home
+_DATA_HOME = user_data_home()
 DATA_DIR   = os.path.join(_DATA_HOME, "data")
 DB_FILE    = os.path.join(DATA_DIR, "polymaker_db.json")
 

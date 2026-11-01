@@ -36,7 +36,7 @@ class PipelineTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         root = Path(self.tmp.name)
-        self.db_path = root / 'data/polymaker_db.json'
+        self.db_path = root / 'tests/fixtures/catalogues/polymaker_db.json'
         db = small_db()
         db['_update_status'] = 'failed'
         db['_source_results'] = []

@@ -278,12 +278,12 @@ class NfcProfilesTests(unittest.TestCase):
 
 class BundledExtensionTests(unittest.TestCase):
     def test_spoolman_snapshot_has_no_cross_source_brand_duplicates(self):
-        supplement = db_io.load_db(ROOT / "data/catalogue_spoolman.json")
-        ofd = db_io.load_db(ROOT / "data/catalogue_ofd.json")
-        baseline = db_io.load_db(ROOT / "data/polymaker_db.json")
+        supplement = db_io.load_db(ROOT / "tests/fixtures/catalogues/catalogue_spoolman.json")
+        ofd = db_io.load_db(ROOT / "tests/fixtures/catalogues/catalogue_ofd.json")
+        baseline = db_io.load_db(ROOT / "tests/fixtures/catalogues/polymaker_db.json")
         covered = {source.brand_key(n) for n in set(ofd["_brands"]) | set(baseline["_brands"])}
         self.assertFalse(covered & {source.brand_key(n) for n in supplement["_brands"]})
-        audit = db_io.parse_json((ROOT / "data/catalogue_spoolman_audit.json").read_bytes())
+        audit = db_io.parse_json((ROOT / "tests/fixtures/catalogues/audits/catalogue_spoolman_audit.json").read_bytes())
         self.assertEqual(len(supplement["_skus"]), audit["references"])
         self.assertFalse(audit["rejected"])
         rows = core.list_skus(supplement)
@@ -297,7 +297,7 @@ class BundledExtensionTests(unittest.TestCase):
     def test_legacy_catalogue_and_1008_compact_exports_are_identical(self):
         from tests.support import catalogue
         contract = db_io.parse_json((ROOT / "tests/fixtures/legacy_catalogue_contract.json").read_bytes())
-        self.assertEqual(hashlib.sha256((ROOT / "data/polymaker_db.json").read_bytes()).hexdigest(), contract["base_sha256"])
+        self.assertEqual(hashlib.sha256((ROOT / "tests/fixtures/catalogues/polymaker_db.json").read_bytes()).hexdigest(), contract["base_sha256"])
         db, fingerprints = catalogue(), {}
         for sku, e in db["_skus"].items():
             view = core.get_sku_view(db, sku)
@@ -309,8 +309,8 @@ class BundledExtensionTests(unittest.TestCase):
         self.assertEqual(digest, contract["compact_exports_sha256"])
 
     def test_every_new_reference_has_valid_data_or_explicit_unknowns(self):
-        db = db_io.load_db(ROOT / "data/catalogue_ofd.json")
-        audit = db_io.parse_json((ROOT / "data/catalogue_ofd_audit.json").read_bytes())
+        db = db_io.load_db(ROOT / "tests/fixtures/catalogues/catalogue_ofd.json")
+        audit = db_io.parse_json((ROOT / "tests/fixtures/catalogues/audits/catalogue_ofd_audit.json").read_bytes())
         self.assertEqual(len(db["_skus"]), audit["references"])
         self.assertEqual(len(db["_brands"]), audit["brands_imported"])
         self.assertFalse(audit["rejected"])
@@ -332,9 +332,9 @@ class BundledExtensionTests(unittest.TestCase):
         self.assertGreater(ready, 20000)
 
     def test_approved_logos_match_manifest_and_rejected_logos_are_not_referenced(self):
-        manifest = db_io.parse_json((ROOT / "data/brand_logos/manifest.json").read_bytes())
-        db = db_io.load_db(ROOT / "data/catalogue_ofd.json")
-        audit = db_io.parse_json((ROOT / "data/catalogue_ofd_audit.json").read_bytes())
+        manifest = db_io.parse_json((ROOT / "data/brands/manifest.json").read_bytes())
+        db = db_io.load_db(ROOT / "tests/fixtures/catalogues/catalogue_ofd.json")
+        audit = db_io.parse_json((ROOT / "tests/fixtures/catalogues/audits/catalogue_ofd_audit.json").read_bytes())
         self.assertEqual(len(manifest), audit["logos_approved"])
         rejected = {row["brand"] for row in audit["logos_rejected"]}
         for name, brand in db["_brands"].items():
@@ -342,5 +342,6 @@ class BundledExtensionTests(unittest.TestCase):
                 self.assertNotIn("logo_path", brand)
             else:
                 asset = manifest[brand["source_id"]]
-                self.assertEqual(brand["logo_path"], asset["path"])
+                from scripts.resource_paths import canonical_resource_path
+                self.assertEqual(canonical_resource_path(brand["logo_path"]), asset["path"])
                 self.assertEqual(hashlib.sha256((ROOT / asset["path"]).read_bytes()).hexdigest(), asset["sha256"])
