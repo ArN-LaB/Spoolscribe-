@@ -1,50 +1,76 @@
-# Printers and Readers
+# 🖨 Printers & readers
 
-SpoolScribe writes nothing to a printer: it prepares an OpenSpool JSON payload
-for an NTAG215/NTAG216 tag. Whether that tag is ever read depends on the
-machine's spool reader and its firmware. The list below is the bundled
-`data/printers.json` (version 2026-11-01), shown in **⚙ → Mon matériel**; the
-dialog's **Mettre à jour la liste des imprimantes…** button downloads the
-current file from the repository (network authorization required, strict
-validation, installed only when newer).
+[⌂ Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
 
-Four groups:
+**Check the reader and installed software, not just the printer name.**
+SpoolScribe exports OpenSpool 1.0 JSON. A printer having RFID/NFC does not
+mean it accepts that format.
 
-| Group | Meaning |
-|---|---|
-| **Native** | The printer's own reader reads an OpenSpool NTAG |
-| **External reader** | A separate NFC reader reads the tag and tells the printer or Spoolman |
-| **Proprietary** | The printer has a reader, but it only accepts its own (often encrypted) tag format |
-| **No reader** | Nothing reads a spool tag; an external reader remains possible |
+<table>
+<tr>
+<td width="50%" align="center"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/data/printers/photos/u1.webp" alt="Snapmaker U1" width="140"><br><strong>Snapmaker U1</strong><br>OpenSpool with compatible paxx12 firmware.</td>
+<td width="50%" align="center"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/data/printers/photos/bambu-x1c-transparent.png" alt="Bambu Lab X1 Carbon, illustrated AMS family model" width="140"><br><strong>Bambu Lab X1 Carbon</strong><br>Native tags use a different format; an external OpenSpool reader is a separate setup.</td>
+</tr>
+</table>
 
-## Printers
+## OpenSpool configurations
 
-| Printer | Reader | Firmware | SpoolScribe export | Note |
-|---|---|---|---|---|
-| Snapmaker U1 | NFC ISO 14443-A, integrated (NTAG21x) | **paxx12 open firmware** — reads OpenSpool since 0.9.4 | **OpenSpool** | Material and colour identify the filament; brand is optional. [Firmware](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) |
-| Snapmaker U1 | same | Stock firmware | none | Reads only Snapmaker tags (MIFARE Classic 1K); an OpenSpool tag is ignored |
-| Flashforge AD5X / Creator 5 | FF_NFC community reader | Zmod / Kiln OS + FF_NFC | **OpenSpool** | Community firmware; check the reader's documentation. [Zmod](https://github.com/ghzserg/zmod) |
-| Flashforge AD5X / Creator 5 | — | Stock firmware | none | No spool reader |
-| Klipper + Spoolman (Voron, Sovol SV08, RatRig…) | External NFC reader (SpoolSense, nfc2klipper, Happy Hare…) | Klipper + Spoolman | **OpenSpool** (conservative) | The format each module understands depends on its version; check its documentation |
-| Bambu Lab + external OpenSpool reader | OpenSpool ESP32 + PN532 → printer via MQTT (developer mode) | Stock firmware + developer mode | **OpenSpool** | The AMS does not read the tag; the external reader sends the filament over MQTT. [OpenSpool](https://github.com/spuder/OpenSpool) |
-| Other OpenSpool reader | any | per reader | **OpenSpool** (conservative) | All printing parameters are required by SpoolScribe; their use depends on the reader |
-| Bambu Lab X1 / P1 / A1 / H2 (AMS) | RFID MIFARE Classic, encrypted and signed (Bambu spools) | Stock, or X1Plus (X1 only) | none | The AMS ignores OpenSpool, OpenTag3D and OpenPrintTag; X1Plus changes nothing. Reference sheet for Bambu Studio |
-| Prusa CORE One / MK4S / XL | Optional NFC-V ISO 15693 reader (CORE One); firmware 8.0 reads OpenPrintTag | Stock 8.0+ | none | OpenPrintTag uses ISO 15693 tags and a CBOR payload: an NTAG215/216 OpenSpool tag is not read; no OpenPrintTag encoder in SpoolScribe |
-| Creality K2 / K2 Plus / Hi (CFS) | RFID MIFARE Classic, proprietary (Creality spools) | Stock | none | NTAG tags are not read by the CFS |
-| Anycubic Kobra S1 / Kobra 3 (ACE Pro) | NFC NTAG213 in Anycubic's format | Stock | none | Unencrypted but different from OpenSpool |
-| Elegoo Centauri Carbon 2 (CANVAS) | NFC NTAG213, published Elegoo specification | Stock | none | Binary Elegoo format, different from OpenSpool |
-| QIDI Plus4 / Q2 / Max4 (QIDI Box) | RFID MIFARE Classic (QIDI spools) | Stock | none | Official QIDI specification, different from OpenSpool |
-| UltiMaker 3 / S-series (Material Station) | NFC NTAG216 in UltiMaker's format (Cura GUID) | Stock | none | UltiMaker format, different from OpenSpool |
-| Raise3D Pro3 HS | Proprietary RFID | Stock | none | Reference sheet only |
-| MakerBot METHOD | Proprietary RFID ISO 15693 | Stock | none | Reference sheet only |
-| XYZprinting da Vinci | Proprietary NFC (DRM) | Stock | none | Reference sheet only |
-| No reader (Snapmaker Artisan/J1, Flashforge AD5M, Phrozen Arco, Zortrax, Kingroon…) | none | Stock | none | An external reader remains possible (see Klipper + Spoolman) |
+NFC export is available for these documented configurations. Confirm the exact
+firmware and external-reader documentation before writing a tag.
 
-"SpoolScribe export: none" means the tag controls are hidden in the card and
-the record is a reference sheet for your slicer profile. No proprietary tag
-format is generated.
+| Printer / setup | Required software | Reader & limits |
+| --- | --- | --- |
+| Snapmaker U1 | **paxx12 open firmware** — reads OpenSpool since 0.9.4 | NFC ISO 14443-A, integrated (NTAG21x); Material and colour identify the filament; brand is optional. [Firmware](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware) |
+| Flashforge AD5X / Creator 5 | Zmod / Kiln OS + FF_NFC | FF_NFC community reader; Community firmware; check the reader's documentation. [Zmod](https://github.com/ghzserg/zmod) |
+| Klipper + Spoolman (Voron, Sovol SV08, RatRig…) | Klipper + Spoolman | External NFC reader (SpoolSense, nfc2klipper, Happy Hare…); The format each module understands depends on its version; check its documentation |
+| Bambu Lab + external OpenSpool reader | Stock firmware + developer mode | OpenSpool ESP32 + PN532 → printer via MQTT (developer mode); The AMS does not read the tag; the external reader sends the filament over MQTT. [OpenSpool](https://github.com/spuder/OpenSpool) |
+| Other OpenSpool reader | per reader | any; All printing parameters are required by SpoolScribe; their use depends on the reader |
 
-## External readers listed
+## Other RFID formats & reference sheets
+
+For these configurations, SpoolScribe provides filament information for your
+slicer. It does **not** generate their native tag format; NFC export controls are hidden.
+
+| Printer / setup | Software | Why an OpenSpool tag is not sufficient |
+| --- | --- | --- |
+| Snapmaker U1 | Stock firmware | Reads only Snapmaker tags (MIFARE Classic 1K); an OpenSpool tag is ignored |
+| Flashforge AD5X / Creator 5 | Stock firmware | No spool reader |
+| Bambu Lab X1 / P1 / A1 / H2 (AMS) | Stock, or X1Plus (X1 only) | The AMS ignores OpenSpool, OpenTag3D and OpenPrintTag; X1Plus changes nothing. Reference sheet for Bambu Studio |
+| Prusa CORE One / MK4S / XL | Stock 8.0+ | OpenPrintTag uses ISO 15693 tags and a CBOR payload: an NTAG215/216 OpenSpool tag is not read; no OpenPrintTag encoder in SpoolScribe |
+| Creality K2 / K2 Plus / Hi (CFS) | Stock | NTAG tags are not read by the CFS |
+| Anycubic Kobra S1 / Kobra 3 (ACE Pro) | Stock | Unencrypted but different from OpenSpool |
+| Elegoo Centauri Carbon 2 (CANVAS) | Stock | Binary Elegoo format, different from OpenSpool |
+| QIDI Plus4 / Q2 / Max4 (QIDI Box) | Stock | Official QIDI specification, different from OpenSpool |
+| UltiMaker 3 / S-series (Material Station) | Stock | UltiMaker format, different from OpenSpool |
+| Raise3D Pro3 HS | Stock | Reference sheet only |
+| MakerBot METHOD | Stock | Reference sheet only |
+| XYZprinting da Vinci | Stock | Reference sheet only |
+| No reader (Snapmaker Artisan/J1, Flashforge AD5M, Phrozen Arco, Zortrax, Kingroon…) | Stock | An external reader remains possible (see Klipper + Spoolman) |
+
+<details>
+<summary><strong>Technical reader specifications for the other configurations</strong></summary>
+
+| Configuration | Reader / native format |
+| --- | --- |
+| Snapmaker U1 · Stock firmware | same |
+| Flashforge AD5X / Creator 5 · Stock firmware | — |
+| Bambu Lab X1 / P1 / A1 / H2 (AMS) · Stock, or X1Plus (X1 only) | RFID MIFARE Classic, encrypted and signed (Bambu spools) |
+| Prusa CORE One / MK4S / XL · Stock 8.0+ | Optional NFC-V ISO 15693 reader (CORE One); firmware 8.0 reads OpenPrintTag |
+| Creality K2 / K2 Plus / Hi (CFS) · Stock | RFID MIFARE Classic, proprietary (Creality spools) |
+| Anycubic Kobra S1 / Kobra 3 (ACE Pro) · Stock | NFC NTAG213 in Anycubic's format |
+| Elegoo Centauri Carbon 2 (CANVAS) · Stock | NFC NTAG213, published Elegoo specification |
+| QIDI Plus4 / Q2 / Max4 (QIDI Box) · Stock | RFID MIFARE Classic (QIDI spools) |
+| UltiMaker 3 / S-series (Material Station) · Stock | NFC NTAG216 in UltiMaker's format (Cura GUID) |
+| Raise3D Pro3 HS · Stock | Proprietary RFID |
+| MakerBot METHOD · Stock | Proprietary RFID ISO 15693 |
+| XYZprinting da Vinci · Stock | Proprietary NFC (DRM) |
+| No reader (Snapmaker Artisan/J1, Flashforge AD5M, Phrozen Arco, Zortrax, Kingroon…) · Stock | none |
+
+</details>
+
+<details>
+<summary><strong>External readers and their formats</strong></summary>
+
 
 | Reader | Works with | Tags |
 |---|---|---|
@@ -57,7 +83,11 @@ format is generated.
 | SpoolLink | Snapmaker U1 + Spoolman (spool linked by tag UID) | UID only |
 | Prusa OpenPrintTag reader | Prusa CORE One | OpenPrintTag (ISO 15693) |
 
-## Not confirmed by a primary source
+
+</details>
+
+## Check an uncertain or missing configuration
+
 
 - Behaviour of the Bambu Lab X2D / P2S / H2C and of the ACE 2 Pro.
 - Availability of the Prusa OpenPrintTag reader outside the CORE One family.
@@ -68,19 +98,31 @@ technology, the firmware and a link to its documentation; the list is data, not
 code, and can be refreshed without a new release.
 
 
-## Printer list and images in v0.3.5
 
-The printer picker includes documented product summaries and an explicit OpenSpool
-status. Reviewed manufacturer images are used for U1, X1 Carbon and QIDI Plus4;
-the illustrated model is identified for a family. Other entries remain textual.
-These images do not imply identical accessories across a family. Confirm the installed software where requested.
+## Find your setup in the app
 
-A development build may ship `data/printers.json` before that file is present
-on the published `main` branch. In this case, updating the list retains the
-bundled catalogue and displays “Aucune nouvelle liste publiée”. Other network
-errors are displayed inline and retain the current catalogue too. No fallback
-to an unreviewed development branch is performed.
+Open **⚙ → My hardware**, search for the printer or reader, and confirm the
+installed software. The picker shows a short product summary and an explicit
+OpenSpool status. **Refresh list** retrieves the reviewed hardware catalogue
+after network consent; failed updates keep the current list.
 
-## Other formats exist
+Images illustrate named models, not every printer in a family. Accessories and
+reader support may differ. [Image provenance](https://github.com/ArN-LaB/Spoolscribe-/blob/main/data/printers/photos/manifest.json).
 
-The table describes the OpenSpool export implemented by SpoolScribe, not every tag format a reader could support. See [NFC formats and current-source verification](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/FORMATS-NFC.md): OpenSpool 1.0, OpenTag3D and OpenPrintTag use different encodings. The extended U1 develop documentation also describes additional readers/formats; verify the installed firmware and detection system. No new encoder or hardware validation is implied.
+<details>
+<summary><strong>Catalogue, other formats and source references</strong></summary>
+
+This guide follows the bundled hardware catalogue dated 2026-11-01:
+[data/printers.json](https://github.com/ArN-LaB/Spoolscribe-/blob/main/data/printers.json).
+Its public path remains stable for existing app installations. A newer validated
+list can be installed without a new application release. An unpublished list or
+network error leaves the current catalogue available.
+
+OpenSpool, OpenTag3D and OpenPrintTag have different encodings. This guide describes
+the export implemented by SpoolScribe, not every format a reader might support.
+See [NFC formats and source verification](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/FORMATS-NFC.md).
+No new encoder or physical acceptance is implied.
+
+</details>
+
+[Ready to write a tag? →](Writing-RFID-Tags.md) · [U1 walkthrough →](Snapmaker-U1-and-paxx12.md)

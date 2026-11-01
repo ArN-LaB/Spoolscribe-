@@ -1,66 +1,83 @@
-# Getting started with SpoolScribe v0.3.5
+# 🚀 Getting started
 
-[Wiki home](Home.md) · [FAQ](FAQ.md)
+[⌂ Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
+
+**From an empty catalogue to your first exported label.** No Python installation needed.
+
+| ① Install | ② Download sources | ③ Pick a filament | ④ Export |
+| --- | --- | --- | --- |
+| Choose your platform. | Give consent and refresh. | Confirm colour and spool size. | Configure a reader and save the file. |
 
 ## 1. Download and open
 
-Download the archive and companion SHA-256 from
-[the v0.3.5 release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
+| Platform | v0.3.5 download | Inside the ZIP |
+| --- | --- | --- |
+| **Windows · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-windows.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-windows.zip.sha256) | One <code>SpoolScribe.exe</code> |
+| **macOS · Apple Silicon** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-macos.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-macos.zip.sha256) | One <code>SpoolScribe.app</code> |
+| **Linux · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-linux.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.3.5/SpoolScribe-linux.zip.sha256) | One <code>SpoolScribe</code> executable |
 
-| Platform | Contents |
-| --- | --- |
-| Windows x64 | One `SpoolScribe.exe` |
-| macOS Apple Silicon | One `SpoolScribe.app` |
-| Linux x64 | One `SpoolScribe` executable; recent glibc and Qt runtime libraries required |
+Verify the download’s origin and checksum, unzip it and open the application.
 
-Verify origin and checksum before opening. Windows has no commercial signing
-certificate. The macOS bundle is ad hoc signed, without Apple notarisation:
-use the system’s per-application Open option after verification. Do not disable
-Gatekeeper globally. For personal source builds, use the
-[local installation guide](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/LOCAL_MACOS_INSTALL.md).
+<details>
+<summary><strong>First-launch checks on macOS, Windows and Linux</strong></summary>
 
-For Python source use and compilation, see
-[Development](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DEVELOPMENT.md).
+- **macOS:** the Apple Silicon bundle is ad hoc signed, without Apple notarisation.
+  Use the system’s per-application **Open** option after verification. Do not disable
+  Gatekeeper globally. For your own source builds, see the
+  [local installation guide](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/LOCAL_MACOS_INSTALL.md).
+- **Windows:** the executable has no commercial signing certificate. Verify origin
+  and checksum before responding to SmartScreen.
+- **Linux:** a recent glibc and Qt libraries <code>libegl1</code>,
+  <code>libxkbcommon0</code> and <code>libdbus-1-3</code> are required.
+
+Compare the supplied SHA-256 using <code>shasum -a 256</code> on macOS,
+<code>sha256sum</code> on Linux, or <code>Get-FileHash -Algorithm SHA256</code> in PowerShell.
+
+[Run or build from source](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DEVELOPMENT.md).
+
+</details>
 
 ## 2. Choose the language and download the catalogue
 
-The app follows supported system languages and otherwise uses English.
-**Settings → Interface** lets you choose English, Français, Español or 简体中文.
-After saving, choose **Restart now** or **Later**. No data or favourites are lost.
+**English · Français · Español · 简体中文**
 
-The first launch starts empty. Choose sources, give network consent and refresh.
-Later launches use the saved cadence; **Refresh catalogue** forces a refresh.
-Offline, the last downloaded catalogue remains usable.
-[Source and backup details](Updating-the-Database.md).
+The app follows supported system languages and otherwise uses English.
+Change it in **Settings → Interface**. Save, then choose **Restart now** or
+**Later**; your data and favourites remain intact.
+
+The first launch starts empty. Choose your sources, give network consent and
+click **Refresh now**. Later, **Refresh catalogue** lets you refresh on demand.
+After the first download, your saved catalogue works offline.
+
+[Choose sources and understand refresh results →](Updating-the-Database.md)
 
 ## 3. Find your filament
 
-Search across products, colours and references. Selecting a manufacturer limits
-materials to those available; selecting a material also narrows manufacturers.
-Filter by favourites or data state. Resetting filters keeps saved favourites.
+[![List view: filters on the left, filaments in the centre, selected filament and export on the right](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)
 
-Click a column header to sort, click again to reverse; its context menu selects
-primary/secondary sort or visible columns. Choose a row or grid card to inspect
-a filament. Its actual packaging references are grouped in the detail card.
-Choose the correct shade if sources disagree, then the available spool size.
-Set a preferred packaging in **Settings → Spools**.
+| 🔎 Narrow the list | ★ Keep your favourites | 🎨 Confirm the actual spool |
+| --- | --- | --- |
+| Search products, colours or references. Manufacturer and material filters narrow each other. | Save manufacturers and filaments. Clearing filters keeps those favourites. | Open a row or grid card. Choose the shade when sources disagree, then the available spool size. |
 
-**Modify** creates an independent personal copy with an editable `@suffix`.
-The source record stays intact and refreshes preserve the copy.
+Click a column header to sort; click again to reverse. Its context menu selects
+primary/secondary sort and visible columns. Use the list/grid buttons to switch views.
+
+**Your usual packaging:** set it in **Settings → Spools**. It is preselected when available.
+**Your own adjustments:** use **Edit…** to save an independent copy with an editable
+<code>@suffix</code>. The source stays intact; refreshes preserve your copy.
 
 ## 4. Configure your reader and export
 
-In **⚙ → My hardware**, choose printer/reader and installed software. Only a
-compatible OpenSpool configuration enables NFC export; other setups provide
-a reference sheet. [Check compatibility](Printers-and-Readers.md).
+| In the app | Next action |
+| --- | --- |
+| **⚙ → My hardware** | Choose the printer or reader and installed software. [Check compatibility](Printers-and-Readers.md). |
+| **Tag type** | Choose the NTAG215 or NTAG216 you bought. Advanced profile/reserve settings are optional. |
+| **Show JSON** | Inspect the same payload that will be exported; the window size stays unchanged. |
+| **Export for NFC** | Choose a destination folder and wait for the saved-file confirmation. Cancelling creates no file. |
 
-Choose the NTAG215 or NTAG216 you bought. Advanced profile/reserve options remain
-optional. Then:
+A compatible OpenSpool setup enables NFC export; other setups provide a reference
+sheet. SpoolScribe prepares the payload and does not replace the slicer profile.
 
-1. Inspect the JSON if desired; the window size stays unchanged.
-2. Click **Export for NFC** and choose a destination folder.
-3. Wait for the saved-file confirmation. Cancelling creates no file.
-4. Use a separate NFC writing app, read the tag back and test the reader.
+**Next:** use a separate NFC writing app, read the tag back, then check it on your reader.
 
-SpoolScribe prepares the payload; it does not write the tag or replace the
-slicer profile. [Writing guide](Writing-RFID-Tags.md).
+[Continue to writing and read-back →](Writing-RFID-Tags.md)
