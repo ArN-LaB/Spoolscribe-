@@ -85,6 +85,16 @@ automatic refreshes for the rest of that session.
 
 The four interface languages (English, French, Spanish, Simplified Chinese) are bundled locally. System-language detection and restarting after a language change do not contact a server or change consent.
 
-## OpenTag3D (v0.4.0 en développement)
+## OpenTag3D (préversion v0.6.0)
 
 La génération du payload, des profils NFC Tools et du message NDEF est entièrement locale. Les paramètres explicites sont enregistrés par référence dans les réglages utilisateur ; ils ne sont pas envoyés aux sources du catalogue. Aucun schéma ou service OpenTag3D n’est téléchargé par l’application.
+
+## QR numérique SSQR1 (v0.6.0)
+
+Le QR et ses fichiers PNG/SVG sont produits localement à partir du message NDEF
+complet déjà préparé pour l’export. Aucun serveur, lien de téléchargement ou
+compte Companion n’est utilisé. Toute personne qui reçoit l’image peut décoder
+son contenu : ne partagez pas un QR contenant des données que vous souhaitez
+garder privées. Le SHA-256 détecte une altération ; ce n’est pas une signature
+d’authenticité. Le décodeur valide les longueurs et ne lance ni URL ni commande.
+Companion reste à développer ; impression et essais physiques sont différés.

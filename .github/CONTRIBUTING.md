@@ -118,3 +118,15 @@ suite. Review snapshot audit reports and logo contact sheets; do not overwrite
 the historical catalogue or Orca profiles to update a supplement. The 1,008
 historical exports are checked byte for byte: a deliberate change to the export
 format must be verified and recorded in `tests/fixtures/legacy_catalogue_contract.json`.
+
+## SSQR1 and documentation captures
+
+Keep the [SSQR1 contract](../docs/QR_FORMAT.md) and its reference vectors stable.
+PNG/SVG transfer is digital; do not infer physical phone, printing or NFC acceptance
+from an automated decoder. Companion is a separate future project.
+
+Regenerate the six real interface captures with
+`python .github/scripts/render_readme_screenshots.py`. Use only public fixtures,
+isolated settings and the offline audit hook; review every image and its manifest.
+Never show personal paths or catalogue edits. Screenshots and scan oracles are not
+application resources. [Provenance](../docs/images/README.md).

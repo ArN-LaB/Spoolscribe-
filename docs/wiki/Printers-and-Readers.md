@@ -15,6 +15,10 @@ identified setups. The public stable v0.3.5 still exports OpenSpool only.
 </tr>
 </table>
 
+[![v0.6.0 visual printer selector with real photographs and compatibility categories](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/printers.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/printers.png)
+
+[See the actual reader/software/tag choices](Visual-Tour.md#3-choose-your-machine-and-its-real-setup).
+
 ## Follow the data
 
 | Connection | Required support | What happens |

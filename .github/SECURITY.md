@@ -6,7 +6,7 @@ Security reports are welcome; please keep vulnerability details private.
 ## Supported versions
 
 Current stable release: [v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
-The [v0.4.0 pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0) is
+The [v0.6.0 pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.6.0) is
 also open for bug and private security reports; it is not a hardware certification.
 
 The [latest stable GitHub Release](https://github.com/ArN-LaB/Spoolscribe-/releases/latest)
@@ -33,7 +33,8 @@ without a response-time guarantee; confirmed security issues take priority.
 | Network | Outbound HTTPS GET after explicit consent; downloaded data, redirects, size limits and source validation matter. No server or inbound listening port. |
 | Local storage | The app stores a catalogue, preferences, backups and exports in the user folder. Safe paths, atomic writes and preservation of local changes matter. |
 | Update workers | Bundled scripts process external data. Script allowlisting and avoidance of command injection matter. |
-| NFC exports | The app prepares JSON; it does not program tag memory, modify firmware or associate hardware UIDs. |
+| NFC exports | The app prepares OpenSpool JSON or OpenTag3D binary messages/containers; it does not program tag memory, modify firmware or associate hardware UIDs. |
+| Digital QR | SSQR1 carries the complete NDEF message offline. Length, bounded decompression and integrity checks do not establish authenticity; decoded content is never executed. Companion is a separate future application. |
 
 See [network transparency](../docs/PRIVACY.md), [data sources](../docs/DATA_SOURCES.md)
 and [storage/data format](../docs/DATA_FORMAT.md).

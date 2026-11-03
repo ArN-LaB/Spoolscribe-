@@ -10,9 +10,9 @@ de régression. [Documentation](../docs/README.md) · [Données de test](../test
 | `ui/` | Icônes SVG utilisées par les contrôles Qt |
 | `brands/manifest.json` | 147 entrées de provenance, empreintes et chemins des logos revus |
 | `brands/logos/` | 141 images référencées par le manifeste, plus le logo historique ROSA3D de repli |
-| `printers/photos/` | Quatre photos et leur manifeste de provenance |
+| `printers/photos/` | 15 photographies produit et leur manifeste de provenance |
 | `translations/` | Catalogue local des quatre langues et consignes de traduction |
-| `licenses/` | Licences des sources et attribution TheFilamentDB |
+| `licenses/` | Licences des sources, attribution TheFilamentDB et licence BSD de Segno |
 | `printers.json` | Catalogue matériel public et embarqué ; chemin stable utilisé par les versions déjà publiées |
 
 Plusieurs entrées de marque peuvent référencer une même image **strictement

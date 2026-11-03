@@ -157,6 +157,11 @@ planned for a future companion app that does not exist yet. Dense codes are
 refused on narrow labels such as the 24 mm printable width of the NIIMBOT D101
 rather than shrunk. [QR transfer format](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/QR_FORMAT.md).
 
+[![Digital SSQR1 QR with PNG SVG saving in v0.6.0](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/qr-transfer.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/qr-transfer.png)
+
+Digital section of the real window; existing printing controls are omitted here.
+[Step-by-step illustrated QR workflow](Visual-Tour.md#4-carry-the-complete-message-in-a-qr).
+
 ## Write, read back, check
 
 1. In **My hardware**, choose the printer/reader and its firmware, the tag

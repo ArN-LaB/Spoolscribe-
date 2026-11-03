@@ -90,3 +90,37 @@ Review the diff and commit/push the separate Wiki repository explicitly.
 
 Historical evidence lives in `docs/archive/`; current release evidence lives in
 `docs/validation/`. Historical campaigns retain their original measured results.
+
+## Reproduce the v0.6.0 documentation captures
+
+```sh
+python .github/scripts/render_readme_screenshots.py
+```
+
+Six real Qt captures and `docs/images/captures.json` use public regression fixtures,
+a temporary database/configuration and a network-denying audit hook. This is a
+documentation tool, not a runtime dependency or hardware test. The QR illustration
+is the top of the real window through PNG/SVG actions; its printing band is omitted.
+The animated logo is preserved. See [image provenance](images/README.md).
+
+For native digital QR QA, CI installs Pillow and `zxing-cpp==2.3.0` only **after**
+PyInstaller, then runs `.github/scripts/check_frozen_ssqr1.py`. They must stay out
+of the application bundle. Independent scans verify exact SSQR1/NDEF restoration;
+they do not certify a camera, printer or NFC reader.
+
+## Linux desktop runtime
+
+The native Linux archive is x64, built on `ubuntu-latest`. It needs a compatible
+glibc, EGL, DBus and the Qt platform dependencies of the target desktop. For X11,
+the release build reports these external library names (some repeat across plugins):
+
+```text
+libxcb-util.so.1        libxkbcommon-x11.so.0   libxcb-cursor.so.0
+libxcb-shape.so.0       libxcb-xkb.so.1         libxcb-keysyms.so.1
+libxcb-image.so.0       libxcb-render-util.so.0 libxcb-icccm.so.4
+```
+
+Install the corresponding Qt/X11 runtime packages for your distribution rather
+than copying arbitrary shared libraries into the app. CI uses Qt offscreen:
+passing those digital checks does not measure a native X11/Wayland desktop session.
+[Exact release build log](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41650816610/job/125971039581).

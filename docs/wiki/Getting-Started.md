@@ -2,6 +2,8 @@
 
 [Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
 
+[Prefer pictures? Follow the v0.6.0 visual tour](Visual-Tour.md).
+
 **From an empty catalogue to your first exported label.** No Python installation needed.
 
 | 1. Install | 2. Download sources | 3. Pick a filament | 4. Export |
@@ -30,7 +32,8 @@ Verify the download’s origin and checksum, unzip it and open the application.
 - **Windows:** the executable has no commercial signing certificate. Verify origin
   and checksum before responding to SmartScreen.
 - **Linux:** a recent glibc and Qt libraries <code>libegl1</code>,
-  <code>libxkbcommon0</code> and <code>libdbus-1-3</code> are required.
+  <code>libxkbcommon0</code> and <code>libdbus-1-3</code> are required. X11 also needs
+  Qt XCB/XKB system libraries; see [Linux runtime notes](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DEVELOPMENT.md#linux-desktop-runtime).
 
 Compare the supplied SHA-256 using <code>shasum -a 256</code> on macOS,
 <code>sha256sum</code> on Linux, or <code>Get-FileHash -Algorithm SHA256</code> in PowerShell.

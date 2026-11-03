@@ -13,8 +13,8 @@
 </p>
 <p align="center"><a href="https://github.com/ArN-LaB/Spoolscribe-/wiki/Getting-Started">Start here</a> · <a href="https://github.com/ArN-LaB/Spoolscribe-/wiki/Printers-and-Readers">Check your printer</a> · <a href="https://github.com/ArN-LaB/Spoolscribe-/wiki/FAQ">Get help</a></p>
 
-[![SpoolScribe v0.5.0: manufacturer and material filters, colour preview, properties and NFC export](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)
-<p align="center"><sub>Actual v0.5.0 interface, shown in English using public catalogue fixtures and isolated offline settings. Counts are demonstration data, not live coverage.</sub></p>
+[![SpoolScribe v0.6.0: manufacturer and material filters, colour preview, properties and NFC export](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)
+<p align="center"><sub>Actual v0.6.0 interface, shown in English using public catalogue fixtures and isolated offline settings. Counts are demonstration data, not live coverage.</sub></p>
 
 ## A catalogue that works your way
 
@@ -40,6 +40,16 @@ alone does not guarantee OpenSpool or OpenTag3D compatibility.
 **New in v0.6.0:** digital SSQR1 QR transfer (PNG/SVG) for the future Companion.
 [How it works](Writing-RFID-Tags.md#digital-qr-transfer-ssqr1-v060-pre-release).
 Printing and physical acceptance are deferred; Companion is not implemented yet.
+
+## See the useful details
+
+| Compare a colour | Carry the NFC message |
+| --- | --- |
+| [![Delta E colour proximity](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-search.png)](Visual-Tour.md#2-compare-colours-with-a-clear-limit) | [![Digital SSQR1 QR and PNG SVG saving](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/qr-transfer.png)](Visual-Tour.md#4-carry-the-complete-message-in-a-qr) |
+| Smaller ΔE means closer declared screen colours. Set an inclusive maximum; it is not a percentage. | Save PNG/SVG for the future Companion. No server; printing and physical acceptance are deferred. |
+
+**[Walk through all six v0.6.0 captures](Visual-Tour.md)** — list, grid, ΔE,
+photographic printer selection, hardware choices and digital QR.
 
 ## Download v0.6.0 · Pre-release
 

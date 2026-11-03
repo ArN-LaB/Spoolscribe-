@@ -15,7 +15,7 @@
 <p align="center"><a href="#download">Download</a> · <a href="#your-first-tag">Your first tag</a> · <a href="#will-it-work-with-my-printer">Compatibility</a> · <a href="docs/README.md">Documentation</a></p>
 
 [![SpoolScribe catalogue: searchable manufacturers, filament colours and NFC export](docs/images/catalogue.png)](docs/images/catalogue.png)
-<p align="center"><sub>Actual v0.5.0 interface, shown in English with public catalogue fixtures and temporary offline settings. Available in English, French, Spanish and Simplified Chinese.</sub></p>
+<p align="center"><sub>Actual v0.6.0 interface, shown in English with public catalogue fixtures and temporary offline settings. Available in English, French, Spanish and Simplified Chinese.</sub></p>
 
 **Current stable: [v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).**
 
@@ -68,7 +68,8 @@ No Python installation needed. Download, unzip and open the app for your system.
 - **Windows:** the executable has no commercial signing certificate. SmartScreen may
   ask for confirmation; verify its origin and SHA-256 before choosing **More info → Run anyway**.
 - **Linux:** built on `ubuntu-latest`; requires a recent glibc and the Qt runtime
-  libraries `libegl1`, `libxkbcommon0` and `libdbus-1-3`.
+  libraries `libegl1`, `libxkbcommon0` and `libdbus-1-3`. X11 also needs
+  the Qt XCB/XKB system dependencies; see [Linux runtime notes](docs/DEVELOPMENT.md#linux-desktop-runtime).
 
 The `.zip.sha256` file contains the expected hash. Compare it with `sha256sum`
 (Linux), `shasum -a 256` (macOS) or `Get-FileHash -Algorithm SHA256` (PowerShell).
@@ -84,6 +85,28 @@ The `.zip.sha256` file contains the expected hash. Compare it with `sha256sum`
 
 [![SpoolScribe grid: colour-matched spool previews and the selected filament card](docs/images/collection.png)](docs/images/collection.png)
 <p align="center"><sub>The spool preview follows the recorded filament colour. Unknown colours stay unknown until you choose one.</sub></p>
+
+## Find a close colour
+
+Choose a swatch or enter a HEX, then **Compare**. Your manufacturer and material
+filters still apply. The cards show **ΔE**: a smaller number means closer declared
+screen colours. **Maximum ΔE 10** means **ΔE ≤ 10**, not a percentage or a tolerance
+around 10. Adjust the limit in **Settings → Colours**.
+
+[![v0.6.0 colour proximity search: reference swatch, maximum Delta E and ranked filament cards](docs/images/colour-search.png)](docs/images/colour-search.png)
+
+Gloss, transparency and special effects can change the printed result. This helps
+compare catalogue colours; it is not a physical colour measurement.
+
+## Choose the printer, then its real setup
+
+Search by model and use the visual categories. Next, select the reader and software
+actually installed. The result explains whether data goes to the printer or an
+external inventory; a USB connection alone does not establish compatibility.
+
+[![v0.6.0 visual printer selector with photographs and concise descriptions](docs/images/printers.png)](docs/images/printers.png)
+
+[See the step-by-step hardware choices](docs/wiki/Visual-Tour.md#3-choose-your-machine-and-its-real-setup).
 
 ## Your first tag
 
@@ -105,6 +128,9 @@ stay in your user folder.
 **Show QR Code…** captures the complete current NFC export in one offline QR.
 Save **PNG** for sharing or **SVG** for a scalable digital file. The data is fixed
 when the QR window opens; reopen it after changing the filament or export options.
+
+[![v0.6.0 digital SSQR1 QR window with PNG and SVG save actions](docs/images/qr-transfer.png)](docs/images/qr-transfer.png)
+<p align="center"><sub>Digital section of the actual QR window; printing controls are outside this illustration and validation.</sub></p>
 
 The **SSQR1 contract is validated for digital transfer**. SpoolScribe Companion,
 which will scan the code and write a tag, is a future application. An ordinary QR
@@ -158,7 +184,7 @@ These automated checks do not replace human desktop acceptance or physical NFC r
 
 ## Help, ideas and the next steps
 
-[Documentation](docs/README.md) · [FAQ](docs/wiki/FAQ.md) ·
+[Visual tour of v0.6.0](docs/wiki/Visual-Tour.md) · [Documentation](docs/README.md) · [FAQ](docs/wiki/FAQ.md) ·
 [Report a bug](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) ·
 [Suggest an improvement](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) ·
 [Roadmap](docs/ROADMAP.md) · [Changelog](CHANGELOG.md)

@@ -1,6 +1,6 @@
 # Visuels des imprimantes
 
-SpoolScribe 0.4.0 — travail UX local, revue du 3 novembre 2026.
+SpoolScribe 0.6.0 — photographies conservées, documentation actualisée le 3 novembre 2026.
 
 **15 photographies produit couvrent les 17 entrées désignant une machine ou une
 famille précise.** Les vues isolées, de face ou de trois quarts, gardent leurs couleurs
