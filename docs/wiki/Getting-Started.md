@@ -10,13 +10,13 @@
 
 ## 1. Download and open
 
-**v0.5.0 is a pre-release.** [Choose v0.3.5 for the latest stable build](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
+**v0.6.0 is a pre-release.** [Choose v0.3.5 for the latest stable build](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
 
-| Platform | v0.5.0 pre-release download | Inside the ZIP |
+| Platform | v0.6.0 pre-release download | Inside the ZIP |
 | --- | --- | --- |
-| **Windows · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-windows.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-windows.zip.sha256) | One <code>SpoolScribe.exe</code> |
-| **macOS · Apple Silicon** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-macos.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-macos.zip.sha256) | One <code>SpoolScribe.app</code> |
-| **Linux · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-linux.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-linux.zip.sha256) | One <code>SpoolScribe</code> executable |
+| **Windows · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.6.0/SpoolScribe-windows.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.6.0/SpoolScribe-windows.zip.sha256) | One <code>SpoolScribe.exe</code> |
+| **macOS · Apple Silicon** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.6.0/SpoolScribe-macos.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.6.0/SpoolScribe-macos.zip.sha256) | One <code>SpoolScribe.app</code> |
+| **Linux · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.6.0/SpoolScribe-linux.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.6.0/SpoolScribe-linux.zip.sha256) | One <code>SpoolScribe</code> executable |
 
 Verify the download’s origin and checksum, unzip it and open the application.
 

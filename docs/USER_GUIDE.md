@@ -188,7 +188,11 @@ profils OpenSpool compact/complet et les réserves d’écriture restent dans le
 matériels avancés. SpoolScribe prépare le fichier ; une autre application écrit
 l’étiquette. L’archive JSON complète reste disponible dans le menu général.
 
-### QR Code (en développement)
+### QR numérique SSQR1 (v0.6.0, préversion)
+
+Le contrat numérique SSQR1 est validé pour OpenSpool 1.0 et OpenTag3D 2.004.
+L’impression, la D101 et les essais physiques sont différés ; les commandes
+d’impression déjà présentes ne font pas partie de cette validation.
 
 **Afficher le QR Code…**, sur sa propre ligne sous **Voir le JSON** et **Afficher le fichier**,
 n’est actif que si l’export NFC est possible : mêmes blocages (couleur, brouillon, configuration,

@@ -2,9 +2,11 @@
 
 [Documentation](README.md) · [Data format](DATA_FORMAT.md) · [Writing tags](wiki/Writing-RFID-Tags.md)
 
-**In development, not part of a published release.** One standard QR Code
+**Available in v0.6.0 pre-release: validated digital SSQR1 contract.** One standard QR Code
 carries the **whole NDEF message** of an NFC export, with no server, link or
-file transfer. SpoolScribe Desktop shows, saves (PNG, SVG) and prints it. A
+file transfer. SpoolScribe Desktop shows and saves it (PNG, SVG). Existing system-printing
+controls remain outside this digital validation; printing, D101 and Bluetooth
+are deferred. A
 future **SpoolScribe Companion** app is meant to scan it, then write and read
 back the tag; that app does not exist yet. An ordinary QR reader only shows the
 transfer text: it does not program a chip.
@@ -77,7 +79,7 @@ Any valid zlib stream is accepted: the normative identity is the decompressed
 NDEF, not the compressed bytes. Reference vectors (five NDEF messages and one
 transfer text) are in [`tests/fixtures/qr/ssqr1_vectors.json`](../tests/fixtures/qr/ssqr1_vectors.json).
 
-## Printed size
+## Printed size (existing geometry; physical validation deferred)
 
 A QR of version *v* has `17 + 4v` modules per side, plus four white modules on
 each side. Printing uses **whole printer dots per module**, from the paper,

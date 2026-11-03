@@ -66,3 +66,12 @@ reconnaissance par le firmware. La validation matérielle reste à effectuer.
 - [Validation](validation/v0.5.0.md) separates software checks from real printer/RFID acceptance.
 - v0.3.5 stays stable. Broader physical feedback is needed before promoting this development line.
 - Autonomous QR and any Spoolman bridge remain separate work; neither is included in this release.
+
+## v0.6.0 — SSQR1 digital transfer, pre-release
+
+- Complete NFC message in one offline QR, PNG/SVG output and a validated SSQR1
+  digital contract for OpenSpool 1.0 and OpenTag3D 2.004.
+- [Validation](validation/v0.6.0.md) distinguishes independent software scans from
+  physical phone, tag and printer acceptance. No NFC protocol or compatibility extension.
+- Companion remains a separate future project. Printing, D101 and Bluetooth are deferred.
+- v0.3.5 remains stable; v0.5.0 and previous tags remain unchanged.
