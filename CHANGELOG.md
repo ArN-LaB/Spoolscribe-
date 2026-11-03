@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (in development, not released)
+
+- **Show QR Code…**: the complete NDEF message of the current NFC export as one
+  standard QR Code (`SSQR1:` + Base45, raw or zlib, SHA-256 integrity, no server),
+  for OpenSpool 1.0 and OpenTag3D 2.004. Available only when the export is; the
+  window keeps the data frozen at opening. PNG/SVG saving and system printing with
+  whole printer dots per module; dense codes are refused instead of shrunk
+  (NIIMBOT D101 25 × 50 mm diagnosed, no Bluetooth printing). New runtime
+  dependency: Segno 1.6.6 (BSD 3-Clause). Physical printing and scanning are not
+  validated. See [docs/QR_FORMAT.md](docs/QR_FORMAT.md).
+
 ## [0.5.0] - 2026-11-03
 
 ### Pre-release — hardware feedback wanted

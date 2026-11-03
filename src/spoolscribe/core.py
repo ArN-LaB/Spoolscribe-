@@ -194,6 +194,7 @@ DEFAULT_CONFIG = {
     "export_directory": "",
     "show_extra_fields": False,
     "nfc_reserved_bytes": 0,
+    "qr_label": {},            # QR paper profile only (spoolscribe.qr_layout.validate_settings).
 }
 NETWORK_SOURCES_REVISION = 2
 
@@ -1598,6 +1599,8 @@ def import_settings(path):
         raise ValueError('Conditionnement préféré invalide')
     if not valid_colour_delta_limit(cfg['colour_delta_max']):
         raise ValueError('Écart de couleur invalide')
+    from . import qr_layout
+    qr_layout.validate_settings(cfg['qr_label'])
     directory=cfg['export_directory']
     if not isinstance(directory,str) or len(directory)>4096 or '\x00' in directory or directory and not os.path.isabs(directory):
         raise ValueError('Dossier d’export invalide')

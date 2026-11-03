@@ -688,6 +688,12 @@ class DetailUx:
         self.btn_generate.setText(text)
         self.btn_generate.setEnabled(enabled)
         self.btn_generate.setToolTip(tip or tr("Ctrl+E : exporter pour NFC"))
+        if hasattr(self, "btn_qr"):
+            # Same verdict as the export itself: no QR for a message that cannot be exported.
+            available = kind == "export" and enabled
+            self.btn_qr.setEnabled(available)
+            self.btn_qr.setToolTip(tr("Afficher, enregistrer ou imprimer le message NFC sous forme de QR Code.") if available
+                                   else tr("Disponible lorsque l’export NFC est possible."))
 
     def _primary_action(self, *_):
         kind = getattr(self, "_primary_kind", "export")
@@ -763,6 +769,10 @@ class DetailUx:
         super().changeEvent(event)
         if event.type() == QEvent.ActivationChange and self.isActiveWindow():
             self._refresh_last_export()
+
+    def _open_qr(self, *_):
+        from .ui_qr import open_qr_window
+        return open_qr_window(self)
 
     def _open_output(self):
         """Reveal the last file actually written; never creates a folder."""

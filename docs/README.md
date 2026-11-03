@@ -17,7 +17,7 @@
 
 - [Développement, commandes et compilation](DEVELOPMENT.md).
 - [Structure du dépôt et maintenance](REPOSITORY.md).
-- [Contrat des données et de l’export](DATA_FORMAT.md).
+- [Contrat des données et de l’export](DATA_FORMAT.md) · [QR Code du message NFC, en développement](QR_FORMAT.md).
 - [Ressources de l’application](../data/README.md) · [Jeux de référence](../tests/fixtures/README.md).
 - [Langues de l’interface](../data/translations/README.md).
 - [Captures et logo animé : provenance et régénération](images/README.md).

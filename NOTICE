@@ -15,3 +15,8 @@ See docs/DATA_SOURCES.md and docs/TRADEMARKS.md for the full picture.
 OpenTag3D 2.004 interoperability: https://opentag3d.info/spec.html
 The SpoolScribe encoder is independently implemented from the standard field layout.
 No OpenTag3D website or OpenRFID implementation code is included in the application.
+
+QR Codes are generated with Segno 1.6.6 (https://github.com/heuer/segno/),
+Copyright (c) 2016 - 2025, Lars Heuer, BSD 3-Clause License; the full notice is
+shipped as data/licenses/Segno-LICENSE.txt. Base45 (RFC 9285) is implemented
+locally from the specification.

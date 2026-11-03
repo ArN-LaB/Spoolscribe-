@@ -5028,5 +5028,505 @@
     "en": "1 comparable colour",
     "es": "1 color comparable",
     "zh_CN": "1 种可比较颜色"
+  },
+  "Afficher le QR Code…": {
+    "en": "Show QR Code…",
+    "es": "Mostrar código QR…",
+    "zh_CN": "显示二维码…"
+  },
+  "Afficher le message NFC en QR Code": {
+    "en": "Show the NFC message as a QR Code",
+    "es": "Mostrar el mensaje NFC como código QR",
+    "zh_CN": "以二维码显示 NFC 消息"
+  },
+  "Afficher, enregistrer ou imprimer le message NFC sous forme de QR Code.": {
+    "en": "Show, save or print the NFC message as a QR Code.",
+    "es": "Mostrar, guardar o imprimir el mensaje NFC como código QR.",
+    "zh_CN": "以二维码形式显示、保存或打印 NFC 消息。"
+  },
+  "Agrandissez la fenêtre pour afficher le QR Code.": {
+    "en": "Enlarge the window to show the QR Code.",
+    "es": "Amplíe la ventana para mostrar el código QR.",
+    "zh_CN": "请放大窗口以显示二维码。"
+  },
+  "Aperçu de l’étiquette": {
+    "en": "Label preview",
+    "es": "Vista previa de la etiqueta",
+    "zh_CN": "标签预览"
+  },
+  "Aucun fichier enregistré.": {
+    "en": "No file saved.",
+    "es": "No se ha guardado ningún archivo.",
+    "zh_CN": "未保存任何文件。"
+  },
+  "Aucune imprimante n’est disponible dans le système. Les enregistrements PNG et SVG restent possibles.": {
+    "en": "No printer is available on this system. Saving as PNG or SVG is still possible.",
+    "es": "No hay ninguna impresora disponible en el sistema. Aún puede guardar en PNG o SVG.",
+    "zh_CN": "系统中没有可用的打印机。仍可保存为 PNG 或 SVG。"
+  },
+  "Autorise 3 points d’imprimante par module au lieu de 4. Vérifiez la lecture de l’étiquette imprimée.": {
+    "en": "Allows 3 printer dots per module instead of 4. Check that the printed label can be read.",
+    "es": "Permite 3 puntos de impresora por módulo en lugar de 4. Compruebe la lectura de la etiqueta impresa.",
+    "zh_CN": "允许每个模块 3 个打印点，而不是 4 个。请检查打印出的标签能否被读取。"
+  },
+  "Avec le format et la résolution acceptés par le pilote ({v0} ppp), le QR est trop dense. Rien n’a été envoyé.": {
+    "en": "With the format and resolution accepted by the driver ({v0} dpi), the QR is too dense. Nothing was sent.",
+    "es": "Con el formato y la resolución aceptados por el controlador ({v0} ppp), el QR es demasiado denso. No se ha enviado nada.",
+    "zh_CN": "按驱动程序接受的尺寸和分辨率（{v0} dpi），二维码过于密集。未发送任何内容。"
+  },
+  "Ce QR Code contient tout le message de l’étiquette NFC. La programmation d’une puce demandera la future application SpoolScribe Companion ; un lecteur QR ordinaire affiche seulement un texte de transfert.": {
+    "en": "This QR Code contains the whole NFC tag message. Programming a chip will require the future SpoolScribe Companion app; an ordinary QR reader only shows a transfer text.",
+    "es": "Este código QR contiene todo el mensaje de la etiqueta NFC. Programar un chip requerirá la futura aplicación SpoolScribe Companion; un lector QR normal solo muestra un texto de transferencia.",
+    "zh_CN": "此二维码包含 NFC 标签的完整消息。写入芯片需要未来的 SpoolScribe Companion 应用；普通二维码阅读器只会显示一段传输文本。"
+  },
+  "Contrôle de taille NDEF en échec.": {
+    "en": "NDEF size check failed.",
+    "es": "Falló la comprobación del tamaño NDEF.",
+    "zh_CN": "NDEF 大小检查失败。"
+  },
+  "Copie personnelle de {v0}": {
+    "en": "Personal copy of {v0}",
+    "es": "Copia personal de {v0}",
+    "zh_CN": "{v0} 的个人副本"
+  },
+  "Correction d’erreur": {
+    "en": "Error correction",
+    "es": "Corrección de errores",
+    "zh_CN": "纠错级别"
+  },
+  "Correction non appliquée : {v0}": {
+    "en": "Error correction not applied: {v0}",
+    "es": "Corrección no aplicada: {v0}",
+    "zh_CN": "未应用纠错级别：{v0}"
+  },
+  "Disponible lorsque l’export NFC est possible.": {
+    "en": "Available when the NFC export is possible.",
+    "es": "Disponible cuando la exportación NFC es posible.",
+    "zh_CN": "可进行 NFC 导出时可用。"
+  },
+  "Détails techniques": {
+    "en": "Technical details",
+    "es": "Detalles técnicos",
+    "zh_CN": "技术详情"
+  },
+  "Enregistrement impossible": {
+    "en": "Cannot save",
+    "es": "No se puede guardar",
+    "zh_CN": "无法保存"
+  },
+  "Enregistrer en PNG…": {
+    "en": "Save as PNG…",
+    "es": "Guardar en PNG…",
+    "zh_CN": "保存为 PNG…"
+  },
+  "Enregistrer en SVG…": {
+    "en": "Save as SVG…",
+    "es": "Guardar en SVG…",
+    "zh_CN": "保存为 SVG…"
+  },
+  "Enregistrer le QR Code": {
+    "en": "Save the QR Code",
+    "es": "Guardar el código QR",
+    "zh_CN": "保存二维码"
+  },
+  "Géométrie : {v0} ppp, zone imprimable {v1} × {v2} points ; {v3} modules × {v4} points = {v5} points.": {
+    "en": "Geometry: {v0} dpi, printable area {v1} × {v2} dots; {v3} modules × {v4} dots = {v5} dots.",
+    "es": "Geometría: {v0} ppp, zona imprimible {v1} × {v2} puntos; {v3} módulos × {v4} puntos = {v5} puntos.",
+    "zh_CN": "几何：{v0} dpi，可打印区域 {v1} × {v2} 点；{v3} 个模块 × {v4} 点 = {v5} 点。"
+  },
+  "Hauteur (mm)": {
+    "en": "Height (mm)",
+    "es": "Alto (mm)",
+    "zh_CN": "高度（mm）"
+  },
+  "Image PNG (*.png)": {
+    "en": "PNG image (*.png)",
+    "es": "Imagen PNG (*.png)",
+    "zh_CN": "PNG 图像 (*.png)"
+  },
+  "Image SVG (*.svg)": {
+    "en": "SVG image (*.svg)",
+    "es": "Imagen SVG (*.svg)",
+    "zh_CN": "SVG 图像 (*.svg)"
+  },
+  "Image enregistrée : {v0}": {
+    "en": "Image saved: {v0}",
+    "es": "Imagen guardada: {v0}",
+    "zh_CN": "图像已保存：{v0}"
+  },
+  "Impression annulée : rien n’a été envoyé.": {
+    "en": "Printing cancelled: nothing was sent.",
+    "es": "Impresión cancelada: no se ha enviado nada.",
+    "zh_CN": "已取消打印：未发送任何内容。"
+  },
+  "Impression non envoyée": {
+    "en": "Printing not sent",
+    "es": "Impresión no enviada",
+    "zh_CN": "未发送打印"
+  },
+  "Impression refusée pour ce support ; l’affichage et l’enregistrement restent disponibles.": {
+    "en": "Printing refused for this medium; viewing and saving remain available.",
+    "es": "Impresión rechazada para este soporte; la visualización y el guardado siguen disponibles.",
+    "zh_CN": "此介质拒绝打印；仍可显示和保存。"
+  },
+  "Imprimer le QR Code": {
+    "en": "Print the QR Code",
+    "es": "Imprimir el código QR",
+    "zh_CN": "打印二维码"
+  },
+  "Imprimer…": {
+    "en": "Print…",
+    "es": "Imprimir…",
+    "zh_CN": "打印…"
+  },
+  "La tâche d’impression n’a pas pu être terminée.": {
+    "en": "The print job could not be completed.",
+    "es": "No se pudo completar el trabajo de impresión.",
+    "zh_CN": "打印任务无法完成。"
+  },
+  "Largeur (mm)": {
+    "en": "Width (mm)",
+    "es": "Ancho (mm)",
+    "zh_CN": "宽度（mm）"
+  },
+  "Le QR Code est disponible lorsque l’export NFC est possible.": {
+    "en": "The QR Code is available when the NFC export is possible.",
+    "es": "El código QR está disponible cuando la exportación NFC es posible.",
+    "zh_CN": "可进行 NFC 导出时才可使用二维码。"
+  },
+  "Le fichier n’a pas été enregistré :\n{v0}": {
+    "en": "The file was not saved:\n{v0}",
+    "es": "No se ha guardado el archivo:\n{v0}",
+    "zh_CN": "文件未保存：\n{v0}"
+  },
+  "Le pilote n’a pas accepté le format {v0} × {v1} mm (format obtenu : {v2} × {v3} mm). Rien n’a été envoyé.": {
+    "en": "The driver did not accept the {v0} × {v1} mm format (format obtained: {v2} × {v3} mm). Nothing was sent.",
+    "es": "El controlador no aceptó el formato {v0} × {v1} mm (formato obtenido: {v2} × {v3} mm). No se ha enviado nada.",
+    "zh_CN": "驱动程序未接受 {v0} × {v1} mm 尺寸（实际尺寸：{v2} × {v3} mm）。未发送任何内容。"
+  },
+  "Le pilote n’a pas démarré la tâche d’impression. Rien n’a été envoyé.": {
+    "en": "The driver did not start the print job. Nothing was sent.",
+    "es": "El controlador no inició el trabajo de impresión. No se ha enviado nada.",
+    "zh_CN": "驱动程序未启动打印任务。未发送任何内容。"
+  },
+  "Le profil NFC essentiel, s’il convient à votre lecteur, donne un QR plus petit : choisissez-le dans la fenêtre principale puis rouvrez le QR.": {
+    "en": "The essential NFC profile, if it suits your reader, gives a smaller QR: choose it in the main window, then reopen the QR.",
+    "es": "El perfil NFC esencial, si conviene a su lector, da un QR más pequeño: elíjalo en la ventana principal y vuelva a abrir el QR.",
+    "zh_CN": "如果您的读取器适用，精简 NFC 配置会生成更小的二维码：请在主窗口中选择它，然后重新打开二维码。"
+  },
+  "L’imprimante choisie n’est pas utilisable. Rien n’a été envoyé.": {
+    "en": "The chosen printer cannot be used. Nothing was sent.",
+    "es": "La impresora elegida no se puede usar. No se ha enviado nada.",
+    "zh_CN": "所选打印机不可用。未发送任何内容。"
+  },
+  "M — standard": {
+    "en": "M — standard",
+    "es": "M — estándar",
+    "zh_CN": "M — 标准"
+  },
+  "Marges (mm)": {
+    "en": "Margins (mm)",
+    "es": "Márgenes (mm)",
+    "zh_CN": "边距（mm）"
+  },
+  "Message NDEF : {v0} octets ; SHA-256 {v1}.": {
+    "en": "NDEF message: {v0} bytes; SHA-256 {v1}.",
+    "es": "Mensaje NDEF: {v0} bytes; SHA-256 {v1}.",
+    "zh_CN": "NDEF 消息：{v0} 字节；SHA-256 {v1}。"
+  },
+  "Orientation": {
+    "en": "Orientation",
+    "es": "Orientación",
+    "zh_CN": "方向"
+  },
+  "Paysage": {
+    "en": "Landscape",
+    "es": "Horizontal",
+    "zh_CN": "横向"
+  },
+  "Petit format sur {v0} : QR de {v1} mm, 3 points par module. Essai de lecture requis avant usage.": {
+    "en": "Small format on {v0}: {v1} mm QR, 3 dots per module. A reading test is required before use.",
+    "es": "Formato pequeño en {v0}: QR de {v1} mm, 3 puntos por módulo. Se requiere una prueba de lectura antes de usarlo.",
+    "zh_CN": "{v0} 上的小尺寸：二维码 {v1} mm，每个模块 3 个点。使用前必须进行读取测试。"
+  },
+  "Petit format — essai de lecture requis": {
+    "en": "Small format — reading test required",
+    "es": "Formato pequeño — prueba de lectura necesaria",
+    "zh_CN": "小尺寸 — 需要读取测试"
+  },
+  "Portrait": {
+    "en": "Portrait",
+    "es": "Vertical",
+    "zh_CN": "纵向"
+  },
+  "Prêt pour un essai d’impression sur {v0} : QR de {v1} mm, {v2} points par module. Vérifiez la lecture de l’étiquette imprimée.": {
+    "en": "Ready for a test print on {v0}: {v1} mm QR, {v2} dots per module. Check that the printed label can be read.",
+    "es": "Listo para una impresión de prueba en {v0}: QR de {v1} mm, {v2} puntos por módulo. Compruebe la lectura de la etiqueta impresa.",
+    "zh_CN": "可在 {v0} 上试打印：二维码 {v1} mm，每个模块 {v2} 个点。请检查打印出的标签能否被读取。"
+  },
+  "Q — renforcée, QR plus grand": {
+    "en": "Q — stronger, larger QR",
+    "es": "Q — reforzada, QR más grande",
+    "zh_CN": "Q — 更强纠错，二维码更大"
+  },
+  "QR Code": {
+    "en": "QR Code",
+    "es": "Código QR",
+    "zh_CN": "二维码"
+  },
+  "QR Code SpoolScribe — {v0}": {
+    "en": "SpoolScribe QR Code — {v0}",
+    "es": "Código QR de SpoolScribe — {v0}",
+    "zh_CN": "SpoolScribe 二维码 — {v0}"
+  },
+  "QR Code de transfert": {
+    "en": "Transfer QR Code",
+    "es": "Código QR de transferencia",
+    "zh_CN": "传输二维码"
+  },
+  "QR Code indisponible : {v0}": {
+    "en": "QR Code unavailable: {v0}",
+    "es": "Código QR no disponible: {v0}",
+    "zh_CN": "二维码不可用：{v0}"
+  },
+  "QR Code — {v0}": {
+    "en": "QR Code — {v0}",
+    "es": "Código QR — {v0}",
+    "zh_CN": "二维码 — {v0}"
+  },
+  "QR de {v0} mm, zone blanche comprise.": {
+    "en": "{v0} mm QR, quiet zone included.",
+    "es": "QR de {v0} mm, zona blanca incluida.",
+    "zh_CN": "二维码 {v0} mm，含空白区。"
+  },
+  "QR trop dense pour {v0} : il faut au moins {v1} mm de largeur imprimable ({v2} mm en petit format, essai requis). Choisissez un support plus large ; l’affichage et l’enregistrement restent disponibles.": {
+    "en": "QR too dense for {v0}: at least {v1} mm of printable width is needed ({v2} mm in small format, test required). Choose a wider medium; viewing and saving remain available.",
+    "es": "QR demasiado denso para {v0}: se necesitan al menos {v1} mm de ancho imprimible ({v2} mm en formato pequeño, prueba necesaria). Elija un soporte más ancho; la visualización y el guardado siguen disponibles.",
+    "zh_CN": "二维码对 {v0} 过于密集：至少需要 {v1} mm 可打印宽度（小尺寸为 {v2} mm，需要测试）。请选择更宽的介质；仍可显示和保存。"
+  },
+  "QR version {v0}, correction {v1}, {v2} × {v2} modules + 4 modules blancs par côté.": {
+    "en": "QR version {v0}, error correction {v1}, {v2} × {v2} modules + 4 white modules on each side.",
+    "es": "QR versión {v0}, corrección {v1}, {v2} × {v2} módulos + 4 módulos blancos por lado.",
+    "zh_CN": "二维码版本 {v0}，纠错 {v1}，{v2} × {v2} 个模块，每边另加 4 个空白模块。"
+  },
+  "Réglage refusé : {v0}": {
+    "en": "Setting refused: {v0}",
+    "es": "Ajuste rechazado: {v0}",
+    "zh_CN": "设置被拒绝：{v0}"
+  },
+  "Réglages du pilote inutilisables : {v0}. Rien n’a été envoyé.": {
+    "en": "Driver settings unusable: {v0}. Nothing was sent.",
+    "es": "Ajustes del controlador inutilizables: {v0}. No se ha enviado nada.",
+    "zh_CN": "驱动程序设置不可用：{v0}。未发送任何内容。"
+  },
+  "Réglages du support non enregistrés ; ils restent appliqués dans cette fenêtre.": {
+    "en": "Medium settings not saved; they still apply in this window.",
+    "es": "Ajustes del soporte no guardados; siguen aplicándose en esta ventana.",
+    "zh_CN": "介质设置未保存；在此窗口中仍然有效。"
+  },
+  "Résolution (ppp)": {
+    "en": "Resolution (dpi)",
+    "es": "Resolución (ppp)",
+    "zh_CN": "分辨率（dpi）"
+  },
+  "SHA-256 détecte une altération accidentelle ; ce n’est pas une signature d’authenticité.": {
+    "en": "SHA-256 detects accidental changes; it is not an authenticity signature.",
+    "es": "SHA-256 detecta alteraciones accidentales; no es una firma de autenticidad.",
+    "zh_CN": "SHA-256 用于检测意外改动；它不是真实性签名。"
+  },
+  "Support": {
+    "en": "Medium",
+    "es": "Soporte",
+    "zh_CN": "介质"
+  },
+  "Support d’impression": {
+    "en": "Print medium",
+    "es": "Soporte de impresión",
+    "zh_CN": "打印介质"
+  },
+  "Support invalide : vérifiez ses dimensions et ses marges.": {
+    "en": "Invalid medium: check its dimensions and margins.",
+    "es": "Soporte no válido: compruebe sus dimensiones y márgenes.",
+    "zh_CN": "介质无效：请检查尺寸和边距。"
+  },
+  "Support personnalisé": {
+    "en": "Custom medium",
+    "es": "Soporte personalizado",
+    "zh_CN": "自定义介质"
+  },
+  "Texte de transfert : {v0} caractères (SSQR1, Base45, {v1}).": {
+    "en": "Transfer text: {v0} characters (SSQR1, Base45, {v1}).",
+    "es": "Texto de transferencia: {v0} caracteres (SSQR1, Base45, {v1}).",
+    "zh_CN": "传输文本：{v0} 个字符（SSQR1，Base45，{v1}）。"
+  },
+  "Trop dense pour l’impression prudente sur {v0}. Le petit format (3 points par module, essai requis) est possible dans les détails techniques ; sinon choisissez un support plus large.": {
+    "en": "Too dense for cautious printing on {v0}. The small format (3 dots per module, test required) is available in the technical details; otherwise choose a wider medium.",
+    "es": "Demasiado denso para una impresión prudente en {v0}. El formato pequeño (3 puntos por módulo, prueba necesaria) está disponible en los detalles técnicos; si no, elija un soporte más ancho.",
+    "zh_CN": "对于 {v0} 上的稳妥打印过于密集。可在技术详情中使用小尺寸（每个模块 3 个点，需要测试）；否则请选择更宽的介质。"
+  },
+  "Tâche transmise au système ({v0} ppp, QR de {v1} mm). Vérifiez l’étiquette imprimée et faites un essai de lecture.": {
+    "en": "Job handed to the system ({v0} dpi, {v1} mm QR). Check the printed label and test its reading.",
+    "es": "Trabajo transmitido al sistema ({v0} ppp, QR de {v1} mm). Compruebe la etiqueta impresa y haga una prueba de lectura.",
+    "zh_CN": "任务已交给系统（{v0} dpi，二维码 {v1} mm）。请检查打印出的标签并进行读取测试。"
+  },
+  "Version {v0}, correction {v1}, {v2} modules": {
+    "en": "Version {v0}, error correction {v1}, {v2} modules",
+    "es": "Versión {v0}, corrección {v1}, {v2} módulos",
+    "zh_CN": "版本 {v0}，纠错 {v1}，{v2} 个模块"
+  },
+  "Zoom": {
+    "en": "Zoom",
+    "es": "Zoom",
+    "zh_CN": "缩放"
+  },
+  "Zoom de l’aperçu": {
+    "en": "Preview zoom",
+    "es": "Zoom de la vista previa",
+    "zh_CN": "预览缩放"
+  },
+  "brut": {
+    "en": "raw",
+    "es": "sin comprimir",
+    "zh_CN": "未压缩"
+  },
+  "{v0} ; QR version {v1}-{v2} ; module {v3} mm ; NDEF SHA-256 {v4}": {
+    "en": "{v0}; QR version {v1}-{v2}; module {v3} mm; NDEF SHA-256 {v4}",
+    "es": "{v0}; QR versión {v1}-{v2}; módulo {v3} mm; NDEF SHA-256 {v4}",
+    "zh_CN": "{v0}；二维码版本 {v1}-{v2}；模块 {v3} mm；NDEF SHA-256 {v4}"
+  },
+  "{v0} · référence {v1} · données figées à l’ouverture ({v2})": {
+    "en": "{v0} · reference {v1} · data frozen when opened ({v2})",
+    "es": "{v0} · referencia {v1} · datos fijados al abrir ({v2})",
+    "zh_CN": "{v0} · 型号 {v1} · 数据于打开时固定（{v2}）"
+  },
+  "Échelle à l’écran indicative : l’écran n’est pas calibré.": {
+    "en": "On-screen scale is approximate: the screen is not calibrated.",
+    "es": "La escala en pantalla es orientativa: la pantalla no está calibrada.",
+    "zh_CN": "屏幕比例仅供参考：屏幕未经校准。"
+  },
+  "Étiquette NFC visée : {v0}, réserve {v1} octets.": {
+    "en": "Target NFC tag: {v0}, reserve {v1} bytes.",
+    "es": "Etiqueta NFC prevista: {v0}, reserva de {v1} bytes.",
+    "zh_CN": "目标 NFC 标签：{v0}，保留 {v1} 字节。"
+  },
+  "Étiquette QR": {
+    "en": "QR label",
+    "es": "Etiqueta QR",
+    "zh_CN": "二维码标签"
+  },
+  "Étiquette {v0} × {v1} mm ; zone imprimable {v2} × {v3} mm.": {
+    "en": "Label {v0} × {v1} mm; printable area {v2} × {v3} mm.",
+    "es": "Etiqueta de {v0} × {v1} mm; zona imprimible de {v2} × {v3} mm.",
+    "zh_CN": "标签 {v0} × {v1} mm；可打印区域 {v2} × {v3} mm。"
+  },
+  "NIIMBOT D101 · 25 × 50 mm": {
+    "en": "NIIMBOT D101 · 25 × 50 mm",
+    "es": "NIIMBOT D101 · 25 × 50 mm",
+    "zh_CN": "NIIMBOT D101 · 25 × 50 mm"
+  },
+  "Étiquette 50 × 50 mm": {
+    "en": "Label 50 × 50 mm",
+    "es": "Etiqueta de 50 × 50 mm",
+    "zh_CN": "标签 50 × 50 mm"
+  },
+  "Étiquette 62 × 100 mm": {
+    "en": "Label 62 × 100 mm",
+    "es": "Etiqueta de 62 × 100 mm",
+    "zh_CN": "标签 62 × 100 mm"
+  },
+  "Page A4": {
+    "en": "A4 page",
+    "es": "Página A4",
+    "zh_CN": "A4 页面"
+  },
+  "Les marges ne laissent aucune zone imprimable.": {
+    "en": "The margins leave no printable area.",
+    "es": "Los márgenes no dejan ninguna zona imprimible.",
+    "zh_CN": "边距没有留下可打印区域。"
+  },
+  "Message trop volumineux pour un seul QR Code à ce niveau de correction.": {
+    "en": "Message too large for a single QR Code at this error correction level.",
+    "es": "Mensaje demasiado grande para un solo código QR con este nivel de corrección.",
+    "zh_CN": "在此纠错级别下，消息过大，无法放入单个二维码。"
+  },
+  "Texte de transfert trop long pour un QR Code.": {
+    "en": "Transfer text too long for a QR Code.",
+    "es": "Texto de transferencia demasiado largo para un código QR.",
+    "zh_CN": "传输文本过长，无法放入二维码。"
+  },
+  "Contrôle du texte de transfert en échec.": {
+    "en": "Transfer text check failed.",
+    "es": "Falló la comprobación del texto de transferencia.",
+    "zh_CN": "传输文本检查失败。"
+  },
+  "Résolution du pilote hors bornes.": {
+    "en": "Driver resolution out of range.",
+    "es": "Resolución del controlador fuera de límites.",
+    "zh_CN": "驱动程序分辨率超出范围。"
+  },
+  "Zone d’impression du pilote vide.": {
+    "en": "The driver's printable area is empty.",
+    "es": "La zona de impresión del controlador está vacía.",
+    "zh_CN": "驱动程序的打印区域为空。"
+  },
+  "Réglages QR invalides.": {
+    "en": "Invalid QR settings.",
+    "es": "Ajustes QR no válidos.",
+    "zh_CN": "二维码设置无效。"
+  },
+  "Support QR inconnu.": {
+    "en": "Unknown QR medium.",
+    "es": "Soporte QR desconocido.",
+    "zh_CN": "未知的二维码介质。"
+  },
+  "Support personnalisé incomplet.": {
+    "en": "Incomplete custom medium.",
+    "es": "Soporte personalizado incompleto.",
+    "zh_CN": "自定义介质不完整。"
+  },
+  "Support personnalisé invalide.": {
+    "en": "Invalid custom medium.",
+    "es": "Soporte personalizado no válido.",
+    "zh_CN": "自定义介质无效。"
+  },
+  "Quatre marges attendues.": {
+    "en": "Four margins expected.",
+    "es": "Se esperan cuatro márgenes.",
+    "zh_CN": "需要四个边距。"
+  },
+  "Orientation : portrait ou paysage.": {
+    "en": "Orientation: portrait or landscape.",
+    "es": "Orientación: vertical u horizontal.",
+    "zh_CN": "方向：纵向或横向。"
+  },
+  "Taille de QR invalide.": {
+    "en": "Invalid QR size.",
+    "es": "Tamaño de QR no válido.",
+    "zh_CN": "二维码尺寸无效。"
+  },
+  "Fichier PDF écrit ({v0} ppp, QR de {v1} mm) : {v2}. Ce n’est pas une impression.": {
+    "en": "PDF file written ({v0} dpi, {v1} mm QR): {v2}. This is not a print.",
+    "es": "Archivo PDF escrito ({v0} ppp, QR de {v1} mm): {v2}. No es una impresión.",
+    "zh_CN": "已写入 PDF 文件（{v0} dpi，二维码 {v1} mm）：{v2}。这不是打印。"
+  },
+  "Transfert numérique : message NFC complet ({v0} octets), QR version {v1}-{v2}, sans serveur.": {
+    "en": "Digital transfer: complete NFC message ({v0} bytes), QR version {v1}-{v2}, no server.",
+    "es": "Transferencia digital: mensaje NFC completo ({v0} bytes), QR versión {v1}-{v2}, sin servidor.",
+    "zh_CN": "数字传输：完整 NFC 消息（{v0} 字节），二维码版本 {v1}-{v2}，无需服务器。"
+  },
+  "Remplacer le fichier ?": {
+    "en": "Replace the file?",
+    "es": "¿Reemplazar el archivo?",
+    "zh_CN": "替换文件？"
+  },
+  "Le fichier existe déjà :\n{v0}\nVoulez-vous le remplacer ?": {
+    "en": "The file already exists:\n{v0}\nDo you want to replace it?",
+    "es": "El archivo ya existe:\n{v0}\n¿Desea reemplazarlo?",
+    "zh_CN": "文件已存在：\n{v0}\n是否替换？"
+  },
+  "Enregistrement annulé : le fichier existant est conservé.": {
+    "en": "Saving cancelled: the existing file is kept.",
+    "es": "Guardado cancelado: se conserva el archivo existente.",
+    "zh_CN": "已取消保存：保留现有文件。"
   }
 }

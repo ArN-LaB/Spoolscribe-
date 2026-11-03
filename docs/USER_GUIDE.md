@@ -188,6 +188,39 @@ profils OpenSpool compact/complet et les réserves d’écriture restent dans le
 matériels avancés. SpoolScribe prépare le fichier ; une autre application écrit
 l’étiquette. L’archive JSON complète reste disponible dans le menu général.
 
+### QR Code (en développement)
+
+**Afficher le QR Code…**, sur sa propre ligne sous **Voir le JSON** et **Afficher le fichier**,
+n’est actif que si l’export NFC est possible : mêmes blocages (couleur, brouillon, configuration,
+capacité, valeurs OpenTag3D). Le QR contient **tout le message NFC** de l’export, sans
+serveur ni lien ; un lecteur QR ordinaire n’affiche qu’un texte de transfert. Écrire une
+puce depuis ce QR demandera la future application SpoolScribe Companion, qui n’existe pas
+encore.
+
+La fenêtre garde les données du moment de son ouverture (heure indiquée) : changer de
+fiche, de teinte ou d’étiquette dans la fenêtre principale ne modifie ni ce qui est
+enregistré ni ce qui est imprimé. Rouvrez le QR pour prendre en compte un changement.
+Le code reste entier, noir sur blanc, dans les deux thèmes et à toutes les tailles de fenêtre :
+la fenêtre ne descend pas sous la taille qui le garde lisible. **Aperçu de l’étiquette** montre
+le gabarit avec ses dimensions, à un zoom indicatif (l’écran n’est pas calibré).
+
+**Enregistrer en PNG…** et **Enregistrer en SVG…**, juste sous le code, utilisent le dialogue
+du système ; annuler n’écrit rien. Si l’extension ajoutée désigne un fichier existant, une
+confirmation est demandée. Le support, **Imprimer…** et les **Détails techniques** sont dans
+la partie basse, qui défile sans réduire le code. **Imprimer…** passe par le dialogue
+d’impression du système, relit le format et la résolution acceptés par le pilote, puis refuse
+d’envoyer une page trop dense.
+« Tâche transmise au système » ne prouve pas qu’une étiquette est sortie ni qu’elle se lit :
+faites un essai de lecture. Le **Support** (NIIMBOT D101 25 × 50 mm par défaut, étiquettes
+50 × 50, 62 × 100, A4 ou personnalisé) et, dans **Détails techniques**, la correction
+M/Q et le **Petit format — essai de lecture requis** sont mémorisés.
+
+Sur la D101 (24 mm imprimables, 203 ppp), les QR OpenSpool du catalogue sont trop grands :
+l’impression y est refusée, avec la largeur nécessaire. Choisissez une étiquette plus
+large, ou le profil NFC essentiel si votre lecteur l’accepte. SpoolScribe ne retire aucune
+donnée et ne change pas de format de lui-même. L’impression Bluetooth directe sur D101
+n’est pas prise en charge. [Format du QR et tailles](QR_FORMAT.md).
+
 ## Configurer l’imprimante
 
 Ouvrez **Mon matériel** depuis le menu général. La flèche ouvre une recherche par

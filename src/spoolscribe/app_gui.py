@@ -763,9 +763,10 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.last_export_label=WrapLabel();self.last_export_label.setObjectName('exportState');self.footer_layout.addWidget(self.last_export_label)
         self.footer_layout.addWidget(self.btn_generate)
         actions=QHBoxLayout();actions.setContentsMargins(0,0,0,0);actions.setSpacing(8)
-        self.btn_inspect.setFixedHeight(32);self.btn_open_out.setFixedHeight(32)
+        self.btn_inspect.setFixedHeight(32);self.btn_open_out.setFixedHeight(32);self.btn_qr.setFixedHeight(32)
         actions.addWidget(self.btn_inspect,1);actions.addWidget(self.btn_open_out,1)
-        self.footer_layout.addLayout(actions);detail_layout.addWidget(self.detail_footer)
+        # Own row: three labels do not fit side by side in every language and width.
+        self.footer_layout.addLayout(actions);self.footer_layout.addWidget(self.btn_qr);detail_layout.addWidget(self.detail_footer)
         detail_scroll.viewportChanged.connect(self._align_detail_footer)
         self.stack.addWidget(detail_panel)
 
@@ -996,6 +997,12 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.btn_open_out.setObjectName("secondary")
         self.btn_open_out.setCursor(Qt.PointingHandCursor)
         self.btn_open_out.clicked.connect(self._open_output)
+        self.btn_qr = QPushButton(tr('Afficher le QR Code…'))
+        self.btn_qr.setObjectName("secondary")
+        self.btn_qr.setCursor(Qt.PointingHandCursor)
+        self.btn_qr.setAccessibleName(tr('Afficher le message NFC en QR Code'))
+        self.btn_qr.setEnabled(False)
+        self.btn_qr.clicked.connect(self._open_qr)
 
 
         # Zone d'inspection JSON (repliée par défaut, hauteur fixe pour
