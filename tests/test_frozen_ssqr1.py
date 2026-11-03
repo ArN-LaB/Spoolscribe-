@@ -1,6 +1,8 @@
 """Protect the independent CI oracle; its scan libraries stay outside the app."""
 import importlib.util
 import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from tests.support import ROOT
@@ -12,6 +14,14 @@ spec.loader.exec_module(oracle)
 
 
 class FrozenSsqr1OracleTests(unittest.TestCase):
+    def test_version_metadata_does_not_execute_or_import_application(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "src/spoolscribe/core.py"
+            source.parent.mkdir(parents=True)
+            source.write_text("raise RuntimeError('application must not execute')\nAPP_VERSION = '0.5.0'\n", encoding="utf-8")
+            self.assertEqual(oracle.source_version(root), "0.5.0")
+
     def test_normative_vectors_and_both_codecs(self):
         vectors = json.loads((ROOT / "tests/fixtures/qr/ssqr1_vectors.json").read_text(encoding="utf-8"))["vectors"]
         for entry in vectors.values():

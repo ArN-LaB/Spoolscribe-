@@ -1,5 +1,6 @@
 """Scan the native binary's QR outputs with a separate, CI-only decoder."""
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -11,6 +12,13 @@ import zlib
 
 
 ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:"
+
+
+def source_version(root):
+    """Read version metadata without importing application code or its scripts package."""
+    tree = ast.parse((root / "src/spoolscribe/core.py").read_text(encoding="utf-8"))
+    return next(ast.literal_eval(node.value) for node in tree.body if isinstance(node, ast.Assign)
+                and any(isinstance(target, ast.Name) and target.id == "APP_VERSION" for target in node.targets))
 
 
 def decode_transfer(text):
@@ -69,8 +77,7 @@ def verify_outputs(folder, root):
     assert result["frozen"] and result["offline"] and result["fixtures_absent"]
     assert all(result["oracles_absent"].values())
     assert result["license_sha256"] == hashlib.sha256((root / "data/licenses/Segno-LICENSE.txt").read_bytes()).hexdigest()
-    from spoolscribe.core import APP_VERSION
-    assert result["version"] == APP_VERSION
+    assert result["version"] == source_version(root)
     vectors = json.loads((root / "tests/fixtures/qr/ssqr1_vectors.json").read_text(encoding="utf-8"))["vectors"]
     assert len(result["rows"]) == 24
     scans = []
