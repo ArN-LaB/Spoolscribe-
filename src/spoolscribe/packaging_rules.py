@@ -8,7 +8,7 @@ FIXED_DATA = {
     'data/brands/manifest.json','data/brands/logos/rosa3d.png',
     'data/printers.json','data/printers/photos/manifest.json',
     'data/licenses/OFD-LICENSE.txt','data/licenses/SpoolmanDB-LICENSE.txt',
-    'data/licenses/TheFilamentDB-ATTRIBUTION.txt','data/translations/messages.json',
+    'data/licenses/TheFilamentDB-ATTRIBUTION.txt','data/licenses/Segno-LICENSE.txt','data/translations/messages.json',
 }
 
 
@@ -27,7 +27,7 @@ def include_resource(name):
         return len(path.parts)==4 and (path.suffix in {'.png','.webp'} or path.name=='manifest.json')
     return name in {'data/brands/manifest.json','data/licenses/OFD-LICENSE.txt',
         'data/licenses/SpoolmanDB-LICENSE.txt','data/licenses/TheFilamentDB-ATTRIBUTION.txt',
-        'data/printers.json','data/translations/messages.json'}
+        'data/licenses/Segno-LICENSE.txt','data/printers.json','data/translations/messages.json'}
 
 
 def resources(root):

@@ -145,6 +145,16 @@ diameter/density as positive numbers, HEX as six uppercase characters.
 
 </details>
 
+## QR Code of the NFC message (in development)
+
+**Show QR Code…**, below **Show JSON** and **Show file**, displays the complete NDEF message of
+the current export as one QR Code, with no server or link. It follows the export
+state exactly and can be saved as PNG/SVG or printed through the system dialog.
+An ordinary QR reader only shows a transfer text; programming a tag from it is
+planned for a future companion app that does not exist yet. Dense codes are
+refused on narrow labels such as the 24 mm printable width of the NIIMBOT D101
+rather than shrunk. [QR transfer format](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/QR_FORMAT.md).
+
 ## Write, read back, check
 
 1. In **My hardware**, choose the printer/reader and its firmware, the tag

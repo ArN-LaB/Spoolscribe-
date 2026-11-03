@@ -105,6 +105,7 @@ The state filter accepts `all`, `ready`, `incomplete` (not ready) and
 | `recent_brands` | Legacy browsing history, never interpreted as favorites |
 | `favorite_brands`, `favorite_filaments` | Explicit persistent favorites, included in settings export/import |
 | `auto_update` | Legacy flag, accepted but unused; the cadence applies |
+| `qr_label` | QR paper settings only: `preset` (`d101-25x50`, `label-50x50`, `label-62x100`, `a4`, `custom`), optional `custom` profile (`width_mm`, `height_mm`, `margins_mm`, `dpi`, `orientation`), `small_format`, `error` (`M`/`Q`); validated by `qr_layout.validate_settings`, see [QR format](QR_FORMAT.md) |
 
 Settings exported from the application contain everything except the consent
 keys; importing never grants consent.

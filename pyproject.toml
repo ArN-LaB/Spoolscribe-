@@ -9,6 +9,7 @@ authors = [{ name = "ArN-LaB" }]
 keywords = ["3d-printing", "filament", "nfc", "rfid", "openspool", "snapmaker", "polymaker"]
 dependencies = [
     "PySide6>=6.6,<6.12",
+    "segno>=1.6.6,<1.7",
 ]
 
 [project.optional-dependencies]
