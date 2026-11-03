@@ -1,6 +1,6 @@
-# Documentation SpoolScribe v0.4.0 · Pre-release
+# Documentation SpoolScribe v0.5.0 · Pre-release
 
-**[Télécharger la préversion v0.4.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0)** · **[Version stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)** · [Présentation](../README.md) · [Wiki](wiki/Home.md)
+**[Télécharger la préversion v0.5.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.5.0)** · **[Version stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)** · [Présentation](../README.md) · [Wiki](wiki/Home.md)
 
 ## Utiliser l’application
 
@@ -21,7 +21,7 @@
 - [Ressources de l’application](../data/README.md) · [Jeux de référence](../tests/fixtures/README.md).
 - [Langues de l’interface](../data/translations/README.md).
 - [Captures et logo animé : provenance et régénération](images/README.md).
-- [Validation de v0.3.5 et publication](validation/v0.3.5.md).
+- [Validation de la préversion v0.5.0](validation/v0.5.0.md) · [Stable v0.3.5](validation/v0.3.5.md).
 - [Installation personnelle macOS](LOCAL_MACOS_INSTALL.md).
 - [Roadmap](ROADMAP.md) · [Changelog](../CHANGELOG.md) · [Contribuer](../.github/CONTRIBUTING.md).
 - [Confidentialité](PRIVACY.md) · [Marques](TRADEMARKS.md) · [Visuels des imprimantes](PRINTER_VISUALS.md) · [Licence](../LICENSE) · [Attributions](../NOTICE).
@@ -35,9 +35,9 @@ ils ne décrivent pas la version actuelle.
 Les tests automatisés et les sondes des exécutables ne remplacent pas une recette
 visuelle humaine ni une écriture/relecture NFC sur une imprimante réelle.
 
-## Préversion v0.4.0
+## Préversion v0.5.0
 
-[Reader setup guide](PRINTER-CONFIGURATIONS.md) · [OpenTag3D export guide](OPENTAG3D.md) · [Validation status](validation/v0.4.0.md).
+[Reader setup guide](PRINTER-CONFIGURATIONS.md) · [OpenTag3D export guide](OPENTAG3D.md) · [Validation status](validation/v0.5.0.md).
 La préversion propose trois ZIP et leurs SHA-256. La stable reste v0.3.5.
 Les tests logiciels ne certifient pas toutes les combinaisons imprimante/lecteur ;
 [retours de compatibilité bienvenus](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml).

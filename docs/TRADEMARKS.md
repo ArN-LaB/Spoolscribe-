@@ -60,7 +60,10 @@ and the explicit fallback in the packaging list.
 
 ## Printer product images
 
-Reviewed manufacturer product images identify the illustrated machine and are
-bundled with their original bytes and source hashes. They retain their owners'
+Reviewed product images from manufacturers, their software repositories and
+identified resellers identify the illustrated machine. They are bundled with
+their original bytes and source hashes; transparent margins are fitted only at
+display time. Example captions name the actual model when a choice covers a family.
+They retain their owners'
 rights and are not relicensed under the MIT licence of SpoolScribe. See
 [PRINTER_VISUALS.md](PRINTER_VISUALS.md) and the photo manifest for provenance.

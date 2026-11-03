@@ -57,3 +57,12 @@ the v0.2.x/v0.3.0 history and screen-feedback campaigns.
 La passe v0.4.0 précise également les [installations de lecture](PRINTER-CONFIGURATIONS.md) :
 connexion, logiciel nécessaire et effet réel, sans assimiler inventaire externe et
 reconnaissance par le firmware. La validation matérielle reste à effectuer.
+
+
+## v0.5.0 — UX and colour search, pre-release
+
+- [New pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.5.0): colour proximity with explicit inclusive limits, protected in-card editing, compact provenance and guided export.
+- Unified filters, visual printer choices, documented photos and content-aware dialogs.
+- [Validation](validation/v0.5.0.md) separates software checks from real printer/RFID acceptance.
+- v0.3.5 stays stable. Broader physical feedback is needed before promoting this development line.
+- Autonomous QR and any Spoolman bridge remain separate work; neither is included in this release.

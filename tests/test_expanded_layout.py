@@ -26,18 +26,16 @@ class ExpandedLayoutTests(unittest.TestCase):
         with patch.object(QDialog,'exec',inspect):w._database_details()
 
     def test_physical_form_aligns_all_fields_and_uses_french_actions(self):
-        from PySide6.QtWidgets import QDialog,QLineEdit,QDialogButtonBox
+        from PySide6.QtWidgets import QLineEdit
         from PySide6.QtCore import QPoint
-        w=self.window;w._show_detail('PB05001')
-        def inspect(dialog):
-            dialog.show();w.app.processEvents();fields=dialog.findChildren(QLineEdit)
-            self.assertEqual(len({f.mapTo(dialog,QPoint()).x() for f in fields}),1)
-            self.assertEqual(len({f.width() for f in fields}),1)
-            buttons=dialog.findChild(QDialogButtonBox)
-            self.assertEqual(buttons.button(QDialogButtonBox.Save).text(),'Enregistrer')
-            self.assertEqual(buttons.button(QDialogButtonBox.Cancel).text(),'Annuler')
-            return QDialog.Rejected
-        with patch.object(QDialog,'exec',inspect):w._edit_physical()
+        w=self.window;w.show();w._show_detail('PB05001')
+        # In-card draft (former dialog): one aligned column of fields, explicit actions.
+        w._edit_physical();w.app.processEvents();fields=w.draft_editor.findChildren(QLineEdit)
+        self.assertEqual(len(fields),8)
+        self.assertEqual(len({f.mapTo(w.draft_editor,QPoint()).x() for f in fields}),1)
+        self.assertEqual(len({f.width() for f in fields}),1)
+        self.assertEqual(w.draft_save.text(),'Enregistrer une copie')
+        self.assertEqual(w.draft_cancel.text(),'Annuler')
 
     def test_favorite_filters_span_the_same_edges_as_manufacturer_search(self):
         from PySide6.QtCore import QPoint

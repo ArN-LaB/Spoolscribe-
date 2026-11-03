@@ -1,6 +1,6 @@
 # README screenshots
 
-Generated on 1 November 2026 from the actual SpoolScribe v0.3.5 source interface
+Generated on 3 November 2026 from the actual SpoolScribe v0.5.0 source interface
 (Python 3.12 / PySide6 6.11.3, Qt offscreen, 1480 × 920 logical pixels).
 
 - `catalogue.png`: list view, Polymaker PLA, selected Panchroma Basic PLA Aqua Blue.

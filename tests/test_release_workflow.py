@@ -83,3 +83,10 @@ class ReleasePublicationTests(unittest.TestCase):
 
     def test_wrong_published_channel_is_reported_as_failure(self):
         self.assertEqual(len(self.execute_publication('true', wrong_channel=True)), 1)
+
+    def test_v050_explicitly_uses_pre_release_channel(self):
+        workflow=(ROOT/'.github/workflows/build.yml').read_text(encoding='utf-8')
+        channel=next(line for line in workflow.splitlines() if 'RELEASE_PRERELEASE:' in line)
+        self.assertIn("github.ref_name == 'v0.5.0'",channel)
+        self.assertIn("github.ref_name == 'v0.4.0'",channel)
+        self.assertIn("contains(github.ref_name, '-')",channel)

@@ -2,12 +2,12 @@
   <img src="docs/images/spoolscribe-animated.gif" alt="SpoolScribe — animated spool logo" width="128" height="128">
 </p>
 
-<h1 align="center">SpoolScribe <sub>v0.4.0 · Pre-release</sub></h1>
+<h1 align="center">SpoolScribe <sub>v0.5.0 · Pre-release</sub></h1>
 <p align="center"><strong>Find your filament. Prepare its NFC label.</strong></p>
 <p align="center">A filament catalogue for your desktop, with colour previews, OpenSpool and OpenTag3D exports.<br>Windows · macOS · Linux — free, open source, no account.</p>
 
 <p align="center">
-  <a href="https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0"><img src="https://img.shields.io/badge/v0.4.0-Pre--release-d4a017" alt="v0.4.0 pre-release"></a>
+  <a href="https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.5.0"><img src="https://img.shields.io/badge/v0.5.0-Pre--release-d4a017" alt="v0.5.0 pre-release"></a>
   <a href="https://github.com/ArN-LaB/Spoolscribe-/releases/latest"><img src="https://img.shields.io/github/v/release/ArN-LaB/Spoolscribe-?color=008899&amp;label=stable" alt="Latest stable release"></a>
   <a href="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml"><img src="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml/badge.svg?branch=main" alt="Build and tests"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT licence"></a>
@@ -15,16 +15,17 @@
 <p align="center"><a href="#download">Download</a> · <a href="#your-first-tag">Your first tag</a> · <a href="#will-it-work-with-my-printer">Compatibility</a> · <a href="docs/README.md">Documentation</a></p>
 
 [![SpoolScribe catalogue: searchable manufacturers, filament colours and NFC export](docs/images/catalogue.png)](docs/images/catalogue.png)
-<p align="center"><sub>Actual v0.3.5 interface, shown in English with public catalogue fixtures and temporary offline settings. Available in English, French, Spanish and Simplified Chinese.</sub></p>
+<p align="center"><sub>Actual v0.5.0 interface, shown in English with public catalogue fixtures and temporary offline settings. Available in English, French, Spanish and Simplified Chinese.</sub></p>
 
 **Current stable: [v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).**
 
-**Try [v0.4.0 — Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0):**
-OpenTag3D 2.004 alongside OpenSpool, with guided reader choices and NFC Tools profiles.
+**Try [v0.5.0 — Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.5.0):**
+Colour proximity search, in-card personal editing and a clearer hardware/export journey,
+with OpenTag3D 2.004 alongside OpenSpool and NFC Tools profiles.
 The downloads below are the pre-release builds; v0.3.5 remains the latest stable release.
 [OpenTag3D guide](docs/OPENTAG3D.md) · [Printer and reader setups](docs/PRINTER-CONFIGURATIONS.md).
 
-**Help verify real-world setups.** The v0.4.0 printer list describes documented
+**Help verify real-world setups.** The v0.5.0 printer list describes documented
 configurations, not a hardware-tested certification. Automated tests check the
 software and exported data; testing every printer, reader and firmware combination
 would require access to all of that equipment. Physical NFC writing and printer
@@ -42,18 +43,18 @@ Your printer or external reader must support the selected format and configurati
 
 ## Download
 
-**v0.4.0 · Pre-release** — for testing the new formats and reader setup.
+**v0.5.0 · Pre-release** — for testing the new colour search and guided editing/export experience.
 Prefer a stable build? [Download v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
 
 No Python installation needed. Download, unzip and open the app for your system.
 
 | System | Download | Checksum |
 |---|---|---|
-| **Windows 10 / 11 · x64** | [SpoolScribe.exe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-windows.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-windows.zip.sha256) |
-| **macOS · Apple Silicon** | [SpoolScribe.app — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-macos.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-macos.zip.sha256) |
-| **Linux · x64** | [SpoolScribe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-linux.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-linux.zip.sha256) |
+| **Windows 10 / 11 · x64** | [SpoolScribe.exe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-windows.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-windows.zip.sha256) |
+| **macOS · Apple Silicon** | [SpoolScribe.app — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-macos.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-macos.zip.sha256) |
+| **Linux · x64** | [SpoolScribe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-linux.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-linux.zip.sha256) |
 
-[Pre-release notes](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0) ·
+[Pre-release notes](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.5.0) ·
 [First-launch help](docs/wiki/Getting-Started.md) · [Run from source](docs/DEVELOPMENT.md)
 
 <details>
@@ -134,10 +135,10 @@ The app uses Python and PySide6, with a shared core for the desktop and command-
 interfaces. See [development and CLI use](docs/DEVELOPMENT.md) and
 [how to contribute](.github/CONTRIBUTING.md).
 
-The suite contains **323 offline tests**, including five publication safety checks.
+The suite contains **428 offline tests**, including five publication safety checks.
 CI runs Linux/Python 3.10 and 3.12, Windows/Python 3.12 and macOS/Python 3.12 before
 three native builds and their frozen-app, resource, TLS and export checks. See the
-[validation record](docs/validation/v0.4.0.md) and its release workflow links.
+[validation record](docs/validation/v0.5.0.md) and its release workflow links.
 These automated checks do not replace human desktop acceptance or physical NFC read-back.
 
 </details>

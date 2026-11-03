@@ -49,8 +49,9 @@ manufacturer's, then the community's) is shown and the card says so.
 
 - **Missing colour**: the GUI and the CLI ask for an explicit representative HEX
   at export time; cancelling the colour cancels the export.
-- **Missing temperatures / density / diameter**: use **Modify…** in the
-  card; save a personal copy with an editable `@suffix`; the source stays intact.
+- **Missing temperatures / density / diameter**: the export button becomes
+  **Correct the properties…** and opens the in-card draft; save a personal copy with an
+  editable `@suffix`; the source stays intact.
 - **“Needs review”**: the source published a value that contradicts itself
   (for example a black HEX for a "White" filament, or a density of 7 g/cm³).
   Open the card, correct the value explicitly, and the record becomes exportable.

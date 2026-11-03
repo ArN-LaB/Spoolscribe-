@@ -8,8 +8,67 @@ from PySide6.QtWidgets import (QLabel, QWidget, QFrame, QHBoxLayout, QVBoxLayout
     QDialogButtonBox, QScrollArea, QStyleOptionComboBox)
 
 from .i18n import tr
+from .colour_distance import display_delta
+from .ui_surfaces import fit_dialog
+from .ui_reading import PrinterCategoryDialog, PrinterCategoryPicker
 
 CONTROL_HEIGHT = 32
+
+
+def printer_visual(info, size=80, dark=False):
+    """Use the documented photo, otherwise an explicitly generic device pictogram."""
+    if info.get('photo'):
+        photo = _product_photo(info['photo'], tuple(info.get('photo_bounds', ())), size)
+        if not photo.isNull():return photo
+    return _generic_printer_visual(info.get('visual_kind', 'enclosed'), size, dark)
+
+
+@lru_cache(maxsize=64)
+def _product_photo(path, bounds, size):
+    """Fit the visible object in the UI; original files and colours stay untouched."""
+    photo = QPixmap(path)
+    if photo.isNull():return photo
+    if len(bounds)==4:
+        left,top,right,bottom=bounds
+        if 0<=left<right<=photo.width() and 0<=top<bottom<=photo.height():
+            photo=photo.copy(left,top,right-left,bottom-top)
+    photo=photo.scaled(size*2,size*2,Qt.KeepAspectRatio,Qt.SmoothTransformation)
+    photo.setDevicePixelRatio(2)
+    return photo
+
+
+@lru_cache(maxsize=64)
+def _generic_printer_visual(kind, size, dark):
+    """Vector artwork, not a manufacturer logo or a model-specific photograph."""
+    image = QPixmap(size*2, size*2); image.setDevicePixelRatio(2); image.fill(Qt.transparent)
+    painter = QPainter(image); painter.setRenderHint(QPainter.Antialiasing)
+    painter.scale(size/80, size/80)
+    ink = QColor('#acc9dc' if dark else '#48677a')
+    accent = QColor('#58c3ce' if dark else '#168a99')
+    painter.setPen(QPen(ink, 2.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+    painter.setBrush(QColor('#2b3943' if dark else '#eaf0f3'))
+    if kind == 'reader':
+        painter.drawRoundedRect(QRectF(16, 15, 46, 52), 7, 7)
+        painter.setBrush(Qt.NoBrush); painter.setPen(QPen(accent, 2.5, Qt.SolidLine, Qt.RoundCap))
+        for inset in (0, 8, 16):
+            painter.drawArc(QRectF(27-inset/2, 30-inset/2, 14+inset, 14+inset), -55*16, 110*16)
+        painter.drawLine(30, 58, 48, 58)
+    else:
+        if kind == 'enclosed':
+            painter.drawRoundedRect(QRectF(10, 10, 60, 60), 5, 5)
+            painter.setBrush(Qt.NoBrush); painter.drawRoundedRect(QRectF(17, 20, 46, 42), 2, 2)
+            painter.drawLine(53, 15, 61, 15)
+        else:
+            painter.drawRoundedRect(QRectF(9, 63, 62, 8), 2, 2)
+            painter.drawLine(17, 63, 17, 14); painter.drawLine(63, 63, 63, 14)
+            painter.drawLine(17, 14, 63, 14)
+        painter.drawLine(21, 29, 59, 29); painter.drawLine(40, 29, 40, 40)
+        painter.setPen(QPen(accent, 2.5, Qt.SolidLine, Qt.RoundCap))
+        painter.drawLine(36, 40, 44, 40); painter.drawLine(40, 40, 40, 44)
+        painter.setBrush(accent); painter.drawRoundedRect(QRectF(30, 49, 20, 10), 2, 2)
+        painter.setPen(QPen(ink, 2.5, Qt.SolidLine, Qt.RoundCap)); painter.drawLine(23, 61, 57, 61)
+    painter.end()
+    return image
 
 
 class ChoiceButtons(QWidget):
@@ -36,7 +95,7 @@ class ChoiceButtons(QWidget):
             button.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
             button.setAccessibleName(label);button.clicked.connect(lambda _checked=False,value=key:self.choiceChanged.emit(value))
             self.group.addButton(button);self.buttons[key]=button
-            self.grid.addWidget(button,i//2,i%2,1,2 if len(choices)==1 else 1)
+            self.grid.addWidget(button,i//2,i%2,1,2 if i==len(choices)-1 and i%2==0 else 1)
     def setChoice(self,key):
         self.group.setExclusive(False)
         for value,button in self.buttons.items():button.setChecked(value==key)
@@ -138,13 +197,9 @@ class PrinterChoiceDelegate(QStyledItemDelegate):
         ink=option.palette.text().color();dark=ink.lightness()>128;accent=option.palette.highlight().color()
         base=QColor('#252d34' if dark else '#ffffff');border=QColor('#434c55' if dark else '#d1d9df')
         painter.setPen(QPen(accent if selected else border,2 if selected else 1));painter.setBrush(base);painter.drawRoundedRect(rect,10,10)
-        photo=QRectF(rect.left()+12,rect.top()+12,64,64);pixmap=QPixmap(info.get('photo',''))
-        if not pixmap.isNull():
-            size=pixmap.size().scaled(128,128,Qt.KeepAspectRatio);target=QRectF(photo.center().x()-size.width()/4,photo.center().y()-size.height()/4,size.width()/2,size.height()/2)
-            painter.drawPixmap(target,pixmap,QRectF(pixmap.rect()))
-        else:
-            painter.setPen(Qt.NoPen);painter.setBrush(option.palette.alternateBase());painter.drawRoundedRect(photo,10,10)
-            painter.setPen(accent);badge=QFont(option.font);badge.setPointSizeF(badge.pointSizeF()+3);painter.setFont(badge);painter.drawText(photo,Qt.AlignCenter,info['title'].split()[0][:2].upper())
+        photo=QRectF(rect.left()+12,rect.top()+12,64,64);pixmap=printer_visual(info,64,dark)
+        size=pixmap.size().scaled(128,128,Qt.KeepAspectRatio);target=QRectF(photo.center().x()-size.width()/4,photo.center().y()-size.height()/4,size.width()/2,size.height()/2)
+        painter.drawPixmap(target,pixmap,QRectF(pixmap.rect()))
         x=rect.left()+90;y=rect.top()+12
         painter.setFont(name_font);painter.setPen(ink);painter.drawText(QRectF(x,y,text_width,name_height),Qt.TextWordWrap|Qt.AlignTop,info['title'])
         painter.setFont(option.font);painter.setPen(option.palette.text().color());painter.drawText(QRectF(x,y+name_height+6,text_width,detail_height),Qt.TextWordWrap|Qt.AlignTop,info['description'])
@@ -161,7 +216,7 @@ class PrinterBrowser(QDialog):
         body=QVBoxLayout(self);body.setContentsMargins(16,16,16,16);body.setSpacing(12)
         title=QLabel(tr('Votre imprimante'));font=title.font();font.setPointSizeF(font.pointSizeF()+3);font.setBold(True);title.setFont(font);body.addWidget(title)
         self.search=QLineEdit();self.search.setPlaceholderText(tr('Marque ou modèle : Snapmaker, Prusa, X1…'));self.search.setClearButtonEnabled(True);self.search.setFixedHeight(CONTROL_HEIGHT);body.addWidget(self.search)
-        self.category=QComboBox();self.category.setAccessibleName(tr('Catégorie de compatibilité'));self.category.setFixedHeight(CONTROL_HEIGHT)
+        self.category=PrinterCategoryPicker();self.category.setAccessibleName(tr('Catégorie de compatibilité'));self.category.setFixedHeight(CONTROL_HEIGHT)
         for label,key in ((tr('Toutes les imprimantes et lecteurs'),'all'),(tr('Au moins une configuration exportable'),'compatible'),
                           (tr('Lecteur USB ajouté'),'usb'),(tr('Lecteur réseau ajouté'),'network'),
                           (tr('Export possible · firmware constructeur'),'stock'),(tr('Export possible · firmware modifié'),'modified'),
@@ -173,6 +228,8 @@ class PrinterBrowser(QDialog):
         for i in range(combo.count()):
             profile=printer_profiles.PROFILES[combo.itemData(i)];info=presentation(profile)
             item=QListWidgetItem(info['title']);item.setData(Qt.UserRole,i)
+            item.setToolTip(info.get('caption', info['title']))
+            item.setData(Qt.AccessibleDescriptionRole, info.get('caption', info['description']))
             searchable=' '.join(' '.join(str(f.get(key,''))+' '+tr(f.get(key,'')) for key in ('label','reader','notes')) for f in profile['firmwares'])
             item.setData(Qt.UserRole+1,(combo.itemText(i)+' '+info['title']+' '+searchable).casefold())
             item.setData(Qt.UserRole+2,printer_profiles.categories(combo.itemData(i)));self.entries[i]=info;self.list.addItem(item)
@@ -186,7 +243,21 @@ class PrinterBrowser(QDialog):
         self.search.textChanged.connect(self._filter)
         self._accept_button=buttons.button(QDialogButtonBox.Ok);self.search.setFocus()
         self.category.currentIndexChanged.connect(lambda *_:self._filter(self.search.text()))
+        self.category.counts_provider=self._category_counts
         self.list.viewport().installEventFilter(self)
+    def showEvent(self,event):
+        super().showEvent(event);fit_dialog(self,preferred_width=720,preferred_height=min(760,200+self.list.count()*92))
+
+    def _category_counts(self):
+        counts={key:0 for key in ('all','compatible','usb','network','stock','modified','rfid','none')}
+        query=self.search.text().casefold().strip()
+        for i in range(self.list.count()):
+            item=self.list.item(i)
+            if query not in item.data(Qt.UserRole+1):continue
+            counts['all']+=1
+            for key in item.data(Qt.UserRole+2):
+                if key in counts:counts[key]+=1
+        return counts
     def eventFilter(self,watched,event):
         if watched is self.list.viewport() and event.type()==QEvent.Resize:
             self.list.doItemsLayout()
@@ -258,7 +329,7 @@ def paint_spool(painter, bounds, hex_color=None, dark=False):
     scale=min(bounds.width()/170,bounds.height()/160)
     painter.translate(bounds.center().x()-85*scale,bounds.center().y()-80*scale);painter.scale(scale,scale)
     color=QColor('#'+hex_color) if hex_color else QColor('#8b98a2')
-    theta=math.radians(30);tilt=math.radians(-10)
+    theta=math.radians(38);tilt=math.radians(-10)
     def point(radius,angle,z=0):
         a=math.radians(angle);x=math.cos(theta)*radius*math.cos(a)+math.sin(theta)*z;y=radius*math.sin(a)
         return (65+math.cos(tilt)*x-math.sin(tilt)*y,82+math.sin(tilt)*x+math.cos(tilt)*y)
@@ -270,12 +341,12 @@ def paint_spool(painter, bounds, hex_color=None, dark=False):
         result.closeSubpath();return result
     painter.setPen(Qt.NoPen);painter.setBrush(QColor(0,0,0,22));painter.drawEllipse(QRectF(19,136,127,9))
     plastic=QLinearGradient(20,25,130,130);plastic.setColorAt(0,QColor('#95a6af' if dark else '#6b7c87'));plastic.setColorAt(.45,QColor('#566670' if dark else '#364751'));plastic.setColorAt(1,QColor('#26333c'))
-    painter.setBrush(plastic);painter.setPen(QPen(QColor('#91a0aa'),.7));painter.drawPath(path(loop(52,44)))
-    tube=path([point(43,-90,0)]+loop(43,44,-90,90)+[point(43,90,0)])
+    painter.setBrush(plastic);painter.setPen(QPen(QColor('#91a0aa'),.7));painter.drawPath(path(loop(52,68)))
+    tube=path([point(43,-90,0)]+loop(43,68,-90,90)+[point(43,90,0)])
     winding=QLinearGradient(30,25,110,130);winding.setColorAt(0,color.lighter(130));winding.setColorAt(.42,color);winding.setColorAt(1,color.darker(150))
     painter.setBrush(winding);painter.setPen(Qt.NoPen);painter.drawPath(tube)
     shade=color.darker(145);shade.setAlpha(110)
-    for z in range(3,44,3):
+    for z in range(3,68,3):
         line=QPainterPath();line.moveTo(*point(43,-90,z))
         for x,y in loop(43,z,-90,90)[1:]:line.lineTo(x,y)
         painter.setPen(QPen(shade,.55));painter.drawPath(line)
@@ -289,7 +360,7 @@ def paint_spool(painter, bounds, hex_color=None, dark=False):
         flange=flange.subtracted(opening)
     painter.setPen(QPen(QColor('#a4b1b9'),.7));painter.setBrush(plastic);painter.drawPath(flange)
     painter.setBrush(QColor('#192832'));painter.setPen(QPen(QColor('#97a7b0'),.7));painter.drawPath(path(loop(10)))
-    tail=QPainterPath();tail.moveTo(*point(43,0,44));tail.cubicTo(151,91,130,118,151,134)
+    tail=QPainterPath();tail.moveTo(*point(43,0,68));tail.cubicTo(151,91,130,118,151,134)
     painter.setBrush(Qt.NoBrush);painter.setPen(QPen(color,1.8,Qt.SolidLine,Qt.RoundCap));painter.drawPath(tail)
     if hex_color is None:
         painter.setPen(QColor('#edf3f6'));font=QFont();font.setPixelSize(12);font.setBold(True);painter.setFont(font)
@@ -342,7 +413,7 @@ class BrandDelegate(QStyledItemDelegate):
         text_rect=option.rect.adjusted(6,0,-28,0)
         painter.drawText(text_rect,Qt.AlignVCenter,option.fontMetrics.elidedText(index.data() or '',Qt.ElideRight,text_rect.width()))
         if index.data(Qt.UserRole) and (index.data(Qt.UserRole+1) or hovered):
-            painter.setPen(ink if selected else option.palette.highlight().color())
+            painter.setPen(ink)
             painter.drawText(option.rect.adjusted(option.rect.width()-26,0,-2,0),Qt.AlignCenter,'★' if index.data(Qt.UserRole+1) else '☆')
         painter.restore()
 
@@ -360,28 +431,71 @@ class FavoriteBrandList(QListWidget):
 
 
 class FilamentDelegate(QStyledItemDelegate):
-    """Cards share the spool drawing and name the actual product, not only its brand."""
+    """Cards lead with the colour; product and brand stay readable but quieter.
+
+    Selection (solid accent frame), keyboard focus (dashed inner frame) and hover
+    (accent-tinted border) are distinct, and data state is written, not only tinted.
+    """
     dark=False
     def __init__(self,parent=None):
-        super().__init__(parent);self.rows={}
+        super().__init__(parent);self.rows={};self.context={}
+    @staticmethod
+    def footer_rects(box,font,delta):
+        from PySide6.QtGui import QFontMetrics
+        row=QRectF(box.left()+10,box.bottom()-(32 if delta is not None else 25),box.width()-20,20)
+        if delta is None:return row,QRectF()
+        value=QFont(font);value.setPointSize(10);value.setBold(True)
+        label=QFont(font);label.setPointSize(8)
+        width=QFontMetrics(value).horizontalAdvance(display_delta(delta))+QFontMetrics(label).horizontalAdvance('ΔE')+21
+        badge=QRectF(row.right()-width,row.top(),width,row.height())
+        meta=QRectF(row.left(),row.top(),max(0,row.width()-width-8),row.height())
+        return meta,badge
+
     def paint(self,painter,option,index):
         row=self.rows.get(index.data(Qt.UserRole),{});dark=self.dark
-        box=QRectF(option.rect).adjusted(5,5,-5,-5);selected=bool(option.state & QStyle.State_Selected)
+        box=QRectF(option.rect).adjusted(5,5,-5,-5)
+        selected=bool(option.state & QStyle.State_Selected);focused=bool(option.state & QStyle.State_HasFocus)
+        hovered=bool(option.state & QStyle.State_MouseOver)
         accent=QColor('#26c6da' if dark else '#007f91');ink=QColor('#edf1f5' if dark else '#24303a')
+        quiet=QColor('#9eafb9' if dark else '#61717d')
         painter.save();painter.setRenderHint(QPainter.Antialiasing)
-        painter.setPen(QPen(accent if selected else QColor('#45515b' if dark else '#d6dfe5'),2 if selected else 1))
+        border=accent if selected else (accent.darker(130) if dark else accent.lighter(160)) if hovered else QColor('#45515b' if dark else '#d6dfe5')
+        painter.setPen(QPen(border,2 if selected else 1))
         painter.setBrush(QColor('#263139' if dark else '#ffffff'));painter.drawRoundedRect(box,12,12)
-        painter.setPen(ink);font=QFont(option.font);font.setPointSize(10);painter.setFont(font)
-        painter.drawText(box.adjusted(11,8,-30,-8),Qt.AlignTop,option.fontMetrics.elidedText(row.get('brand',''),Qt.ElideRight,int(box.width()-48)))
+        if focused:
+            painter.setPen(QPen(accent,1,Qt.DashLine));painter.setBrush(Qt.NoBrush);painter.drawRoundedRect(box.adjusted(3,3,-3,-3),9,9)
+        brand=row.get('brand','')
+        # The brand is already given by an active manufacturer filter: keep it, quieter.
+        painter.setPen(quiet if brand and self.context.get('brand')==brand else ink)
+        font=QFont(option.font);font.setPointSize(9);painter.setFont(font)
+        painter.drawText(box.adjusted(11,8,-30,-8),Qt.AlignTop,painter.fontMetrics().elidedText(brand,Qt.ElideRight,int(box.width()-48)))
+        font.setPointSize(10);painter.setFont(font)
         painter.setPen(accent if row.get('_favorite') else QColor('#87939b'))
         painter.drawText(QRectF(box.right()-25,box.top()+6,20,22),Qt.AlignCenter,'★' if row.get('_favorite') else '☆')
         icon=index.data(Qt.DecorationRole)
-        if icon:icon.paint(painter,int(box.center().x()-55),int(box.top()+25),110,100)
-        painter.setPen(ink);font.setBold(True);font.setPointSize(11);painter.setFont(font)
-        painter.drawText(QRectF(box.left()+10,box.top()+128,box.width()-20,37),Qt.TextWordWrap|Qt.AlignTop,product_label(row.get('product',''),row.get('brand','')))
-        font.setBold(False);font.setPointSize(10);painter.setFont(font);painter.setPen(QColor('#9eafb9' if dark else '#61717d'))
-        text=row.get('color_name','')+(f" · {row['diameter']:g} mm" if row.get('diameter') else '')+(' ⚠' if row.get('hex_variants',0)>1 else '')
-        painter.drawText(QRectF(box.left()+10,box.bottom()-28,box.width()-20,20),Qt.AlignVCenter,option.fontMetrics.elidedText(text,Qt.ElideRight,int(box.width()-20)))
+        if icon:icon.paint(painter,int(box.center().x()-50),int(box.top()+24),100,92)
+        colour=row.get('color_name') or tr('Couleur à renseigner')
+        colour+=' ⚠' if row.get('hex_variants',0)>1 else ''
+        painter.setPen(ink);font.setBold(True);font.setPointSize(12);painter.setFont(font)
+        colour_rect=QRectF(box.left()+10,box.top()+118,box.width()-20,36)
+        lines=painter.fontMetrics().elidedText(colour,Qt.ElideRight,int(2*colour_rect.width()-8))
+        painter.drawText(colour_rect,Qt.TextWordWrap|Qt.AlignHCenter|Qt.AlignTop,lines)
+        font.setBold(False);font.setPointSize(10);painter.setFont(font);painter.setPen(quiet)
+        product=product_label(row.get('product',''),brand)
+        painter.drawText(QRectF(box.left()+10,box.top()+155,box.width()-20,18),Qt.AlignHCenter|Qt.AlignVCenter,
+                         painter.fontMetrics().elidedText(product,Qt.ElideRight,int(box.width()-20)))
+        state='' if row.get('ready') else tr('à vérifier') if 'vérifier' in str(row.get('quality','')).casefold() else tr('à compléter')
+        bits=[f"{row['diameter']:g} mm" if row.get('diameter') else '',state]
+        delta=row.get('_delta');meta,badge=self.footer_rects(box,option.font,delta)
+        font.setPointSize(9);font.setBold(False);painter.setFont(font);painter.setPen(quiet)
+        painter.drawText(meta,Qt.AlignVCenter|(Qt.AlignLeft if delta is not None else Qt.AlignHCenter),
+                         painter.fontMetrics().elidedText(' · '.join(b for b in bits if b),Qt.ElideRight,int(meta.width())))
+        if delta is not None:
+            painter.setPen(Qt.NoPen);painter.setBrush(QColor('#174955' if dark else '#d9f1f3'));painter.drawRoundedRect(badge,6,6)
+            painter.setPen(QColor('#b5f4fa' if dark else '#005460'))
+            font.setPointSize(8);painter.setFont(font);painter.drawText(badge.adjusted(7,0,0,0),Qt.AlignVCenter|Qt.AlignLeft,'ΔE')
+            font.setPointSize(10);font.setBold(True);painter.setFont(font)
+            painter.drawText(badge.adjusted(0,0,-7,0),Qt.AlignVCenter|Qt.AlignRight,display_delta(delta))
         painter.restore()
 
 
@@ -405,12 +519,9 @@ class PrinterCard(QFrame):
         self.name.setText(info['title']);self.description.setText(info['description'])
         self.status.setText(status);self.status.setStyleSheet(f'color:{accent};font-weight:600;')
         self.reader.setText(profile.get('reader',''))
-        pixmap=QPixmap(info.get('photo','')) if info.get('photo') else QPixmap()
-        self.photo.setVisible(not pixmap.isNull());self.photo_caption.setVisible(not pixmap.isNull())
-        self.setMinimumHeight(108 if not pixmap.isNull() else 88)
-        # Set DPR on the pixmap before assigning it: QLabel returns a value copy.
-        if not pixmap.isNull():
-            fitted=pixmap.scaled(160,160,Qt.KeepAspectRatio,Qt.SmoothTransformation);fitted.setDevicePixelRatio(2);self.photo.setPixmap(fitted)
-        self.photo_caption.setText(info.get('caption',''))
-        self.photo_caption.setVisible(not pixmap.isNull() and info.get('caption')!=info['title'])
+        self.photo.setPixmap(printer_visual(info,80,dark));self.photo.show();self.setMinimumHeight(108)
+        caption=info.get('caption','') if info.get('photo') else tr('Illustration générique')
+        self.photo.setToolTip(caption);self.photo.setAccessibleName(info['title'])
+        self.photo_caption.setText(caption)
+        self.photo_caption.setVisible(bool(caption) and caption!=info['title'])
         self.description.setToolTip(info.get('source',''))

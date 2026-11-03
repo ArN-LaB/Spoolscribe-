@@ -94,7 +94,8 @@ class PolishUiTests(unittest.TestCase):
     def test_progress_text_has_its_own_height_and_not_the_bar_height(self):
         w=self.window;w._on_update_progress('Catalogue multi-fabricants OFD',2,7)
         self.assertFalse(w.progress.isTextVisible())
-        self.assertIn('2/7',w.progress_label.text())
+        self.assertEqual(w.progress_label.text(),'Catalogue multi-fabricants OFD')
+        self.assertEqual(w.progress_step.text(),'Étape 2 sur 7')
         self.assertGreaterEqual(w.progress_label.minimumHeight(),24)
 
     def test_printer_refresh_404_does_not_display_a_failure(self):

@@ -6,7 +6,24 @@
     "bytes": 23892,
     "caption": "Snapmaker U1",
     "checked": "2026-11-01",
-    "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation."
+    "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation.",
+    "model": "Snapmaker U1",
+    "page_url": "https://www.snapmaker.com/snapmaker-u1",
+    "source_kind": "manufacturer",
+    "dimensions": [
+      420,
+      420
+    ],
+    "bounds": [
+      46,
+      16,
+      374,
+      404
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.550176,
+    "transformation": "none",
+    "view": "isolated product view"
   },
   "bambu": {
     "url": "https://raw.githubusercontent.com/bambulab/BambuStudio/master/resources/images/printer_thumbnail_x1c_png.png",
@@ -16,7 +33,23 @@
     "caption": "Exemple : X1 Carbon",
     "checked": "2026-11-01",
     "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation.",
-    "transparent": true
+    "transparent": true,
+    "model": "Bambu Lab X1 Carbon",
+    "page_url": "https://github.com/bambulab/BambuStudio/blob/master/resources/images/printer_thumbnail_x1c_png.png",
+    "source_kind": "manufacturer_repository",
+    "dimensions": [
+      320,
+      320
+    ],
+    "bounds": [
+      10,
+      13,
+      310,
+      307
+    ],
+    "transparent_fraction": 0.191104,
+    "transformation": "none",
+    "view": "isolated product view"
   },
   "qidi_box": {
     "url": "https://qidi3d.com/cdn/shop/files/PLUS4_a838191a-7fc5-49d6-a245-4fb88c793490.png?v=1773372605",
@@ -25,7 +58,24 @@
     "bytes": 529859,
     "caption": "Exemple : QIDI Plus4",
     "checked": "2026-11-01",
-    "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation."
+    "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation.",
+    "model": "QIDI Plus4",
+    "page_url": "https://qidi3d.com/products/plus4-3d-printer",
+    "source_kind": "manufacturer",
+    "dimensions": [
+      1280,
+      1280
+    ],
+    "bounds": [
+      187,
+      126,
+      1097,
+      1185
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.435103,
+    "transformation": "none",
+    "view": "isolated product view"
   },
   "anycubic_ace": {
     "url": "https://raw.githubusercontent.com/ANYCUBIC-3D/AnycubicSlicerNext/main/resources/profiles/Anycubic/Anycubic%20Kobra%20S1_cover.png",
@@ -35,6 +85,308 @@
     "caption": "Exemple : Kobra S1",
     "checked": "2026-11-01",
     "copyright": "Visuel du fabricant ; identification du produit, aucune affiliation.",
-    "transparent": true
+    "transparent": true,
+    "model": "Anycubic Kobra S1",
+    "page_url": "https://github.com/ANYCUBIC-3D/AnycubicSlicerNext/blob/main/resources/profiles/Anycubic/Anycubic%20Kobra%20S1_cover.png",
+    "source_kind": "manufacturer_repository",
+    "dimensions": [
+      180,
+      180
+    ],
+    "bounds": [
+      25,
+      0,
+      155,
+      180
+    ],
+    "transparent_fraction": 0.362963,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "flashforge_ad5x": {
+    "url": "https://uk.flashforge.com/cdn/shop/files/7ab3798b-ccc3-4107-a049-a11739b8ad6b.png?v=1761182860&width=900",
+    "file": "flashforge_ad5x.png",
+    "sha256": "3e258d2cc85b8ecd04ed6a5cacf4f9a307adf7f26b45bc663ac0f05f7986626c",
+    "bytes": 512866,
+    "caption": "Flashforge AD5X",
+    "model": "Flashforge AD5X",
+    "page_url": "https://uk.flashforge.com/products/ad5x-3d-printer",
+    "source_kind": "manufacturer",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      900,
+      900
+    ],
+    "bounds": [
+      110,
+      24,
+      802,
+      821
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.467784,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "flashforge_creator5": {
+    "url": "https://cdn.shopify.com/s/files/1/0665/0727/6476/files/C5_4.png?v=1778299797",
+    "file": "flashforge_creator5.png",
+    "sha256": "b62be0bf4f55a85aa97832ea099a56e02efffa5c3f2b08eef0d4bbbdc18abfae",
+    "bytes": 1626393,
+    "caption": "Flashforge Creator 5",
+    "model": "Flashforge Creator 5",
+    "page_url": "https://uk.flashforge.com/products/flashforge-creator-5",
+    "source_kind": "manufacturer",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      1600,
+      1600
+    ],
+    "bounds": [
+      196,
+      225,
+      1404,
+      1505
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.627683,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "prusa_mk4": {
+    "url": "https://www.igo3d.com/media/image/product/19385/lg/original-prusa-mk4s-3d-drucker-montiert~3.png",
+    "file": "prusa_mk4.png",
+    "sha256": "f6ea57146accf6db8955025d9fc3f869c431415178d9e5995208761933250bfc",
+    "bytes": 273894,
+    "caption": "Exemple : Prusa MK4S",
+    "model": "Original Prusa MK4S",
+    "page_url": "https://www.igo3d.com/original-prusa-mk4s-3d-drucker-montiert",
+    "source_kind": "reseller",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      680,
+      680
+    ],
+    "bounds": [
+      93,
+      14,
+      551,
+      650
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.65189,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "prusa_core": {
+    "url": "https://storage.googleapis.com/prusa3d-content-prod-14e8-wordpress-blog-prod/2025/07/edc94fae-coreone-product-1-2048x1965.png",
+    "file": "prusa_core.png",
+    "sha256": "bcd87a214b3578a0cbd2af87cfc6846573ca81c61b0dd4345c6391efa05edd7f",
+    "bytes": 3021355,
+    "caption": "Exemple : Prusa CORE One",
+    "model": "Prusa CORE One",
+    "page_url": "https://blog.prusa3d.com/de/mehrfarbiges-drucken-mit-einem-prusa-einfuehrungs-anleitung_110590/",
+    "source_kind": "manufacturer",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      2048,
+      1965
+    ],
+    "bounds": [
+      343,
+      145,
+      1752,
+      1806
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.442199,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "creality_k2": {
+    "url": "https://cdn.creality.com/ow/official/ef0a90a0-84ba-4236-afde-151229a281e9.png",
+    "file": "creality_k2.png",
+    "sha256": "33c437686bdde03bb6055718e0d2461560f5b1e872c6020d4276b5524f32c087",
+    "bytes": 692922,
+    "caption": "Exemple : Creality K2 Combo",
+    "model": "Creality K2 Combo",
+    "page_url": "https://3dcim.com/creality-k2-combo-3d-yazici",
+    "source_kind": "manufacturer_cdn",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      1000,
+      1000
+    ],
+    "bounds": [
+      116,
+      98,
+      883,
+      1000
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.355398,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "creality_klipper": {
+    "url": "https://cdn.creality.com/ow/product-info/9a26d06c-d530-439a-8dee-8b4f8419459d.png",
+    "file": "creality_klipper.png",
+    "sha256": "c6609d1fd26aea7ec228503d18e61161859345fff18952bf8a0cccce951f304d",
+    "bytes": 227928,
+    "caption": "Exemple : Creality K1 Max",
+    "model": "Creality K1 Max",
+    "page_url": "https://www.creality.com/ae/download",
+    "source_kind": "manufacturer",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      1000,
+      1000
+    ],
+    "bounds": [
+      153,
+      124,
+      846,
+      875
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.509275,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "elegoo_cc2": {
+    "url": "https://www.sync-innovation.com/cdn/shop/files/CentauriCarbon2_253cccc9-addc-439c-b891-a8cade7dce30.webp?v=1769484546",
+    "file": "elegoo_cc2.webp",
+    "sha256": "d3a983350669dad4a209a3df939465f0f670b2fc3ee6b82c92467ae4dc019a68",
+    "bytes": 469807,
+    "caption": "Elegoo Centauri Carbon 2 Combo",
+    "model": "Elegoo Centauri Carbon 2 Combo",
+    "page_url": "https://www.sync-innovation.com/products/elegoo-centauri-carbon-2-combo",
+    "source_kind": "reseller",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      1200,
+      1200
+    ],
+    "bounds": [
+      306,
+      135,
+      933,
+      1102
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.642416,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "ultimaker_s": {
+    "url": "https://cdn.shopify.com/s/files/1/0789/2979/files/Ultimaker-S5-hero.png?v=1529446816",
+    "file": "ultimaker_s.png",
+    "sha256": "1e40746276eaa3d1df918c8e07c30ded0616b5bfa69765c39aa33b58a6d60f07",
+    "bytes": 72381,
+    "caption": "Exemple : UltiMaker S5",
+    "model": "UltiMaker S5",
+    "page_url": "https://ultimate3dprintingstore.com/products/ultimaker-s5",
+    "source_kind": "reseller",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      600,
+      600
+    ],
+    "bounds": [
+      105,
+      11,
+      499,
+      593
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.546858,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "raise3d_pro3": {
+    "url": "https://makeshop-multi-images.akamaized.net/3jigenkoubou/itemimages/000000000323_decTsED.png",
+    "file": "raise3d_pro3.png",
+    "sha256": "8e057a3997004ed608921a473cada7c7c0ec7eecdf8c897c8b730df473cecefc",
+    "bytes": 192616,
+    "caption": "Raise3D Pro3 HS",
+    "model": "Raise3D Pro3 HS",
+    "page_url": "https://3jigenkoubou.com/shopdetail/000000000323",
+    "source_kind": "reseller",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      953,
+      1079
+    ],
+    "bounds": [
+      0,
+      0,
+      953,
+      1079
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.086497,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "makerbot_method": {
+    "url": "https://raw.githubusercontent.com/Ultimaker/Cura/main/plugins/UM3NetworkPrinting/resources/png/MakerBot%20Method%20XL.png",
+    "file": "makerbot_method.png",
+    "sha256": "cd6c2dfaa06133815a735d1015d4954f441ed6e59dff582c9551bfdf66efd9f2",
+    "bytes": 65485,
+    "caption": "Exemple : MakerBot METHOD XL",
+    "model": "MakerBot METHOD XL",
+    "page_url": "https://github.com/Ultimaker/Cura/blob/main/plugins/UM3NetworkPrinting/resources/png/MakerBot%20Method%20XL.png",
+    "source_kind": "manufacturer_repository",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      300,
+      324
+    ],
+    "bounds": [
+      36,
+      49,
+      294,
+      297
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.506358,
+    "transformation": "none",
+    "view": "isolated product view"
+  },
+  "xyz_davinci": {
+    "url": "https://3dprintersuperstore.com.au/cdn/shop/products/left-side_1_2000x.png?v=1571262559",
+    "file": "xyz_davinci.png",
+    "sha256": "6d9933b85ce72a104f5970f19cfe294ec6b001669a89530e2d2dd483e2dc99d3",
+    "bytes": 838084,
+    "caption": "Exemple : da Vinci 1.0 Pro",
+    "model": "XYZprinting da Vinci 1.0 Pro",
+    "page_url": "https://3dprintersuperstore.com.au/products/da-vinci-1-0-pro",
+    "source_kind": "reseller",
+    "checked": "2026-11-03",
+    "copyright": "Visuel produit ; droits conservés par ses ayants droit, identification sans affiliation.",
+    "dimensions": [
+      1000,
+      1000
+    ],
+    "bounds": [
+      71,
+      52,
+      942,
+      979
+    ],
+    "transparent": true,
+    "transparent_fraction": 0.275308,
+    "transformation": "none",
+    "view": "isolated product view"
   }
 }
