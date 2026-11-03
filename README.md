@@ -68,7 +68,8 @@ No Python installation needed. Download, unzip and open the app for your system.
 - **Windows:** the executable has no commercial signing certificate. SmartScreen may
   ask for confirmation; verify its origin and SHA-256 before choosing **More info → Run anyway**.
 - **Linux:** built on `ubuntu-latest`; requires a recent glibc and the Qt runtime
-  libraries `libegl1`, `libxkbcommon0` and `libdbus-1-3`.
+  libraries `libegl1`, `libxkbcommon0` and `libdbus-1-3`. X11 also needs
+  the Qt XCB/XKB system dependencies; see [Linux runtime notes](docs/DEVELOPMENT.md#linux-desktop-runtime).
 
 The `.zip.sha256` file contains the expected hash. Compare it with `sha256sum`
 (Linux), `shasum -a 256` (macOS) or `Get-FileHash -Algorithm SHA256` (PowerShell).
