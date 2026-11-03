@@ -14,7 +14,7 @@ from tests.support import ROOT
 
 
 class ReleasePublicationTests(unittest.TestCase):
-    def execute_publication(self, channel, *, corrupt=False, wrong_channel=False):
+    def execute_publication(self, channel, *, corrupt=False, wrong_channel=False, tag='v0.4.0'):
         workflow = (ROOT / '.github/workflows/build.yml').read_text(encoding='utf-8')
         step = workflow.split('- name: Verify uploaded assets and publish\n', 1)[1]
         code = textwrap.dedent(step.split('        run: |\n', 1)[1])
@@ -45,13 +45,13 @@ class ReleasePublicationTests(unittest.TestCase):
                     self.fail('Unexpected command: ' + str(args))
                 return subprocess.CompletedProcess(args, 0)
 
-            metadata = dict(isDraft=False, tagName='v0.4.0',
+            metadata = dict(isDraft=False, tagName=tag,
                             isPrerelease=(channel == 'true') != wrong_channel)
             previous = Path.cwd()
             try:
                 os.chdir(root)
                 with patch.dict(os.environ, RELEASE_PRERELEASE=channel,
-                                GITHUB_REF_NAME='v0.4.0', GITHUB_REPOSITORY='ArN-LaB/Spoolscribe-'), \
+                                GITHUB_REF_NAME=tag, GITHUB_REPOSITORY='ArN-LaB/Spoolscribe-'), \
                      patch('subprocess.run', side_effect=command), \
                      patch('subprocess.check_output', return_value=json.dumps(metadata)):
                     if corrupt or wrong_channel or channel not in ('true', 'false'):
@@ -90,3 +90,12 @@ class ReleasePublicationTests(unittest.TestCase):
         self.assertIn("github.ref_name == 'v0.5.0'",channel)
         self.assertIn("github.ref_name == 'v0.4.0'",channel)
         self.assertIn("contains(github.ref_name, '-')",channel)
+
+    def test_v060_explicitly_preserves_pre_release_and_stable(self):
+        workflow = (ROOT / '.github/workflows/build.yml').read_text(encoding='utf-8')
+        channel = next(line for line in workflow.splitlines() if 'RELEASE_PRERELEASE:' in line)
+        self.assertIn("github.ref_name == 'v0.6.0'", channel)
+        edits = self.execute_publication('true', tag='v0.6.0')
+        self.assertEqual(len(edits), 1)
+        self.assertIn('--prerelease=true', edits[0])
+        self.assertIn('--latest=false', edits[0])

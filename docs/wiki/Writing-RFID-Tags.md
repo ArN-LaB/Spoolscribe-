@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Select a filament → export a file | Write an NDEF MIME record → read it back | Check the detected material and colour |
 
-**v0.5.0 is a [pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.5.0).**
+**v0.6.0 is a [pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.6.0).**
 Choose the printer first in **My hardware**, then combine the reader/software
 buttons and confirm the installed solution. The result distinguishes printer
 recognition from external inventory; only eligible formats are offered.
@@ -145,11 +145,13 @@ diameter/density as positive numbers, HEX as six uppercase characters.
 
 </details>
 
-## QR Code of the NFC message (in development)
+## Digital QR transfer (SSQR1, v0.6.0 pre-release)
 
 **Show QR Code…**, below **Show JSON** and **Show file**, displays the complete NDEF message of
 the current export as one QR Code, with no server or link. It follows the export
-state exactly and can be saved as PNG/SVG or printed through the system dialog.
+state exactly and can be saved as PNG/SVG. The digital SSQR1 contract is validated
+for OpenSpool 1.0 and OpenTag3D 2.004; existing system-printing controls are outside
+this validation. Printing, D101, Bluetooth and physical acceptance are deferred.
 An ordinary QR reader only shows a transfer text; programming a tag from it is
 planned for a future companion app that does not exist yet. Dense codes are
 refused on narrow labels such as the 24 mm printable width of the NIIMBOT D101

@@ -13,16 +13,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added (in development, not released)
+## [0.6.0] - 2026-11-03
 
-- **Show QR Code…**: the complete NDEF message of the current NFC export as one
-  standard QR Code (`SSQR1:` + Base45, raw or zlib, SHA-256 integrity, no server),
-  for OpenSpool 1.0 and OpenTag3D 2.004. Available only when the export is; the
-  window keeps the data frozen at opening. PNG/SVG saving and system printing with
-  whole printer dots per module; dense codes are refused instead of shrunk
-  (NIIMBOT D101 25 × 50 mm diagnosed, no Bluetooth printing). New runtime
-  dependency: Segno 1.6.6 (BSD 3-Clause). Physical printing and scanning are not
-  validated. See [docs/QR_FORMAT.md](docs/QR_FORMAT.md).
+### Pre-release — digital SSQR1 transfer
+
+**v0.3.5 remains the latest stable; v0.5.0 and its downloads remain unchanged.**
+SSQR1 is a stable digital transfer contract inside this application pre-release.
+The future Companion app is not implemented. Printing, D101, Bluetooth and
+physical phone/tag/printer acceptance remain deferred, not validated by software CI.
+
+### Added
+
+- **Show QR Code…**: the complete, frozen NDEF message of the current NFC export
+  as one standard QR, with PNG/SVG saving and no server or link. SSQR1 uses Base45,
+  raw/zlib selection, bounded decoding and SHA-256 integrity; it supports exactly
+  OpenSpool 1.0 and OpenTag3D 2.004 without changing their NFC encoders.
+- Independent digital decoding of rendered QR images, including packaged apps
+  on Windows, macOS and Linux. Scan tools are CI-only dependencies, installed
+  after packaging. Segno 1.6.6 is the runtime encoder (BSD 3-Clause).
+- Explicit pre-release publication safety for v0.6.0: three complete ZIP archives
+  and their SHA-256 files are checked before publication, without replacing stable.
+
+The previously implemented system-printing controls remain present but are outside
+this digital validation and have no physical acceptance claim.
+[SSQR1 contract](docs/QR_FORMAT.md) · [Validation](docs/validation/v0.6.0.md).
 
 ## [0.5.0] - 2026-11-03
 
