@@ -2,7 +2,11 @@
 
 [Documentation](README.md) · [Ressources](../data/README.md) · [Fixtures](../tests/fixtures/README.md) · [Développement](DEVELOPMENT.md)
 
-**Préversion v0.4.0 :** l’[encodeur OpenTag3D](OPENTAG3D.md) est ajouté sous `src/spoolscribe/opentag3d.py`. Les preuves ci-dessous décrivent la passe de structure v0.3.5 ; les nouveaux contrôles sont consignés [séparément](validation/v0.4.0.md).
+**Préversion actuelle v0.6.0 :** les encodeurs NFC sont conservés ; `qr_transfer.py`,
+`qr_layout.py` et `ui_qr.py` ajoutent le transfert numérique SSQR1.
+[Validation actuelle](validation/v0.6.0.md) · [Captures et génération](images/README.md).
+Les résultats de structure ci-dessous restent datés de v0.3.5 : ils ne sont pas
+présentés comme les résultats de la version actuelle.
 
 ## Organisation actuelle
 
@@ -21,7 +25,11 @@ attributions, pyproject et lanceur personnel macOS.
 | `docs/archive/README.md` | Index vers les rapports historiques dans Git |
 | `.github/` | Workflows, politiques, outils de contrôle et de maintenance |
 
-## Suppressions et déplacements justifiés
+Les captures de démonstration et leur manifeste restent sous `docs/images/`,
+hors des ressources embarquées. Les vecteurs SSQR1 sont sous `tests/fixtures/qr/` ;
+les oracles de scan restent des outils de QA/CI, installés après compilation.
+
+## Suppressions et déplacements justifiés (passe historique v0.3.5)
 
 - **54 fichiers de référence** déplacés hors de `data/` et de la racine : leurs
   octets sont identiques, contrôlés par `tests/fixtures/manifest.json` à partir
@@ -43,7 +51,7 @@ Les catalogues de filaments, les 48 profils Orca et le contrat des 1 008 exports
 gardent leur contenu. Les chemins de logos déjà enregistrés restent lisibles par
 des alias ; les fichiers du dossier utilisateur ne sont ni déplacés ni réécrits.
 Les anciennes copies de manifestes et les personnalisations de logos restent prises
-en compte. Cette passe historique conservait la version **0.3.5** ; la préversion actuelle est **0.4.0**.
+en compte. Cette passe historique conservait la version **0.3.5** ; la préversion actuelle est **0.6.0**.
 
 Le packaging utilise une liste déclarée, pas une collecte de toutes les images
 trouvées dans `data/`. Le contrôle du dépôt refuse les ressources orphelines,
@@ -55,7 +63,7 @@ les images strictement identiques. L’import de logos actualise les empreintes
 de toutes les entrées partageant l’image retraitée. Dependabot suit `/` et
 `/requirements`, selon la [configuration multi-dossiers GitHub](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#directories-or-directory).
 
-## Vérification de cette passe
+## Vérification de la passe historique v0.3.5
 
 La suite comprend les 269 tests précédents et neuf cas supplémentaires : identité
 des 54 fixtures, anciens chemins et logos utilisateur, exclusion d’images non

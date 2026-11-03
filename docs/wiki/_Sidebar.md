@@ -6,6 +6,7 @@
 
 - [Welcome](Home.md)
 - [Getting started](Getting-Started.md)
+- [Visual tour: filaments, colours, printers & QR](Visual-Tour.md)
 - [Download v0.6.0 · Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.6.0)
 
 - [Stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)

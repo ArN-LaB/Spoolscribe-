@@ -6,6 +6,7 @@
 
 | Besoin | Guide |
 | --- | --- |
+| Découvrir le catalogue, ΔE, les imprimantes et le QR en images | [Parcours visuel v0.6.0](wiki/Visual-Tour.md) |
 | Installer et préparer une première étiquette | [Démarrage](wiki/Getting-Started.md) |
 | Langue, filtres croisés, favoris, bobines et copies personnelles | [Guide de l’interface](USER_GUIDE.md) |
 | Choisir une imprimante ou un lecteur | [Compatibilité](wiki/Printers-and-Readers.md) |

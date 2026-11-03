@@ -209,7 +209,7 @@ A personal copy adds its own `USER-<uuid>` SKU and private product key, leaving 
 
 Source reconciliation excludes personal SKUs from identity/article/family matching. Copied fields carry high-priority `Copie personnelle` provenance; explicit physical edits use `Utilisateur`. An explicit HEX edit of a copy is stored on the copy's own SKU with `Utilisateur` provenance; only edited fields become `Utilisateur`, never the whole copied record. Copying a colour does not silently confirm an implausible source HEX. Existing explicit corrections and null values remain protected. Standard reference exports are unchanged. The display name is used in personal export filenames and full payloads; the suffix is an application label, not a new printer material type or NFC standard.
 
-## OpenTag3D 2.004 (v0.4.0 Pre-release)
+## OpenTag3D 2.004 (préversion actuelle : v0.6.0)
 
 This independent binary format does not change the historical OpenSpool JSON
 contract. It uses MIME `application/opentag3d`, not `application/json`, with NFC

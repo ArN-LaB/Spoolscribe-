@@ -1,0 +1,69 @@
+{
+  "version": "0.6.0",
+  "source_commit": "074f76e65739f9cd49837e6db92c1fe32b4fd81e",
+  "language": "en",
+  "theme": "application light palette",
+  "network": "blocked by Python audit hook",
+  "provenance": "public regression fixtures merged in memory, isolated temporary user/config folders",
+  "captures": [
+    {
+      "file": "catalogue.png",
+      "description": "list catalogue with selected Polymaker filament",
+      "version": "0.6.0",
+      "width": 1480,
+      "height": 920,
+      "sha256": "163ac48bcdcf2822e68d1e96225df2f0fe8d91fd0aa2ff4682d736f73e1c0c49",
+      "sku": "OFD-044E3262-B9E7-4461-9059-C94331295643",
+      "view": "list"
+    },
+    {
+      "file": "qr-transfer.png",
+      "description": "Complete SSQR1 QR and digital PNG/SVG save actions",
+      "version": "0.6.0",
+      "width": 660,
+      "height": 530,
+      "sha256": "e94032056d4f586694cf66da3f7c65074e39eb751b5cb0f4eceda8d8936528d0",
+      "crop": "Top of the real QR window through digital save actions; printing band omitted",
+      "sku": "OFD-044E3262-B9E7-4461-9059-C94331295643",
+      "protocol": "OpenSpool 1.0",
+      "ndef_sha256": "8bf834bb7b3ec5fa787bc048a4c74d47e8fe13361d25737518c142aaa2e7c8ef"
+    },
+    {
+      "file": "collection.png",
+      "description": "grid catalogue with selected Bambu Lab filament",
+      "version": "0.6.0",
+      "width": 1480,
+      "height": 920,
+      "sha256": "2f928f23e7521d07aa2aaf99a0c27d6bc29651dfc043428c28448cdc65477f78",
+      "sku": "OFD-CC958C7B-967B-4FC2-A034-6C8B40B213B8",
+      "view": "grid"
+    },
+    {
+      "file": "colour-search.png",
+      "description": "PLA colour proximity with declared HEX and actual Delta E scores",
+      "version": "0.6.0",
+      "width": 1480,
+      "height": 920,
+      "sha256": "306bd64d8a36d65c09f55f541f7e9e30b2fcbf9039139b2edc6f4f70a39d7d0e",
+      "target_hex": "C8E6A0",
+      "maximum_delta_e": 10.0,
+      "results": 85
+    },
+    {
+      "file": "hardware.png",
+      "description": "Compose a real printer, reader and tag setup",
+      "version": "0.6.0",
+      "width": 780,
+      "height": 740,
+      "sha256": "d01e6d9f2ff7d7bfd3f0f996ddce2b31d87b799f0e6e5727b3518f7a5a415b53"
+    },
+    {
+      "file": "printers.png",
+      "description": "Visual printer browser with photographs, search and compatibility categories",
+      "version": "0.6.0",
+      "width": 840,
+      "height": 800,
+      "sha256": "c30165a1eedd7a2aebb269fe9e22fcfaa8a1ec03e9a4a17a4204b28c5565967e"
+    }
+  ]
+}

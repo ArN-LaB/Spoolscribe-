@@ -1,6 +1,9 @@
-# Utiliser SpoolScribe v0.4.0 · Pre-release
+# Utiliser SpoolScribe v0.6.0 · Pre-release
 
-[Accueil](../README.md) · [Documentation](README.md) · [Préversion v0.4.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0) · [Stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
+[Accueil](../README.md) · [Documentation](README.md) · [Préversion v0.6.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.6.0) · [Stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
+
+[Parcours visuel de v0.6.0 : catalogue, ΔE, imprimantes et QR](wiki/Visual-Tour.md).
+Les captures sont réelles, en anglais ; le même parcours existe dans les quatre langues.
 
 ## Langue de l’interface
 

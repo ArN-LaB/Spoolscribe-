@@ -2,6 +2,8 @@
 
 [Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
 
+[Prefer pictures? Follow the v0.6.0 visual tour](Visual-Tour.md).
+
 **From an empty catalogue to your first exported label.** No Python installation needed.
 
 | 1. Install | 2. Download sources | 3. Pick a filament | 4. Export |
