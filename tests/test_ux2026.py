@@ -532,9 +532,16 @@ class UxGuiTests(unittest.TestCase):
             w._generate()
         path = w._last_export["path"]; self.assertTrue(Path(path).is_file())
         self.assertIn("identique à l’export actuel", w.last_export_label.text()); self.assertTrue(w.btn_open_out.isEnabled())
-        with patch("subprocess.Popen") as popen:
-            w._open_output()
-        self.assertIn(path, popen.call_args.args[0])
+        # Linux opens the containing folder; Finder/Explorer can select the
+        # actual file. Exercise all three commands without opening anything.
+        import os
+        for platform, command in (
+                ("linux", ["xdg-open", str(Path(path).parent)]),
+                ("darwin", ["open", "-R", path]),
+                ("win32", ["explorer", "/select,", os.path.normpath(path)])):
+            with self.subTest(platform=platform), patch("spoolscribe.ui_detail.sys.platform", platform), patch("subprocess.Popen") as popen:
+                w._open_output()
+                popen.assert_called_once_with(command)
         w.nfc_profile.setCurrentIndex(w.nfc_profile.findData("full"))
         self.assertIn("autre fiche ou réglages différents", w.last_export_label.text())
         w.nfc_profile.setCurrentIndex(w.nfc_profile.findData("auto")); self.assertIn("identique", w.last_export_label.text())

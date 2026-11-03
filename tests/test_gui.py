@@ -31,7 +31,7 @@ class GuiTests(unittest.TestCase):
         db = root / "db.json"
         db.write_text(json.dumps(catalogue()), encoding="utf-8")
         self.paths = patch.multiple(core, DB_PATH=str(db), DATA_HOME=str(root), CONFIG_PATH=str(root / "config.json"),
-                                    OUTPUT_DIR=str(root / "output"))
+                                    OUTPUT_DIR=str(root / "output"), ORCA_DIR=str(root / "orca_profiles"))
         self.paths.start()
         self.addCleanup(self.paths.stop)
         # GUI fixtures explicitly stay offline; a delayed startup timer must not

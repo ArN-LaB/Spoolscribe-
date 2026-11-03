@@ -1244,8 +1244,12 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
                 button.ensurePolished()
                 minimum=colour_minimum
                 button.setMinimumWidth(minimum);colour_width+=minimum
-            side_width=max(232,2*width+28,colour_width+36)
-            self.sidebar.setMinimumWidth(side_width+(-side_width%6)); self.sidebar.setMaximumWidth(max(520,side_width+120))
+            # Three colour actions: two 6px gaps, 12px section margins,
+            # 2px frame border and 6px sidebar margin. Extra rounding can
+            # unnecessarily widen the sidebar with Linux font metrics.
+            side_width=max(232,2*width+28,colour_width+32)
+            side_width+=side_width%2  # equal paired buttons need an even width
+            self.sidebar.setMinimumWidth(side_width); self.sidebar.setMaximumWidth(max(520,side_width+120))
             for index in (1,2):self.splitter.handle(index).setCursor(Qt.SplitHCursor)
             facet_palette=QPalette(self.palette())
             facet_palette.setColor(QPalette.Highlight,QColor(facet_fill));facet_palette.setColor(QPalette.HighlightedText,QColor(t['text']))
