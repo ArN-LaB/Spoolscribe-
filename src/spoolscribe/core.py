@@ -36,7 +36,7 @@ DatabaseError = db_io.DatabaseError
 # APP_VERSION est la référence de version. spoolscribe.spec la lit ici ;
 # la CI vérifie que la version déclarée dans pyproject.toml reste alignée.
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.4.0"
+APP_VERSION = "0.5.0"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
@@ -188,6 +188,7 @@ DEFAULT_CONFIG = {
     "ui": {},
     "favorite_brands": [],
     "favorite_filaments": [],
+    "colour_delta_max": 10.0,  # Screen-colour search scope, not a printing tolerance.
     "preferred_weight_g": 1000,
     "preferred_packaging": "any",
     "export_directory": "",
@@ -206,6 +207,16 @@ def load_config() -> dict:
         return merged
     except Exception:
         return dict(DEFAULT_CONFIG)
+
+
+def valid_colour_delta_limit(value):
+    import math
+    return value is None or (type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 200)
+
+
+def colour_delta_limit(cfg=None):
+    value = (load_config() if cfg is None else cfg).get("colour_delta_max", 10.0)
+    return value if valid_colour_delta_limit(value) else 10.0
 
 
 def save_config(cfg: dict) -> None:
@@ -453,6 +464,21 @@ def load_orca_temps(path: str) -> dict:
         raise ExportValidationError(f"Profil Orca inutilisable ({path}) : {exc}") from exc
 
 
+def _apply_orca(src: dict, path: str, use_orca_overrides: bool) -> tuple[dict, set]:
+    """The single Orca policy of both encoders: fill unknowns, or override on request.
+
+    Mutates ``src`` and returns the profile values and the keys actually applied.
+    Callers keep their own error wording; this helper only centralises the rule.
+    """
+    values = load_orca_temps(path)
+    applied = set()
+    for key, value in values.items():
+        if value is not None and (use_orca_overrides or src.get(key) is None):
+            src[key] = value
+            applied.add(key)
+    return values, applied
+
+
 # ─── Logo SVG ─────────────────────────────────────────────────────────────
 def app_logo_abs_path() -> Optional[str]:
     """Chemin absolu du logo de l'application SpoolScribe, ou None."""
@@ -665,6 +691,9 @@ def list_skus(db: dict) -> list[dict]:
             "manufacturer_sku": e.get("manufacturer_sku", ""),
             "alpha": e.get("alpha"),
             "source_colors": e.get("source_colors", []),
+            # Display/search projection only: lets the proximity search exclude
+            # multicolour references; exports keep reading the stored entry.
+            "additional_color_hexes": list(e.get("additional_color_hexes") or []),
             "source_traits": e.get("source_traits", {}),
             "spool_refill": e.get("spool_refill"),
             "_hex_rank": hex_info.get("rank", 0) if e.get("hex") else -1,
@@ -889,17 +918,23 @@ def save_personal_filament(db: dict, sku: str, values: dict, suffix: str, *, pat
 
     Copied values are frozen at personal priority; only explicitly edited values
     become user-confirmed. Copying must not confirm an implausible source colour.
+    An explicit ``hex`` is stored on the copy's own reference, never on the source.
     """
     import uuid
     suffix=suffix.strip().lstrip('@').strip() if isinstance(suffix,str) else ''
     if not suffix or len(suffix)>40 or not all(c.isalnum() or c in ' _-' for c in suffix):
         raise ExportValidationError('Suffixe personnel : 1 à 40 lettres, chiffres, espaces, tirets ou underscores.')
     view=get_sku_view(db,sku)
-    allowed={'min_temp','max_temp','bed_min_temp','bed_max_temp','density','diameter'}
+    allowed={'min_temp','max_temp','bed_min_temp','bed_max_temp','density','diameter','hex'}
     if view is None or not values or set(values)-allowed:raise ExportValidationError('Caractéristiques personnelles invalides.')
     for key,value in values.items():
         if key.endswith('temp') and value is not None and (type(value) not in (int,float) or not math.isfinite(value) or int(value)!=value):
             raise ExportValidationError('Les températures doivent être entières.')
+    colour=None
+    if 'hex' in values:
+        colour=validate_hex(values['hex']) if isinstance(values['hex'],str) else None
+        if not colour:raise ExportValidationError('Couleur invalide : six caractères HEX requis.')
+    physical={key:value for key,value in values.items() if key!='hex'}
     origin=db['_skus'][sku].get('_personal_origin') or sku
     existing=next((key for key,record in db['_skus'].items() if record.get('_personal') and record.get('_personal_origin')==origin and record.get('_personal_suffix')==suffix),None)
     changed=copy.deepcopy(db);entry=copy.deepcopy(db['_skus'][existing or sku])
@@ -907,7 +942,7 @@ def save_personal_filament(db: dict, sku: str, values: dict, suffix: str, *, pat
     identifier=existing or 'USER-'+uuid.uuid4().hex
     pkey=entry['product'] if existing else '@personal/'+identifier
     base=product.get('_personal_base_name') or view.display_product
-    product.update(values);product.update(display_name=f'{base} @{suffix}',_personal=True,_personal_base_name=base)
+    product.update(physical);product.update(display_name=f'{base} @{suffix}',_personal=True,_personal_base_name=base)
     entry.update(product=pkey,source='Personnalisation locale',_personal=True,_personal_suffix=suffix,
                  _personal_origin=origin)
     # Keep the original source reference as metadata, but give the copy its own identity.
@@ -915,13 +950,120 @@ def save_personal_filament(db: dict, sku: str, values: dict, suffix: str, *, pat
         previous=record.get('_field_sources',{})
         record['_field_sources']={key:(copy.deepcopy(previous[key]) if previous.get(key,{}).get('source')==db_io.USER_SOURCE else
             dict(source='Copie personnelle',rank=db_io.USER_RANK,value=copy.deepcopy(value))) for key,value in record.items() if not key.startswith('_')}
-    for key,value in values.items():product['_field_sources'][key]=db_io.user_correction(value)
+    for key,value in physical.items():product['_field_sources'][key]=db_io.user_correction(value)
+    if colour:
+        entry['hex']=colour;entry['_field_sources']['hex']=db_io.user_correction(colour)
     changed['_products'][pkey]=product;changed['_skus'][identifier]=entry
     db_io.validate_db(changed)
     save_db(changed,path)
     db.clear();db.update(changed)
     if isinstance(db,db_io.Database):db.revision,db.source_path=changed.revision,changed.source_path
     return identifier
+
+
+# ─── Comparaison des valeurs (présentation, aucune écriture) ──────────────
+COMPARED_FIELDS = ("min_temp", "max_temp", "bed_min_temp", "bed_max_temp", "diameter", "density", "hex")
+_OPENTAG_BOUNDS = {"min_temp": "min_print_temp", "max_temp": "max_print_temp",
+                   "bed_min_temp": "min_bed_temp", "bed_max_temp": "max_bed_temp"}
+
+
+def field_provenance(record: dict, key: str) -> dict:
+    """Classify the winning provenance of one stored value; never upgrade it.
+
+    ``manufacturer`` requires a manufacturer-rank source. A value without any
+    provenance record stays ``unknown`` (historical catalogue, older installs).
+    """
+    info = (record.get("_field_sources") or {}).get(key) if isinstance(record, dict) else None
+    if not isinstance(info, dict) or not info:
+        return {"kind": "unknown", "source": None}
+    source = info.get("source")
+    if source == db_io.USER_SOURCE:
+        kind = "user"
+    elif source == "Copie personnelle":
+        kind = "copy"
+    elif isinstance(info.get("rank"), (int, float)) and info["rank"] >= db_io.MANUFACTURER_RANK:
+        kind = "manufacturer"
+    else:
+        kind = "source"
+    return {"kind": kind, "source": source}
+
+
+def value_comparison(db: dict, sku: str, *, use_orca_overrides: bool = False, nfc_format: str = "openspool",
+                     opentag_settings: Optional[dict] = None) -> Optional[dict]:
+    """Reference / Orca / personal / effective values per field, for display only.
+
+    Effective values follow the encoders' own policy (``_apply_orca`` and the
+    OpenTag3D explicit settings); a value that is unknown stays ``None``. The
+    reference of a personal copy is its origin's *current* record when present.
+    """
+    view = get_sku_view(db, sku)
+    if view is None:
+        return None
+    entry = db["_skus"][sku]
+    product = view.product_data
+    personal = bool(entry.get("_personal"))
+    origin_entry = origin_product = None
+    if personal:
+        origin = entry.get("_personal_origin")
+        origin_entry = db["_skus"].get(origin) if origin and origin != sku else None
+        origin_product = db["_products"].get(origin_entry.get("product")) if origin_entry else None
+        reference_entry, reference_product = origin_entry, origin_product
+    else:
+        reference_entry, reference_product = entry, product
+    result = {"sku": sku, "personal": personal, "origin_missing": personal and reference_product is None,
+              "format": nfc_format, "orca": {"status": "none", "path": None, "values": {}, "applied": []},
+              "targets": {}, "rows": []}
+    effective = dict(product)
+    orca_path = find_orca_profile(entry.get("product", ""))
+    orca_values: dict = {}
+    if orca_path:
+        try:
+            orca_values, applied = _apply_orca(effective, orca_path, use_orca_overrides)
+            result["orca"] = {"status": "applied" if applied else "unused", "path": orca_path,
+                              "values": orca_values, "applied": sorted(applied)}
+        except (ValueError, TypeError, OSError) as exc:
+            result["orca"] = {"status": "error", "path": orca_path, "values": {}, "applied": [], "message": str(exc)}
+    elif personal and origin_entry:
+        origin_path = find_orca_profile(origin_entry.get("product", ""))
+        if origin_path:
+            try:
+                origin_values = load_orca_temps(origin_path)
+            except ExportValidationError as exc:
+                result["orca"] = {"status": "error", "path": origin_path, "values": {}, "applied": [], "message": str(exc)}
+            else:
+                # Shown for comparison only: the encoders do not apply it to the copy.
+                result["orca"] = {"status": "origin_only", "path": origin_path, "values": origin_values, "applied": []}
+    settings = opentag_settings if nfc_format == "opentag3d" and isinstance(opentag_settings, dict) else {}
+    for key in COMPARED_FIELDS:
+        if key == "hex":
+            ref_value = reference_entry.get("hex") if reference_entry else None
+            ref_info = field_provenance(reference_entry, "hex") if reference_entry else {"kind": "absent", "source": None}
+            suspect = bool(reference_entry and db_io.implausible_color(reference_entry))
+            own = entry.get("hex")
+            effective_value = validate_hex(own)
+            origin = "personal" if personal else "reference"
+        else:
+            ref_value = reference_product.get(key) if reference_product else None
+            ref_info = field_provenance(reference_product, key) if reference_product else {"kind": "absent", "source": None}
+            suspect = bool(reference_product and any(issue for issue in db_io.implausible_physical(
+                {key: ref_value, "_field_sources": reference_product.get("_field_sources", {})})))
+            own = product.get(key)
+            effective_value = effective.get(key)
+            origin = "orca" if key in result["orca"]["applied"] else "personal" if personal else "reference"
+            if key in _OPENTAG_BOUNDS and _OPENTAG_BOUNDS[key] in settings:
+                effective_value = settings[_OPENTAG_BOUNDS[key]]
+                origin = "opentag_settings"
+        row = {"key": key,
+               "reference": {"value": ref_value, **ref_info, "suspect": suspect},
+               "orca": ({"value": (result["orca"]["values"] or {}).get(key),
+                         "applied": key in result["orca"]["applied"]} if key != "hex" and result["orca"]["values"] else None),
+               "personal": ({"value": own, **field_provenance(product if key != "hex" else entry, key)} if personal else None),
+               "effective": {"value": effective_value, "origin": origin}}
+        row["differs"] = ref_value is not None and effective_value is not None and ref_value != effective_value
+        result["rows"].append(row)
+    if nfc_format == "opentag3d":
+        result["targets"] = {key: settings.get(key) for key in ("print_temp", "bed_temp", "chamber_temp")}
+    return result
 
 
 # ─── Payload OpenSpool / NFC ──────────────────────────────────────────────
@@ -1018,10 +1160,7 @@ def build_openspool(entry: dict, product_data: dict, brand_meta: Optional[dict] 
     orca_path = find_orca_profile(entry.get("product", ""))
     if orca_path:
         try:
-            values = load_orca_temps(orca_path)
-            for key, value in values.items():
-                if value is not None and (use_orca_overrides or src.get(key) is None):
-                    src[key] = value
+            _apply_orca(src, orca_path, use_orca_overrides)
         except (ValueError, TypeError, OSError) as exc:
             raise ExportValidationError(f"Profil Orca inutilisable ({orca_path}) : {exc}") from exc
     payload = {
@@ -1457,6 +1596,8 @@ def import_settings(path):
         if type(cfg[key]) is not bool:raise ValueError('Option invalide')
     if type(cfg['preferred_weight_g']) is not int or not 0 <= cfg['preferred_weight_g'] <= 20000 or cfg['preferred_packaging'] not in ('any','spool','refill'):
         raise ValueError('Conditionnement préféré invalide')
+    if not valid_colour_delta_limit(cfg['colour_delta_max']):
+        raise ValueError('Écart de couleur invalide')
     directory=cfg['export_directory']
     if not isinstance(directory,str) or len(directory)>4096 or '\x00' in directory or directory and not os.path.isabs(directory):
         raise ValueError('Dossier d’export invalide')
@@ -1494,9 +1635,7 @@ def opentag_fields(entry, product_data, settings=None, *, use_orca_overrides=Fal
     src=dict(product_data)
     orca_path=find_orca_profile(entry.get('product',''))
     if orca_path:
-        try:
-            for key,value in load_orca_temps(orca_path).items():
-                if value is not None and (use_orca_overrides or src.get(key) is None):src[key]=value
+        try:_apply_orca(src,orca_path,use_orca_overrides)
         except (ValueError,TypeError,OSError) as exc:raise ExportValidationError('Profil Orca inutilisable : '+str(exc)) from exc
     fields=dict(material=src.get('type'),manufacturer=src.get('brand'),
                 diameter=src.get('diameter'),density=src.get('density'))

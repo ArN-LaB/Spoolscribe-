@@ -1,4 +1,4 @@
-"""Capture the real v0.3.5 UI using public fixtures and temporary, offline settings."""
+"""Capture the current UI using public fixtures and temporary, offline settings."""
 import json
 import os
 from pathlib import Path

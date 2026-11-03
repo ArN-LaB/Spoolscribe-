@@ -10,13 +10,13 @@
 
 ## 1. Download and open
 
-**v0.4.0 is a pre-release.** [Choose v0.3.5 for the latest stable build](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
+**v0.5.0 is a pre-release.** [Choose v0.3.5 for the latest stable build](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
 
-| Platform | v0.4.0 pre-release download | Inside the ZIP |
+| Platform | v0.5.0 pre-release download | Inside the ZIP |
 | --- | --- | --- |
-| **Windows · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-windows.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-windows.zip.sha256) | One <code>SpoolScribe.exe</code> |
-| **macOS · Apple Silicon** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-macos.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-macos.zip.sha256) | One <code>SpoolScribe.app</code> |
-| **Linux · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-linux.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.4.0/SpoolScribe-linux.zip.sha256) | One <code>SpoolScribe</code> executable |
+| **Windows · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-windows.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-windows.zip.sha256) | One <code>SpoolScribe.exe</code> |
+| **macOS · Apple Silicon** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-macos.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-macos.zip.sha256) | One <code>SpoolScribe.app</code> |
+| **Linux · x64** | [Application](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-linux.zip) · [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.5.0/SpoolScribe-linux.zip.sha256) | One <code>SpoolScribe</code> executable |
 
 Verify the download’s origin and checksum, unzip it and open the application.
 
@@ -65,8 +65,10 @@ Click a column header to sort; click again to reverse. Its context menu selects
 primary/secondary sort and visible columns. Use the list/grid buttons to switch views.
 
 **Your usual packaging:** set it in **Settings → Spools**. It is preselected when available.
-**Your own adjustments:** use **Edit…** to save an independent copy with an editable
-<code>@suffix</code>. The source stays intact; refreshes preserve your copy.
+**Your own adjustments:** **Edit…** opens a draft inside the card; **Save a copy** stores an
+independent copy with an editable <code>@suffix</code>, **Cancel** writes nothing. The value
+comparison shows reference, Orca, personal and exported values. The source stays intact;
+refreshes preserve your copy.
 
 ## 4. Configure your reader and export
 
@@ -81,6 +83,23 @@ primary/secondary sort and visible columns. Use the list/grid buttons to switch 
 An explicitly configured OpenSpool or OpenTag3D setup enables the corresponding
 export. The result distinguishes printer recognition from external inventory.
 Other setups provide a reference sheet. SpoolScribe prepares the payload and does not replace the slicer profile.
+
+The export card connects your printer and tag, with a space-left gauge.
+**Details**, beside the tag, opens **Your next steps** and a separate **Technical information** tab.
+The **Colours** section sits below **Materials** in the left sidebar: choose a swatch
+or enter a code, then **Compare**. **Remove** clears only this comparison.
+All filter categories share the same collapsible card design. The active-filter
+button lists your criteria without adding a paragraph. **Remove** also clears an
+unapplied colour code; it is disabled when empty. Saved favourites remain intact.
+**Help** explains the results and excluded records in cards, with the method in a separate tab.
+Printed results may differ from on-screen colours.
+
+Named printer/family choices have transparent product photos, with the actual
+illustrated model identified in example captions. Generic choices without a
+specific model, and standalone readers, retain clearly identified icons.
+The same images appear in the picker, hardware card and export card.
+For OpenTag3D, **Details → Your next steps →
+Edit label values…** opens the settings. The main card keeps a single primary action.
 
 **Next:** use the matching NFC writing app, read the tag back, then check it on your reader.
 Documented support is not exhaustive hardware certification;

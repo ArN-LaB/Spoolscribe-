@@ -29,18 +29,25 @@ DESCRIPTIONS = {
  'xyz_davinci': ('XYZprinting da Vinci','Famille da Vinci : capacités et consommables variables selon le modèle. Les caractéristiques techniques de votre version restent à confirmer.',''),
 }
 
+PHOTO_ALIASES = {'bambu_openspool': 'bambu', 'prusa': 'prusa_mk4'}
+
 
 def presentation(profile):
     key=next((k for k,p in printer_profiles.PROFILES.items() if p['label']==profile['label']),None)
     title,description,source=DESCRIPTIONS.get(key,(profile['label'],profile.get('help','Consultez le profil de votre modèle dans le trancheur.'),''))
-    result=dict(title=tr(title),description=tr(description),source=source)
+    # A device category must not depend on a translated title or the word "reader"
+    # inside "printer without a reader". This is artwork selection, not compatibility.
+    kind='reader' if key in ('openspool','opentag3d') else 'open' if key in ('klipper_diy','prusa_mk4') else 'enclosed'
+    result=dict(title=tr(title),description=tr(description),source=source,visual_kind=kind)
     root=printer_profiles.bundled_path().parent
     try:
         manifest=json.loads((root/'printers/photos/manifest.json').read_text())
-        item=manifest.get('bambu' if key=='bambu_openspool' else key,{})
+        item=manifest.get(PHOTO_ALIASES.get(key,key),{})
         if item:
             path=(root/'printers/photos'/item['file']).resolve()
             if path.is_relative_to((root/'printers/photos').resolve()) and path.is_file():
-                result.update(photo=str(path),caption=tr(item['caption']))
+                result.update(photo=str(path),caption=tr(item['caption']),
+                              photo_model=item['model'],photo_source=item['page_url'],
+                              photo_bounds=tuple(item['bounds']))
     except (OSError,ValueError,KeyError):pass
     return result

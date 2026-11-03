@@ -13,6 +13,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-03
+
+### Pre-release — hardware feedback wanted
+
+This is a new development pre-release. **v0.3.5 remains the latest stable**;
+v0.4.0 and its downloads remain unchanged. Software tests do not certify every
+printer, RFID reader, firmware, plugin or tag combination. Physical writing and
+printer read-back across these configurations remain unverified. Please report
+successful tests and problems through [compatibility Issues](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml),
+including model, reader, firmware/plugin versions, tag type, format and observed result.
+
+### Added
+
+- Offline CIEDE2000 colour search from a swatch or HEX, respecting catalogue filters.
+  Inclusive maximums 3/10/20, unrestricted or a saved manual limit. Scores are not
+  percentages; display rounding up to 0.01 never conceals a threshold excess.
+- In-card personal editing with per-field restore and explicit save/discard/keep
+  decisions. The source reference stays intact; export cannot mix saved and draft data.
+- Compact value/source comparison for reference, Orca, personal copy and actual
+  OpenSpool/OpenTag3D output; identical reference values are not duplicated.
+- Reviewed transparent photos for the 17 named printer/family choices (15 images),
+  with provenance and an explicit generic visual for other installations.
+
+### Improved
+
+- Consistent collapsible filters, favourite actions, crossed manufacturer/material
+  choices, preserved panel widths and a single active-filter menu.
+- Visual printer-category choices, guided hardware/tag/export states, readable
+  blocking reasons and separate exact NFC budget details. No new hardware compatibility claimed.
+- Clearer colour-first grid, deeper spool previews and spaced ΔE footers; theme-aware
+  logo contrast. Secondary actions align without oversized or truncated labels.
+- Independent edit/details views and exclusive hardware accordion with draft guards.
+- Grouped catalogue-update progress and dialogs that use free screen space after
+  native layout, with symmetric tab overflow, visible arrows and reachable actions.
+- English, French, Spanish and Simplified Chinese text for the new controls; consent,
+  local-correction protections and the 1,008 historical exports remain covered.
+
 ## [0.4.0] - 2026-11-01
 
 ### Pre-release

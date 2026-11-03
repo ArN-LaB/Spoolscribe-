@@ -214,9 +214,9 @@ jobs:
     permissions:
       contents: write
     env:
-      # v0.4.0 is explicitly authorised as a pre-release. Suffixed tags are
+      # v0.4.0 and v0.5.0 are explicitly authorised as pre-releases. Suffixed tags are
       # pre-releases too; neither may replace the latest stable download.
-      RELEASE_PRERELEASE: ${{ github.ref_name == 'v0.4.0' || contains(github.ref_name, '-') }}
+      RELEASE_PRERELEASE: ${{ github.ref_name == 'v0.4.0' || github.ref_name == 'v0.5.0' || contains(github.ref_name, '-') }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -258,7 +258,10 @@ jobs:
           prerelease: ${{ env.RELEASE_PRERELEASE == 'true' }}
           make_latest: ${{ env.RELEASE_PRERELEASE != 'true' }}
           fail_on_unmatched_files: true
-          body: ${{ steps.changelog.outputs.body }}
+          body: |
+            ${{ steps.changelog.outputs.body }}
+
+            Automated tests and platform builds: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           files: |
             artifacts/**/*.zip
             artifacts/**/*.zip.sha256

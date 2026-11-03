@@ -1,9 +1,11 @@
 """Catalogue interaction, persistent workspace settings and guided exports."""
+import re
 from PySide6.QtCore import Qt, QByteArray, QThread, Signal, QUrl, QTimer, QSize
 from PySide6.QtGui import QDesktopServices, QPixmap, QPainter, QColor, QImage, QKeySequence, QShortcut, QIcon
 from PySide6.QtWidgets import (QTableWidget, QListWidget, QListWidgetItem, QCompleter, QMenu, QDialog, QVBoxLayout,
     QHBoxLayout, QLabel, QPushButton, QToolButton, QCheckBox, QDialogButtonBox, QComboBox,
     QFileDialog, QMessageBox, QPlainTextEdit, QLineEdit, QWidget, QScrollArea, QFrame, QTableWidgetItem, QHeaderView, QSizePolicy, QStackedWidget, QGridLayout)
+from .ui_surfaces import fit_dialog
 from . import core
 from .i18n import tr
 from . import printer_profiles
@@ -11,10 +13,24 @@ from .printer_profiles import PROFILES
 from .ui_widgets import WrapLabel, PrinterCard, FavoriteBrandList, PrinterPicker, ChoiceButtons, report_metrics, CONTROL_HEIGHT
 
 
+def _may_clear(view):
+    """One decision for the whole deselection intent (reclick, empty area, Escape)."""
+    guard = getattr(view, 'before_clear', None)
+    return guard() if guard else True
+
+
+def _may_navigate(view, event):
+    """One decision for a keyboard move, taken before Qt changes the selection."""
+    guard = getattr(view, 'before_navigate', None)
+    return guard(view, event) if guard else True
+
+
 class ClearableTable(QTableWidget):
     def mousePressEvent(self, event):
         index = self.indexAt(event.position().toPoint())
         if event.button() == Qt.LeftButton and (not index.isValid() or self.selectionModel().isRowSelected(index.row(), index.parent())):
+            if not _may_clear(self):
+                return
             self.clearSelection()
             self.setCurrentCell(-1, -1)
             return
@@ -22,8 +38,12 @@ class ClearableTable(QTableWidget):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
+            if not _may_clear(self):
+                return
             self.clearSelection()
             self.setCurrentCell(-1, -1)
+            return
+        if not _may_navigate(self, event):
             return
         super().keyPressEvent(event)
 
@@ -38,6 +58,8 @@ class ClearableList(QListWidget):
             if event.position().x()>rect.right()-34 and event.position().y()<rect.top()+32:
                 self.favoriteRequested.emit(item.data(Qt.UserRole));return
         if event.button() == Qt.LeftButton and (item is None or item.isSelected()):
+            if not _may_clear(self):
+                return
             self.clearSelection()
             self.setCurrentRow(-1)
             return
@@ -45,8 +67,12 @@ class ClearableList(QListWidget):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
+            if not _may_clear(self):
+                return
             self.clearSelection()
             self.setCurrentRow(-1)
+            return
+        if not _may_navigate(self, event):
             return
         super().keyPressEvent(event)
 
@@ -97,7 +123,7 @@ class CatalogueUx:
         self.btn_view_list.clicked.connect(self._schedule_ui_preferences)
         # Raccourcis clavier : recherche, export, mise à jour, désélection.
         QShortcut(QKeySequence.Find, self, activated=lambda: (self.search.setFocus(), self.search.selectAll()))
-        QShortcut(QKeySequence('Ctrl+E'), self, activated=lambda: self.btn_generate.click() if self.btn_generate.isEnabled() else None)
+        QShortcut(QKeySequence('Ctrl+E'), self, activated=lambda: self._generate() if self.btn_generate.isEnabled() and getattr(self,'_primary_kind','export')=='export' else None)
         QShortcut(QKeySequence('Ctrl+U'), self, activated=lambda: self.update_btn.click() if self.update_btn.isEnabled() else None)
         QShortcut(QKeySequence(Qt.Key_Escape), self, activated=self._clear_filament)
         self.search.setToolTip(tr('Ctrl+F : rechercher'))
@@ -134,12 +160,21 @@ class CatalogueUx:
     # ── Barre latérale : fabricants, matières, état ───────────────────
     def _build_sidebar(self):
         side = QWidget(); side.setObjectName('sidebar')
-        side.setFixedWidth(220)
+        side.setMinimumWidth(220); side.setMaximumWidth(520)
         lay = QVBoxLayout(side); lay.setContentsMargins(0, 0, 6, 0); lay.setSpacing(6)
         def caption(text):
             label = QLabel(text); label.setObjectName('caption'); self._muted_labels.append(label); return label
-        filter_title = QGridLayout();filter_title.setContentsMargins(0,0,0,0);filter_title.setHorizontalSpacing(8)
-        filter_title.setColumnStretch(0,1);filter_title.setColumnStretch(1,1);filter_title.addWidget(caption(tr('FILTRES')),0,0)
+        filter_title = QGridLayout();filter_title.setContentsMargins(7,0,7,0);filter_title.setHorizontalSpacing(8)
+        filter_title.setColumnStretch(0,1);filter_title.setColumnStretch(1,1)
+        self.sections_menu=QToolButton();self.sections_menu.setText(tr('Filtres'))
+        self.sections_menu.setFixedHeight(CONTROL_HEIGHT);self.sections_menu.setObjectName('sectionsMenu')
+        self.sections_menu.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.sections_menu.setPopupMode(QToolButton.InstantPopup)
+        self.sections_menu.setAccessibleName(tr('Déplier ou replier les catégories de filtres'))
+        section_actions=QMenu(self.sections_menu);self.sections_menu.setMenu(section_actions)
+        self.collapse_sections=section_actions.addAction(tr('Tout replier'),lambda:self._set_all_sections_expanded(False))
+        self.expand_sections=section_actions.addAction(tr('Tout déplier'),lambda:self._set_all_sections_expanded(True))
+        filter_title.addWidget(self.sections_menu,0,0)
         self.reset_filters = QToolButton();self.reset_filters.setText(tr('Effacer'));self.reset_filters.setFixedHeight(32)
         self.reset_filters.setToolTip(tr('Effacer les filtres et la sélection. Vos favoris restent enregistrés.'))
         self.reset_filters.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
@@ -152,11 +187,12 @@ class CatalogueUx:
         self.favorites_only.setToolTip(tr('Afficher mes filaments favoris'));self.brand_favorites_only.setToolTip(tr('Afficher mes fabricants favoris'))
         self.favorites_only.toggled.connect(self._apply_filter);self.brand_favorites_only.toggled.connect(self._brand_favorites_filter)
         lay.addLayout(filter_title)
-        brand_title=QHBoxLayout();brand_title.addWidget(caption(tr('FABRICANTS')),1);lay.addLayout(brand_title)
+        # The same control manages active criteria and category presentation.
+        self.filter_summary=self.sections_menu
         self.brand_favorite_btn=QToolButton();self.brand_favorite_btn.setParent(side);self.brand_favorite_btn.hide()
         self.brand_search = QLineEdit(); self.brand_search.setPlaceholderText(tr('Filtrer les fabricants…'))
+        self.brand_search.setFixedHeight(CONTROL_HEIGHT)
         self.brand_search.setClearButtonEnabled(True); self.brand_search.textChanged.connect(self._filter_brand_list)
-        lay.addWidget(self.brand_search)
         self.brand_list = FavoriteBrandList(); self.brand_list.setObjectName('facets')
         self.brand_list.setUniformItemSizes(True); self.brand_list.setAlternatingRowColors(False)
         self.brand_list.itemClicked.connect(lambda item: self._choose_brand(item.data(Qt.UserRole) or '', remember=False))
@@ -164,19 +200,110 @@ class CatalogueUx:
         self.brand_list.setToolTip(tr('Survolez une ligne pour afficher son étoile, ou utilisez le clic droit. Les favoris gardent une étoile pleine.'))
         self.brand_list.setContextMenuPolicy(Qt.CustomContextMenu)
         self.brand_list.customContextMenuRequested.connect(self._brand_context_menu)
-        lay.addWidget(self.brand_list, 3)
-        lay.addWidget(caption(tr('MATIÈRES')))
         self.material_search=QLineEdit();self.material_search.setPlaceholderText(tr('Filtrer les matières…'));self.material_search.setClearButtonEnabled(True)
-        self.material_search.setFixedHeight(CONTROL_HEIGHT);self.material_search.textChanged.connect(self._filter_material_list);lay.addWidget(self.material_search)
+        self.material_search.setFixedHeight(CONTROL_HEIGHT);self.material_search.textChanged.connect(self._filter_material_list)
         self.family_list = QListWidget(); self.family_list.setObjectName('facets'); self.family_list.setUniformItemSizes(True)
         self.family_list.itemClicked.connect(lambda item: self._choose_family(item.data(Qt.UserRole) or ''))
-        lay.addWidget(self.family_list, 2)
-        lay.addWidget(caption(tr('ÉTAT DES DONNÉES')))
         self.state_list = QListWidget(); self.state_list.setObjectName('facets'); self.state_list.setUniformItemSizes(True)
         self.state_list.itemClicked.connect(lambda item: self._choose_state(item.data(Qt.UserRole) or 'all'))
         self.state_list.setFixedHeight(4 * 26 + 6)
-        lay.addWidget(self.state_list)
+        self.state_scope=QLabel(tr('Compteurs : tout le catalogue'));self.state_scope.setObjectName('stats');self._muted_labels.append(self.state_scope)
+        for listing,rows in ((self.brand_list,8),(self.family_list,7)):
+            listing.setMaximumHeight(rows*(listing.fontMetrics().height()+8)+6)
+        self._sections={};self._section_layout=lay
+        for key,title,widgets,stretch in (('brands',tr('FABRICANTS'),(self.brand_search,self.brand_list),3),
+                                          ('materials',tr('MATIÈRES'),(self.material_search,self.family_list),2),
+                                          ('colours',tr('TEINTES'),(self._build_colour_filter(),),0),
+                                          ('states',tr('ÉTAT DES DONNÉES'),(self.state_list,self.state_scope),0)):
+            self._add_filter_section(key,title,widgets,stretch)
+        # Keeps the open sections at the top when every list section is closed.
+        lay.addStretch(1);self._section_spacer_index=lay.count()-1
+        self._set_section_expanded('colours',False,save=False)
         return side
+
+    def _add_filter_section(self,key,title,widgets,stretch):
+        toggle=QToolButton();toggle.setObjectName('sectionToggle');toggle.setCheckable(True);toggle.setChecked(True)
+        toggle.setToolButtonStyle(Qt.ToolButtonTextBesideIcon);toggle.setArrowType(Qt.DownArrow)
+        toggle.setFocusPolicy(Qt.StrongFocus);toggle.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
+        toggle.setMinimumHeight(CONTROL_HEIGHT)
+        toggle.setCursor(Qt.PointingHandCursor)
+        frame=QFrame();frame.setObjectName('filterSection')
+        frame.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Maximum)
+        shell=QVBoxLayout(frame);shell.setContentsMargins(6,4,6,6);shell.setSpacing(4)
+        shell.addWidget(toggle)
+        body=QWidget();body_layout=QVBoxLayout(body);body_layout.setContentsMargins(0,0,0,0);body_layout.setSpacing(6)
+        for widget in widgets:body_layout.addWidget(widget,1 if isinstance(widget,QListWidget) and stretch else 0)
+        shell.addWidget(body,1 if stretch else 0)
+        self._section_layout.addWidget(frame)
+        self._sections[key]=dict(toggle=toggle,body=body,frame=frame,title=title,stretch=stretch)
+        toggle.toggled.connect(lambda expanded,k=key:self._set_section_expanded(k,expanded))
+
+    def _set_section_expanded(self,key,expanded,*,save=True):
+        """Folding is presentation only: criteria, page, sort and selection never change."""
+        section=self._sections[key];body=section['body'];toggle=section['toggle']
+        focus=self.focusWidget() if hasattr(self,'focusWidget') else None
+        if not expanded and focus is not None and body.isAncestorOf(focus):toggle.setFocus(Qt.OtherFocusReason)
+        body.setVisible(expanded)
+        toggle.blockSignals(True);toggle.setChecked(expanded);toggle.blockSignals(False)
+        toggle.setArrowType(Qt.DownArrow if expanded else Qt.RightArrow)
+        self._refresh_section_headers()
+        if save:self._schedule_ui_preferences()
+
+    def _set_all_sections_expanded(self,expanded):
+        """One presentation action; never resets filters, favourites or selection."""
+        for key in self._sections:self._set_section_expanded(key,expanded,save=False)
+        self._schedule_ui_preferences()
+
+    def _active_section_values(self):
+        quality=self.quality_filter.currentData() or 'all'
+        return {'brands':self.brand_filter.currentData() or '',
+                'materials':self.material_filter.currentData() or '',
+                'colours':'#'+self._colour_query['hex'] if self._colour_query else '',
+                'states':'' if quality=='all' else self.quality_filter.currentText()}
+
+    def _refresh_section_headers(self):
+        """Closed headers name their active choice; the summary lists every criterion."""
+        if not hasattr(self,'_sections'):return
+        values=self._active_section_values()
+        for key,section in self._sections.items():
+            toggle=section['toggle'];expanded=toggle.isChecked();value=values[key]
+            # A closed header names its active choice on its own line (never elided away).
+            text=section['title']+(f'\n● {value}' if value and not expanded else '')
+            toggle.setText(text)
+            state=tr('ouverte') if expanded else tr('fermée')
+            toggle.setAccessibleName(tr('Section {v0}, {v1}',v0=section['title'],v1=state))
+            toggle.setAccessibleDescription(tr('Filtre actif : {v0}',v0=value) if value else tr('Aucun filtre actif dans cette section'))
+            scope=tr('Compteurs : tout le catalogue') if key=='states' else tr('Compteurs selon les autres filtres actifs')
+            toggle.setToolTip((tr('Replier la section') if expanded else tr('Déplier la section'))+
+                              ('\n'+tr('Filtre actif : {v0}',v0=value) if value else '')+'\n'+scope)
+        parts=[]
+        if values['brands']:parts.append(tr('Fabricant : {v0}',v0=values['brands']))
+        if values['materials']:parts.append(tr('Matière : {v0}',v0=values['materials']))
+        if values['states']:parts.append(tr('État : {v0}',v0=values['states']))
+        if self.search.text().strip():parts.append(tr('Recherche : « {v0} »',v0=self.search.text().strip()))
+        if self.brand_favorites_only.isChecked():parts.append(tr('Fabricants favoris'))
+        if self.favorites_only.isChecked():parts.append(tr('Filaments favoris'))
+        if getattr(self,'_colour_query',None):parts.append(tr('Teintes proches de #{v0}',v0=self._colour_query['hex']))
+        self.filter_summary.setText(tr('Filtres')+(f' · {len(parts)}' if parts else ''))
+        self.filter_summary.setToolTip('\n'.join(parts))
+        self.filter_summary.setAccessibleName(self.filter_summary.text())
+        self.filter_summary.setAccessibleDescription('\n'.join(parts))
+        menu=self.filter_summary.menu();menu.clear()
+        for part in parts:menu.addAction(part).setEnabled(False)
+        if parts:menu.addSeparator()
+        self.collapse_sections=menu.addAction(tr('Tout replier'),lambda:self._set_all_sections_expanded(False))
+        self.expand_sections=menu.addAction(tr('Tout déplier'),lambda:self._set_all_sections_expanded(True))
+        self.collapse_sections.setEnabled(any(s['toggle'].isChecked() for s in self._sections.values()))
+        self.expand_sections.setEnabled(any(not s['toggle'].isChecked() for s in self._sections.values()))
+
+    def _section_preferences(self):
+        return {key:not section['toggle'].isChecked() for key,section in getattr(self,'_sections',{}).items()}
+
+    def _restore_section_preferences(self,state):
+        collapsed=state.get('collapsed') if isinstance(state,dict) else None
+        if not isinstance(collapsed,dict):collapsed={}
+        for key in getattr(self,'_sections',{}):
+            self._set_section_expanded(key,collapsed.get(key,key=='colours') is not True,save=False)
 
     def _fill_sidebar(self):
         if not hasattr(self, 'brand_list'): return
@@ -273,6 +400,7 @@ class CatalogueUx:
             else:
                 widget.clearSelection()
             widget.blockSignals(False)
+        self._refresh_section_headers()
         brand = self.brand_filter.currentData()
         self.brand_favorite_btn.setEnabled(bool(brand))
         self.brand_favorite_btn.setText('★' if brand in core.load_config().get('favorite_brands', []) else '☆')
@@ -357,10 +485,13 @@ class CatalogueUx:
         menu.exec(self.columns_btn.mapToGlobal(self.columns_btn.rect().bottomLeft()))
 
     def _clear_filament(self):
+        if not self._confirm_draft_transition():
+            self._reselect_draft();return
         self.current_sku = None
         for widget in (self.table, self.grid):
             widget.blockSignals(True); widget.clearSelection(); widget.blockSignals(False)
         self._show_empty()
+        self._refresh_nfc_capacity()
         if hasattr(self, 'inspector'): self.inspector.clear()
 
     def _store_config(self, cfg):
@@ -382,7 +513,8 @@ class CatalogueUx:
             quality=self.quality_filter.currentData(), search=self.search.text(), brand_search=self.brand_search.text(), sort1=self.sort1.currentData(), sort2=self.sort2.currentData(),
             descending1=self.sort1_direction.currentData(), descending2=self.sort2_direction.currentData(), view=self.view_mode,
             header=bytes(self.table.horizontalHeader().saveState().toHex()).decode(),
-            geometry=bytes(self.saveGeometry().toHex()).decode(), splitter=self.splitter.sizes(), favorites_only=self.favorites_only.isChecked(), brand_favorites_only=self.brand_favorites_only.isChecked())
+            geometry=bytes(self.saveGeometry().toHex()).decode(), splitter=self.splitter.sizes(), favorites_only=self.favorites_only.isChecked(), brand_favorites_only=self.brand_favorites_only.isChecked(),
+            collapsed=self._section_preferences())
         self._store_config(cfg)
 
     def _restore_ui_preferences(self):
@@ -406,14 +538,18 @@ class CatalogueUx:
             if state.get('geometry'): self.restoreGeometry(QByteArray.fromHex(state['geometry'].encode()))
             sizes=state.get('splitter', [])
             if not isinstance(sizes,list) or len(sizes)!=3 or any(type(v) is not int or v<0 for v in sizes): sizes=[220,620,400]
-            self.splitter.setSizes([220,max(340,sizes[1]),max(300,min(sizes[2],600))])
+            self.splitter.setSizes([max(self.sidebar.minimumWidth(),min(sizes[0],self.sidebar.maximumWidth())),max(340,sizes[1]),max(300,min(sizes[2],600))])
         except (ValueError,TypeError): pass
         self._set_view_mode(state.get('view','list') if state.get('view') in ('list','grid') else 'list')
+        self._restore_section_preferences(state)
+        self._refresh_colour_limit_label()
         for control in controls:control.blockSignals(False)
         self._apply_filter()
         self._restoring_ui = False
 
     def closeEvent(self, event):
+        if not self._confirm_draft_transition():
+            event.ignore(); return
         if self.worker and self.worker.isRunning():
             answer = QMessageBox.question(self, tr('Synchronisation en cours'),
                 tr('Une synchronisation est en cours. Quitter quand même ?\nL’étape en cours est interrompue ; la base locale reste celle d’avant.'),
@@ -435,6 +571,7 @@ class CatalogueUx:
             except (OSError,ValueError) as exc: QMessageBox.warning(self,tr('Réglages'),str(exc))
 
     def _import_settings(self):
+        if not self._confirm_draft_transition():return
         path, _ = QFileDialog.getOpenFileName(self,tr('Charger des réglages'),'','JSON (*.json)')
         if path:
             try:
@@ -513,7 +650,7 @@ class CatalogueUx:
         technical.toggled.connect(lambda checked:report_pages.setCurrentIndex(1 if checked else 0))
         technical.toggled.connect(lambda checked:technical.setText(tr('Retour aux sources') if checked else tr('Stockage et valeurs conservées')))
         lay.addWidget(technical,0,Qt.AlignLeft)
-        close=QPushButton(tr('Fermer'));close.setFixedHeight(CONTROL_HEIGHT);close.clicked.connect(dlg.accept);row=QHBoxLayout();row.addStretch(1);row.addWidget(close);lay.addLayout(row);dlg.exec()
+        close=QPushButton(tr('Fermer'));close.setFixedHeight(CONTROL_HEIGHT);close.clicked.connect(dlg.accept);row=QHBoxLayout();row.addStretch(1);row.addWidget(close);lay.addLayout(row);fit_dialog(dlg,preferred_width=740);dlg.exec()
 
     @staticmethod
     def _source_status(ok, status, message=''):
@@ -526,6 +663,8 @@ class CatalogueUx:
         return tr('Échec de l’actualisation')
 
     def _sync_catalogue(self):
+        # The draft decision is taken in _start_update, the single route of every
+        # refresh: saving sources only (no refresh) never asks about the draft.
         if core.has_network_consent():self._start_update(manual=True)
         else:self._choose_sources()
 
@@ -594,6 +733,7 @@ class CatalogueUx:
             except OSError as exc:error.setText(tr(str(exc)));return
             state['download']=download;dlg.accept()
         run.clicked.connect(lambda:accept(True));save.clicked.connect(lambda:accept(False));cancel.clicked.connect(dlg.reject);lay.addWidget(buttons)
+        fit_dialog(dlg,preferred_width=760)
         if dlg.exec()==QDialog.Accepted and state['download']:self._start_update(manual=True)
 
     # ── Rapport de synchronisation ────────────────────────────────────
@@ -623,10 +763,10 @@ class CatalogueUx:
         lay.addWidget(self._report_sources([dict(source=r.label,status=r.status,ok=r.ok,message=r.stderr) for r in results]),1)
         if status!='complete':lay.addWidget(WrapLabel(tr('Les fiches non actualisées restent disponibles. Vous pouvez réessayer plus tard.')))
         close=QPushButton(tr('Fermer'));close.setFixedHeight(CONTROL_HEIGHT);close.clicked.connect(dlg.accept)
-        row=QHBoxLayout();row.addStretch(1);row.addWidget(close);lay.addLayout(row);dlg.show()
+        row=QHBoxLayout();row.addStretch(1);row.addWidget(close);lay.addLayout(row);fit_dialog(dlg,preferred_width=820);dlg.show()
 
     def _maybe_auto_update(self):
-        if not self.isVisible() or core.db_restored_this_session():return
+        if not self.isVisible() or core.db_restored_this_session() or getattr(self,'_draft',None):return
         if core.has_network_consent():
             if not self.db.get('_skus') or core.update_due():
                 self._start_update()
@@ -765,7 +905,7 @@ class CatalogueUx:
             if self._opentag_selected():
                 button=self.writer_buttons.buttons.get(self.opentag_output.currentData())
                 if button:effect+='\n'+tr('Fichier : {v0}',v0=button.text())
-        self.setup_result.setText(title+'\n'+effect)
+        self.setup_result.setText(effect);self.setup_result.setToolTip(title)
 
     def _fill_firmware_combo(self,printer_id,firmware_id=None):
         self.firmware.blockSignals(True);self.firmware.clear()
@@ -780,9 +920,9 @@ class CatalogueUx:
     def _build_hardware_dialog(self):
         self.hardware_dialog=QDialog(self);self.hardware_dialog.setWindowTitle(tr('Mon imprimante et mes étiquettes'))
         available=self.app.primaryScreen().availableGeometry().height() if self.app.primaryScreen() else 900
-        self.hardware_dialog.resize(680,min(760,max(480,available-40)))
+        self.hardware_dialog.resize(680,min(640,max(380,available-40)))
         self.hardware_dialog.setMinimumSize(480,300)
-        lay=QVBoxLayout(self.hardware_dialog)
+        lay=QVBoxLayout(self.hardware_dialog);lay.setContentsMargins(16,16,16,16);lay.setSpacing(10)
         intro=WrapLabel(tr('Retrouvez votre imprimante, puis vérifiez comment elle reconnaît vos bobines.'))
         lay.addWidget(intro)
         self.hardware_scroll=QScrollArea();self.hardware_scroll.setWidgetResizable(True)
@@ -797,13 +937,16 @@ class CatalogueUx:
             control.setFixedHeight(CONTROL_HEIGHT);control.setMinimumWidth(0)
             control.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon);control.setMinimumContentsLength(12)
         self.printers_origin=WrapLabel()
-        self.printers_origin.setObjectName('fieldvalue');lay.addWidget(self.printers_origin)
+        self.printers_origin.setObjectName('guidanceNote');lay.addWidget(self.printers_origin)
         foot=QHBoxLayout()
         self.btn_update_printers=QPushButton(tr('Actualiser la liste'))
         self.btn_update_printers.setFixedHeight(CONTROL_HEIGHT)
         self.btn_update_printers.setToolTip(tr('Télécharger la liste des imprimantes depuis le dépôt SpoolScribe'))
         self.btn_update_printers.clicked.connect(self._update_printers);foot.addWidget(self.btn_update_printers)
-        foot.addStretch(1);close=QPushButton(tr('Terminé'));close.setFixedHeight(CONTROL_HEIGHT);close.clicked.connect(self.hardware_dialog.accept);foot.addWidget(close);lay.addLayout(foot)
+        foot.addStretch(1);close=self.hardware_footer_close=QPushButton(tr('Terminé'));close.setFixedHeight(CONTROL_HEIGHT);close.clicked.connect(self.hardware_dialog.accept);foot.addWidget(close);lay.addLayout(foot)
+        for button in (close,self.btn_update_printers):button.ensurePolished()
+        width=max(button.fontMetrics().horizontalAdvance(button.text())+28 for button in (close,self.btn_update_printers))
+        for button in (close,self.btn_update_printers):button.setFixedWidth(width)
         self._refresh_printers_origin()
 
     def _refresh_printers_origin(self):
@@ -813,6 +956,7 @@ class CatalogueUx:
 
     def _open_hardware(self):
         self._refresh_printer_card()
+        fit_dialog(self.hardware_dialog,preferred_width=720)
         self.hardware_dialog.show();self.hardware_dialog.raise_();self.hardware_dialog.activateWindow()
 
     def _update_printers(self):
@@ -996,6 +1140,12 @@ class CatalogueUx:
         return core.recommended_nfc(payload,self.tag_type.currentData(),self.nfc_profile.currentData(),self.nfc_reserve.value())
 
     def _refresh_nfc_capacity(self):
+        """Export state, then the value comparison and draft reminders of the same context."""
+        self._refresh_export_state()
+        self._refresh_export_journey()
+        if hasattr(self,'_refresh_comparison'):self._refresh_comparison()
+
+    def _refresh_export_state(self):
         if not hasattr(self,'printer'):return
         can=self._can_export_for_printer()
         printer_id=self.printer.currentData() or printer_profiles.DEFAULT
@@ -1014,34 +1164,106 @@ class CatalogueUx:
         if hasattr(self,'btn_inspect'):
             self.btn_inspect.setText(tr('Masquer l’export') if self.inspector.isVisible() else tr('Voir l’export')) if is_opentag else self.btn_inspect.setText(tr('Masquer le JSON') if self.inspector.isVisible() else tr('Voir le JSON'))
         self.nfc_advanced.setVisible(can and self.advanced_toggle.isChecked())
-        summary=tr(PROFILES[printer_id]['label'])
-        if can:summary+=f' · {self.tag_choice.currentData()} · {self.nfc_format.currentText()}'
-        else:summary+=tr(' · consultation des fiches')
-        if hasattr(self,'hardware_summary'):self.hardware_summary.setText(summary)
-        self.btn_generate.setEnabled(can and bool(self.current_sku) and not self._variant_needs_choice() and not (self.worker and self.worker.isRunning()))
-        if hasattr(self,'btn_inspect'):self.btn_inspect.setEnabled(can and bool(self.current_sku))
+        if not hasattr(self,'btn_generate'):return
+        # Hardware, configuration and its real effect, then format/profile/tag.
+        configuration=self.firmware.currentText() if self.firmware.currentData() not in (None,'unknown') else tr('configuration à préciser')
+        self.hardware_summary.setText(tr(PROFILES[printer_id]['label'])+' · '+self._configuration_effect())
+        self.hardware_summary.setToolTip(configuration)
+        self.nfc_capacity.setToolTip('')
+        self._reset_export_explanation()
+        busy=bool(self.worker and self.worker.isRunning())
+        if hasattr(self,'btn_inspect'):self.btn_inspect.setEnabled(can and bool(self.current_sku) and not self._draft_dirty())
+        self._refresh_last_export()
+        if not self.current_sku:
+            self.nfc_capacity.setText(tr('Choisissez un filament pour préparer une étiquette.'))
+            self._set_primary('export',tr('Exporter pour NFC'),False);return
+        if busy:
+            self._set_primary('export',tr('Exporter pour NFC'),False)
+            self.nfc_capacity.setText(tr('Attendez la fin de la mise à jour avant de modifier ou exporter la fiche.'));return
         if not can:
             self.nfc_note.setText(tr('Utilisez ces informations dans votre logiciel de préparation d’impression.'))
-            self.nfc_capacity.setText(tr('Précisez votre installation dans « Modifier… ».') if self.firmware.currentData()=='unknown' else tr('Aucun format exportable pour cette configuration.'));return
-        if not self.current_sku:return
+            if self.firmware.currentData()=='unknown':
+                # Hardware is chosen in « Mon matériel » ; the export stays disabled
+                # until a supported configuration is selected (existing contract).
+                self.nfc_capacity.setText(tr('Précisez votre installation dans « Modifier… ».'))
+                self._set_primary('export',tr('Exporter pour NFC'),False,tr('Choisir le lecteur, le logiciel et le format pris en charge'))
+            else:
+                self.nfc_capacity.setText(tr('Aucun format exportable pour cette configuration.'))
+                self._set_primary('export',tr('Exporter pour NFC'),False,tr('Ce lecteur ou ce logiciel ne lit aucun format exporté par SpoolScribe.'))
+            return
+        if self._draft_dirty():
+            self.nfc_capacity.setText(tr('Brouillon non enregistré : l’export et l’aperçu utilisent uniquement des valeurs enregistrées.'))
+            self._set_primary('export',tr('Enregistrez ou annulez le brouillon'),False);return
+        if self._variant_needs_choice():
+            self.nfc_note.setText(tr('Choisissez la teinte de votre bobine ci-dessus.'))
+            self.nfc_capacity.setText(tr('Comparez les pastilles de couleur et choisissez la teinte de votre bobine.'))
+            self._set_primary('export',tr('Choisissez d’abord une teinte'),False);return
+        tag=self.tag_type.currentData();reserve=self.nfc_reserve.value()
         try:
             if is_opentag:
-                prepared=self._prepare_opentag()
+                prepared=self._prepare_opentag();size=prepared.size
+                writer=self.opentag_output.currentText() or self.opentag_output.currentData()
                 self.nfc_note.setText(tr('Importez le profil dans NFC Tools. Le fichier JSON contient un enregistrement binaire OpenTag3D, pas un JSON OpenSpool.') if self.opentag_output.currentData()!='ndef' else tr('Message NDEF brut : le logiciel d’écriture doit accepter ce format.'))
-                self.nfc_capacity.setText(tr('OpenTag3D : {v0}/{v1} octets sur l’étiquette ; {v2} octets disponibles.',v0=prepared.size['occupied'],v1=prepared.size['capacity'],v2=prepared.size['remaining']))
-                self.nfc_capacity.setToolTip(tr('Validation logicielle uniquement. Vérifiez l’import, l’écriture et la relecture avec votre matériel.'))
-                return
-            payload=self._build_payload()
-            if payload is None:return
-            options=self._nfc_options();text=core.serialize_openspool(payload,**options)
-            size=core.nfc_size(text,tag_type=options['tag_type'],reserved_bytes=options['reserved_bytes'])
-            self.nfc_note.setText(tr('Fichier avec descriptifs et logo.') if options['profile']=='full' else tr('Fichier compact, adapté à votre étiquette.'))
-            self.nfc_capacity.setText(tr('Place suffisante sur l’étiquette.'))
-            self.nfc_capacity.setToolTip(tr('Espace restant : {v0} octets. Le logiciel d’écriture peut ajouter des données ; vérifiez sa taille finale.', v0=size.remaining_bytes))
+                budget=dict(payload=size['payload'],ndef=size['ndef'],occupied=size['occupied'],
+                            reserved=reserve,remaining=size['remaining'],capacity=size['capacity'])
+                technical_format=f'OpenTag3D 2.004 · {writer}'
+                remaining=size['remaining']
+            else:
+                payload=self._build_payload()
+                if payload is None:return
+                options=self._nfc_options();text=core.serialize_openspool(payload,**options)
+                size=core.nfc_size(text,tag_type=options['tag_type'],reserved_bytes=options['reserved_bytes'])
+                self.nfc_note.setText(tr('Fichier avec descriptifs et logo.') if options['profile']=='full' else tr('Fichier compact, adapté à votre étiquette.'))
+                profile={'essential':tr('profil essentiel'),'full':tr('profil complet')}[options['profile']]
+                budget=dict(payload=size.utf8_bytes,ndef=size.ndef_bytes,occupied=size.type2_bytes,
+                            reserved=size.reserved_bytes,remaining=size.remaining_bytes,capacity=size.capacity_bytes)
+                technical_format=f'OpenSpool 1.0 · {profile}'
+                remaining=size.remaining_bytes
+            self.nfc_capacity.setText(tr('Le fichier tient sur votre {v0}.',v0=tag))
+            self._explain_export(budget=budget,technical_format=technical_format)
+            self.nfc_capacity.setToolTip(tr('Espace restant : {v0} octets. Le logiciel d’écriture peut ajouter des données ; vérifiez sa taille finale.', v0=remaining)
+                                         +'\n'+tr('Validation logicielle uniquement. Vérifiez l’import, l’écriture et la relecture avec votre matériel.'))
+            self._set_primary('export',tr('Exporter pour NFC'),True)
         except (ValueError,OSError) as exc:
-            if self._variant_needs_choice(): self.btn_generate.setEnabled(False)
-            self.nfc_note.setText(tr('Choisissez la teinte de votre bobine ci-dessus.') if self._variant_needs_choice() else tr('Complétez les données signalées avant l’export.'))
-            self.nfc_capacity.setText(tr(str(exc)))
+            self._blocking_field=next((key for key in core.COMPARED_FIELDS if re.search(rf'\b{key}\b',str(exc))),None)
+            entry=self.db['_skus'].get(self.current_sku,{})
+            view=core.get_sku_view(self.db,self.current_sku)
+            self.nfc_note.setText(tr('Complétez les données signalées avant l’export.'))
+            reason=tr(str(exc))
+            if isinstance(exc,core.NfcCapacityError) or (is_opentag and self._opentag_capacity_exceeded()):
+                kind,label=('hardware',tr('Ajuster l’étiquette…'))
+                reason=tr('Le fichier est trop volumineux pour cette étiquette.')
+            elif isinstance(exc,core.MissingColorError):
+                kind,label=(('missing_colour',tr('Préciser la couleur…')) if not core.validate_hex(entry.get('hex')) else ('confirm_colour',tr('Confirmer la couleur…')))
+            elif is_opentag and view and not core.db_io.implausible_physical(view.product_data) and not self._blocking_field:
+                kind,label=('opentag_settings',tr('Préparer l’étiquette…'))
+                reason=self._friendly_tag_error(str(exc))
+            else:
+                kind,label=('correct_physical',tr('Corriger les caractéristiques…'))
+            if self._blocking_field:
+                from .ui_detail import FIELD_LABELS
+                # Readable, translated reason; the engine's technical wording stays available.
+                reason=tr('Champ à corriger : {v0}',v0=tr(dict(FIELD_LABELS)[self._blocking_field]))
+                self.nfc_capacity.setToolTip(tr(str(exc)))
+            self.nfc_capacity.setText(tr('Export bloqué : {v0}',v0=reason))
+            self._explain_export(diagnostic=tr(str(exc)))
+            self._set_primary(kind,label,True,tr('Corriger avant d’exporter ; aucun fichier n’est écrit.'))
+
+    def _opentag_capacity_exceeded(self):
+        """Presentation adapter: True only when a valid OpenTag3D payload exceeds the tag budget.
+
+        Reuses the encoder's own fields, payload and budget with no reserve, then
+        compares with the chosen reserve; the encoder and its errors are unchanged.
+        """
+        from . import opentag3d
+        try:
+            view=core.get_sku_view(self.db,self.current_sku)
+            fields=core.opentag_fields(dict(self.db['_skus'][self.current_sku],sku=self.current_sku),view.product_data,
+                                       core.opentag_settings(self.current_sku),use_orca_overrides=core.load_config().get('orca_overrides') is True)
+            size=opentag3d.budget(opentag3d.encode(fields),self.tag_type.currentData(),0)
+        except (ValueError,TypeError,KeyError,AttributeError,OSError):
+            return False
+        return size['remaining']<self.nfc_reserve.value()
 
     def _transparent_logo(self, pixmap):
         # Keep alpha; a subtle contrasting outline makes white/dark logos visible
@@ -1067,7 +1289,7 @@ class CatalogueUx:
         background=QColor('#252d34' if getattr(self,'_tok',{}).get('dark',False) else '#ffffff')
         samples=[image.pixelColor(x,y) for y in range(0,image.height(),max(1,image.height()//24)) for x in range(0,image.width(),max(1,image.width()//48))]
         visible=[c for c in samples if c.alpha()>128]
-        needs_edge=bool(visible) and sum(abs(c.lightness()-background.lightness())<35 for c in visible)/len(visible)>.85
+        needs_edge=bool(visible) and sum(abs(c.lightness()-background.lightness())<35 for c in visible)/len(visible)>(.4 if background.lightness()>128 else .85)
         image.setDevicePixelRatio(1)
         result=QPixmap(image.width()+2*pad,image.height()+2*pad);result.fill(Qt.transparent);painter=QPainter(result)
         if needs_edge:
@@ -1075,7 +1297,7 @@ class CatalogueUx:
             for y in range(mask.height()):
                 for x in range(mask.width()):
                     ink.setAlpha(round(image.pixelColor(x,y).alpha()*.45));mask.setPixelColor(x,y,ink)
-            for dx,dy in ((-1,0),(1,0),(0,-1),(0,1)):painter.drawImage(pad+dx,pad+dy,mask)
+            for dx,dy in ((-round(dpr),0),(round(dpr),0),(0,-round(dpr)),(0,round(dpr))):painter.drawImage(pad+dx,pad+dy,mask)
         painter.drawImage(pad,pad,image);painter.end();result.setDevicePixelRatio(dpr);return result
 
     def _check_app_update(self):
@@ -1132,8 +1354,10 @@ class CatalogueUx:
         if self.favorites_only.isChecked():self._apply_filter()
         else:
             saved=set(core.load_config().get('favorite_filaments',[]))
+            # Keep the current drawing metadata (ΔE, effect mark) — only the star changes.
+            drawn=self.grid.itemDelegate().rows
             for index,row in enumerate(self._rows):
-                self.grid.itemDelegate().rows[row['sku']]=dict(row,_favorite=self._is_favorite(row,saved))
+                drawn[row['sku']]=dict(drawn.get(row['sku'],row),_favorite=self._is_favorite(row,saved))
             self.grid.viewport().update()
 
     def _refresh_favorite_button(self):
@@ -1217,6 +1441,9 @@ class CatalogueUx:
         self.package_hint.setVisible(missing)
 
     def _choose_shade(self, color):
+        before=self.current_sku
+        if not self._confirm_draft_transition() or self.current_sku!=before:
+            self._refresh_variant_choice(self._group_for_sku(self.current_sku),self.current_sku);return
         group=self._group_for_sku(self.current_sku)
         members=[r for r in (group or {}).get('variants',[]) if r.get('hex')==color]
         if members:
@@ -1228,6 +1455,9 @@ class CatalogueUx:
     def _variant_changed(self, *_):
         sku=self.variant_choice.currentData()
         if not sku:return
+        before=self.current_sku
+        if sku!=before and (not self._confirm_draft_transition() or self.current_sku!=before):
+            self._refresh_variant_choice(self._group_for_sku(self.current_sku),self.current_sku);return
         self._remember_packaging(sku)
         self._chosen_variant=sku;self.current_sku=sku;self._show_detail(sku)
 
@@ -1236,9 +1466,14 @@ class CatalogueUx:
         return bool(group and group.get('hex_variants',0)>1 and getattr(self,'_chosen_variant',None)!=self.current_sku)
 
     def _toggle_provenance(self, visible):
+        if visible and getattr(self,'_draft',None) and not self._confirm_draft_transition():
+            self.provenance_toggle.blockSignals(True);self.provenance_toggle.setChecked(False);self.provenance_toggle.blockSignals(False)
+            return
         self.provenance_box.setVisible(visible)
+        if hasattr(self,'comparison_card'):self._refresh_comparison()
+        self._sync_hardware_presentation()
         if visible and hasattr(self,'detail_scroll'):
-            QTimer.singleShot(0,lambda:self.detail_scroll.ensureWidgetVisible(self.provenance_box) if self.provenance_box.isVisible() else None)
+            QTimer.singleShot(0,lambda:self.detail_scroll.ensureWidgetVisible(self.comparison_card,0,0) if self.comparison_card.isVisible() else None)
 
     def _opentag_selected(self):
         return hasattr(self,'nfc_format') and self.nfc_format.currentData()=='opentag3d'
@@ -1307,6 +1542,7 @@ class CatalogueUx:
                 QMessageBox.warning(dialog,tr('Étiquette incomplète'),str(exc));return
             dialog.accept()
         save.clicked.connect(accept);cancel.clicked.connect(dialog.reject);lay.addWidget(buttons)
+        fit_dialog(dialog,preferred_width=700)
         result=dialog.exec()==QDialog.Accepted
         if result:self._refresh_nfc_capacity()
         return result

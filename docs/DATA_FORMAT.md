@@ -206,7 +206,7 @@ images are bundled, never downloaded automatically by the running app.
 
 A personal copy adds its own `USER-<uuid>` SKU and private product key, leaving the original reference intact. The product display name ends in an editable ` @suffix`. `_personal`, `_personal_origin`, `_personal_suffix` and `_personal_base_name` are local metadata, preserved in the database/backups and omitted from NFC payload metadata. Same origin/suffix saves update the existing personal copy.
 
-Source reconciliation excludes personal SKUs from identity/article/family matching. Copied fields carry high-priority `Copie personnelle` provenance; explicit physical edits use `Utilisateur`. Copying a colour does not silently confirm an implausible source HEX. Existing explicit corrections and null values remain protected. Standard reference exports are unchanged. The display name is used in personal export filenames and full payloads; the suffix is an application label, not a new printer material type or NFC standard.
+Source reconciliation excludes personal SKUs from identity/article/family matching. Copied fields carry high-priority `Copie personnelle` provenance; explicit physical edits use `Utilisateur`. An explicit HEX edit of a copy is stored on the copy's own SKU with `Utilisateur` provenance; only edited fields become `Utilisateur`, never the whole copied record. Copying a colour does not silently confirm an implausible source HEX. Existing explicit corrections and null values remain protected. Standard reference exports are unchanged. The display name is used in personal export filenames and full payloads; the suffix is an application label, not a new printer material type or NFC standard.
 
 ## OpenTag3D 2.004 (v0.4.0 Pre-release)
 

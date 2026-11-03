@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Select a filament → export a file | Write an NDEF MIME record → read it back | Check the detected material and colour |
 
-**v0.4.0 is a [pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.4.0).**
+**v0.5.0 is a [pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.5.0).**
 Choose the printer first in **My hardware**, then combine the reader/software
 buttons and confirm the installed solution. The result distinguishes printer
 recognition from external inventory; only eligible formats are offered.

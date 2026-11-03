@@ -19,11 +19,27 @@ Anglais, français, espagnol et chinois simplifié. La langue du système est ut
   mémorisés. Ce sont des filtres, pas des commandes de suppression des favoris.
 - **Effacer** vide les trois recherches, les filtres et la sélection. Les favoris
   enregistrés restent intacts. Polymaker est le choix initial d’une première session.
+- Les sections **Fabricants**, **Matières** et **État des données** se replient
+  indépendamment (clic ou touche Espace sur leur titre). Une section fermée affiche
+  son choix actif sous son titre ; le menu **Filtres** indique le nombre et le détail des
+  critères. Replier ne change ni les filtres, ni la page, ni le tri, ni la sélection,
+  et l’état ouvert/fermé est mémorisé. Les compteurs de fabricants et de matières
+  tiennent compte des autres filtres ; ceux de l’état des données portent sur tout le catalogue.
+
+Le menu **Filtres**, en haut de la colonne gauche, propose **Tout replier** et
+**Tout déplier**. Ces actions changent seulement la présentation : les critères,
+la sélection, les tris et les favoris restent conservés. Les listes gardent une
+hauteur contenue ; leurs sélections utilisent le même accent discret que les
+autres contrôles de filtrage.
+
 
 Les commandes **liste/grille** sont près des résultats. En liste, cliquez sur un
 intitulé pour trier ; recliquez pour inverser. Le clic droit choisit le tri principal,
 le tri secondaire ou les colonnes. En grille, chaque carte nomme le produit et la
-couleur, rappelle le diamètre et montre une bobine. Les cartes restent sélectionnables
+couleur, rappelle le diamètre et montre une bobine. Le nom de couleur est mis en avant ;
+le produit et le fabricant restent lisibles, plus discrets (le fabricant l’est davantage
+lorsqu’un filtre le fixe déjà). L’état « à compléter » ou « à vérifier » est écrit sur la carte.
+Le focus clavier est un cadre pointillé, distinct de la sélection. Les cartes restent sélectionnables
 et leur étoile se clique directement. Recliquer une sélection, cliquer dans le vide
 ou appuyer sur Échap désélectionne. La pagination apparaît si nécessaire.
 
@@ -36,15 +52,80 @@ absente ou encore ambiguë reste neutre avec un point d’interrogation : cette 
 n’ajoute aucune valeur au catalogue et ne remplace pas un choix explicite.
 
 Les paramètres d’impression sont regroupés en quatre blocs : **buse**, **plateau**,
-**diamètre**, **densité**. « Modifier… » propose une copie personnelle nommée « Produit @Personnel ». Le suffixe est modifiable, par exemple @U1. La source reste intacte et les valeurs de la copie sont protégées lors des actualisations. Enregistrer le même suffixe pour la même référence met à jour sa copie existante. Cette commande et « Détails et sources » sont alignées sous les quatre caractéristiques. Survolez
+**diamètre**, **densité**. « Modifier… » ouvre un brouillon dans la fiche, sans fenêtre
+séparée : l’identité du filament reste affichée, les tuiles gardent les valeurs enregistrées
+et les champs modifiés sont signalés. **Enregistrer une copie** crée la copie personnelle
+nommée « Produit @Personnel » (suffixe modifiable, par exemple @U1) ; **Annuler** n’écrit rien.
+Seuls les champs modifiés deviennent des corrections confirmées ; un champ vidé signifie « inconnu ».
+La couleur HEX peut aussi être corrigée dans la copie ; pour une couleur signalée « à vérifier »,
+la case **Confirmer ce HEX tel quel** confirme explicitement la valeur affichée, sans la modifier. La source reste intacte et les valeurs de
+la copie sont protégées lors des actualisations. Enregistrer le même suffixe pour la même
+référence met à jour sa copie existante. Avant de changer de fiche, de variante, de filtre
+effaçant la sélection, de réglages importés ou de fermer, SpoolScribe demande d’enregistrer,
+d’abandonner ou de continuer l’édition ; un brouillon modifié bloque l’export et l’aperçu.
+Cette commande et « Détails et sources » sont alignées sous les quatre caractéristiques. Survolez
 un paramètre pour connaître son usage pour l’imprimante choisie. Les températures
 restent à adapter au trancheur et au plateau ; leur présence dans le JSON ne signifie
 pas qu’elles seront automatiquement appliquées par l’imprimante.
 
-**Détails et sources** déplie les références et la provenance dans un encadré, puis les fait défiler dans la zone visible. Les identifiants
+**Détails et sources** déplie les références et la provenance dans un encadré, puis les fait défiler dans la zone visible.
+
+Le panneau **Paramètres de l’étiquette**, aussi affiché pendant l’édition, regroupe
+les valeurs en cinq blocs : buse, plateau, diamètre, densité et couleur. Les plages
+minimale/maximale restent distinctes. Les valeurs retenues sont mises en avant ;
+les valeurs ajustées, inconnues ou à vérifier sont nommées explicitement. La source
+commune n’est indiquée qu’une fois. **Origine des valeurs** déplie les références,
+le profil Orca s’il s’applique et la copie personnelle. Chaque provenance reste
+accessible par champ, avec la valeur effectivement retenue dans le format choisi. Une valeur
+inconnue n’est jamais présentée comme un écart. Le bouton ↺ rétablit la valeur de référence
+dans la copie personnelle seulement ; une référence à vérifier ne se rétablit pas automatiquement.
+Le HEX reste une couleur déclarée, pas une mesure. Les identifiants
 OFD/SMDB restent des identifiants de source, pas des références commerciales.
 Le filtre « État des données » décrit les informations disponibles ; il ne note pas
 la qualité physique du filament.
+
+La zone imprimante et les détails du filament fonctionnent de façon exclusive :
+ouvrir **Détails et sources** ou **Modifier…** replie la zone imprimante. La
+flèche près de **Configurer** permet de l’ouvrir ; les détails de la fiche se
+ferment alors. Fermer une zone ne rouvre pas automatiquement l’autre. Si un
+brouillon contient des modifications, les choix habituels d’enregistrement,
+d’abandon ou de poursuite de l’édition restent proposés avant de le fermer.
+L’état de préparation et l’action d’export restent visibles. Le panneau matériel
+et la fiche partagent les mêmes bords ; leurs hauteurs s’adaptent à leur contenu.
+
+
+## Teintes proches
+
+Les catégories de la colonne de gauche partagent le même cadre repliable. Le bouton
+**Filtres** ouvre le détail des critères et les commandes de repli ; les choix actifs restent aussi lisibles
+dans les en-têtes repliés. Fabricants, matières et état conservent leurs listes à parcourir.
+
+La section **Teintes**, sous **Matières** à gauche, rassemble le choix de couleur :
+cliquez sur la pastille pour choisir une couleur, ou saisissez un code puis **Comparer**.
+Elle fonctionne sans filament sélectionné et ne modifie aucune fiche.
+**Teintes**, dans la fiche, ouvre cette même section avec la couleur du filament.
+En grille, le badge compact **ΔE**, à côté du diamètre, affiche l’écart sur chaque tuile : plus le nombre est petit,
+plus la couleur déclarée est proche. **Écart maximal**, dans cette section, ouvre
+**Paramètres > Teintes**. La limite initiale est **10** ; les choix **3**, **10**, **20**,
+**Toutes les couleurs** ou une valeur personnelle de **0 à 200** sont mémorisés et
+inclus dans l’enregistrement des réglages. Il s’agit de plages d’exploration, pas de
+seuils certifiant une correspondance après impression. Les résultats trop éloignés
+sont masqués ; l’aide les compte séparément des fiches non comparables.
+
+Le classement se fait dans la
+zone de résultats, en liste ou en grille, et respecte les filtres de la colonne de gauche.
+Les égalités sont départagées par fabricant, produit, couleur et référence. Les couleurs
+inconnues, les teintes en conflit, les multicolores et les translucides sont exclus et
+comptés ; les effets (soie, métal, lueur…) restent classés mais signalés. ΔE00 compare des
+couleurs d’écran déclarées par les sources : il ne prédit pas le rendu imprimé. **Retirer**
+désactive seulement la comparaison ; **Effacer** réinitialise tous les filtres, sans supprimer les favoris.
+**Retirer** efface aussi une saisie non appliquée et devient inactif quand il n’y a rien
+à retirer. Le champ vide indique « Code couleur », sans réafficher une fausse couleur d’exemple.
+Replier la section ne désactive pas la couleur choisie : son code reste dans le titre et le résumé des filtres.
+Le titre des résultats affiche **couleurs comparables**. **Aide**, dans la section Teintes,
+ouvre une fenêtre organisée : **Les résultats** présente la couleur, les effectifs et quatre
+cartes expliquant les exclusions ; **La méthode** explique le classement et ses limites.
+Sans couleur choisie, seule la méthode est proposée, sans résultat fictif.
 
 ## Choisir le conditionnement
 
@@ -66,15 +147,41 @@ transparences et variantes multicolores restent distincts selon leurs données.
 
 ## Exporter
 
-Le pied de fiche affiche le matériel choisi et le résultat du calcul de capacité.
-**Exporter pour NFC** occupe la largeur de la fiche. Les commandes **Voir le JSON**
-et **Dossier d’export** restent visibles dessous, alignées sur les mêmes bords.
+Le pied de fiche relie deux étapes dans un même encadré : **1. l’imprimante et son lecteur**,
+avec la photo disponible et **Configurer**, puis **2. l’étiquette et le format de fichier**.
+Les entrées nommant une machine ou une famille disposent d’une vraie photo produit
+à fond transparent. Pour une famille, la légende indique le modèle illustré comme
+exemple. Seuls les choix génériques sans modèle précis et les lecteurs autonomes
+gardent un pictogramme clairement identifié. Ces repères sont communs au choix
+d’imprimante, à sa fiche et au parcours d’export. [Origine des photos](PRINTER_VISUALS.md).
+Il affiche une conclusion simple :
+**Le fichier tient sur votre étiquette**, avec une jauge de **place disponible**, ou la
+raison d’un blocage, formulée avec les termes de l’utilisateur (par exemple « Indiquez
+la température de buse »). **Détails**, à côté de l’étiquette, ouvre une fenêtre :
+**Votre parcours** explique préparer, écrire et relire ; **Informations techniques**
+regroupe les tailles dans des cartes séparées et conserve le diagnostic exact du moteur.
+La jauge indique l’espace disponible
+après la réserve choisie ; elle ne confirme ni l’écriture ni la lecture réelle de l’étiquette.
+L’action principale suit cet état :
+**Exporter pour NFC** lorsque tout est prêt, **Corriger les caractéristiques…**,
+**Préciser la couleur…**, **Confirmer la couleur…** ou **Ajuster l’étiquette…** sinon.
+Les commandes **Voir le JSON** et **Afficher le fichier** restent visibles dessous, alignées
+sur les mêmes bords. **Afficher le fichier** n’est disponible qu’après une écriture réussie
+pendant la session, si le fichier existe encore ; la ligne du dernier export indique s’il
+correspond à la fiche et aux réglages actuels. Un fichier exporté n’est ni une étiquette
+écrite, ni une étiquette relue, ni une validation de l’imprimante.
 L’inspection défile vers le fichier lorsqu’elle s’ouvre, sans changer la taille de la fenêtre. Chaque export propose un dossier de destination, mémorise le dernier choix et confirme le chemin du fichier après son écriture. Annuler le choix de dossier ne crée rien. Le dossier proposé se règle aussi dans **Paramètres → Export**. Le menu général contient
 les réglages matériels et les paramètres du conditionnement.
 
+Les accents sont discrets : violet pour la recherche de teintes, bleu pour le parcours
+matériel, vert lorsque le fichier tient et ambre pour une étape à compléter. Les libellés
+et actions donnent toujours le sens de l’état ; la couleur seule ne porte aucune instruction.
+
 Pour OpenTag3D, **Voir l’export** affiche le profil NFC Tools ; le NDEF brut affiche
-ses champs décodés et octets. **Préparer l’étiquette…** demande les cibles et la
-masse explicites. [Guide OpenTag3D](OPENTAG3D.md).
+ses champs décodés et octets. **Préparer l’étiquette…**, proposé comme action principale
+si des valeurs manquent, demande les cibles et la masse explicites. Pour les modifier
+ensuite : **Détails → Votre parcours → Modifier les valeurs de l’étiquette…**.
+Un seul bouton de préparation apparaît dans la fiche. [Guide OpenTag3D](OPENTAG3D.md).
 
 Le fichier inspecté est identique à celui exporté avec les mêmes options. Les
 profils OpenSpool compact/complet et les réserves d’écriture restent dans les réglages
@@ -93,15 +200,20 @@ plugin. Le résumé fixé sous les choix distingue identification dans l’impri
 inventaire externe et lecteur autonome. Les versions, pilotes et connexions sont
 regroupés sous **Prérequis et détails**.
 
-Les filtres de recherche distinguent installations exportables, lecteurs USB ou
-réseau ajoutés, firmware constructeur ou modifié, formats non exportés et absence
-d’intégration confirmée. Un même modèle peut relever de plusieurs catégories.
+Le sélecteur de catégorie ouvre des cartes illustrées : installations exportables,
+lecteurs USB ou réseau, logiciel d’origine ou modifié, autre format RFID et
+intégration à vérifier. Chaque carte explique son rôle et compte les choix qui
+correspondent à la recherche en cours. Cliquer sur une carte applique le filtre ;
+Annuler ne change rien. Un même modèle peut relever de plusieurs catégories,
+sans que ce filtre confirme la présence réelle d’un lecteur ou d’un logiciel.
 Choisissez un format proposé, votre NTAG215/216 et, pour OpenTag3D, le logiciel
 qui importera le fichier. [Installations et limites](PRINTER-CONFIGURATIONS.md).
 
-Des visuels transparents officiels sont embarqués pour la U1, la X1 Carbon illustrant les familles Bambu, la Plus4 illustrant les familles QIDI et la Kobra S1 illustrant la famille Anycubic. Le modèle illustré est précisé si
-nécessaire. Les autres entrées restent textuelles : aucune icône générique n’est
-présentée comme une photographie de leur modèle.
+Les choix nommant une machine ou une famille précise utilisent les photographies
+produit embarquées ; le modèle réellement illustré est précisé si le choix regroupe
+plusieurs machines. Les lecteurs et installations génériques gardent un symbole
+explicite. Les symboles des cartes de catégories désignent une fonction, pas un
+modèle d’imprimante. [Visuels et provenances](PRINTER_VISUALS.md).
 
 Choisissez le logiciel installé lorsque sa compatibilité en dépend. Une nouvelle
 installation ne suppose pas qu’un U1 utilise paxx12. Lorsque la lecture est possible,
@@ -141,3 +253,38 @@ Les cartes de recherche d’imprimante calculent leur hauteur sur la largeur dis
 Dans **À propos**, le bouton « Soutenir le projet · Buy Me a Coffee » ouvre [arn_lab](https://buymeacoffee.com/arn_lab) dans le navigateur au clic seulement. Aucun widget JavaScript distant n’est chargé par l’application. Le lien correspond au fichier [FUNDING.yml](../.github/FUNDING.yml).
 
 La vérification de version efface son message d’attente lorsqu’elle se termine. Dans À propos, GitHub et Buy Me a Coffee sont deux boutons de dimensions communes. Les autres formats RFID/NFC sont expliqués dans [Formats NFC](FORMATS-NFC.md) ; l’application conserve son export OpenSpool 1.0.
+
+La poignée entre les colonnes permet de redimensionner les panneaux. La largeur
+choisie est conservée, dans les limites nécessaires à la lisibilité. Une flèche vers
+le bas indique une section ouverte ; vers la droite, une section repliée, y compris
+pour la zone imprimante. Pendant une actualisation, la carte de progression indique
+la source en cours et son numéro d’étape ; la barre ne certifie pas le succès des sources.
+
+
+Les fenêtres de paramètres et d’aide privilégient la place utile au contenu et
+restent dans l’écran où elles s’ouvrent. Les pages longues défilent sans masquer
+les actions de fermeture. Les onglets tiennent sur une ligne lorsque la place le
+permet ; sinon, des flèches visibles et une coupure ondulée à chaque bord masqué
+signalent la suite. Leurs titres complets restent disponibles en infobulle.
+Les logos de fabricants reçoivent un halo léger en thème sombre : leur fichier et
+leurs couleurs d’origine ne sont pas modifiés ; le halo disparaît en thème clair.
+
+
+Modifier et Détails sont deux vues distinctes : l’une ferme l’autre. Si un brouillon
+a changé, le passage aux détails demande quoi en faire. Le résumé des caractéristiques
+est remplacé par la vue ouverte, afin de ne pas afficher deux fois les mêmes données.
+Les détails regroupent les plages de température sur une ligne et les autres valeurs
+avec leur unité. L’origine commune est indiquée une seule fois ; les références
+chiffrées identiques ne sont pas répétées. Les différences Orca/personnelles restent
+consultables dans Origine des valeurs, sans changer ce qui sera réellement exporté.
+
+**Maximum 3** signifie **ΔE ≤ 3**, sans pourcentage ni marge supplémentaire.
+Exemple : l’écart entre `C8E6A0` et `D8EEA3` est **3,035999** dans le calcul existant :
+il est exclu à 3, inclus à 10. Le score affiché devient **3,04**. Les scores sont
+arrondis à l’écran au centième supérieur pour ne pas masquer un dépassement ; le
+filtre conserve le score calculé à six décimales. L’infobulle donne cette valeur précise.
+Aucun de ces nombres ne certifie une correspondance de couleur après impression.
+
+Après ouverture ou remise en page native, une fenêtre peut encore gagner en hauteur
+si son contenu défile alors qu’il reste de la place sur son écran. La limite de l’écran
+et les boutons restent respectés ; les contenus trop longs continuent à défiler.

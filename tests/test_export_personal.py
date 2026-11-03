@@ -82,14 +82,13 @@ class ExportPersonalUiTests(unittest.TestCase):
             w._generate();message.assert_not_called();self.assertFalse(Path(core.OUTPUT_DIR).exists())
 
     def test_gui_saves_a_personal_copy_and_selects_it_without_changing_source(self):
-        from PySide6.QtWidgets import QDialog,QLineEdit,QDialogButtonBox
+        from PySide6.QtWidgets import QLineEdit
         w=self.window;w._show_detail('PB05001');original=copy.deepcopy(w.db['_products'])
-        def inspect(dialog):
-            dialog.findChild(QLineEdit,'personal_suffix').setText('U1')
-            dialog.findChild(QLineEdit,'min_temp').setText('225')
-            dialog.findChild(QDialogButtonBox).button(QDialogButtonBox.Save).click()
-            return dialog.result()
-        with patch.object(QDialog,'exec',inspect):w._edit_physical()
+        # The former modal dialog is now an in-card draft with the same guarantees.
+        w._edit_physical()
+        w.draft_editor.findChild(QLineEdit,'personal_suffix').setText('U1')
+        field=w.draft_editor.findChild(QLineEdit,'min_temp');field.setText('225');field.textEdited.emit('225')
+        w.draft_save.click()
         self.assertTrue(w.current_sku.startswith('USER-'))
         for name,product in original.items():self.assertEqual(w.db['_products'][name],product)
         view=core.get_sku_view(w.db,w.current_sku)

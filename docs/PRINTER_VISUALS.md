@@ -1,46 +1,63 @@
-# Visuels et descriptions des imprimantes
+# Visuels des imprimantes
 
-SpoolScribe v0.3.5 stable. Provenance vérifiée le 1er novembre 2026.
+SpoolScribe 0.4.0 — travail UX local, revue du 3 novembre 2026.
 
-Les images sont des fichiers originaux provenant du fabricant, sans retouche.
-Leur affichage les redimensionne en conservant les proportions. Elles sont
-embarquées pour éviter tout chargement réseau à l’ouverture de la fiche.
+**15 photographies produit couvrent les 17 entrées désignant une machine ou une
+famille précise.** Les vues isolées, de face ou de trois quarts, gardent leurs couleurs
+et leur transparence native. Les photos sont communes au sélecteur, à la fiche
+matérielle et au parcours d’export.
 
-| Entrée | Modèle illustré | Provenance | Description factuelle utilisée |
-| --- | --- | --- | --- |
-| Snapmaker U1 | U1 | [Page constructeur](https://www.snapmaker.com/snapmaker-u1), visuel CDN référencé par cette page | Quatre têtes indépendantes, volume 270 × 270 × 270 mm ; la compatibilité OpenSpool reste conditionnée au logiciel déjà documenté. |
-| Bambu Lab et lecteur externe Bambu | X1 Carbon, exemple de machine de la famille | [Image officielle Bambu Studio](https://github.com/bambulab/BambuStudio/blob/master/resources/images/printer_thumbnail_x1c_png.png), [identité du modèle](https://github.com/bambulab/BambuStudio/blob/master/resources/printers/BL-P001.json) | Le volume 256 × 256 × 256 mm concerne exclusivement la X1 Carbon, selon [sa fiche technique](https://public-cdn.bambulab.com/store/X1-Carbon%20tech%20specs.pdf). Le fonctionnement du lecteur externe est décrit par [OpenSpool](https://github.com/spuder/OpenSpool). |
-| Anycubic Kobra S1 / Kobra 3 | Kobra S1, exemple de machine de la famille | [PNG officiel AnycubicSlicerNext](https://github.com/ANYCUBIC-3D/AnycubicSlicerNext/blob/main/resources/profiles/Anycubic/Anycubic%20Kobra%20S1_cover.png) | Aucune caractéristique de la S1 n’est généralisée à la Kobra 3. |
-| QIDI Plus4 / Q2 / Max4 | Plus4, explicitement indiquée comme exemple | [Page QIDI Plus4](https://qidi3d.com/products/plus4-3d-printer) et son image produit | Aucun volume ou équipement de la Plus4 n’est généralisé à toute la famille. |
+## Machines illustrées
 
-Les fichiers, URL exactes, SHA-256 et noms illustrés sont consignés dans
-[data/printers/photos/manifest.json](../data/printers/photos/manifest.json).
-Les marques et visuels restent la propriété de leurs ayants droit ; leur présence
-sert à identifier les machines et ne signifie aucune affiliation. La licence du
-code de SpoolScribe ne transforme pas ces visuels en créations sous licence MIT.
+| Entrée de SpoolScribe | Modèle réellement photographié | Provenance |
+| --- | --- | --- |
+| Snapmaker U1 | U1 | [Constructeur](https://www.snapmaker.com/snapmaker-u1) |
+| Bambu Lab ; Bambu avec lecteur externe | X1 Carbon, exemple de la famille | [Bambu Studio](https://github.com/bambulab/BambuStudio/blob/master/resources/images/printer_thumbnail_x1c_png.png) |
+| Prusa ; Prusa MK4/MK4S/MMU3 | Original Prusa MK4S, exemple de la famille | [IGO3D](https://www.igo3d.com/original-prusa-mk4s-3d-drucker-montiert) — version 680 px de la vue fournie par l’utilisateur |
+| Prusa CORE One / CORE One L | CORE One, exemple de la famille | [Blog Prusa](https://blog.prusa3d.com/de/mehrfarbiges-drucken-mit-einem-prusa-einfuehrungs-anleitung_110590/), image produit publiée sur son stockage officiel |
+| Anycubic Kobra S1 / Kobra 3 | Kobra S1, exemple de la famille | [AnycubicSlicerNext](https://github.com/ANYCUBIC-3D/AnycubicSlicerNext/blob/main/resources/profiles/Anycubic/Anycubic%20Kobra%20S1_cover.png) |
+| QIDI Plus4 / Q2 / Max4 | Plus4, exemple de la famille | [Constructeur](https://qidi3d.com/products/plus4-3d-printer) |
+| Creality K2 / K2 Plus / Hi | K2 Combo, exemple de la famille | [Fiche revendeur](https://3dcim.com/creality-k2-combo-3d-yazici), image hébergée par Creality |
+| Creality K1 / K1 Max | K1 Max, exemple de la famille | [Site Creality](https://www.creality.com/ae/download), image du CDN constructeur |
+| Flashforge AD5X | AD5X | [Boutique Flashforge](https://uk.flashforge.com/products/ad5x-3d-printer) |
+| Flashforge Creator 5 | Creator 5, pas Creator 5 Pro | [Boutique Flashforge](https://uk.flashforge.com/products/flashforge-creator-5) |
+| Elegoo Centauri Carbon 2 | Centauri Carbon 2 Combo | [Sync Innovation](https://www.sync-innovation.com/products/elegoo-centauri-carbon-2-combo) |
+| UltiMaker 3 / S-series | S5, exemple de la famille | [Ultimate 3D Printing Store](https://ultimate3dprintingstore.com/products/ultimaker-s5) |
+| Raise3D Pro3 HS | Pro3 HS | [参次元工房](https://3jigenkoubou.com/shopdetail/000000000323) |
+| MakerBot METHOD | METHOD XL, exemple de la famille | [UltiMaker Cura](https://github.com/Ultimaker/Cura/blob/main/plugins/UM3NetworkPrinting/resources/png/MakerBot%20Method%20XL.png) |
+| XYZprinting da Vinci | da Vinci 1.0 Pro, exemple de la famille | [3D Printer Superstore](https://3dprintersuperstore.com.au/products/da-vinci-1-0-pro) |
 
-Les quatre visuels actuellement référencés disposent d’un canal alpha natif, vérifié sur les fichiers. Le PNG X1 Carbon de 320 × 320 remplace une miniature de 181 × 180 dans le manifeste ; l’ancienne miniature non référencée a été supprimée lors du nettoyage v0.3.5 ; elle reste accessible dans l’historique Git. Le PNG Anycubic de 180 × 180 est ajouté sans retouche ni suppression de fond.
+Une photo d’exemple ne représente pas tous les modèles d’une famille. La légende
+nomme la machine illustrée ; ses dimensions ou équipements ne sont pas attribués aux
+autres modèles. L’image Creator 5 Pro transmise comme exemple a servi à la recherche :
+la fiche Creator 5 utilise le visuel du modèle correspondant.
 
-Les autres entrées restent textuelles tant qu’un visuel adapté n’a pas été revu. Les images promotionnelles Prusa et Anycubic des passes antérieures avaient été écartées. La nouvelle recherche Prusa, sur sa page officielle de ressources médias, a fourni des photographies JPEG opaques ; elles ne sont pas présentées comme des détourages transparents. Le dessin générique de l’ancienne
-passe a été retiré.
+## Intégration et qualité
 
-Pour Prusa, le descriptif distingue les architectures CORE One, MK4S et XL à partir
-du [catalogue constructeur](https://www.prusa3d.com/) et de la
-[documentation des configurations XL](https://help.prusa3d.com/article/prusa-printer-upgrades_796284?product=xl).
-Pour Kobra S1, le volume cité est limité à ce modèle selon
-[la page Anycubic](https://store.anycubic.com/products/kobra-s1-combo).
-Les autres résumés reprennent le périmètre fonctionnel déjà décrit par le catalogue
-matériel et évitent d’inventer des caractéristiques communes à plusieurs modèles.
+- Les fichiers sont conservés octet pour octet, sans détourage automatique,
+  génération d’image, recoloration, miroir ou suppression de marquage.
+- Un canal RGBA ne suffit pas : les pixels transparents sont mesurés et le rendu est
+  revu sur fonds clair et sombre. Les PNG opaques et bannières trouvés sont écartés.
+- L’affichage retire seulement les marges entièrement transparentes, puis ajuste
+  l’objet en conservant les proportions. Les originaux restent inchangés. Les petites
+  tailles rendues sont mises en cache.
+- Les images sont embarquées : aucun téléchargement à l’ouverture d’une fiche,
+  aucune nouvelle source réseau dans l’application.
+- URL de fichier et de page source, modèle, légende, dimensions, bornes alpha,
+  octets et SHA-256 figurent dans le [manifeste](../data/printers/photos/manifest.json).
+  Les tests contrôlent ces valeurs, la couverture et l’absence d’orphelins.
 
-`src/spoolscribe/printer_presentations.py` ne modifie aucun drapeau de compatibilité : les données
-sur les firmwares et les formats lisibles restent dans `data/printers.json`.
-Une photo ou un résumé ne vaut pas validation physique du lecteur.
+## Choix génériques
 
+« Imprimante sous Klipper », « Prusa autre modèle » et « Imprimante sans lecteur »
+ne désignent pas une machine précise. Ils gardent une illustration générique
+explicitement nommée. Les lecteurs autonomes OpenSpool et OpenTag3D conservent
+leur pictogramme de lecteur.
 
-Les autres descriptifs techniques sont limités à des faits documentés :
-[CoreXY et CANVAS Elegoo](https://us.elegoo.com/collections/3d-printing/products/centauri-carbon-2),
-[double extrusion et filaments 2,85 mm UltiMaker](https://support.ultimaker.com/s/article/1667410778895),
-[double tête et filaments 1,75 mm Raise3D Pro3 HS](https://s1.raise3d.com/2024/06/Raise3D_Pro3-HS-Series-Technical-Specifications_V1.5.pdf),
-[exemple METHOD XL, sans généralisation à la famille](https://um-support-files.ultimaker.com/manuals/user-manual/Method-XL/METHOD%20XL%20User%20Manual%20%28English%29_JUN142023.pdf).
-L’entrée historique da Vinci indique explicitement que ses caractéristiques restent
-à confirmer, plutôt que d’attribuer une fiche technique unique à toute la famille.
+Les marques et photos restent la propriété de leurs ayants droit. L’origine peut
+être le constructeur, son dépôt logiciel ou un revendeur identifié ; ces fichiers
+ne sont pas relicenciés sous MIT et n’impliquent aucune affiliation. Voir
+[TRADEMARKS.md](TRADEMARKS.md).
+
+`printer_presentations.py` ne change aucun format, firmware ou drapeau de compatibilité
+de `data/printers.json`. Une photo n’atteste ni la lecture RFID/NFC ni un essai matériel.

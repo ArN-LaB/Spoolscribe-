@@ -9,6 +9,8 @@ Lancement :  python -m spoolscribe
 """
 from __future__ import annotations
 
+from .ui_surfaces import ReadingTabs, fit_dialog
+
 import os
 import sys
 import time
@@ -26,7 +28,7 @@ from PySide6.QtWidgets import (
     QHeaderView, QAbstractItemView, QFrame, QMessageBox, QProgressBar, QGridLayout, QTabWidget,
     QSizePolicy, QStackedWidget, QToolButton, QMenu, QListWidget, QListWidgetItem,
     QDialog, QDialogButtonBox, QCheckBox, QSpinBox, QButtonGroup, QComboBox,
-    QScrollArea, QFileDialog,
+    QScrollArea, QFileDialog, QDoubleSpinBox, QGraphicsDropShadowEffect,
 )
 
 try:
@@ -39,6 +41,7 @@ from . import core
 from .i18n import tr, configure_language, LANGUAGES, display_quality
 from .app_lifecycle import RESTART_EXIT_CODE, launch_replacement
 from .ui_catalogue import CatalogueUx, ClearableTable, ClearableList
+from .ui_detail import DetailUx
 from .ui_widgets import SearchField, SpoolPreview, MetricGrid, WrapLabel, FilamentDelegate, spool_icon, product_label, DetailScrollArea, CONTROL_HEIGHT
 
 # The inspector lives inside the scroll area; toggling never changes the window.
@@ -426,7 +429,7 @@ def contrast_text(hex_code: str | None) -> str:
 
 
 # ─── Fenêtre principale ───────────────────────────────────────────────────
-class MainWindow(CatalogueUx, QMainWindow):
+class MainWindow(DetailUx, CatalogueUx, QMainWindow):
     def __init__(self):
         super().__init__()
         self.app = QApplication.instance()
@@ -624,12 +627,17 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.stats_label.hide()
 
         # Barre de progression (cachée par défaut) + annulation
-        progress_row = QHBoxLayout()
-        self.progress_label = QLabel()
+        self.update_progress_card = QFrame(); self.update_progress_card.setObjectName('updateProgressCard')
+        progress_layout = QVBoxLayout(self.update_progress_card); progress_layout.setContentsMargins(12,10,12,10); progress_layout.setSpacing(6)
+        heading = QHBoxLayout(); progress_title = QLabel(tr('Actualisation du catalogue')); progress_title.setObjectName('guidanceTitle')
+        self.progress_step = QLabel(); self.progress_step.setObjectName('guidanceNote')
+        heading.addWidget(progress_title,1); heading.addWidget(self.progress_step); progress_layout.addLayout(heading)
+        progress_row = QHBoxLayout(); progress_row.setSpacing(12)
+        self.progress_label = WrapLabel()
         self.progress_label.setMinimumHeight(24)
         self.progress_label.setVisible(False)
-        root.addWidget(self.progress_label)
-        self.progress = QProgressBar()
+        progress_layout.addWidget(self.progress_label)
+        self.progress = QProgressBar(); self.progress.setObjectName("catalogueProgress")
         self.progress.setVisible(False)
         self.progress.setTextVisible(False)
         self.progress.setFixedHeight(8)
@@ -639,7 +647,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.cancel_update_btn.setToolTip(tr("Interrompt la synchronisation ; la base locale reste celle d'avant."))
         self.cancel_update_btn.clicked.connect(self._cancel_update)
         progress_row.addWidget(self.cancel_update_btn)
-        root.addLayout(progress_row)
+        progress_layout.addLayout(progress_row); root.addWidget(self.update_progress_card); self.update_progress_card.hide()
 
         # ── Splitter : facettes · liste/grille · fiche ───────────────────
         splitter = self.splitter = QSplitter(Qt.Horizontal)
@@ -690,6 +698,8 @@ class MainWindow(CatalogueUx, QMainWindow):
         for column in (1, 6, 7):
             self.table.setColumnHidden(column, True)
         self.table.itemSelectionChanged.connect(self._on_select)
+        self.table.before_clear = lambda: self._confirm_draft_transition()
+        self.table.before_navigate = self._before_view_navigation
         self.list_stack.addWidget(self.table)
 
         # Vue grille (cartes)
@@ -706,6 +716,8 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.grid.setWordWrap(True)
         self.grid.setTextElideMode(Qt.ElideRight)
         self.grid.itemSelectionChanged.connect(self._on_select_grid)
+        self.grid.before_clear = lambda: self._confirm_draft_transition()
+        self.grid.before_navigate = self._before_view_navigation
         self.list_stack.addWidget(self.grid)
 
         table_panel = QWidget()
@@ -746,8 +758,10 @@ class MainWindow(CatalogueUx, QMainWindow):
         detail_layout.addWidget(detail_scroll, 1)
         self.detail_footer=QWidget();self.footer_layout=QVBoxLayout(self.detail_footer)
         self.footer_layout.setContentsMargins(0,0,0,0);self.footer_layout.setSpacing(8)
-        self.footer_layout.addWidget(self.hardware_summary);self.footer_layout.addWidget(self.nfc_capacity)
-        self.nfc_note.hide();self.footer_layout.addWidget(self.btn_generate)
+        self.nfc_note.hide()
+        self._build_export_explanation(self.footer_layout)
+        self.last_export_label=WrapLabel();self.last_export_label.setObjectName('exportState');self.footer_layout.addWidget(self.last_export_label)
+        self.footer_layout.addWidget(self.btn_generate)
         actions=QHBoxLayout();actions.setContentsMargins(0,0,0,0);actions.setSpacing(8)
         self.btn_inspect.setFixedHeight(32);self.btn_open_out.setFixedHeight(32)
         actions.addWidget(self.btn_inspect,1);actions.addWidget(self.btn_open_out,1)
@@ -845,8 +859,13 @@ class MainWindow(CatalogueUx, QMainWindow):
         hero_layout = QVBoxLayout(self.hero);hero_layout.setContentsMargins(14,12,14,12);hero_layout.setSpacing(8)
         head = QHBoxLayout()
         self.logo = QLabel();self.logo.setFixedSize(100,30);self.logo.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+        halo=QGraphicsDropShadowEffect(self.logo);halo.setOffset(0,0);halo.setBlurRadius(7);halo.setColor(QColor(255,255,255,175));halo.setEnabled(False);self.logo.setGraphicsEffect(halo)
         head.addWidget(self.logo);head.addStretch(1)
         self.favorite_btn=QToolButton();self.favorite_btn.setText(tr('☆ Favori'));self.favorite_btn.setCheckable(True)
+        self.btn_similar=QToolButton();self.btn_similar.setText(tr('Teintes'));self.btn_similar.setFixedHeight(CONTROL_HEIGHT)
+        self.btn_similar.setObjectName('colourAction')
+        self.btn_similar.setToolTip(tr('Comparer cette couleur avec le catalogue'))
+        self.btn_similar.clicked.connect(self._open_colour_search);head.addWidget(self.btn_similar)
         self.favorite_btn.setFixedHeight(CONTROL_HEIGHT);self.favorite_btn.clicked.connect(self._toggle_filament_favorite);head.addWidget(self.favorite_btn)
         hero_layout.addLayout(head)
         body=QHBoxLayout();body.setSpacing(10)
@@ -872,7 +891,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.shade_row=QGridLayout();self.shade_layout.addLayout(self.shade_row);self.shade_buttons=[];dl.addWidget(self.shade_panel)
         # Four scannable tiles replace the label/value inventory.
         caption=QLabel(tr('CARACTÉRISTIQUES'));caption.setObjectName('caption');self._muted_labels.append(caption);dl.addWidget(caption)
-        self.btn_edit_physical=QToolButton();self.btn_edit_physical.setText(tr('Modifier…'));self.btn_edit_physical.clicked.connect(self._edit_physical)
+        self.btn_edit_physical=QToolButton();self.btn_edit_physical.setText(tr('Modifier…'));self.btn_edit_physical.clicked.connect(lambda:self._edit_physical())
         self.card=QFrame();self.card.setObjectName('physicalCard');card_layout=QVBoxLayout(self.card);card_layout.setContentsMargins(0,0,0,0)
         self.characteristics=MetricGrid();card_layout.addWidget(self.characteristics);self._field_widgets=dict(self.characteristics.values)
         dl.addWidget(self.card)
@@ -882,6 +901,8 @@ class MainWindow(CatalogueUx, QMainWindow):
             button.setFixedHeight(CONTROL_HEIGHT);button.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
             self.characteristic_actions.addWidget(button,1)
         dl.addLayout(self.characteristic_actions)
+        self._build_draft_editor(dl)
+        self._build_comparison_card(dl)
         self.provenance_box=QFrame();self.provenance_box.setObjectName('provenanceCard')
         self.fields=QGridLayout(self.provenance_box);self.fields.setContentsMargins(12,10,12,10);self.fields.setHorizontalSpacing(12);self.fields.setVerticalSpacing(8)
         for i,name in enumerate(('Références','Source')):
@@ -940,10 +961,10 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.tag_type.currentIndexChanged.connect(self._nfc_changed)
         self.nfc_profile.currentIndexChanged.connect(self._nfc_changed)
         self.nfc_reserve.valueChanged.connect(self._nfc_changed)
-        self.btn_opentag_settings=QPushButton(tr('Préparer l’étiquette…'))
+        self.btn_opentag_settings=QPushButton(tr('Modifier les valeurs de l’étiquette…'))
         self.btn_opentag_settings.setFixedHeight(CONTROL_HEIGHT)
         self.btn_opentag_settings.clicked.connect(self._complete_opentag_settings)
-        dl.addWidget(self.btn_opentag_settings);self.btn_opentag_settings.hide()
+        self.btn_opentag_settings.hide()  # Reparented into export details, outside the filament card.
         self._wire_export_assistant()
 
         # Respiration au-dessus de l'action principale (la centre verticalement).
@@ -961,7 +982,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         gf.setPointSize(max(11, gf.pointSize() + 2))
         gf.setWeight(QFont.DemiBold)
         self.btn_generate.setFont(gf)
-        self.btn_generate.clicked.connect(self._generate)
+        self.btn_generate.clicked.connect(self._primary_action)
         dl.addWidget(self.btn_generate)
 
         # Actions secondaires juste sous l'action principale.
@@ -971,7 +992,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.btn_inspect.setObjectName("secondary")
         self.btn_inspect.setCursor(Qt.PointingHandCursor)
         self.btn_inspect.clicked.connect(self._toggle_inspect)
-        self.btn_open_out = QPushButton(tr("Dossier d'export"))
+        self.btn_open_out = QPushButton(tr('Afficher le fichier'))
         self.btn_open_out.setObjectName("secondary")
         self.btn_open_out.setCursor(Qt.PointingHandCursor)
         self.btn_open_out.clicked.connect(self._open_output)
@@ -992,6 +1013,12 @@ class MainWindow(CatalogueUx, QMainWindow):
         t = theme_tokens(self.app)
         self._tok = t
         muted, faint, accent = t["muted"], t["faint"], t["accent"]
+        colour_ink = accent
+        hardware_ink = '#96bce8' if t['dark'] else '#365f91'
+        ready_ink = '#8bcba7' if t['dark'] else '#26734d'
+        attention_ink = '#ebc381' if t['dark'] else '#895c12'
+        base_colour,accent_colour=QColor(t['card']),QColor(accent)
+        facet_fill=QColor(*[round(base_colour.getRgb()[i]*.88+accent_colour.getRgb()[i]*.12) for i in range(3)]).name()
 
         # Palette de base re-synchronisée (utile en mode auto quand l'OS bascule).
         try:
@@ -1101,7 +1128,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             f" border:1px solid {t['border']}; border-radius:6px; padding:4px 8px; }}"
             f"QComboBox QAbstractItemView {{ background:{t['card']}; color:{t['text']};"
             f" selection-background-color:{t['sel']}; selection-color:{t['sel_text']}; }}"
-            f"QSpinBox {{ background:{t['field_bg']}; color:{t['text']};"
+            f"QSpinBox, QDoubleSpinBox {{ background:{t['field_bg']}; color:{t['text']};"
             f" border:1px solid {t['border']}; border-radius:6px; padding:3px 6px; }}"
             f"QCheckBox {{ color:{t['text']}; background:transparent; spacing:6px; }}"
             f"QCheckBox::indicator {{ width:15px; height:15px; border:1px solid {t['faint']};"
@@ -1109,8 +1136,8 @@ class MainWindow(CatalogueUx, QMainWindow):
             f"QCheckBox::indicator:checked {{ background:{accent}; border-color:{accent};"
             f" image:url({CHECK_ICON_PATH}); }}"
             f"QCheckBox::indicator:disabled {{ border-color:{t['border']}; background:{t['window']}; }}"
-            f"QComboBox, QSpinBox, QLineEdit {{ background:{t['field_bg']}; color:{t['text']}; border:1px solid {t['border']}; border-radius:7px; min-height:18px; padding:6px 8px; }}"
-            f"QComboBox:focus, QSpinBox:focus, QLineEdit:focus {{ border-color:{accent}; }}"
+            f"QComboBox, QSpinBox, QDoubleSpinBox, QLineEdit {{ background:{t['field_bg']}; color:{t['text']}; border:1px solid {t['border']}; border-radius:7px; min-height:18px; padding:6px 8px; }}"
+            f"QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus, QLineEdit:focus {{ border-color:{accent}; }}"
             f"QComboBox::drop-down {{ border:none; width:24px; subcontrol-origin:padding; subcontrol-position:top right; }}"
             f"QComboBox::down-arrow {{ image:url({CHEVRON_ICON_PATH}); width:12px; height:8px; }}"
             f"QComboBox#printerPicker::down-arrow {{ image:none; }}"
@@ -1118,7 +1145,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             f"QMenu::item {{ min-height:18px; padding:6px 14px; border-radius:5px; }}"
             f"QMenu::item:selected {{ background:{t['sel']}; color:{t['sel_text']}; }}"
             f"QMenu::separator {{ height:1px; background:{t['border']}; margin:4px 8px; }}"
-            f"QComboBox:disabled, QSpinBox:disabled, QLineEdit:disabled {{ color:{t['faint']};"
+            f"QComboBox:disabled, QSpinBox:disabled, QDoubleSpinBox:disabled, QLineEdit:disabled {{ color:{t['faint']};"
             f" background:{t['window']}; border-color:{t['border']}; }}"
             f"QPushButton:disabled, QToolButton:disabled {{ color:{t['faint']}; }}"
             f"QPushButton#chip {{ border:1px solid {t['border']}; border-radius:12px; padding:2px 11px;"
@@ -1127,6 +1154,9 @@ class MainWindow(CatalogueUx, QMainWindow):
             f"QProgressBar {{ background:{t['field_bg']}; color:{t['text']};"
             f" border:1px solid {t['border']}; border-radius:6px; text-align:center; }}"
             f"QProgressBar::chunk {{ background:{accent}; border-radius:5px; }}"
+            f"QFrame#updateProgressCard {{ background:{t['panel'] if 'panel' in t else t['field_bg']}; border:1px solid {t['border']}; border-radius:10px; }}"
+            f"QProgressBar#catalogueProgress {{ border:0; border-radius:4px; background:{t['border']}; }}"
+            f"QProgressBar#catalogueProgress::chunk {{ background:{accent}; border-radius:4px; }}"
             f"QScrollBar:vertical {{ background:transparent; width:11px; margin:2px; }}"
             f"QScrollBar::handle:vertical {{ background:{t['border']};"
             f" border-radius:5px; min-height:28px; }}"
@@ -1154,7 +1184,45 @@ class MainWindow(CatalogueUx, QMainWindow):
                            + f"QLabel#printerBadge {{ background:{t['sec_bg']}; border-radius:12px; font-size:20px; color:{accent}; }}"
                            + f"QLabel#sourceStatus {{ color:{t['muted']}; font-weight:600; }}"
                            + f"QLabel#sourceStatus[success=true] {{ color:{accent}; }}"
-                           + f"QLabel#fieldvalue {{ color:{t['text']}; }}")
+                           + f"QLabel#fieldvalue {{ color:{t['text']}; }}"
+                           + f"QToolButton#sectionToggle {{ background:transparent; border:1px solid transparent; border-radius:5px; color:{faint};"
+                           + f" font-size:11px; letter-spacing:1px; padding:3px 2px; min-height:24px; text-align:left; }}"
+                           + f"QToolButton#sectionToggle:hover {{ color:{t['text']}; background:transparent; border-color:transparent; }}"
+                           + f"QToolButton#sectionToggle:focus {{ border:1px solid {accent}; }}"
+                           + f"QToolButton#sectionToggle:checked {{ background:transparent; color:{faint}; border-color:transparent; }}"
+                           + f"QToolButton#sectionToggle:checked:focus {{ border:1px solid {accent}; }}"
+                           + f"QToolButton#filterSummary {{ color:{t['muted']}; background:{t['card']}; border:1px solid {t['border']}; border-radius:8px; text-align:left; padding:5px 8px; font-size:11px; }}"
+                           + f"QFrame#filterSection {{ background:{t['card']}; border:1px solid {t['border']}; border-radius:8px; }}"
+                           + f"QListWidget#facets {{ background:{t['card']}; border:none; outline:0; }}"
+                           + f"QListWidget#facets::item {{ padding:2px 4px; border:none; border-radius:4px; }}"
+                           + f"QListWidget#facets::item:hover {{ background:{t['sec_bg']}; }}"
+                           + f"QListWidget#facets::item:selected {{ background:{facet_fill}; color:{t['text']}; }}"
+                           + f"QToolButton#favoriteFilter:checked {{ background:{facet_fill}; color:{t['text']}; border-color:{accent}; }}"
+                           + f"QFrame#draftEditor, QFrame#comparisonCard {{ background:{t['card']}; border:1px solid {t['border']}; border-radius:12px; }}"
+                           + f"QFrame#parameterCard {{ background:{t['field_bg']}; border:1px solid {t['border']}; border-radius:8px; }}"
+                           + f"QFrame#parameterCard[tone=changed] {{ border-left:3px solid {accent}; }}"
+                           + f"QFrame#parameterCard[tone=attention] {{ border-left:3px solid {attention_ink}; }}"
+                           + f"QLabel#parameterState {{ color:{t['muted']}; font-size:10px; }}"
+                           + f"QLabel#readingTitle {{ color:{t['text']}; font-size:15px; font-weight:600; }}"
+                           + "QFrame#colourFilter { border:none; background:transparent; }"
+                           + "QToolButton[colourControl=true] { padding:6px; }"
+                           + f"QFrame#exportJourney, QFrame#guidanceTile {{ background:{t['card']}; border:1px solid {t['border']}; border-radius:9px; }}"
+                           + f"QFrame#exportJourney[tone=ready], QFrame#guidanceTile[tone=ready] {{ border-left:3px solid {ready_ink}; }}"
+                           + f"QFrame#exportJourney[tone=attention], QFrame#guidanceTile[tone=attention] {{ border-left:3px solid {attention_ink}; }}"
+                           + f"QFrame#guidanceTile[tone=colour] {{ border-left:3px solid {colour_ink}; }}"
+                           + f"QFrame#guidanceTile[tone=hardware] {{ border-left:3px solid {hardware_ink}; }}"
+                           + f"QLabel#journeyStep {{ color:{hardware_ink}; border:1px solid {t['border']}; border-radius:12px; font-weight:600; }}"
+                           + f"QLabel#guidanceTitle {{ font-weight:600; color:{t['text']}; }}"
+                           + f"QLabel#guidanceValue {{ font-size:16px; font-weight:600; color:{t['text']}; }}"
+                           + f"QLabel#guidanceHeading {{ font-size:18px; font-weight:600; color:{t['text']}; }}"
+                           + f"QLabel#guidanceNote, QLabel#hardwareSummary {{ color:{t['muted']}; font-size:11px; }}"
+                           + f"QLabel#guidanceCaution {{ color:{attention_ink}; }}"
+                           + f"QFrame#draftEditor {{ border:1px dashed {accent}; }}"
+                           + f"QLabel#draftBadge {{ color:{accent}; font-weight:600; }}"
+                           + f"QLabel#comparisonHead {{ color:{t['muted']}; font-size:10px; }}"
+                           + f"QLabel#comparisonNote, QLabel#exportState {{ color:{t['muted']}; font-size:11px; }}"
+                           + f"QLabel#exportReady {{ font-weight:600; }}"
+                           + f"QLineEdit[draftChanged=true] {{ border:1px solid {accent}; font-weight:600; }}")
 
         # Equal compact actions use their rendered text plus the QSS padding/border.
         # Windows tool-button hints may impose a larger native minimum; ignore
@@ -1165,18 +1233,36 @@ class MainWindow(CatalogueUx, QMainWindow):
         for button in actions:
             button.setSizePolicy(QSizePolicy.Ignored,QSizePolicy.Fixed);button.setMinimumWidth(width)
         if hasattr(self,'reset_filters'):
-            buttons=(self.reset_filters,self.brand_favorites_only,self.favorites_only)
+            buttons=(self.sections_menu,self.reset_filters,self.brand_favorites_only,self.favorites_only)
             for button in buttons:button.ensurePolished()
             width=max(button.fontMetrics().horizontalAdvance(button.text())+18 for button in buttons)
             for button in buttons:
                 button.setSizePolicy(QSizePolicy.Ignored,QSizePolicy.Fixed);button.setMinimumWidth(width)
-            self.sidebar.setFixedWidth(max(220,2*width+14))
+            colour_width=0
+            colour_minimum=max(button.fontMetrics().horizontalAdvance(button.text())+18 for button in (self.colour_rank_btn,self.colour_exit_btn,self.colour_details_button))
+            for button in (self.colour_rank_btn,self.colour_exit_btn,self.colour_details_button):
+                button.ensurePolished()
+                minimum=colour_minimum
+                button.setMinimumWidth(minimum);colour_width+=minimum
+            side_width=max(232,2*width+28,colour_width+36)
+            self.sidebar.setMinimumWidth(side_width+(-side_width%6)); self.sidebar.setMaximumWidth(max(520,side_width+120))
+            for index in (1,2):self.splitter.handle(index).setCursor(Qt.SplitHCursor)
+            facet_palette=QPalette(self.palette())
+            facet_palette.setColor(QPalette.Highlight,QColor(facet_fill));facet_palette.setColor(QPalette.HighlightedText,QColor(t['text']))
+            for listing in (self.brand_list,self.family_list,self.state_list):listing.setPalette(facet_palette)
         self._align_detail_footer()
+        self._fit_hardware_actions()
+        self._refresh_logo()
+        for button in (self.favorite_btn,self.btn_similar):button.ensurePolished()
+        action_width=max(max(b.sizeHint().width(), b.fontMetrics().horizontalAdvance(b.text())+24) for b in (self.favorite_btn,self.btn_similar))
+        for button in (self.favorite_btn,self.btn_similar):button.setFixedWidth(action_width)
         # Titre de la fiche : contraste fort, indépendant du palette OS.
         if hasattr(self, "title"):
             self.title.setStyleSheet(f"color:{t['text']};")
         if hasattr(self, 'printer_card'):
             self._refresh_printer_card()
+        if hasattr(self, 'export_journey'):
+            self._refresh_export_journey()
 
         # Rafraîchit la bande couleur si une fiche est affichée.
         if self.current_sku:
@@ -1204,6 +1290,9 @@ class MainWindow(CatalogueUx, QMainWindow):
         if hasattr(self,'footer_layout'):
             gutter=max(0,self.detail_scroll.width()-self.detail_scroll.viewport().width())
             self.footer_layout.setContentsMargins(0,0,gutter,0)
+            # On odd viewport widths, put the spare pixel in the gap: both
+            # characteristic actions keep equal widths and their outer edges.
+            self.characteristic_actions.setSpacing(8+self.detail_scroll.viewport().width()%2)
 
     def _show_card(self):
         self.stack.setCurrentIndex(1)
@@ -1264,7 +1353,7 @@ class MainWindow(CatalogueUx, QMainWindow):
                 if key == 'product' and e.get('diameter'):
                     item.setText(f"{product_label(e['product'],e.get('brand',''))} · {e['diameter']:g} mm")
             color_item = self.table.item(r, 3)
-            color_item.setText(e["color_name"] + (" ⚠" if e.get("hex_variants",0)>1 else ""))
+            color_item.setText(e["color_name"] + (" ⚠" if e.get("hex_variants",0)>1 else "") + self._colour_suffix(e["sku"]))
             color_item.setToolTip(f"#{e['hex']}" if e.get("hex") else tr('Couleur à renseigner'))
             if not e.get("hex"):
                 color_item.setForeground(QColor("#b00"))
@@ -1273,7 +1362,9 @@ class MainWindow(CatalogueUx, QMainWindow):
         favorite_keys=set(core.load_config().get("favorite_filaments",[]))
         # Qt stores only the string SKU. Keep Python display data in the delegate;
         # passing whole nested catalogue records through QVariant is unnecessary.
-        self.grid.itemDelegate().rows={e['sku']:dict(e,_favorite=self._is_favorite(e,favorite_keys)) for e in rows}
+        self.grid.setGridSize(QSize(188,232 if self._colour_query else 216))
+        self.grid.itemDelegate().rows={e['sku']:dict(e,_favorite=self._is_favorite(e,favorite_keys),_distance=self._colour_suffix(e['sku']),_delta=getattr(self,'_colour_deltas',{}).get(e['sku'],{}).get('delta')) for e in rows}
+        self.grid.itemDelegate().context={'brand':self.brand_filter.currentData() or '','family':self.material_filter.currentData() or ''}
         # Vue grille
         # Reuse the Qt-owned cards. Repeated clear()/recreation during filter
         # restoration triggered a native PySide crash; there is no reason to
@@ -1286,12 +1377,15 @@ class MainWindow(CatalogueUx, QMainWindow):
             if it is None:
                 it = QListWidgetItem()
                 self.grid.addItem(it)
-            it.setSizeHint(QSize(180,208))
+            it.setSizeHint(QSize(180,224 if self._colour_query else 208))
             it.setIcon(spool_icon(None if e.get("hex_variants",0)>1 else e.get("hex"),112,dpr,getattr(self,"_tok",{}).get("dark",False)))
             it.setText(e["product"]+"\n"+e["color_name"])
             it.setTextAlignment(Qt.AlignHCenter | Qt.AlignTop)
             it.setData(Qt.UserRole, e["sku"])
-            it.setToolTip(f"{e['sku']}\n{e['product']} · {e['color_name']}\n{e['quality']}")
+            distance=self._colour_suffix(e['sku'])
+            help_text=tr('Plus l’écart ΔE est petit, plus la couleur d’écran est proche.') if distance else ''
+            it.setToolTip(f"{e['sku']}\n{e['product']} · {e['color_name']}\n{display_quality(e['quality'])}{distance}\n{help_text}" + (tr('\nÉcart calculé : {v0}. Affichage arrondi au centième supérieur.',v0=f"{self._colour_deltas[e['sku']]['delta']:.6f}") if distance else ''))
+            it.setData(Qt.AccessibleTextRole, f"{e['color_name'] or tr('Couleur à renseigner')}, {product_label(e['product'],e.get('brand',''))}, {e.get('brand','')}, {display_quality(e['quality'])}{distance}")
         self.table.setUpdatesEnabled(True)
         self.grid.setUpdatesEnabled(True)
         self.table.blockSignals(False)
@@ -1305,6 +1399,9 @@ class MainWindow(CatalogueUx, QMainWindow):
             self.grid.setCurrentRow(selected_row)
             self.table.blockSignals(False)
             self.grid.blockSignals(False)
+        elif hasattr(self, "stack") and getattr(self, "_draft", None) and self._draft["sku"] == self.current_sku:
+            # A filter hid the reference being edited: keep its card and draft, no loss.
+            self.status.showMessage(tr('La fiche en cours de modification n’est plus dans les résultats affichés.'), 8000)
         elif hasattr(self, "stack"):
             self.current_sku = None
             self._show_empty()
@@ -1328,6 +1425,8 @@ class MainWindow(CatalogueUx, QMainWindow):
             self._clear_filament()
             return
         sku = items[0].data(Qt.UserRole)
+        if sku and self._draft and self._group_for_sku(sku) is not self._group_for_sku(self._draft["sku"]) and not self._confirm_draft_transition():
+            self._reselect_draft();return
         if sku:
             self.current_sku = sku
             self._show_detail(sku)
@@ -1356,6 +1455,8 @@ class MainWindow(CatalogueUx, QMainWindow):
         if getattr(self, 'favorites_only', None) and self.favorites_only.isChecked():
             favorites=set(core.load_config().get("favorite_filaments", []))
             self._filtered_rows = [r for r in self._filtered_rows if self._is_favorite(r, favorites)]
+        if getattr(self, '_colour_query', None):
+            self._filtered_rows = self._rank_by_colour(self._filtered_rows)
         index = next((i for i, r in enumerate(self._filtered_rows) if r['sku'] == self.current_sku or any(v['sku'] == self.current_sku for v in r.get('variants', []))), None) if self.current_sku else None
         self._page = index // self._page_size if index is not None else 0
         self._refresh_facets()
@@ -1370,18 +1471,23 @@ class MainWindow(CatalogueUx, QMainWindow):
         end = min(total, start + self._page_size)
         self._populate(self._filtered_rows[start:end])
         self.page_label.setText(tr('{v0}–{v1} sur {v2}',v0=fmt_int(start + 1) if total else 0,v1=fmt_int(end),v2=fmt_int(total)))
-        self.results_label.setText(tr('{v0} filaments trouvés', v0=fmt_int(total)))
+        self.results_label.setText((tr('1 couleur comparable') if total==1 else tr('{v0} couleurs comparables',v0=fmt_int(total))) if getattr(self,'_colour_query',None) else tr('{v0} filaments trouvés',v0=fmt_int(total)))
         self.previous_page.setEnabled(self._page > 0)
         self.next_page.setEnabled(end < total)
         self.previous_page.setVisible(total > self._page_size)
         self.next_page.setVisible(total > self._page_size)
 
     def _change_page(self, delta):
+        if self._draft and self._draft_dirty():
+            self.status.showMessage(tr('Brouillon conservé : la fiche reste affichée pendant la navigation.'), 6000)
         last = max(0, (len(self._filtered_rows) - 1) // self._page_size)
         self._page = max(0, min(last, self._page + delta))
         self._show_page()
 
     def _reset_filters(self):
+        if not self._confirm_draft_transition():
+            return
+        self._clear_colour_filter()
         controls = (self.search, self.brand_search, self.material_search, self.favorites_only, self.brand_favorites_only, self.brand_filter, self.material_filter, self.quality_filter)
         self._search_timer.stop()
         for widget in controls:
@@ -1425,6 +1531,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         if brand is None:
             view = core.get_sku_view(self.db, self.current_sku) if self.current_sku else None
             brand = (view.product_data.get("brand") if view else "") or ""
+        self.logo.graphicsEffect().setEnabled(bool(getattr(self,'_tok',{}).get('dark')))
         self.logo.setTextFormat(Qt.PlainText)
         abs_path = core.logo_abs_path(self.db, brand) if brand else None
         dark = bool(getattr(self, "_tok", {}).get("dark"))
@@ -1457,7 +1564,10 @@ class MainWindow(CatalogueUx, QMainWindow):
         sku_item = self.table.item(row, 1)
         if not sku_item:
             return
-        self.current_sku = sku_item.data(Qt.UserRole) or sku_item.text()
+        sku = sku_item.data(Qt.UserRole) or sku_item.text()
+        if self._draft and self._group_for_sku(sku) is not self._group_for_sku(self._draft["sku"]) and not self._confirm_draft_transition():
+            self._reselect_draft();return
+        self.current_sku = sku
         self._show_detail(self.current_sku)
 
     def _paint_swatch(self):
@@ -1467,7 +1577,13 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.swatch.setStyleSheet(f"color:{t['muted']};background:transparent;font-size:11px;")
 
     def _show_detail(self, sku):
-        sku = self._detail_packaging(sku)
+        draft = getattr(self, "_draft", None)
+        if draft and self._group_for_sku(sku) is not None and self._group_for_sku(sku) is self._group_for_sku(draft["sku"]):
+            sku = draft["sku"]  # Same filament: the edited package stays shown.
+        else:
+            sku = self._detail_packaging(sku)
+            if draft and draft["sku"] != sku:
+                self._close_draft()
         self.current_sku = sku
         view = core.get_sku_view(self.db, sku)
         self._show_card()
@@ -1522,7 +1638,8 @@ class MainWindow(CatalogueUx, QMainWindow):
 
         self.btn_generate.setEnabled(not (self.worker and self.worker.isRunning()))
         self.btn_inspect.setEnabled(True)
-        self._refresh_nfc_capacity()
+        self.btn_similar.setEnabled(bool(self._cur_hex))
+        self._refresh_nfc_capacity()  # also refreshes the comparison of this context
         self._printer_field_help()
         if self.inspector.isVisible():
             self._refresh_inspector()
@@ -1539,61 +1656,6 @@ class MainWindow(CatalogueUx, QMainWindow):
                                     use_orca_overrides=core.load_config().get("orca_overrides") is True)
 
     # ── Actions ──────────────────────────────────────────────────────────
-    def _edit_physical(self):
-        if not self.current_sku or self.worker and self.worker.isRunning():
-            return
-        view = core.get_sku_view(self.db, self.current_sku)
-        if view is None:
-            return
-        count = sum(e.get("product") == view.product for e in self.db["_skus"].values())
-        dialog = QDialog(self)
-        dialog.setWindowTitle(tr('Caractéristiques locales du produit'))
-        dialog.resize(440,420)
-        layout = QVBoxLayout(dialog)
-        layout.setContentsMargins(16,16,16,16);layout.setSpacing(12)
-        note = QLabel(tr('Enregistrez une copie personnelle de cette bobine. La référence source reste intacte.\nLe suffixe apparaît après @. Valeur inconnue : laissez la case vide.'))
-        note.setWordWrap(True)
-        layout.addWidget(note)
-        fields = {}
-        form=QGridLayout();form.setContentsMargins(0,0,0,0);form.setHorizontalSpacing(12);form.setVerticalSpacing(8);form.setColumnStretch(1,1)
-        suffix=QLineEdit(self.db['_skus'][self.current_sku].get('_personal_suffix','Personnel'));suffix.setObjectName('personal_suffix');suffix.setFixedHeight(CONTROL_HEIGHT)
-        suffix.setPlaceholderText(tr('Personnel, U1…'));form.addWidget(QLabel(tr('Suffixe @')),0,0);form.addWidget(suffix,0,1)
-        for key, label in (("min_temp", tr('Buse min. °C')), ("max_temp", tr('Buse max. °C')),
-                           ("bed_min_temp", tr('Plateau min. °C')), ("bed_max_temp", tr('Plateau max. °C')),
-                           ("diameter", tr('Diamètre mm')), ("density", tr('Densité g/cm³'))):
-            value = view.product_data.get(key)
-            field = QLineEdit("" if value is None else str(value))
-            field.setObjectName(key);field.setFixedHeight(CONTROL_HEIGHT)
-            caption=QLabel(label);caption.setBuddy(field);row=len(fields)+1
-            form.addWidget(caption,row,0);form.addWidget(field,row,1);fields[key] = field
-        layout.addLayout(form)
-        error = QLabel(); error.setWordWrap(True); layout.addWidget(error)
-        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
-        buttons.button(QDialogButtonBox.Save).setText(tr('Enregistrer'));buttons.button(QDialogButtonBox.Cancel).setText(tr('Annuler'))
-        for button in buttons.buttons():button.setFixedHeight(CONTROL_HEIGHT)
-        layout.addWidget(buttons)
-        def save():
-            try:
-                values = {}
-                for key, field in fields.items():
-                    raw = field.text().strip().replace(",", ".")
-                    value = float(raw) if raw else None
-                    values[key] = int(value) if value is not None and key.endswith("temp") and value.is_integer() else value
-                created=core.save_personal_filament(self.db,self.current_sku,values,suffix.text())
-                dialog.setProperty('saved_sku',created)
-                dialog.accept()
-            except (ValueError, OSError) as exc:
-                error.setText(tr(str(exc)))
-        buttons.accepted.connect(save)
-        buttons.rejected.connect(dialog.reject)
-        if dialog.exec() == QDialog.Accepted:
-            selected = dialog.property('saved_sku') or self.current_sku
-            self.current_sku=selected
-            self._reload_table()
-            self.current_sku=selected;self._show_detail(selected)
-            self.status.showMessage(tr('Copie personnelle enregistrée ; la référence source est conservée.'),8000)
-            self._update_stats()
-
     def _nfc_changed(self, *_):
         self.nfc_reserve.blockSignals(True)
         self.nfc_reserve.setMaximum(core.NFC_CAPACITIES[self.tag_type.currentData()])
@@ -1628,6 +1690,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         buttons.accepted.connect(dlg.accept)
         buttons.rejected.connect(dlg.reject)
         lay.addWidget(buttons)
+        fit_dialog(dlg,preferred_width=540)
         if dlg.exec() != QDialog.Accepted:
             return False
         value = core.validate_hex(hx.text())
@@ -1643,6 +1706,10 @@ class MainWindow(CatalogueUx, QMainWindow):
 
     def _generate(self, checked=False, *, mode="nfc"):
         if not self.current_sku:
+            return
+        if self._draft_dirty():
+            # Never export a mix of saved values and unsaved draft fields.
+            self.status.showMessage(tr('Enregistrez ou annulez le brouillon avant d’exporter.'), 8000)
             return
         if self.worker and self.worker.isRunning():
             self.status.showMessage(tr('Attendez la fin de la mise à jour avant de modifier ou exporter la fiche.'), 6000)
@@ -1665,6 +1732,7 @@ class MainWindow(CatalogueUx, QMainWindow):
                 if not directory:return
                 out=core.write_opentag3d(prepared,directory)
                 self._last_export_directory=directory
+                self._record_export(out,mode)
                 try:
                     cfg=core.load_config();cfg['export_directory']=directory;core.save_config(cfg)
                 except OSError:self.status.showMessage(tr('Fichier exporté ; le dossier n’a pas pu être mémorisé.'),8000)
@@ -1687,11 +1755,15 @@ class MainWindow(CatalogueUx, QMainWindow):
                 self.status.showMessage(tr('Fichier exporté ; le dossier n’a pas pu être mémorisé.'),8000)
             else:self.status.showMessage(tr('Export terminé : {v0}', v0=out),8000)
             self._last_export_directory=directory
+            self._record_export(out,mode)
             QMessageBox.information(self,tr('Export terminé'),tr('Fichier enregistré :\n{v0}', v0=out))
         except Exception as e:
             QMessageBox.critical(self, "Erreur", tr("Échec de l'export :\n{v0}", v0=e))
 
     def _toggle_inspect(self):
+        if self._draft_dirty() and not self.inspector.isVisible():
+            self.status.showMessage(tr('Enregistrez ou annulez le brouillon avant d’exporter.'), 8000)
+            return
         if self._opentag_selected() and not self.inspector.isVisible():
             if not self._complete_color() or not self._complete_opentag_settings():return
         if self.inspector.isVisible():
@@ -1720,21 +1792,6 @@ class MainWindow(CatalogueUx, QMainWindow):
         except (core.ExportValidationError, core.DatabaseError, OSError) as exc:
             self.inspector.setPlainText(tr('Export impossible : {v0}', v0=exc))
 
-    def _open_output(self):
-        out_dir = getattr(self,'_last_export_directory',core.export_directory())
-        os.makedirs(out_dir, exist_ok=True)
-        try:
-            if sys.platform.startswith("win"):
-                os.startfile(out_dir)  # noqa
-            elif sys.platform == "darwin":
-                import subprocess
-                subprocess.Popen(["open", out_dir])
-            else:
-                import subprocess
-                subprocess.Popen(["xdg-open", out_dir])
-        except Exception as e:
-            QMessageBox.warning(self, "Ouverture", tr("Impossible d'ouvrir le dossier :\n{v0}", v0=e))
-
     # ── Mise à jour DB ───────────────────────────────────────────────────
     def _ask_network_consent(self) -> bool:
         """Affiche les sources et demande le consentement réseau explicite."""
@@ -1761,6 +1818,11 @@ class MainWindow(CatalogueUx, QMainWindow):
     def _start_update(self, manual=False):
         if self.worker and self.worker.isRunning():
             return
+        if getattr(self, "_draft", None):
+            # A refresh replaces the catalogue: one explicit decision before any start.
+            if not manual or not self._confirm_draft_transition():
+                self.status.showMessage(tr('Actualisation non lancée : brouillon en cours.'), 6000)
+                return
         try:
             consent = self._ask_network_consent()
         except OSError as exc:
@@ -1772,6 +1834,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.update_btn.setEnabled(False)
         self.menu_btn.setEnabled(False)
         self.btn_generate.setEnabled(False)
+        self.update_progress_card.show(); self.progress_step.clear()
         self.progress.setVisible(True)
         self.progress_label.setText(tr('Préparation de la synchronisation…'))
         self.progress_label.setVisible(True)
@@ -1790,8 +1853,11 @@ class MainWindow(CatalogueUx, QMainWindow):
         self.worker.start()
 
     def _on_update_progress(self, label, i, total):
-        self.progress.setValue(i)
-        self.progress_label.setText(f"{i}/{total} · {tr(label)}")
+        self.progress.setRange(0,total)
+        self.progress.setValue(max(0,i-1))  # Signal is emitted before this source starts.
+        self.progress_step.setText(tr('Étape {v0} sur {v1}',v0=i,v1=total))
+        self.progress_label.setText(tr(label))
+        self.progress.setAccessibleDescription(tr('Étape {v0} sur {v1}',v0=i,v1=total))
 
     def _cancel_update(self):
         if self.worker and self.worker.isRunning():
@@ -1800,6 +1866,7 @@ class MainWindow(CatalogueUx, QMainWindow):
             self.status.showMessage(tr("Annulation demandée : l'étape en cours s'interrompt…"), 8000)
 
     def _finish_update_ui(self):
+        self.update_progress_card.hide()
         self.progress.setVisible(False)
         self.progress_label.setVisible(False)
         self.cancel_update_btn.setVisible(False)
@@ -1851,9 +1918,9 @@ class MainWindow(CatalogueUx, QMainWindow):
 
     # ── Mise à jour automatique ──────────────────────────────────────────
     # ── Paramètres ───────────────────────────────────────────────────────
-    def _open_settings(self):
+    def _open_settings(self, *, colour_tab=False):
         cfg=core.load_config();dlg=QDialog(self);dlg.setWindowTitle(tr('Paramètres'));dlg.resize(540,460)
-        lay=QVBoxLayout(dlg);lay.setContentsMargins(18,18,18,14);lay.setSpacing(12);tabs=QTabWidget();tabs.setDocumentMode(False);tabs.tabBar().setDrawBase(False);lay.addWidget(tabs,1)
+        lay=QVBoxLayout(dlg);lay.setContentsMargins(18,18,18,14);lay.setSpacing(12);tabs=ReadingTabs();tabs.setDocumentMode(False);tabs.tabBar().setDrawBase(False);lay.addWidget(tabs,1)
         interface=QWidget();interface_layout=QVBoxLayout(interface);interface_layout.setContentsMargins(0,12,0,0)
         interface_layout.addWidget(QLabel(tr('Langue de l’interface')))
         language=QComboBox();language.setObjectName('interface_language');language.setFixedHeight(CONTROL_HEIGHT)
@@ -1907,12 +1974,33 @@ class MainWindow(CatalogueUx, QMainWindow):
         advanced_layout.addWidget(QLabel(tr('Valeurs du fichier NFC')));advanced_layout.addWidget(chk_orca)
         advanced_layout.addWidget(WrapLabel(tr('Par défaut, vos corrections locales restent prioritaires. Activez cette option pour utiliser les paramètres Orca disponibles.')))
         advanced_layout.addStretch(1);tabs.addTab(advanced_export,tr('Export'));tabs.addTab(interface,tr('Interface'))
+        colour_page=QWidget();colour_layout=QVBoxLayout(colour_page);colour_layout.setContentsMargins(0,12,0,0);colour_layout.setSpacing(10)
+        colour_layout.addWidget(QLabel(tr('Jusqu’à quelle distance chercher ?')))
+        colour_layout.addWidget(WrapLabel(tr('ΔE est un écart de couleur, pas un pourcentage. Maximum 3 garde les scores de 0 à 3 inclus ; 3,04 est écarté. Aucune marge n’est ajoutée.')))
+        delta_presets=QComboBox();delta_presets.setObjectName('colour_delta_preset');delta_presets.setFixedHeight(CONTROL_HEIGHT)
+        for label,value in ((tr('Maximum 3 · ΔE ≤ 3'),3.0),(tr('Maximum 10 · ΔE ≤ 10'),10.0),(tr('Maximum 20 · ΔE ≤ 20'),20.0),(tr('Toutes les couleurs'),None),(tr('Personnalisé'),'custom')):delta_presets.addItem(label,value)
+        delta_number=QDoubleSpinBox();delta_number.setObjectName('colour_delta_max');delta_number.setRange(0,200);delta_number.setDecimals(1);delta_number.setSingleStep(0.5);delta_number.setPrefix('ΔE ≤ ');delta_number.setFixedHeight(CONTROL_HEIGHT)
+        initial_delta=core.colour_delta_limit(cfg);delta_number.setValue(initial_delta if initial_delta is not None else 10)
+        delta_presets.setCurrentIndex(max(0,delta_presets.findData(initial_delta) if initial_delta in (None,3,10,20) else delta_presets.findData('custom')));delta_number.setEnabled(initial_delta is not None)
+        def preset_changed():
+            value=delta_presets.currentData();delta_number.setEnabled(value is not None)
+            if type(value) in (float,int):delta_number.setValue(value)
+        def number_changed():
+            value=delta_number.value();index=delta_presets.findData(value) if value in (3,10,20) else delta_presets.findData('custom')
+            delta_presets.blockSignals(True);delta_presets.setCurrentIndex(index);delta_presets.blockSignals(False)
+        delta_presets.currentIndexChanged.connect(preset_changed);delta_number.valueChanged.connect(number_changed)
+        colour_layout.addWidget(delta_presets);colour_layout.addWidget(delta_number);colour_layout.addWidget(WrapLabel(tr('Valeur initiale : 10. Choisissez « Toutes les couleurs » pour explorer sans limite.')));colour_layout.addStretch(1)
+        colour_index=tabs.addTab(colour_page,tr('Teintes'))
+        if colour_tab:tabs.setCurrentIndex(colour_index)
         bb=QDialogButtonBox(QDialogButtonBox.Save|QDialogButtonBox.Cancel);bb.button(QDialogButtonBox.Save).setText(tr('Enregistrer'));bb.button(QDialogButtonBox.Cancel).setText(tr('Annuler'));bb.button(QDialogButtonBox.Save).setFixedHeight(32);bb.button(QDialogButtonBox.Cancel).setFixedHeight(32)
         bb.accepted.connect(dlg.accept);bb.rejected.connect(dlg.reject);lay.addWidget(bb)
+        fit_dialog(dlg,preferred_width=640)
         if dlg.exec()==QDialog.Accepted:
-            cfg=core.load_config();previous_language=cfg.get('language','auto');cfg.update(language=language.currentData(),orca_overrides=chk_orca.isChecked(),update_interval_days=cadence.currentData(),preferred_weight_g=weight.currentData(),preferred_packaging=form.currentData(),export_directory=export_path.text())
+            cfg=core.load_config();previous_language=cfg.get('language','auto');cfg.update(language=language.currentData(),orca_overrides=chk_orca.isChecked(),update_interval_days=cadence.currentData(),preferred_weight_g=weight.currentData(),preferred_packaging=form.currentData(),export_directory=export_path.text(),colour_delta_max=None if delta_presets.currentData() is None else delta_number.value())
             try:
                 core.save_config(cfg)
+                self._refresh_colour_limit_label()
+                if self._colour_query:self._apply_filter()
                 if self.current_sku:self._show_detail(self.current_sku)
                 if self.inspector.isVisible():self._refresh_inspector()
                 self.status.showMessage(tr('Paramètres enregistrés. Le conditionnement préféré s’applique aux fiches sans choix manuel.'),6000)
@@ -2010,6 +2098,7 @@ class MainWindow(CatalogueUx, QMainWindow):
         bb.accepted.connect(dlg.accept)
         bb.button(QDialogButtonBox.Close).clicked.connect(dlg.accept)
         lay.addWidget(bb)
+        fit_dialog(dlg,preferred_width=640)
         dlg.exec()
 
 
