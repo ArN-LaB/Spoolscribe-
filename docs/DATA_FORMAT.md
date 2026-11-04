@@ -147,7 +147,7 @@ trait alone never creates an alpha. Multiple source colours are preserved in
 exported as `additional_color_hexes` (at most four). An unrepresentable set
 blocks export rather than discarding colours.
 
-## Colour measurement registry (in development)
+## Colour measurement registry (v0.7.0)
 
 `colour_measurements.json`, next to `polymaker_db.json` in the user data folder.
 It is **not** a catalogue file: `load_db`/`save_db` never read it, syncs never
@@ -247,7 +247,7 @@ A personal copy adds its own `USER-<uuid>` SKU and private product key, leaving 
 
 Source reconciliation excludes personal SKUs from identity/article/family matching. Copied fields carry high-priority `Copie personnelle` provenance; explicit physical edits use `Utilisateur`. An explicit HEX edit of a copy is stored on the copy's own SKU with `Utilisateur` provenance; only edited fields become `Utilisateur`, never the whole copied record. Copying a colour does not silently confirm an implausible source HEX. Existing explicit corrections and null values remain protected. Standard reference exports are unchanged. The display name is used in personal export filenames and full payloads; the suffix is an application label, not a new printer material type or NFC standard.
 
-## OpenTag3D 2.004 (préversion actuelle : v0.6.0)
+## OpenTag3D 2.004 (préversion actuelle : v0.7.0)
 
 This independent binary format does not change the historical OpenSpool JSON
 contract. It uses MIME `application/opentag3d`, not `application/json`, with NFC

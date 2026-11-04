@@ -75,3 +75,15 @@ reconnaissance par le firmware. La validation matérielle reste à effectuer.
   physical phone, tag and printer acceptance. No NFC protocol or compatibility extension.
 - Companion remains a separate future project. Printing, D101 and Bluetooth are deferred.
 - v0.3.5 remains stable; v0.5.0 and previous tags remain unchanged.
+
+## v0.7.0 — colour measurements, pre-release
+
+- HEX/RGB/CIELAB entry, labelled paste and user-confirmed CSV/TSV mapping.
+- Separate local measurement registry, original values/conditions/provenance,
+  exact reference links and protected backups/restoration.
+- Indicative CIEDE2000 targets against declared catalogue HEX; Lab ranking only
+  with documented D65/2° conditions. Existing HEX/NFC/SSQR1 contracts retained.
+- [Guide](COLOUR_MEASUREMENTS.md) · [Validation and remaining limits](validation/v0.7.0.md).
+- No instrument SDK, USB/Bluetooth driver or Companion development in this step.
+  Authentic manufacturer exports and physical colour/RFID acceptance remain untested.
+- v0.3.5 remains the latest stable release.

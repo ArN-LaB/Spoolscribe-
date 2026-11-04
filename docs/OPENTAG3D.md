@@ -1,8 +1,8 @@
-# OpenTag3D — SpoolScribe v0.6.0 Pre-release
+# OpenTag3D — SpoolScribe v0.7.0 Pre-release
 
-[Documentation](README.md) · [Installations de lecture](PRINTER-CONFIGURATIONS.md) · [Formats NFC](FORMATS-NFC.md) · [Validation](validation/v0.6.0.md)
+[Documentation](README.md) · [Installations de lecture](PRINTER-CONFIGURATIONS.md) · [Formats NFC](FORMATS-NFC.md) · [Validation](validation/v0.7.0.md)
 
-**Disponible dans la [préversion v0.6.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.6.0).**
+**Disponible dans la [préversion v0.7.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.7.0).**
 La version stable v0.3.5 continue à exporter OpenSpool uniquement. Cette préversion
 ajoute OpenTag3D **2.004** ;
 elle ne remplace pas OpenSpool et n’ajoute pas OpenPrintTag.
@@ -126,5 +126,5 @@ L’archive historique reste OpenSpool ; la combinaison OpenTag3D/archive est re
 L’encodeur SpoolScribe est une implémentation indépendante fondée sur les champs
 et unités du standard. Aucun code du site OpenTag3D ou d’OpenRFID n’est embarqué.
 Les essais logiciels et leurs limites sont détaillés dans le
-[rapport de validation](validation/v0.6.0.md). La validation physique des imports,
+[rapport de validation](validation/v0.7.0.md). La validation physique des imports,
 des tags et des imprimantes reste à réaliser avant de revendiquer leur recette.
