@@ -98,3 +98,13 @@ son contenu : ne partagez pas un QR contenant des données que vous souhaitez
 garder privées. Le SHA-256 détecte une altération ; ce n’est pas une signature
 d’authenticité. Le décodeur valide les longueurs et ne lance ni URL ni commande.
 Companion reste à développer ; impression et essais physiques sont différés.
+
+## Local colour measurements (v0.7.0)
+
+Manual entries, pasted text and selected CSV/TSV files are processed locally.
+The separate `colour_measurements.json` registry keeps the chosen values,
+conditions, sample notes and provenance; these can contain information you enter.
+Measurements and their backups are not sent to catalogue sources and are not
+embedded in NFC/SSQR1 exports. Importing a file never uploads or rewrites it.
+No instrument connection, USB/Bluetooth driver, SDK or new network service is added.
+See [measurement storage and controls](COLOUR_MEASUREMENTS.md).

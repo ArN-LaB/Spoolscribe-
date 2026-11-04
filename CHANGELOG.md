@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### In development — colour measurements (P1, not in the v0.6.0 binaries)
+## [0.7.0] - 2026-11-04
+
+### Pre-release — colour measurements (Desktop P1)
 
 - **Mesurer / importer une couleur…** in the *Teintes* section: enter a HEX /
   RGB / CIELAB value, paste a labelled measurement text, or map a CSV/TSV file
@@ -34,7 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - After the independent QA: each entry keeps its own draft and the actions act
   on the visible one; editing a pasted text withdraws its proposal; only whole
   sRGB tokens are accepted (non-sRGB spaces and unbalanced Lab sets are
-  reported); a CSV mapping several colour spaces requires an explicit principal
+  reported); decimal-comma RGB remnants are refused without truncation, while
+  valid spaces around comma/semicolon separators remain accepted; a CSV mapping
+  several colour spaces requires an explicit principal
   set; the observer accepts only 2°/10° notations; an unreadable registry can be
   restored explicitly (revision checked again just before replacing, replaced
   file kept); an illuminant declared “other” is compared by its description;
@@ -717,6 +721,8 @@ These were same-day iterations, kept here for traceability:
 - Cleaned repository: removed one-off bootstrap scripts, raw scrape caches,
   bundled PDF, and generated output; minimized root directory.
 
+[Unreleased]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.6.0...v0.7.0
 [0.4.0]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.3.5...v0.4.0
 [0.3.5]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.3.0...v0.3.5
 [0.3.0]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.2...v0.3.0

@@ -1,9 +1,8 @@
-# Colour measurements (P1, in development)
+# Colour measurements — Desktop P1, v0.7.0 Pre-release
 
-Status: integration candidate for Desktop P1. Local independent QA completed
-with notes; branch CI and package validation are the next integration gate.
-This feature is **not part of the published v0.6.0 binaries**. No release or
-hardware certification is implied.
+Available in [v0.7.0 Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.7.0).
+The software checks do not certify an instrument, its proprietary export format
+or a physical printed colour. [Validation and limits](validation/v0.7.0.md).
 
 ## What it does
 

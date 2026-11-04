@@ -1,9 +1,11 @@
-# SpoolScribe v0.6.0 — a visual tour
+# SpoolScribe v0.7.0 — a visual tour
 
-[Home](Home.md) · [Get started](Getting-Started.md) · [Download pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.6.0)
+[Home](Home.md) · [Get started](Getting-Started.md) · [Download pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.7.0)
 
 **Find a spool → compare its colour → check your reader → prepare the file or QR.**
-These are real v0.6.0 captures with public fixtures, offline settings and no personal
+v0.7.0 adds [colour entry/import and a local registry](Measuring-Colours.md).
+The unchanged catalogue, hardware and QR areas are illustrated below with
+real v0.6.0 captures with public fixtures, offline settings and no personal
 data. Click an image for full size. Demonstration counts are not live coverage.
 
 ## 1. Start with the filament
@@ -79,4 +81,4 @@ reader. SSQR1 software tests do not certify every physical configuration.
 [Share your configuration and result](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml).
 
 [Image provenance and regeneration](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/images/README.md) ·
-[Release validation](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.6.0.md).
+[Release validation](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.7.0.md).

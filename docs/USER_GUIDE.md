@@ -1,8 +1,8 @@
-# Utiliser SpoolScribe v0.6.0 · Pre-release
+# Utiliser SpoolScribe v0.7.0 · Pre-release
 
-[Accueil](../README.md) · [Documentation](README.md) · [Préversion v0.6.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.6.0) · [Stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
+[Accueil](../README.md) · [Documentation](README.md) · [Préversion v0.7.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.7.0) · [Stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
 
-[Parcours visuel de v0.6.0 : catalogue, ΔE, imprimantes et QR](wiki/Visual-Tour.md).
+[Parcours visuel de v0.7.0 : catalogue, ΔE, imprimantes et QR](wiki/Visual-Tour.md).
 Les captures sont réelles, en anglais ; le même parcours existe dans les quatre langues.
 
 ## Langue de l’interface
@@ -130,7 +130,7 @@ ouvre une fenêtre organisée : **Les résultats** présente la couleur, les eff
 cartes expliquant les exclusions ; **La méthode** explique le classement et ses limites.
 Sans couleur choisie, seule la méthode est proposée, sans résultat fictif.
 
-### Mesurer ou importer une couleur (en développement)
+### Mesurer ou importer une couleur (v0.7.0)
 
 Dans **Teintes**, « Mesurer / importer une couleur… » ouvre une fenêtre à trois
 entrées : **Saisir** (HEX, RGB ou L*a*b*), **Coller** (texte copié depuis
@@ -151,7 +151,7 @@ détails » ou par les colonnes du fichier. Chaque entrée garde son propre
 brouillon : les boutons agissent sur l’entrée affichée ; modifier un texte collé
 retire la proposition jusqu’à une nouvelle interprétation ; si un fichier mappe
 à la fois Lab, HEX ou RGB, vous choisissez le jeu principal. Un petit écart ne
-garantit pas le rendu imprimé. Cette fonction n’est pas dans les binaires v0.6.0.
+garantit pas le rendu imprimé. Disponible en v0.7.0 ; les binaires v0.6.0 antérieurs ne contiennent pas cette fonction.
 
 ## Choisir le conditionnement
 

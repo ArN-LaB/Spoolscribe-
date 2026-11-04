@@ -2,9 +2,11 @@
 
 [Documentation](README.md) · [Ressources](../data/README.md) · [Fixtures](../tests/fixtures/README.md) · [Développement](DEVELOPMENT.md)
 
-**Préversion actuelle v0.6.0 :** les encodeurs NFC sont conservés ; `qr_transfer.py`,
-`qr_layout.py` et `ui_qr.py` ajoutent le transfert numérique SSQR1.
-[Validation actuelle](validation/v0.6.0.md) · [Captures et génération](images/README.md).
+**Préversion actuelle v0.7.0 :** les encodeurs NFC et SSQR1 sont conservés.
+`colour_measurements.py`, `colour_import.py`, `colour_targets.py`,
+`measurement_store.py` et `ui_colour_measurements.py` ajoutent la saisie/import
+et un registre de mesures distinct du catalogue.
+[Validation actuelle](validation/v0.7.0.md) · [Captures et génération](images/README.md).
 Les résultats de structure ci-dessous restent datés de v0.3.5 : ils ne sont pas
 présentés comme les résultats de la version actuelle.
 
@@ -51,7 +53,7 @@ Les catalogues de filaments, les 48 profils Orca et le contrat des 1 008 exports
 gardent leur contenu. Les chemins de logos déjà enregistrés restent lisibles par
 des alias ; les fichiers du dossier utilisateur ne sont ni déplacés ni réécrits.
 Les anciennes copies de manifestes et les personnalisations de logos restent prises
-en compte. Cette passe historique conservait la version **0.3.5** ; la préversion actuelle est **0.6.0**.
+en compte. Cette passe historique conservait la version **0.3.5** ; la préversion actuelle est **0.7.0**.
 
 Le packaging utilise une liste déclarée, pas une collecte de toutes les images
 trouvées dans `data/`. Le contrôle du dépôt refuse les ressources orphelines,
