@@ -96,7 +96,7 @@ class MeasurementUiTests(unittest.TestCase):
             dialog.btn_save.click(); self.app.processEvents()
         delta.assert_not_called()
         self.assertTrue(self.registry_path.exists())
-        stored = json.loads(self.registry_path.read_text())["measurements"]
+        stored = json.loads(self.registry_path.read_text(encoding="utf-8"))["measurements"]
         self.assertEqual(len(stored), 1)
         measurement = next(iter(stored.values()))
         self.assertEqual(measurement["conditions"]["illuminant"], "D50"); self.assertEqual(measurement["original"]["lexemes"]["L"], "60")
@@ -116,7 +116,7 @@ class MeasurementUiTests(unittest.TestCase):
         dialog.paste_candidates.setCurrentRow(0)   # the HEX set → indicative
         self.assertEqual(dialog.level_tile.value.text(), "Proximité indicative")
         dialog.btn_save.click(); self.app.processEvents()
-        stored = next(iter(json.loads(self.registry_path.read_text())["measurements"].values()))
+        stored = next(iter(json.loads(self.registry_path.read_text(encoding="utf-8"))["measurements"].values()))
         self.assertEqual(stored["original"]["space"], "sRGB_HEX")
         self.assertEqual({a["space"] for a in stored["original"]["alternatives"]}, {"sRGB_RGB8", "CIELAB"})
         self.assertIn("HEX #74CABF", stored["original"]["raw_text"])
@@ -138,7 +138,7 @@ class MeasurementUiTests(unittest.TestCase):
         self.assertTrue(dialog.partial_confirm.isVisible()); self.assertFalse(dialog.btn_import.isEnabled())
         dialog.partial_confirm.setChecked(True); self.assertTrue(dialog.btn_import.isEnabled())
         dialog.btn_import.click(); self.app.processEvents()
-        stored = json.loads(self.registry_path.read_text())["measurements"]
+        stored = json.loads(self.registry_path.read_text(encoding="utf-8"))["measurements"]
         self.assertEqual(len(stored), 4); self.assertEqual(dialog.tabs.currentIndex(), 3); self.assertEqual(dialog.saved_list.count(), 4)
         self.assertEqual(Path(path).read_bytes(), before)
         names = sorted(m["name"] for m in stored.values())
@@ -200,7 +200,7 @@ class MeasurementUiTests(unittest.TestCase):
         self.assertEqual(dialog.registry.get(identifier)["name"], "Renommée")
         self.assertEqual(Path(core.DB_PATH).read_bytes(), catalogue_before)
         self.assertEqual(Path(core.CONFIG_PATH).read_bytes(), config_before)
-        self.assertFalse(any("MEAS-" in line for line in Path(core.CONFIG_PATH).read_text().splitlines()))
+        self.assertFalse(any("MEAS-" in line for line in Path(core.CONFIG_PATH).read_text(encoding="utf-8").splitlines()))
 
     def test_window_fits_every_language_and_theme_with_keyboard_focus(self):
         for language in ("fr", "en", "es", "zh_CN"):
@@ -254,7 +254,7 @@ class MeasurementUiTests(unittest.TestCase):
         self.assertEqual((measurement["original"]["components"]["hex"], measurement["original"]["raw_text"]), ("FF0000", "HEX #FF0000"))
         self.assertEqual(measurement["conditions"]["observer"], 2)   # declared context kept with an sRGB principal
         dialog.btn_save.click(); self.app.processEvents()
-        stored = next(iter(json.loads(self.registry_path.read_text())["measurements"].values()))
+        stored = next(iter(json.loads(self.registry_path.read_text(encoding="utf-8"))["measurements"].values()))
         self.assertEqual((stored["original"]["components"], stored["original"]["raw_text"]), ({"hex": "FF0000"}, "HEX #FF0000"))
         self.assertEqual(cm.comparison_policy(stored)["reason"], "srgb_declared")
 
@@ -325,7 +325,7 @@ class MeasurementUiTests(unittest.TestCase):
             self.assertEqual(dialog.import_summary.text(), "2 valides / 0 à corriger / 0 doublons potentiels")
             self.assertIn("Jeu principal : HEX", dialog.import_errors.toPlainText())
             dialog.btn_import.click(); self.app.processEvents()
-            stored = list(json.loads(self.registry_path.read_text())["measurements"].values())
+            stored = list(json.loads(self.registry_path.read_text(encoding="utf-8"))["measurements"].values())
             self.assertEqual({m["original"]["space"] for m in stored}, {"sRGB_HEX"})
             self.assertEqual({a["space"] for m in stored for a in m["original"]["alternatives"]}, {"CIELAB"})
             dialog.mapping_combos["hex"].setCurrentIndex(0); self.app.processEvents()   # one space left: the choice disappears
@@ -345,7 +345,7 @@ class MeasurementUiTests(unittest.TestCase):
         dialog.sample_backing.setText("fond blanc"); dialog.sample_surface_note.setText("poncé")
         self.assertEqual(dialog.level_tile.value.text(), "Proximité indicative")
         dialog.btn_save.click(); self.app.processEvents()
-        stored = next(iter(json.loads(self.registry_path.read_text())["measurements"].values()))
+        stored = next(iter(json.loads(self.registry_path.read_text(encoding="utf-8"))["measurements"].values()))
         self.assertEqual({k: stored["conditions"][k] for k in ("geometry", "specular", "aperture")}, {"geometry": "45/0", "specular": "SCE", "aperture": "8 mm"})
         self.assertEqual({k: stored["sample"][k] for k in ("material", "finish", "thickness", "backing", "surface_note")},
                          {"material": "PLA", "finish": "mat", "thickness": "2 mm", "backing": "fond blanc", "surface_note": "poncé"})
@@ -436,7 +436,7 @@ class MeasurementUiTests(unittest.TestCase):
         dialog.paste_edit.setPlainText("RGB 116, 202, 191"); dialog.btn_interpret.click(); self.app.processEvents()
         self.assertEqual(dialog.paste_candidates.count(), 1); self.assertTrue(dialog.btn_save.isEnabled())
         dialog.btn_save.click(); self.app.processEvents()
-        stored = [m for i, m in json.loads(self.registry_path.read_text())["measurements"].items() if i != existing]
+        stored = [m for i, m in json.loads(self.registry_path.read_text(encoding="utf-8"))["measurements"].items() if i != existing]
         self.assertEqual(len(stored), 1)
         original = stored[0]["original"]
         self.assertEqual((original["space"], original["components"], original["lexemes"], original["raw_text"], original["alternatives"]),
@@ -470,7 +470,7 @@ class MeasurementUiTests(unittest.TestCase):
         self.assertFalse(dialog.paste_errors.isVisible())
         self.assertTrue(dialog.btn_save.isEnabled()); self.assertTrue(dialog.btn_search.isEnabled())
         dialog.btn_save.click(); self.app.processEvents()
-        stored = list(json.loads(self.registry_path.read_text())["measurements"].values())
+        stored = list(json.loads(self.registry_path.read_text(encoding="utf-8"))["measurements"].values())
         self.assertEqual(len(stored), 1)
         original = stored[0]["original"]
         self.assertEqual((original["space"], original["components"], original["lexemes"], original["raw_text"], original["alternatives"]),
