@@ -147,6 +147,44 @@ trait alone never creates an alpha. Multiple source colours are preserved in
 exported as `additional_color_hexes` (at most four). An unrepresentable set
 blocks export rather than discarding colours.
 
+## Colour measurement registry (in development)
+
+`colour_measurements.json`, next to `polymaker_db.json` in the user data folder.
+It is **not** a catalogue file: `load_db`/`save_db` never read it, syncs never
+touch it, and restoring one file never restores the other. It is written through
+the generic validated-JSON storage (`save_validated_json`: lock, revision check
+before and immediately before `os.replace`, `.bak` of the previous bytes,
+concurrent copy on conflict). Opening the window does not create the file.
+
+```json
+{"schema": "spoolscribe-colour-measurements", "version": 1,
+ "measurements": {"MEAS-<uuid4>": {
+   "name": "…", "role": "target | filament_sample", "created_at": "<UTC>", "measured_at": null,
+   "original": {"space": "sRGB_HEX | sRGB_RGB8 | CIELAB", "components": {…}, "lexemes": {…}, "raw_text": null, "alternatives": []},
+   "conditions": {"illuminant": "D65 | D50 | other | null", "illuminant_note": null, "observer": "2 | 10 | null", "geometry": null, "specular": null, "aperture": null, "calibration": null, "profile_note": null},
+   "provenance": {"method": "manual | paste | csv", "device_manufacturer": null, "device_model": null, "source_app": null, "operator_note": null, "file_name": null, "file_sha256": null, "record_number": null},
+   "sample": {"type": "unknown | raw_filament | printed_sample | painted_surface | object | other", "material": null, "finish": null, "thickness": null, "backing": null, "surface_note": null},
+   "association": null, "content_digest": "<sha256 of normalised values and conditions>"}}}
+```
+
+Rules: `null` means unknown, nothing is inferred (no default illuminant or
+observer, no instrument); `created_at` is the registry creation instant, distinct
+from an optional reported `measured_at`; `L*` is bounded to [0, 100], `a*`/`b*`
+only have to be finite; RGB8 channels are integers 0–255; lexemes keep the typed
+text (`"73,2"`). An `association` is an exact SKU or `USER-…` identifier chosen
+by the user; a missing SKU is reported, never re-attributed. Changing numbers
+creates a new measurement. The digest only flags similar acquisitions.
+Comparison policy: sRGB → indicative (derived D65/2° basis); CIELAB D65/2° →
+indicative, compared directly to the catalogue Lab; anything else → blocked.
+For an sRGB value, `conditions` only record the context declared with it
+(for example the illuminant mentioned in a pasted text); the comparison
+reference of sRGB stays the derived basis. `original.alternatives` keep the
+other sets recognised with the principal one (paste: with the declared
+conditions; CSV: the other mapped colour columns). The registry is read only
+when its size is within 20 MiB (checked before any read or parse), is never
+reset when unusable, and an explicit restoration keeps the replaced file next
+to it (`colour_measurements.json.before-restore-*`).
+
 ## Export profiles
 
 Both profiles are OpenSpool `protocol: "openspool"`, `version: "1.0"` JSON.

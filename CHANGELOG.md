@@ -13,6 +13,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### In development — colour measurements (P1, not in the v0.6.0 binaries)
+
+- **Mesurer / importer une couleur…** in the *Teintes* section: enter a HEX /
+  RGB / CIELAB value, paste a labelled measurement text, or map a CSV/TSV file
+  (encoding, separator, decimal mark and every column confirmed by the user).
+  Measurements are kept in a separate local registry (`colour_measurements.json`
+  next to the catalogue database) with their original values, lexemes, conditions
+  (illuminant, observer, …) and provenance; they can be renamed, linked to an
+  exact reference or personal copy, detached, deleted and restored. The
+  catalogue, personal copies, settings and NFC/QR exports never change.
+- A measurement can be the target of *Teintes proches*: sRGB values go through
+  the unchanged HEX engine; CIELAB D65/2° values are compared directly to the
+  Lab of the declared catalogue HEX with the same CIEDE2000. D50, 10°, other or
+  unknown conditions are stored but never ranked. Against the catalogue the
+  result is always an *indicative proximity*, never a certified match.
+- Protection bounds for untrusted files (10 MiB, 10 000 records, 64 columns,
+  4 096-character cells, 64 KiB pasted text, 20 MiB / 10 000-measurement registry),
+  checked on the file size before any read.
+- After the independent QA: each entry keeps its own draft and the actions act
+  on the visible one; editing a pasted text withdraws its proposal; only whole
+  sRGB tokens are accepted (non-sRGB spaces and unbalanced Lab sets are
+  reported); a CSV mapping several colour spaces requires an explicit principal
+  set; the observer accepts only 2°/10° notations; an unreadable registry can be
+  restored explicitly (revision checked again just before replacing, replaced
+  file kept); an illuminant declared “other” is compared by its description;
+  documented conditions and sample details can be entered; a swatch previews
+  confirmed HEX/RGB codes only; errors are translated in the four languages.
+
 ## [0.6.0] - 2026-11-03
 
 ### Pre-release — digital SSQR1 transfer

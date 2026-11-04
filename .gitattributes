@@ -2,3 +2,6 @@
 data/** -text
 tests/fixtures/** -text
 scripts/** -text
+# Deliberate CRLF parser fixtures: keep checking real whitespace errors.
+tests/fixtures/measurements/synthetic_lab_bom_crlf.tsv whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+tests/fixtures/measurements/synthetic_lab_semicolon_fr.csv whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

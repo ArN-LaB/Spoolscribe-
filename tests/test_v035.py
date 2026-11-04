@@ -36,7 +36,7 @@ class TranslationTests(unittest.TestCase):
                 with self.subTest(source=source,language=language):
                     self.assertTrue(text.strip())
                     self.assertEqual(i18n.placeholders(source),i18n.placeholders(text))
-        for filename in ('app_gui.py','ui_catalogue.py','ui_widgets.py','ui_detail.py','ui_guidance.py','printer_presentations.py'):
+        for filename in ('app_gui.py','ui_catalogue.py','ui_widgets.py','ui_detail.py','ui_guidance.py','printer_presentations.py','ui_colour_measurements.py'):
             for node in ast.walk(ast.parse((ROOT/'src/spoolscribe'/filename).read_text(encoding='utf-8'))):
                 if isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id=='tr' and node.args and isinstance(node.args[0],ast.Constant):
                     self.assertIn(node.args[0].value,messages,f'{filename}:{node.lineno}')

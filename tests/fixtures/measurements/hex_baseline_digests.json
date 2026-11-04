@@ -1,0 +1,267 @@
+{
+ "source": "docs/agent-runs/SPOOLSCRIBE-COLOR-2026-001/preuves/audit-2026-11-04-091545/hex-baseline-benchmark.json",
+ "note": "Digests of the unmodified HEX ranking (audit of 4 November 2026). Items digest = sha256 of {items:[[sku,delta,effect]...],excluded:{...}} sorted keys, compact separators. Rows derived from the three public fixtures with filename:sku identifiers; padding and synthetic rows regenerated identically by the test.",
+ "runtime": "3.12.13",
+ "fixture_total": 24521,
+ "explicit_synthetic_padding": 479,
+ "datasets": [
+  {
+   "name": "public-fixture-derived",
+   "rows": 25000,
+   "rows_sha256": "2882992d4669004bebd17076d1609375302bb45cc2ee8c3b2b48e81c8f5cd324",
+   "targets": [
+    {
+     "target": "C8E6A0",
+     "digest": "983d50229e205529bde383a562c61b64f5f29799e487a946157d391510404f55",
+     "ranked": 22568,
+     "excluded": {
+      "translucent": 1378,
+      "unknown": 1054
+     },
+     "within_limits": {
+      "0": 1,
+      "3": 2,
+      "10": 133,
+      "20": 2928
+     },
+     "first_five": [
+      [
+       "catalogue_ofd.json:OFD-0B0227E7-CDE1-4F1E-9295-C3BF912B0387",
+       0.0,
+       true
+      ],
+      [
+       "catalogue_ofd.json:OFD-14DE895D-FDC3-494D-9583-AB88728C8326",
+       2.297451,
+       false
+      ],
+      [
+       "catalogue_ofd.json:OFD-D13F969B-27A5-4AB3-9E0B-78CB8102DAA5",
+       3.035999,
+       false
+      ],
+      [
+       "catalogue_ofd.json:OFD-D5159B65-B384-4435-86CC-2C10E7ECB9C6",
+       3.035999,
+       false
+      ],
+      [
+       "polymaker_db.json:PA07029",
+       3.077865,
+       false
+      ]
+     ]
+    },
+    {
+     "target": "74CABF",
+     "digest": "03e9e91668e9b5b7c80ebd4846bceab4afd741a530faa6342f78209fb88d18d5",
+     "ranked": 22568,
+     "excluded": {
+      "translucent": 1378,
+      "unknown": 1054
+     },
+     "within_limits": {
+      "0": 2,
+      "3": 6,
+      "10": 237,
+      "20": 1357
+     },
+     "first_five": [
+      [
+       "polymaker_db.json:PB05009",
+       0.0,
+       false
+      ],
+      [
+       "polymaker_db.json:PM70130",
+       0.0,
+       false
+      ],
+      [
+       "catalogue_ofd.json:OFD-D53D979F-8806-4317-AE06-F060A14CC4C5",
+       2.078763,
+       false
+      ],
+      [
+       "catalogue_ofd.json:OFD-F3E281A3-C75D-48C1-9A23-9F97F060F6B7",
+       2.078763,
+       false
+      ],
+      [
+       "SYNTH-PAD-00068",
+       2.443809,
+       true
+      ]
+     ]
+    },
+    {
+     "target": "070908",
+     "digest": "108d411c430c18c7e23045b916eab822c0c49e3f9e63c72ee45c60acf1455628",
+     "ranked": 22568,
+     "excluded": {
+      "translucent": 1378,
+      "unknown": 1054
+     },
+     "within_limits": {
+      "0": 5,
+      "3": 1948,
+      "10": 2403,
+      "20": 3037
+     },
+     "first_five": [
+      [
+       "polymaker_db.json:PB01043",
+       0.0,
+       false
+      ],
+      [
+       "polymaker_db.json:PB01046",
+       0.0,
+       false
+      ],
+      [
+       "polymaker_db.json:PB05001",
+       0.0,
+       false
+      ],
+      [
+       "polymaker_db.json:PM70632",
+       0.0,
+       false
+      ],
+      [
+       "polymaker_db.json:PM70893",
+       0.0,
+       false
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "synthetic-unique-srgb",
+   "rows": 25000,
+   "rows_sha256": "2578dc60ca633b337924c9902df64e9e1ef5cfc5142fa90119c956ed49f3e59b",
+   "targets": [
+    {
+     "target": "C8E6A0",
+     "digest": "68d4786432e5e9b20cedf5c78e7e9a0d7d39ed0281e3f8080f239569958092ff",
+     "ranked": 25000,
+     "excluded": {},
+     "within_limits": {
+      "0": 0,
+      "3": 15,
+      "10": 602,
+      "20": 5615
+     },
+     "first_five": [
+      [
+       "SYNTH-15754",
+       0.539177,
+       false
+      ],
+      [
+       "SYNTH-02133",
+       0.821714,
+       false
+      ],
+      [
+       "SYNTH-02186",
+       0.946489,
+       false
+      ],
+      [
+       "SYNTH-15701",
+       1.354895,
+       false
+      ],
+      [
+       "SYNTH-15807",
+       1.787207,
+       false
+      ]
+     ]
+    },
+    {
+     "target": "74CABF",
+     "digest": "88fa5a44f79525ca0b947b4dfba271a476de6242f65c104f605557a79cce5036",
+     "ranked": 25000,
+     "excluded": {},
+     "within_limits": {
+      "0": 0,
+      "3": 14,
+      "10": 755,
+      "20": 3440
+     },
+     "first_five": [
+      [
+       "SYNTH-03979",
+       0.247486,
+       false
+      ],
+      [
+       "SYNTH-17547",
+       0.433453,
+       false
+      ],
+      [
+       "SYNTH-17600",
+       1.050218,
+       false
+      ],
+      [
+       "SYNTH-03926",
+       1.247404,
+       false
+      ],
+      [
+       "SYNTH-04032",
+       1.609211,
+       false
+      ]
+     ]
+    },
+    {
+     "target": "070908",
+     "digest": "fe99786aa80816c925d806721deaf58f0ce52293944160608aa077c50eb6d29d",
+     "ranked": 25000,
+     "excluded": {},
+     "within_limits": {
+      "0": 0,
+      "3": 4,
+      "10": 50,
+      "20": 395
+     },
+     "first_five": [
+      [
+       "SYNTH-05553",
+       0.802187,
+       false
+      ],
+      [
+       "SYNTH-19121",
+       1.528444,
+       false
+      ],
+      [
+       "SYNTH-00000",
+       1.672042,
+       false
+      ],
+      [
+       "SYNTH-19174",
+       2.586394,
+       false
+      ],
+      [
+       "SYNTH-05500",
+       3.287903,
+       false
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "batch_seconds": 3.9617186250106897
+}

@@ -130,6 +130,29 @@ ouvre une fenêtre organisée : **Les résultats** présente la couleur, les eff
 cartes expliquant les exclusions ; **La méthode** explique le classement et ses limites.
 Sans couleur choisie, seule la méthode est proposée, sans résultat fictif.
 
+### Mesurer ou importer une couleur (en développement)
+
+Dans **Teintes**, « Mesurer / importer une couleur… » ouvre une fenêtre à trois
+entrées : **Saisir** (HEX, RGB ou L*a*b*), **Coller** (texte copié depuis
+l’application de votre appareil ; seules les valeurs étiquetées sont reconnues
+et vous confirmez le jeu principal) et **Importer** (CSV/TSV : encodage,
+séparateur, décimales et colonnes confirmés, bilan « N valides / M à corriger /
+K doublons » avant enregistrement). La mesure peut être enregistrée dans un
+registre local distinct du catalogue, réutilisée comme cible, liée à une
+référence exacte ou détachée, sans jamais modifier la couleur du catalogue.
+
+Pour une mesure L*a*b*, indiquez l’éclairage et l’observateur lus sur votre
+appareil : D65 et 2° permettent une **proximité indicative** avec les codes
+déclarés du catalogue ; D50, 10° ou « Je ne sais pas » conservent la mesure sans
+la comparer. Les conditions documentées (géométrie, SCI/SCE, ouverture,
+calibration) et la description de l’échantillon (matériau, finition, épaisseur,
+fond) sont facultatives, inconnues par défaut, et se renseignent dans « Plus de
+détails » ou par les colonnes du fichier. Chaque entrée garde son propre
+brouillon : les boutons agissent sur l’entrée affichée ; modifier un texte collé
+retire la proposition jusqu’à une nouvelle interprétation ; si un fichier mappe
+à la fois Lab, HEX ou RGB, vous choisissez le jeu principal. Un petit écart ne
+garantit pas le rendu imprimé. Cette fonction n’est pas dans les binaires v0.6.0.
+
 ## Choisir le conditionnement
 
 Dans **Paramètres → Bobines**, choisissez le poids préféré et, si souhaité,

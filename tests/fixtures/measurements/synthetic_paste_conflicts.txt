@@ -1,0 +1,5 @@
+Mesure synthétique (aucun appareil)
+HEX #74CABF
+RGB 10, 20, 30
+L*=73,2 a*=-25,6 b*=-12,4
+Illuminant D50, observateur 10°
