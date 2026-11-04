@@ -258,7 +258,7 @@ class CatalogueUx:
         quality=self.quality_filter.currentData() or 'all'
         return {'brands':self.brand_filter.currentData() or '',
                 'materials':self.material_filter.currentData() or '',
-                'colours':'#'+self._colour_query['hex'] if self._colour_query else '',
+                'colours':self._colour_query_label() if self._colour_query else '',
                 'states':'' if quality=='all' else self.quality_filter.currentText()}
 
     def _refresh_section_headers(self):
@@ -283,7 +283,7 @@ class CatalogueUx:
         if self.search.text().strip():parts.append(tr('Recherche : « {v0} »',v0=self.search.text().strip()))
         if self.brand_favorites_only.isChecked():parts.append(tr('Fabricants favoris'))
         if self.favorites_only.isChecked():parts.append(tr('Filaments favoris'))
-        if getattr(self,'_colour_query',None):parts.append(tr('Teintes proches de #{v0}',v0=self._colour_query['hex']))
+        if getattr(self,'_colour_query',None):parts.append(tr('Teintes proches de {v0}',v0=self._colour_query_label()))
         self.filter_summary.setText(tr('Filtres')+(f' · {len(parts)}' if parts else ''))
         self.filter_summary.setToolTip('\n'.join(parts))
         self.filter_summary.setAccessibleName(self.filter_summary.text())

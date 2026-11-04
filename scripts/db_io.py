@@ -380,6 +380,170 @@ def save_db(db: dict, path: str | Path) -> bool:
     return True
 
 
+# ── Generic validated JSON documents (measurement registry and similar) ───
+# Additive API: the catalogue functions above keep their own schema and rules.
+class InvalidDocument(DatabaseError):
+    """A file that exists but is not a usable document (unreadable, invalid or over the bound).
+
+    ``revision`` is the digest of the bytes found on disk, so an explicit
+    restoration can replace exactly that file. ``template``/``values`` keep the
+    message translatable (see ``colour_measurements.error_text``).
+    """
+
+    def __init__(self, template: str, *, revision: str | None = None, **values):
+        super().__init__(template.format(**values) if values else template)
+        self.template, self.values, self.revision = template, values, revision
+
+
+def _file_digest(path: Path) -> str:
+    """Streaming digest: the file is never loaded whole for this check."""
+    digest = hashlib.sha256()
+    with open(path, "rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _read_bounded(path: Path, max_bytes: int | None) -> bytes:
+    """Read a file only when its size is within the bound: checked on the inode first, then while reading."""
+    if max_bytes is not None:
+        size = path.stat().st_size
+        if size > max_bytes:
+            raise InvalidDocument("{v0} : fichier de {v1} octets au-delà de la limite ({v2} octets) ; non chargé.",
+                                  revision=_file_digest(path), v0=path.name, v1=size, v2=max_bytes)
+    with open(path, "rb") as stream:
+        data = stream.read(max_bytes + 1) if max_bytes is not None else stream.read()
+    if max_bytes is not None and len(data) > max_bytes:
+        raise InvalidDocument("{v0} : fichier de plus de {v2} octets ; non chargé.", revision=_file_digest(path),
+                              v0=path.name, v2=max_bytes)
+    return data
+
+
+def _preserve_copy(path: Path, prefix: str) -> Path:
+    """Streaming copy of ``path`` next to it (used for the replaced file, whatever its size or validity)."""
+    fd, preserved = tempfile.mkstemp(prefix=prefix, dir=path.parent)
+    with os.fdopen(fd, "wb") as stream, open(path, "rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            stream.write(chunk)
+        stream.flush()
+        os.fsync(stream.fileno())
+    return Path(preserved)
+
+
+def load_validated_json(path: str | Path, validator: Callable, *, missing_ok: bool = True, max_bytes: int | None = None):
+    """Return ``(document, revision)``; a missing file gives ``(None, None)`` and creates nothing.
+
+    ``validator`` receives the parsed document and returns the (normalised)
+    document or raises. Invalid content is reported as :class:`InvalidDocument`
+    (carrying the revision of the bytes found), never reset. With ``max_bytes``
+    the size is checked before any read or parse.
+    """
+    path = Path(path)
+    try:
+        raw = _read_bounded(path, max_bytes)
+    except FileNotFoundError:
+        if not missing_ok:
+            raise DatabaseError(f"Fichier absent : {path}") from None
+        return None, None
+    except InvalidDocument:
+        raise
+    except OSError as exc:
+        raise DatabaseError(f"Lecture impossible : {path} : {exc}") from exc
+    try:
+        parsed = parse_json(raw)
+    except DatabaseError as exc:
+        raise InvalidDocument("{v0} : JSON invalide : {v1}", revision=_digest(raw), v0=path.name, v1=exc.__cause__ or exc) from exc
+    try:
+        document = validator(parsed)
+    except ValueError as exc:
+        raise InvalidDocument("{v0} : {v1}", revision=_digest(raw), v0=path.name, v1=exc) from exc
+    return document, _digest(raw)
+
+
+def save_validated_json(path: str | Path, document, expected_revision, validator: Callable, *,
+                        max_bytes: int | None = None) -> str:
+    """Validate, serialise, then publish atomically under lock with revision control.
+
+    ``expected_revision`` is the digest of the bytes the caller loaded (``None``
+    for a file that did not exist). A different file on disk, under the lock and
+    again just before replacing, is preserved as a concurrent copy and refused.
+    The previous bytes go to ``<path>.bak``. Returns the new revision.
+    """
+    try:
+        document = validator(document)
+    except ValueError as exc:
+        raise DatabaseError(str(exc)) from exc
+    try:
+        raw = json.dumps(document, indent=2, ensure_ascii=False, allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError) as exc:
+        raise DatabaseError(f"Document non sérialisable : {exc}") from exc
+    if max_bytes is not None and len(raw) > max_bytes:
+        raise InvalidDocument("Document trop volumineux : {v0} octets (maximum {v1}).", v0=len(raw), v1=max_bytes)
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with _writer_lock(path):
+        old = path.read_bytes() if path.exists() else None
+        if (_digest(old) if old is not None else None) != expected_revision:
+            _concurrent_change(path, old)
+        if old == raw:
+            return expected_revision
+        if old is not None:
+            atomic_write(str(path) + ".bak", old)
+
+        def check_revision():
+            current = path.read_bytes() if path.exists() else None
+            if current != old:
+                _concurrent_change(path, current)
+
+        atomic_write(path, raw, before_replace=check_revision)
+    return _digest(raw)
+
+
+def restore_validated_json(path: str | Path, backup: str | Path, validator: Callable, expected_revision, *,
+                           max_bytes: int | None = None) -> str:
+    """Replace ``path`` by the validated bytes of ``backup``; keep the replaced file, even corrupt or oversized.
+
+    ``expected_revision`` guards against a file that changed between preview
+    and action (``None`` when the file was absent at preview time); it is
+    checked under the lock and again immediately before the replacement, as
+    for :func:`save_validated_json`. A concurrent change is preserved as a copy
+    and refused. The backup is read only when within ``max_bytes``. This does
+    not exclude a writer that ignores the lock between the last check and the
+    replacement itself.
+    """
+    path, source = Path(path), Path(backup)
+    try:
+        raw = _read_bounded(source, max_bytes)
+    except FileNotFoundError:
+        raise InvalidDocument("Sauvegarde absente : {v0}", v0=source.name) from None
+    except InvalidDocument as exc:
+        raise InvalidDocument("Sauvegarde invalide : {v0} : {v1}", v0=source.name, v1=exc) from exc
+    except OSError as exc:
+        raise DatabaseError(f"Lecture impossible : {source} : {exc}") from exc
+    try:
+        validator(parse_json(raw))
+    except ValueError as exc:
+        raise InvalidDocument("Sauvegarde invalide : {v0} : {v1}", v0=source.name, v1=exc) from exc
+    with _writer_lock(path):
+        current_revision = _file_digest(path) if path.exists() else None
+        if current_revision != expected_revision:
+            if path.exists():
+                preserved = _preserve_copy(path, path.name + ".concurrent-")
+                raise DatabaseError("La base a changé depuis sa lecture. Rechargez-la avant de sauvegarder."
+                                    f" Copie concurrente conservée : {preserved}.")
+            _concurrent_change(path, None)
+        if path.exists():
+            _preserve_copy(path, path.name + ".before-restore-")
+
+        def check_revision():
+            now = _file_digest(path) if path.exists() else None
+            if now != current_revision:
+                _concurrent_change(path, path.read_bytes() if path.exists() else None)
+
+        atomic_write(path, raw, before_replace=check_revision)
+    return _digest(raw)
+
+
 def backup_db(path: str | Path) -> Path:
     """Keep the state before the whole update, separate from per-step backups."""
     path = Path(path)

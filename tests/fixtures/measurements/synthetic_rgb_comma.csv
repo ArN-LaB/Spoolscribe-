@@ -1,0 +1,4 @@
+name,R,G,B,note
+teal,116,202,191,synthetic
+black,0,0,0,synthetic
+bad,300,0,0,out of range

@@ -14,6 +14,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QCheckBox, QColorDialog, QFram
 from PySide6.QtGui import QColor
 
 from . import colour_distance
+from . import colour_measurements
+from . import colour_targets
 from . import core
 from . import printer_profiles
 from .i18n import tr
@@ -825,6 +827,12 @@ class DetailUx:
             button.setProperty('colourControl', True)
             button.setFixedHeight(CONTROL_HEIGHT); button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed); actions.addWidget(button, 1)
         box.addLayout(actions)
+        self.colour_measure_btn = QToolButton(); self.colour_measure_btn.setText(tr("Mesurer / importer une couleur…"))
+        self.colour_measure_btn.setToolTip(tr("Saisir, coller ou importer une mesure de couleur, puis l’utiliser comme cible ou la lier à une fiche"))
+        self.colour_measure_btn.setAccessibleName(tr("Mesurer / importer une couleur…")); self.colour_measure_btn.setProperty('colourControl', True)
+        self.colour_measure_btn.setFixedHeight(CONTROL_HEIGHT); self.colour_measure_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.colour_measure_btn.clicked.connect(self._open_measurements); box.addWidget(self.colour_measure_btn)
+        self.measurement_window = None
         self.colour_limit_button = QToolButton(); self.colour_limit_button.setFixedHeight(CONTROL_HEIGHT)
         self._refresh_colour_limit_label()
         self.colour_limit_button.setToolTip(tr("Régler la proximité des couleurs dans les paramètres"))
@@ -833,8 +841,70 @@ class DetailUx:
         self.colour_info = FlowLabel(); self.colour_info.hide()
         self.colour_info.setObjectName("guidanceNote"); box.addWidget(self.colour_info)
         self._paint_colour_reference(None)
-        self.colour_panel.setMinimumHeight(3*CONTROL_HEIGHT+20)
+        self.colour_panel.setMinimumHeight(4*CONTROL_HEIGHT+26)
         return self.colour_panel
+
+    # ── Measurements (registry window) ──────────────────────────────────
+    def _open_measurements(self):
+        from .ui_colour_measurements import MeasurementWindow
+        if self.measurement_window is None:
+            self.measurement_window = MeasurementWindow(self, current_sku_provider=lambda: self.current_sku,
+                                                        db_provider=lambda: self.db)
+            self.measurement_window.search_requested.connect(self._start_measurement_search)
+            self.measurement_window.registry_changed.connect(self._measurements_changed)
+        self.measurement_window.show(); self.measurement_window.raise_(); self.measurement_window.activateWindow()
+        return self.measurement_window
+
+    def _start_measurement_search(self, target):
+        """A validated measurement target replaces the HEX query; filters and selection stay."""
+        self._set_section_expanded("colours", True)
+        query = getattr(self, "_colour_query", None)
+        if not colour_targets.query_matches(query, target):
+            # A new acquisition is always its own target (identity, name); distances computed for the same values are reused.
+            self._colour_query = dict(target, cache=colour_targets.reusable_cache(query, target))
+        self.colour_hex.blockSignals(True); self.colour_hex.setText(""); self.colour_hex.blockSignals(False)
+        self._paint_colour_reference(target.get("hex"))
+        self.colour_info.setText(tr("Cible : {v0}", v0=self._colour_query_label())); self.colour_info.show()
+        self._refresh_colour_remove()
+        self._apply_filter()
+        return True
+
+    def _measurements_changed(self):
+        """After an explicit registry action (rename, link, delete, restore…): refresh or withdraw the active target.
+
+        The target is withdrawn when its acquisition no longer exists or can
+        no longer be ranked; it is refreshed when its name changed; its
+        distances are kept only when values and conditions are unchanged.
+        Filters, favourites and selection are untouched.
+        """
+        query = getattr(self, "_colour_query", None)
+        window = self.measurement_window
+        if not query or query.get("kind") != "measurement" or window is None or window.registry.load_error is not None:
+            return
+        identifier = query.get("id")
+        if not identifier:
+            return
+        measurement = window.registry.get(identifier)
+        if measurement is None:
+            self._stop_colour_search(); return
+        try:
+            fresh = colour_targets.target_from_measurement(measurement, identifier)
+        except (colour_targets.TargetBlocked, colour_measurements.MeasurementError):
+            self._stop_colour_search(); return
+        if colour_targets.query_matches(query, fresh):
+            return
+        self._colour_query = dict(fresh, cache=colour_targets.reusable_cache(query, fresh))
+        self.colour_info.setText(tr("Cible : {v0}", v0=self._colour_query_label())); self.colour_info.show()
+        self._apply_filter()
+
+    def _colour_query_label(self):
+        query = getattr(self, "_colour_query", None)
+        if not query:
+            return ""
+        if query.get("kind") == "measurement":
+            conditions = colour_measurements.describe_space_conditions(query.get("space"), query.get("conditions_data"), tr)
+            return f"{query['name']} — {query['values']} ({conditions})"
+        return "#" + query["hex"]
 
     def _paint_colour_reference(self, value):
         colour = colour_distance.parse_hex(value)
@@ -882,8 +952,8 @@ class DetailUx:
         self.colour_hex.setText("#" + target); self._paint_colour_reference(target)
         self.colour_info.clear(); self.colour_info.hide(); self.colour_hex.setAccessibleDescription('')
         query = getattr(self, "_colour_query", None)
-        if not query or query["hex"] != target:
-            self._colour_query = dict(hex=target, cache={})
+        if not query or query.get("kind", "hex") != "hex" or query["hex"] != target:
+            self._colour_query = dict(kind="hex", hex=target, cache={})
         self._refresh_colour_remove()
         self._apply_filter()
         return True
@@ -911,14 +981,19 @@ class DetailUx:
         if built is None or built[0] is not catalogue:
             # Rebuilt after every reload: the index refers to these row objects only.
             built = self._colour_index = (catalogue, colour_distance.build_index(catalogue))
-        result = colour_distance.rank(query["hex"], rows, cache=query["cache"], index=built[1])
+        if query.get("kind") == "measurement":
+            result = colour_targets.rank_measurement(query, rows, index=built[1])
+        else:
+            result = colour_distance.rank(query["hex"], rows, cache=query["cache"], index=built[1])
         limit = core.colour_delta_limit()
         matched = [item for item in result["items"] if limit is None or item["delta"] <= limit]
         self._colour_deltas = {item["row"]["sku"]: item for item in matched}
         excluded = result["excluded"]
         effects = sum(1 for item in matched if item["effect"])
-        self._colour_report = dict(target=query["hex"], total=len(matched), excluded=excluded, effects=effects,
+        self._colour_report = dict(target=query.get("hex"), total=len(matched), excluded=excluded, effects=effects,
                                    limit=limit, outside_limit=len(result["items"])-len(matched))
+        if query.get("kind") == "measurement":
+            self._colour_report.update(target_label=self._colour_query_label(), basis=query["policy"].get("reference"))
         self._refresh_colour_limit_label()
         if self.colour_guidance is not None:
             self.colour_guidance.tabs.setTabEnabled(0, True)

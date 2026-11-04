@@ -140,6 +140,9 @@ jobs:
       - name: Check frozen catalogue and NFC profiles offline
         run: python .github/scripts/check_frozen_catalogue.py
 
+      - name: Check frozen colour measurements offline
+        run: python .github/scripts/check_frozen_measurements.py
+
       # Install scan oracles AFTER packaging: they must never enter the executable.
       - name: Install CI-only QR scan oracles
         run: python -m pip install "Pillow>=10.0" "zxing-cpp==2.3.0"

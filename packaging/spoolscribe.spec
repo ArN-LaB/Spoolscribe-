@@ -105,6 +105,9 @@ a = Analysis(
         "spoolscribe.core", "spoolscribe.opentag3d", "scripts.db_io", "scripts.catalogue_sources", "scripts.catalogue_merge", "scripts.official_sources", "scripts.app_updates", "spoolscribe.printer_profiles", "spoolscribe.ui_catalogue", "certifi",
         # QR window, imported on demand: matrix (Segno) and system printing.
         "spoolscribe.ui_qr", "spoolscribe.qr_layout", "spoolscribe.qr_transfer", "segno", "PySide6.QtPrintSupport",
+        # Colour measurements window, imported on demand from the Teintes section.
+        "spoolscribe.colour_measurements", "spoolscribe.colour_import", "spoolscribe.colour_targets",
+        "spoolscribe.measurement_store", "spoolscribe.ui_colour_measurements",
         # Les scrapers dans scripts/ sont lancés via runpy depuis l'exe gelé ;
         # PyInstaller n'analyse pas leurs imports, on les déclare donc ici.
         "urllib", "urllib.request", "urllib.error", "urllib.parse",

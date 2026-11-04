@@ -4079,11 +4079,6 @@
     "es": "Tonos cercanos a",
     "zh_CN": "相近颜色："
   },
-  "Teintes proches de #{v0}": {
-    "en": "Colours similar to #{v0}",
-    "es": "Tonos cercanos a #{v0}",
-    "zh_CN": "与 #{v0} 相近的颜色"
-  },
   "Teintes à vérifier": {
     "en": "Check colour shades",
     "es": "Revisar tonos",
@@ -5528,5 +5523,1590 @@
     "en": "Saving cancelled: the existing file is kept.",
     "es": "Guardado cancelado: se conserva el archivo existente.",
     "zh_CN": "已取消保存：保留现有文件。"
+  },
+  "Mesure Lab {v0}": {
+    "en": "Lab measurement {v0}",
+    "es": "Medición Lab {v0}",
+    "zh_CN": "Lab 测量 {v0}"
+  },
+  "Mesurer / importer une couleur": {
+    "en": "Measure / import a colour",
+    "es": "Medir / importar un color",
+    "zh_CN": "测量 / 导入颜色"
+  },
+  "Saisir": {
+    "en": "Enter",
+    "es": "Introducir",
+    "zh_CN": "输入"
+  },
+  "Coller": {
+    "en": "Paste",
+    "es": "Pegar",
+    "zh_CN": "粘贴"
+  },
+  "Importer": {
+    "en": "Import",
+    "es": "Importar",
+    "zh_CN": "导入"
+  },
+  "Enregistrées": {
+    "en": "Saved",
+    "es": "Guardadas",
+    "zh_CN": "已保存"
+  },
+  "Niveau de comparaison": {
+    "en": "Comparison level",
+    "es": "Nivel de comparación",
+    "zh_CN": "比较级别"
+  },
+  "Enregistrer la mesure": {
+    "en": "Save the measurement",
+    "es": "Guardar la medición",
+    "zh_CN": "保存测量"
+  },
+  "Rechercher des filaments proches": {
+    "en": "Find close filaments",
+    "es": "Buscar filamentos cercanos",
+    "zh_CN": "查找相近的线材"
+  },
+  "Message": {
+    "en": "Message",
+    "es": "Mensaje",
+    "zh_CN": "消息"
+  },
+  "Format des valeurs": {
+    "en": "Value format",
+    "es": "Formato de los valores",
+    "zh_CN": "数值格式"
+  },
+  "Code HEX": {
+    "en": "HEX code",
+    "es": "Código HEX",
+    "zh_CN": "HEX 代码"
+  },
+  "Valeurs": {
+    "en": "Values",
+    "es": "Valores",
+    "zh_CN": "数值"
+  },
+  "Éclairage de la mesure": {
+    "en": "Measurement illuminant",
+    "es": "Iluminante de la medición",
+    "zh_CN": "测量光源"
+  },
+  "Nom de l’éclairage, ex. TL84": {
+    "en": "Illuminant name, e.g. TL84",
+    "es": "Nombre del iluminante, p. ej. TL84",
+    "zh_CN": "光源名称，例如 TL84"
+  },
+  "Observateur": {
+    "en": "Observer",
+    "es": "Observador",
+    "zh_CN": "观察者"
+  },
+  "Vérifiez la fiche ou l’application de votre appareil : D65 et 2° sont nécessaires pour comparer au catalogue. « Je ne sais pas » conserve la mesure sans la comparer.": {
+    "en": "Check your device’s data sheet or app: D65 and 2° are required to compare with the catalogue. “I don’t know” keeps the measurement without comparing it.",
+    "es": "Consulte la ficha o la aplicación de su aparato: D65 y 2° son necesarios para comparar con el catálogo. «No lo sé» conserva la medición sin compararla.",
+    "zh_CN": "请查看设备的说明或应用：与目录比较需要 D65 与 2°。“不知道”会保留测量但不比较。"
+  },
+  "Plus de détails (nom, échantillon, appareil, note)": {
+    "en": "More details (name, sample, device, note)",
+    "es": "Más detalles (nombre, muestra, aparato, nota)",
+    "zh_CN": "更多详情（名称、样品、设备、备注）"
+  },
+  "Nom de la mesure (proposé automatiquement sinon)": {
+    "en": "Measurement name (proposed automatically otherwise)",
+    "es": "Nombre de la medición (propuesto automáticamente si no)",
+    "zh_CN": "测量名称（否则自动建议）"
+  },
+  "Fabricant de l’appareil": {
+    "en": "Device manufacturer",
+    "es": "Fabricante del aparato",
+    "zh_CN": "设备制造商"
+  },
+  "Modèle ou application": {
+    "en": "Model or application",
+    "es": "Modelo o aplicación",
+    "zh_CN": "型号或应用"
+  },
+  "Date de la mesure, si connue": {
+    "en": "Measurement date, if known",
+    "es": "Fecha de la medición, si se conoce",
+    "zh_CN": "测量日期（如已知）"
+  },
+  "Note libre": {
+    "en": "Free note",
+    "es": "Nota libre",
+    "zh_CN": "自由备注"
+  },
+  "Nom": {
+    "en": "Name",
+    "es": "Nombre",
+    "zh_CN": "名称"
+  },
+  "Rôle": {
+    "en": "Role",
+    "es": "Función",
+    "zh_CN": "角色"
+  },
+  "Échantillon": {
+    "en": "Sample",
+    "es": "Muestra",
+    "zh_CN": "样品"
+  },
+  "Appareil": {
+    "en": "Device",
+    "es": "Aparato",
+    "zh_CN": "设备"
+  },
+  "Date": {
+    "en": "Date",
+    "es": "Fecha",
+    "zh_CN": "日期"
+  },
+  "Note": {
+    "en": "Note",
+    "es": "Nota",
+    "zh_CN": "备注"
+  },
+  "Texte collé": {
+    "en": "Pasted text",
+    "es": "Texto pegado",
+    "zh_CN": "粘贴的文本"
+  },
+  "Interpréter": {
+    "en": "Interpret",
+    "es": "Interpretar",
+    "zh_CN": "解析"
+  },
+  "Jeux de valeurs reconnus": {
+    "en": "Recognised value sets",
+    "es": "Conjuntos de valores reconocidos",
+    "zh_CN": "识别到的数值组"
+  },
+  "Choisir un fichier…": {
+    "en": "Choose a file…",
+    "es": "Elegir un archivo…",
+    "zh_CN": "选择文件…"
+  },
+  "Aucun fichier choisi": {
+    "en": "No file chosen",
+    "es": "Ningún archivo elegido",
+    "zh_CN": "未选择文件"
+  },
+  "Aperçu des cinq premières lignes": {
+    "en": "Preview of the first five rows",
+    "es": "Vista previa de las cinco primeras filas",
+    "zh_CN": "前五行预览"
+  },
+  "Vérifier les lignes": {
+    "en": "Check the rows",
+    "es": "Comprobar las filas",
+    "zh_CN": "检查行"
+  },
+  "Enregistrer seulement les lignes valides": {
+    "en": "Save only the valid rows",
+    "es": "Guardar solo las filas válidas",
+    "zh_CN": "仅保存有效行"
+  },
+  "Enregistrer les mesures": {
+    "en": "Save the measurements",
+    "es": "Guardar las mediciones",
+    "zh_CN": "保存测量"
+  },
+  "Lignes à corriger": {
+    "en": "Rows to fix",
+    "es": "Filas por corregir",
+    "zh_CN": "待修正的行"
+  },
+  "Choisir un fichier CSV ou TSV": {
+    "en": "Choose a CSV or TSV file",
+    "es": "Elegir un archivo CSV o TSV",
+    "zh_CN": "选择 CSV 或 TSV 文件"
+  },
+  "{v0} · {v1} Kio": {
+    "en": "{v0} · {v1} KiB",
+    "es": "{v0} · {v1} KiB",
+    "zh_CN": "{v0} · {v1} KiB"
+  },
+  "Encodage {v0} · {v1} enregistrements": {
+    "en": "Encoding {v0} · {v1} records",
+    "es": "Codificación {v0} · {v1} registros",
+    "zh_CN": "编码 {v0} · {v1} 条记录"
+  },
+  "Autre éclairage (fichier)": {
+    "en": "Other illuminant (file)",
+    "es": "Otro iluminante (archivo)",
+    "zh_CN": "其他光源（文件）"
+  },
+  "{v0} valides / {v1} à corriger / {v2} doublons potentiels": {
+    "en": "{v0} valid / {v1} to fix / {v2} potential duplicates",
+    "es": "{v0} válidas / {v1} por corregir / {v2} duplicados potenciales",
+    "zh_CN": "{v0} 有效 / {v1} 待修正 / {v2} 疑似重复"
+  },
+  "Enregistrement {v0} : {v1}": {
+    "en": "Record {v0}: {v1}",
+    "es": "Registro {v0}: {v1}",
+    "zh_CN": "记录 {v0}：{v1}"
+  },
+  "Enregistrement {v0} répète l’enregistrement {v1} (mêmes valeurs et conditions).": {
+    "en": "Record {v0} repeats record {v1} (same values and conditions).",
+    "es": "El registro {v0} repite el registro {v1} (mismos valores y condiciones).",
+    "zh_CN": "记录 {v0} 与记录 {v1} 重复（数值与条件相同）。"
+  },
+  "{v0} mesure(s) enregistrée(s) dans le registre.": {
+    "en": "{v0} measurement(s) saved in the registry.",
+    "es": "{v0} medición(es) guardada(s) en el registro.",
+    "zh_CN": "已在登记表中保存 {v0} 条测量。"
+  },
+  "Mesures enregistrées": {
+    "en": "Saved measurements",
+    "es": "Mediciones guardadas",
+    "zh_CN": "已保存的测量"
+  },
+  "Utiliser comme cible": {
+    "en": "Use as target",
+    "es": "Usar como objetivo",
+    "zh_CN": "用作目标"
+  },
+  "Renommer…": {
+    "en": "Rename…",
+    "es": "Renombrar…",
+    "zh_CN": "重命名…"
+  },
+  "Lier à la fiche sélectionnée…": {
+    "en": "Link to the selected record…",
+    "es": "Vincular a la ficha seleccionada…",
+    "zh_CN": "关联到所选记录…"
+  },
+  "Détacher": {
+    "en": "Unlink",
+    "es": "Desvincular",
+    "zh_CN": "取消关联"
+  },
+  "Supprimer…": {
+    "en": "Delete…",
+    "es": "Eliminar…",
+    "zh_CN": "删除…"
+  },
+  "Restaurer la sauvegarde du registre…": {
+    "en": "Restore the registry backup…",
+    "es": "Restaurar la copia del registro…",
+    "zh_CN": "恢复登记表备份…"
+  },
+  "Créée le {v0}": {
+    "en": "Created on {v0}",
+    "es": "Creada el {v0}",
+    "zh_CN": "创建于 {v0}"
+  },
+  "Méthode : {v0}": {
+    "en": "Method: {v0}",
+    "es": "Método: {v0}",
+    "zh_CN": "方式：{v0}"
+  },
+  "Renommer la mesure": {
+    "en": "Rename the measurement",
+    "es": "Renombrar la medición",
+    "zh_CN": "重命名测量"
+  },
+  "Nouveau nom :": {
+    "en": "New name:",
+    "es": "Nuevo nombre:",
+    "zh_CN": "新名称："
+  },
+  "Mesure liée à {v0}.": {
+    "en": "Measurement linked to {v0}.",
+    "es": "Medición vinculada a {v0}.",
+    "zh_CN": "测量已关联到 {v0}。"
+  },
+  "Mesure supprimée. Sauvegarde : {v0}": {
+    "en": "Measurement deleted. Backup: {v0}",
+    "es": "Medición eliminada. Copia: {v0}",
+    "zh_CN": "测量已删除。备份：{v0}"
+  },
+  "Registre restauré depuis {v0}.": {
+    "en": "Registry restored from {v0}.",
+    "es": "Registro restaurado desde {v0}.",
+    "zh_CN": "已从 {v0} 恢复登记表。"
+  },
+  "Couleur #{v0}": {
+    "en": "Colour #{v0}",
+    "es": "Color #{v0}",
+    "zh_CN": "颜色 #{v0}"
+  },
+  "Couleur RGB {v0}": {
+    "en": "RGB colour {v0}",
+    "es": "Color RGB {v0}",
+    "zh_CN": "RGB 颜色 {v0}"
+  },
+  "Mesure « {v0} » enregistrée.": {
+    "en": "Measurement “{v0}” saved.",
+    "es": "Medición «{v0}» guardada.",
+    "zh_CN": "测量“{v0}”已保存。"
+  },
+  "Les couleurs du catalogue sont des codes déclarés par les sources, pas des mesures. Une mesure sert de cible indicative ou se lie à une référence sans la modifier.": {
+    "en": "Catalogue colours are codes declared by the sources, not measurements. A measurement serves as an indicative target or is linked to a reference without changing it.",
+    "es": "Los colores del catálogo son códigos declarados por las fuentes, no mediciones. Una medición sirve de objetivo indicativo o se vincula a una referencia sin modificarla.",
+    "zh_CN": "目录中的颜色是来源声明的代码，不是测量值。测量可作为参考目标，或关联到某条记录而不改变它。"
+  },
+  "Origine des valeurs : ce que vous lisez sur votre appareil ou dans son application.": {
+    "en": "Origin of the values: what you read on your device or in its app.",
+    "es": "Origen de los valores: lo que lee en su aparato o en su aplicación.",
+    "zh_CN": "数值来源：您在设备或其应用中读取的内容。"
+  },
+  "Canal {v0}": {
+    "en": "Channel {v0}",
+    "es": "Canal {v0}",
+    "zh_CN": "通道 {v0}"
+  },
+  "Coordonnée {v0}": {
+    "en": "Coordinate {v0}",
+    "es": "Coordenada {v0}",
+    "zh_CN": "坐标 {v0}"
+  },
+  "Collez le texte copié depuis l’application ou l’appareil. Seules les valeurs étiquetées (HEX, RGB, L*, a*, b*, D50/D65, 2°/10°) sont reconnues ; rien n’est deviné.": {
+    "en": "Paste the text copied from the app or device. Only labelled values (HEX, RGB, L*, a*, b*, D50/D65, 2°/10°) are recognised; nothing is guessed.",
+    "es": "Pegue el texto copiado desde la aplicación o el aparato. Solo se reconocen los valores etiquetados (HEX, RGB, L*, a*, b*, D50/D65, 2°/10°); nada se adivina.",
+    "zh_CN": "粘贴从应用或设备复制的文本。仅识别带标签的数值（HEX、RGB、L*、a*、b*、D50/D65、2°/10°），不做猜测。"
+  },
+  "Interprétation proposée — choisissez le jeu de valeurs principal :": {
+    "en": "Proposed interpretation — choose the main value set:",
+    "es": "Interpretación propuesta — elija el conjunto de valores principal:",
+    "zh_CN": "建议的解析 — 请选择主数值组："
+  },
+  "éclairage {v0}": {
+    "en": "illuminant {v0}",
+    "es": "iluminante {v0}",
+    "zh_CN": "光源 {v0}"
+  },
+  "observateur {v0}°": {
+    "en": "observer {v0}°",
+    "es": "observador {v0}°",
+    "zh_CN": "观察者 {v0}°"
+  },
+  "Conditions trouvées dans le texte : {v0}": {
+    "en": "Conditions found in the text: {v0}",
+    "es": "Condiciones encontradas en el texto: {v0}",
+    "zh_CN": "文本中找到的条件：{v0}"
+  },
+  "Aucune condition de mesure trouvée dans le texte.": {
+    "en": "No measurement condition found in the text.",
+    "es": "No se encontró ninguna condición de medición en el texto.",
+    "zh_CN": "文本中未找到测量条件。"
+  },
+  "HEX et RGB sont cohérents.": {
+    "en": "HEX and RGB agree.",
+    "es": "HEX y RGB coinciden.",
+    "zh_CN": "HEX 与 RGB 一致。"
+  },
+  "Une décision est nécessaire avant d’enregistrer ou de rechercher.": {
+    "en": "A decision is needed before saving or searching.",
+    "es": "Se necesita una decisión antes de guardar o buscar.",
+    "zh_CN": "保存或搜索前需要做出选择。"
+  },
+  "Fichier CSV ou TSV local. Le fichier n’est jamais modifié ; vous confirmez l’encodage, le séparateur, la virgule décimale et chaque colonne.": {
+    "en": "Local CSV or TSV file. The file is never modified; you confirm the encoding, the separator, the decimal mark and each column.",
+    "es": "Archivo CSV o TSV local. El archivo nunca se modifica; usted confirma la codificación, el separador, la coma decimal y cada columna.",
+    "zh_CN": "本地 CSV 或 TSV 文件。文件不会被修改；由您确认编码、分隔符、小数点以及每一列。"
+  },
+  "Encodage": {
+    "en": "Encoding",
+    "es": "Codificación",
+    "zh_CN": "编码"
+  },
+  "Séparateur": {
+    "en": "Separator",
+    "es": "Separador",
+    "zh_CN": "分隔符"
+  },
+  "Décimales": {
+    "en": "Decimals",
+    "es": "Decimales",
+    "zh_CN": "小数"
+  },
+  "Correspondance des colonnes (par position ; une colonne non choisie n’est pas importée) :": {
+    "en": "Column mapping (by position; an unchosen column is not imported):",
+    "es": "Correspondencia de columnas (por posición; una columna no elegida no se importa):",
+    "zh_CN": "列对应（按位置；未选择的列不会导入）："
+  },
+  "Colonne pour {v0}": {
+    "en": "Column for {v0}",
+    "es": "Columna para {v0}",
+    "zh_CN": "{v0} 对应的列"
+  },
+  "Conditions par défaut si absentes du fichier": {
+    "en": "Default conditions when absent from the file",
+    "es": "Condiciones por defecto si faltan en el archivo",
+    "zh_CN": "文件中缺失时的默认条件"
+  },
+  "Fichier vide.": {
+    "en": "Empty file.",
+    "es": "Archivo vacío.",
+    "zh_CN": "文件为空。"
+  },
+  "Plusieurs séparateurs plausibles ({v0}) : confirmez le bon.": {
+    "en": "Several plausible separators ({v0}): confirm the right one.",
+    "es": "Varios separadores plausibles ({v0}): confirme el correcto.",
+    "zh_CN": "可能的分隔符有多个（{v0}）：请确认正确的一个。"
+  },
+  "— non importée —": {
+    "en": "— not imported —",
+    "es": "— no importada —",
+    "zh_CN": "— 不导入 —"
+  },
+  "Choisissez d’abord un fichier lisible.": {
+    "en": "Choose a readable file first.",
+    "es": "Elija primero un archivo legible.",
+    "zh_CN": "请先选择可读取的文件。"
+  },
+  "Déjà importé exactement (même fichier et numéro) : {v0} enregistrement(s).": {
+    "en": "Already imported exactly (same file and number): {v0} record(s).",
+    "es": "Ya importado exactamente (mismo archivo y número): {v0} registro(s).",
+    "zh_CN": "已完全导入过（相同文件与编号）：{v0} 条记录。"
+  },
+  "Valeurs identiques à des mesures déjà enregistrées : {v0}. Rien n’est fusionné ni ignoré automatiquement.": {
+    "en": "Values identical to already saved measurements: {v0}. Nothing is merged or skipped automatically.",
+    "es": "Valores idénticos a mediciones ya guardadas: {v0}. Nada se fusiona ni se omite automáticamente.",
+    "zh_CN": "与已保存测量数值相同：{v0}。不会自动合并或忽略。"
+  },
+  "Enregistrer {v0} mesure(s)": {
+    "en": "Save {v0} measurement(s)",
+    "es": "Guardar {v0} medición(es)",
+    "zh_CN": "保存 {v0} 条测量"
+  },
+  "{v0} mesure(s) · registre : {v1}": {
+    "en": "{v0} measurement(s) · registry: {v1}",
+    "es": "{v0} medición(es) · registro: {v1}",
+    "zh_CN": "{v0} 条测量 · 登记表：{v1}"
+  },
+  "Mesurée : {v0}": {
+    "en": "Measured: {v0}",
+    "es": "Medida: {v0}",
+    "zh_CN": "测量于：{v0}"
+  },
+  "Appareil : {v0}": {
+    "en": "Device: {v0}",
+    "es": "Aparato: {v0}",
+    "zh_CN": "设备：{v0}"
+  },
+  "Fichier : {v0}, enregistrement {v1}": {
+    "en": "File: {v0}, record {v1}",
+    "es": "Archivo: {v0}, registro {v1}",
+    "zh_CN": "文件：{v0}，记录 {v1}"
+  },
+  "Liée à : {v0}": {
+    "en": "Linked to: {v0}",
+    "es": "Vinculada a: {v0}",
+    "zh_CN": "已关联：{v0}"
+  },
+  "Sélectionnez d’abord une fiche dans le catalogue.": {
+    "en": "Select a record in the catalogue first.",
+    "es": "Seleccione primero una ficha en el catálogo.",
+    "zh_CN": "请先在目录中选择一条记录。"
+  },
+  "La fiche sélectionnée n’a pas de référence exacte.": {
+    "en": "The selected record has no exact reference.",
+    "es": "La ficha seleccionada no tiene una referencia exacta.",
+    "zh_CN": "所选记录没有精确的编号。"
+  },
+  "Lier la mesure": {
+    "en": "Link the measurement",
+    "es": "Vincular la medición",
+    "zh_CN": "关联测量"
+  },
+  "Lier cette mesure à la référence exacte {v0} ?\nLa couleur du catalogue et les exports ne changent pas.": {
+    "en": "Link this measurement to the exact reference {v0}?\nThe catalogue colour and the exports do not change.",
+    "es": "¿Vincular esta medición a la referencia exacta {v0}?\nEl color del catálogo y las exportaciones no cambian.",
+    "zh_CN": "将此测量关联到精确编号 {v0}？\n目录颜色与导出不会改变。"
+  },
+  "Supprimer la mesure": {
+    "en": "Delete the measurement",
+    "es": "Eliminar la medición",
+    "zh_CN": "删除测量"
+  },
+  "Supprimer « {v0} » du registre ? La version précédente du registre est conservée en sauvegarde.": {
+    "en": "Delete “{v0}” from the registry? The previous registry version is kept as a backup.",
+    "es": "¿Eliminar «{v0}» del registro? La versión anterior del registro se conserva como copia.",
+    "zh_CN": "从登记表中删除“{v0}”？登记表的上一版本会保留为备份。"
+  },
+  "Aucune sauvegarde du registre à restaurer.": {
+    "en": "No registry backup to restore.",
+    "es": "No hay ninguna copia del registro que restaurar.",
+    "zh_CN": "没有可恢复的登记表备份。"
+  },
+  "Restaurer le registre": {
+    "en": "Restore the registry",
+    "es": "Restaurar el registro",
+    "zh_CN": "恢复登记表"
+  },
+  "Remplacer le registre des mesures par sa sauvegarde {v0} ? Le fichier actuel est conservé à côté.": {
+    "en": "Replace the measurement registry with its backup {v0}? The current file is kept alongside.",
+    "es": "¿Reemplazar el registro de mediciones por su copia {v0}? El archivo actual se conserva al lado.",
+    "zh_CN": "用备份 {v0} 替换测量登记表？当前文件会保留在旁边。"
+  },
+  "HEX {v0}": {
+    "en": "HEX {v0}",
+    "es": "HEX {v0}",
+    "zh_CN": "HEX {v0}"
+  },
+  "RGB {v0}": {
+    "en": "RGB {v0}",
+    "es": "RGB {v0}",
+    "zh_CN": "RGB {v0}"
+  },
+  "Lab {v0}": {
+    "en": "Lab {v0}",
+    "es": "Lab {v0}",
+    "zh_CN": "Lab {v0}"
+  },
+  "Tous les fichiers": {
+    "en": "All files",
+    "es": "Todos los archivos",
+    "zh_CN": "所有文件"
+  },
+  "Fichier trop volumineux (maximum {v0} Mio).": {
+    "en": "File too large (maximum {v0} MiB).",
+    "es": "Archivo demasiado grande (máximo {v0} MiB).",
+    "zh_CN": "文件过大（最多 {v0} MiB）。"
+  },
+  "Colonnes en double, à choisir vous-même : {v0}": {
+    "en": "Duplicate columns, to choose yourself: {v0}",
+    "es": "Columnas duplicadas, a elegir usted mismo: {v0}",
+    "zh_CN": "存在重复列，请自行选择：{v0}"
+  },
+  "Aucune mesure enregistrée : {v0}": {
+    "en": "No measurement saved: {v0}",
+    "es": "Ninguna medición guardada: {v0}",
+    "zh_CN": "未保存任何测量：{v0}"
+  },
+  "Registre illisible : {v0}": {
+    "en": "Unreadable registry: {v0}",
+    "es": "Registro ilegible: {v0}",
+    "zh_CN": "登记表无法读取：{v0}"
+  },
+  " · lié à {v0}": {
+    "en": " · linked to {v0}",
+    "es": " · vinculada a {v0}",
+    "zh_CN": " · 已关联 {v0}"
+  },
+  " · lien non résolu ({v0})": {
+    "en": " · unresolved link ({v0})",
+    "es": " · vínculo no resuelto ({v0})",
+    "zh_CN": " · 关联未解析（{v0}）"
+  },
+  "Lien conservé vers {v0}, référence absente du catalogue actuel.": {
+    "en": "Link kept to {v0}, reference absent from the current catalogue.",
+    "es": "Vínculo conservado a {v0}, referencia ausente del catálogo actual.",
+    "zh_CN": "保留到 {v0} 的关联，当前目录中没有该编号。"
+  },
+  "Registre non modifié : {v0}": {
+    "en": "Registry unchanged: {v0}",
+    "es": "Registro no modificado: {v0}",
+    "zh_CN": "登记表未修改：{v0}"
+  },
+  "Registre non restauré : {v0}": {
+    "en": "Registry not restored: {v0}",
+    "es": "Registro no restaurado: {v0}",
+    "zh_CN": "登记表未恢复：{v0}"
+  },
+  "Saisissez, collez ou importez des valeurs, ou choisissez une mesure enregistrée.": {
+    "en": "Enter, paste or import values, or choose a saved measurement.",
+    "es": "Introduzca, pegue o importe valores, o elija una medición guardada.",
+    "zh_CN": "请输入、粘贴或导入数值，或选择已保存的测量。"
+  },
+  "Mesure non enregistrée : {v0}": {
+    "en": "Measurement not saved: {v0}",
+    "es": "Medición no guardada: {v0}",
+    "zh_CN": "测量未保存：{v0}"
+  },
+  "{v0}: (sans titre)": {
+    "en": "{v0}: (untitled)",
+    "es": "{v0}: (sin título)",
+    "zh_CN": "{v0}：（无标题）"
+  },
+  "Référentiel : {v0}": {
+    "en": "Reference frame: {v0}",
+    "es": "Referencia: {v0}",
+    "zh_CN": "参照系：{v0}"
+  },
+  "Mesurer / importer une couleur…": {
+    "en": "Measure / import a colour…",
+    "es": "Medir / importar un color…",
+    "zh_CN": "测量 / 导入颜色…"
+  },
+  "Saisir, coller ou importer une mesure de couleur, puis l’utiliser comme cible ou la lier à une fiche": {
+    "en": "Enter, paste or import a colour measurement, then use it as a target or link it to a record",
+    "es": "Introducir, pegar o importar una medición de color, luego usarla como objetivo o vincularla a una ficha",
+    "zh_CN": "输入、粘贴或导入颜色测量，然后用作目标或关联到记录"
+  },
+  "Cible : {v0}": {
+    "en": "Target: {v0}",
+    "es": "Objetivo: {v0}",
+    "zh_CN": "目标：{v0}"
+  },
+  "Proximité indicative : les candidats sont des codes déclarés, pas des mesures.": {
+    "en": "Indicative proximity: the candidates are declared codes, not measurements.",
+    "es": "Proximidad indicativa: los candidatos son códigos declarados, no mediciones.",
+    "zh_CN": "仅供参考的接近度：候选项是声明的代码，不是测量值。"
+  },
+  "Mesure comparée : {v0}": {
+    "en": "Compared measurement: {v0}",
+    "es": "Medición comparada: {v0}",
+    "zh_CN": "比较的测量：{v0}"
+  },
+  "Teintes proches de {v0}": {
+    "en": "Shades close to {v0}",
+    "es": "Tonos cercanos a {v0}",
+    "zh_CN": "接近 {v0} 的色调"
+  },
+  "Proximité indicative": {
+    "en": "Indicative proximity",
+    "es": "Proximidad indicativa",
+    "zh_CN": "仅供参考的接近度"
+  },
+  "Conditions insuffisantes": {
+    "en": "Insufficient conditions",
+    "es": "Condiciones insuficientes",
+    "zh_CN": "条件不足"
+  },
+  "Couleur d’écran sRGB : comparaison indicative avec les couleurs déclarées du catalogue.": {
+    "en": "sRGB screen colour: indicative comparison with the catalogue’s declared colours.",
+    "es": "Color de pantalla sRGB: comparación indicativa con los colores declarados del catálogo.",
+    "zh_CN": "sRGB 屏幕颜色：与目录声明颜色的参考性比较。"
+  },
+  "CIELAB D65/2° : comparé tel quel aux couleurs déclarées du catalogue (converties en D65/2°). Ce n’est pas une mesure du filament imprimé.": {
+    "en": "CIELAB D65/2°: compared as is with the catalogue’s declared colours (converted to D65/2°). This is not a measurement of the printed filament.",
+    "es": "CIELAB D65/2°: comparado tal cual con los colores declarados del catálogo (convertidos a D65/2°). No es una medición del filamento impreso.",
+    "zh_CN": "CIELAB D65/2°：按原值与目录声明颜色（已转换为 D65/2°）比较。这不是对打印线材的测量。"
+  },
+  "Indiquez l’éclairage (illuminant) et l’observateur de la mesure : vérifiez la fiche ou l’application de votre appareil.": {
+    "en": "State the measurement illuminant and observer: check your device’s data sheet or app.",
+    "es": "Indique el iluminante y el observador de la medición: consulte la ficha o la aplicación de su aparato.",
+    "zh_CN": "请指明测量的光源和观察者：查看设备的说明或应用。"
+  },
+  "Mesure en D50 : aucune adaptation vers D65 n’est disponible dans cette version. La mesure reste enregistrable.": {
+    "en": "D50 measurement: no adaptation to D65 is available in this version. The measurement can still be saved.",
+    "es": "Medición en D50: ninguna adaptación a D65 está disponible en esta versión. La medición sigue siendo guardable.",
+    "zh_CN": "D50 测量：此版本不提供到 D65 的适应。测量仍可保存。"
+  },
+  "Cet éclairage n’est pas comparable aux couleurs du catalogue (D65). La mesure reste enregistrable.": {
+    "en": "This illuminant cannot be compared with the catalogue colours (D65). The measurement can still be saved.",
+    "es": "Este iluminante no es comparable con los colores del catálogo (D65). La medición sigue siendo guardable.",
+    "zh_CN": "该光源无法与目录颜色（D65）比较。测量仍可保存。"
+  },
+  "Observateur 10° : il n’existe pas de conversion universelle vers 2°. La mesure reste enregistrable.": {
+    "en": "10° observer: there is no universal conversion to 2°. The measurement can still be saved.",
+    "es": "Observador 10°: no existe una conversión universal a 2°. La medición sigue siendo guardable.",
+    "zh_CN": "10° 观察者：没有通用的到 2° 的转换。测量仍可保存。"
+  },
+  "Valeurs trop grandes pour le calcul ; la mesure reste enregistrable.": {
+    "en": "Values too large for the calculation; the measurement can still be saved.",
+    "es": "Valores demasiado grandes para el cálculo; la medición sigue siendo guardable.",
+    "zh_CN": "数值过大无法计算；测量仍可保存。"
+  },
+  "Je ne sais pas": {
+    "en": "I don’t know",
+    "es": "No lo sé",
+    "zh_CN": "不知道"
+  },
+  "D65": {
+    "en": "D65",
+    "es": "D65",
+    "zh_CN": "D65"
+  },
+  "D50": {
+    "en": "D50",
+    "es": "D50",
+    "zh_CN": "D50"
+  },
+  "Autre (à décrire)": {
+    "en": "Other (describe)",
+    "es": "Otro (describir)",
+    "zh_CN": "其他（请说明）"
+  },
+  "2°": {
+    "en": "2°",
+    "es": "2°",
+    "zh_CN": "2°"
+  },
+  "10°": {
+    "en": "10°",
+    "es": "10°",
+    "zh_CN": "10°"
+  },
+  "Non renseigné": {
+    "en": "Not specified",
+    "es": "No indicado",
+    "zh_CN": "未填写"
+  },
+  "Filament brut": {
+    "en": "Raw filament",
+    "es": "Filamento en bruto",
+    "zh_CN": "原始线材"
+  },
+  "Pièce imprimée": {
+    "en": "Printed part",
+    "es": "Pieza impresa",
+    "zh_CN": "打印件"
+  },
+  "Surface peinte": {
+    "en": "Painted surface",
+    "es": "Superficie pintada",
+    "zh_CN": "涂漆表面"
+  },
+  "Objet": {
+    "en": "Object",
+    "es": "Objeto",
+    "zh_CN": "物体"
+  },
+  "Autre": {
+    "en": "Other",
+    "es": "Otro",
+    "zh_CN": "其他"
+  },
+  "Cible à approcher": {
+    "en": "Target to approach",
+    "es": "Objetivo a aproximar",
+    "zh_CN": "要接近的目标"
+  },
+  "Mesure d’un filament": {
+    "en": "Filament measurement",
+    "es": "Medición de un filamento",
+    "zh_CN": "线材测量"
+  },
+  "L*": {
+    "en": "L*",
+    "es": "L*",
+    "zh_CN": "L*"
+  },
+  "a*": {
+    "en": "a*",
+    "es": "a*",
+    "zh_CN": "a*"
+  },
+  "b*": {
+    "en": "b*",
+    "es": "b*",
+    "zh_CN": "b*"
+  },
+  "HEX": {
+    "en": "HEX",
+    "es": "HEX",
+    "zh_CN": "HEX"
+  },
+  "R": {
+    "en": "R",
+    "es": "R",
+    "zh_CN": "R"
+  },
+  "G": {
+    "en": "G",
+    "es": "G",
+    "zh_CN": "G"
+  },
+  "B (RGB)": {
+    "en": "B (RGB)",
+    "es": "B (RGB)",
+    "zh_CN": "B (RGB)"
+  },
+  "Illuminant": {
+    "en": "Illuminant",
+    "es": "Iluminante",
+    "zh_CN": "光源"
+  },
+  "virgule": {
+    "en": "comma",
+    "es": "coma",
+    "zh_CN": "逗号"
+  },
+  "point-virgule": {
+    "en": "semicolon",
+    "es": "punto y coma",
+    "zh_CN": "分号"
+  },
+  "tabulation": {
+    "en": "tab",
+    "es": "tabulación",
+    "zh_CN": "制表符"
+  },
+  "sRGB → CIELAB D65/2° (conversion du moteur, pas une condition mesurée)": {
+    "en": "sRGB → CIELAB D65/2° (engine conversion, not a measured condition)",
+    "es": "sRGB → CIELAB D65/2° (conversión del motor, no una condición medida)",
+    "zh_CN": "sRGB → CIELAB D65/2°（引擎转换，不是实测条件）"
+  },
+  "CIELAB D65/2° (valeurs d'origine)": {
+    "en": "CIELAB D65/2° (original values)",
+    "es": "CIELAB D65/2° (valores originales)",
+    "zh_CN": "CIELAB D65/2°（原始值）"
+  },
+  "sRGB": {
+    "en": "sRGB",
+    "es": "sRGB",
+    "zh_CN": "sRGB"
+  },
+  "éclairage inconnu / observateur inconnu": {
+    "en": "unknown illuminant / unknown observer",
+    "es": "iluminante desconocido / observador desconocido",
+    "zh_CN": "光源未知 / 观察者未知"
+  },
+  "D65 / 2°": {
+    "en": "D65 / 2°",
+    "es": "D65 / 2°",
+    "zh_CN": "D65 / 2°"
+  },
+  "D50 / 2°": {
+    "en": "D50 / 2°",
+    "es": "D50 / 2°",
+    "zh_CN": "D50 / 2°"
+  },
+  "D65 / 10°": {
+    "en": "D65 / 10°",
+    "es": "D65 / 10°",
+    "zh_CN": "D65 / 10°"
+  },
+  "D50 / 10°": {
+    "en": "D50 / 10°",
+    "es": "D50 / 10°",
+    "zh_CN": "D50 / 10°"
+  },
+  "autre / 2°": {
+    "en": "other / 2°",
+    "es": "otro / 2°",
+    "zh_CN": "其他 / 2°"
+  },
+  "autre / 10°": {
+    "en": "other / 10°",
+    "es": "otro / 10°",
+    "zh_CN": "其他 / 10°"
+  },
+  "éclairage inconnu / 2°": {
+    "en": "unknown illuminant / 2°",
+    "es": "iluminante desconocido / 2°",
+    "zh_CN": "光源未知 / 2°"
+  },
+  "éclairage inconnu / 10°": {
+    "en": "unknown illuminant / 10°",
+    "es": "iluminante desconocido / 10°",
+    "zh_CN": "光源未知 / 10°"
+  },
+  "D65 / observateur inconnu": {
+    "en": "D65 / unknown observer",
+    "es": "D65 / observador desconocido",
+    "zh_CN": "D65 / 观察者未知"
+  },
+  "D50 / observateur inconnu": {
+    "en": "D50 / unknown observer",
+    "es": "D50 / observador desconocido",
+    "zh_CN": "D50 / 观察者未知"
+  },
+  "autre / observateur inconnu": {
+    "en": "other / unknown observer",
+    "es": "otro / observador desconocido",
+    "zh_CN": "其他 / 观察者未知"
+  },
+  "Code HEX sRGB": {
+    "en": "sRGB HEX code",
+    "es": "Código HEX sRGB",
+    "zh_CN": "sRGB HEX 代码"
+  },
+  "RGB sRGB 8 bits": {
+    "en": "8-bit sRGB RGB",
+    "es": "RGB sRGB de 8 bits",
+    "zh_CN": "8 位 sRGB RGB"
+  },
+  "CIELAB (L*, a*, b*)": {
+    "en": "CIELAB (L*, a*, b*)",
+    "es": "CIELAB (L*, a*, b*)",
+    "zh_CN": "CIELAB（L*、a*、b*）"
+  },
+  "UTF-8 (ou BOM)": {
+    "en": "UTF-8 (or BOM)",
+    "es": "UTF-8 (o BOM)",
+    "zh_CN": "UTF-8（或 BOM）"
+  },
+  "Windows-1252": {
+    "en": "Windows-1252",
+    "es": "Windows-1252",
+    "zh_CN": "Windows-1252"
+  },
+  "Latin-1": {
+    "en": "Latin-1",
+    "es": "Latin-1",
+    "zh_CN": "Latin-1"
+  },
+  "point décimal": {
+    "en": "decimal point",
+    "es": "punto decimal",
+    "zh_CN": "小数点"
+  },
+  "virgule décimale": {
+    "en": "decimal comma",
+    "es": "coma decimal",
+    "zh_CN": "小数逗号"
+  },
+  "Conditions documentées (géométrie, SCI/SCE, ouverture, calibration)": {
+    "en": "Documented conditions (geometry, SCI/SCE, aperture, calibration)",
+    "es": "Condiciones documentadas (geometría, SCI/SCE, apertura, calibración)",
+    "zh_CN": "已记录的条件（几何、SCI/SCE、孔径、校准）"
+  },
+  "ex. 45/0, d/8": {
+    "en": "e.g. 45/0, d/8",
+    "es": "p. ej. 45/0, d/8",
+    "zh_CN": "例如 45/0、d/8"
+  },
+  "Composante spéculaire": {
+    "en": "Specular component",
+    "es": "Componente especular",
+    "zh_CN": "镜面反射分量"
+  },
+  "ex. 8 mm": {
+    "en": "e.g. 8 mm",
+    "es": "p. ej. 8 mm",
+    "zh_CN": "例如 8 mm"
+  },
+  "Date ou référence de calibration": {
+    "en": "Calibration date or reference",
+    "es": "Fecha o referencia de calibración",
+    "zh_CN": "校准日期或参考"
+  },
+  "Profil ou réglage de l’application": {
+    "en": "App profile or setting",
+    "es": "Perfil o ajuste de la aplicación",
+    "zh_CN": "应用的配置或设置"
+  },
+  "Géométrie": {
+    "en": "Geometry",
+    "es": "Geometría",
+    "zh_CN": "几何"
+  },
+  "SCI/SCE": {
+    "en": "SCI/SCE",
+    "es": "SCI/SCE",
+    "zh_CN": "SCI/SCE"
+  },
+  "Ouverture": {
+    "en": "Aperture",
+    "es": "Apertura",
+    "zh_CN": "孔径"
+  },
+  "Calibration": {
+    "en": "Calibration",
+    "es": "Calibración",
+    "zh_CN": "校准"
+  },
+  "Profil": {
+    "en": "Profile",
+    "es": "Perfil",
+    "zh_CN": "配置"
+  },
+  "Aperçu du code sRGB confirmé": {
+    "en": "Preview of the confirmed sRGB code",
+    "es": "Vista previa del código sRGB confirmado",
+    "zh_CN": "已确认 sRGB 代码的预览"
+  },
+  "ex. PLA, PETG": {
+    "en": "e.g. PLA, PETG",
+    "es": "p. ej. PLA, PETG",
+    "zh_CN": "例如 PLA、PETG"
+  },
+  "ex. mat, brillant, soyeux": {
+    "en": "e.g. matte, glossy, silk",
+    "es": "p. ej. mate, brillante, sedoso",
+    "zh_CN": "例如 哑光、亮面、丝绸"
+  },
+  "ex. 2 mm, 4 couches": {
+    "en": "e.g. 2 mm, 4 layers",
+    "es": "p. ej. 2 mm, 4 capas",
+    "zh_CN": "例如 2 mm、4 层"
+  },
+  "ex. fond blanc, fond noir": {
+    "en": "e.g. white backing, black backing",
+    "es": "p. ej. fondo blanco, fondo negro",
+    "zh_CN": "例如 白底、黑底"
+  },
+  "État de surface, préparation": {
+    "en": "Surface state, preparation",
+    "es": "Estado de la superficie, preparación",
+    "zh_CN": "表面状态、制备"
+  },
+  "Matériau": {
+    "en": "Material",
+    "es": "Material",
+    "zh_CN": "材料"
+  },
+  "Finition": {
+    "en": "Finish",
+    "es": "Acabado",
+    "zh_CN": "表面处理"
+  },
+  "Épaisseur": {
+    "en": "Thickness",
+    "es": "Grosor",
+    "zh_CN": "厚度"
+  },
+  "Fond": {
+    "en": "Backing",
+    "es": "Fondo",
+    "zh_CN": "背衬"
+  },
+  "Surface": {
+    "en": "Surface",
+    "es": "Superficie",
+    "zh_CN": "表面"
+  },
+  "Texte modifié : cliquez sur « Interpréter » pour une nouvelle proposition.": {
+    "en": "Text changed: click “Interpret” for a new proposal.",
+    "es": "Texto modificado: pulse «Interpretar» para una nueva propuesta.",
+    "zh_CN": "文本已修改：点击“解读”以获得新的建议。"
+  },
+  "Jeu principal (plusieurs jeux de couleur sont mappés)": {
+    "en": "Principal set (several colour sets are mapped)",
+    "es": "Conjunto principal (hay varios conjuntos de color asignados)",
+    "zh_CN": "主数值组（映射了多个颜色组）"
+  },
+  "Jeu de valeurs principal": {
+    "en": "Principal value set",
+    "es": "Conjunto de valores principal",
+    "zh_CN": "主数值组"
+  },
+  "Enregistrement {v0}, avertissement : {v1}": {
+    "en": "Record {v0}, warning: {v1}",
+    "es": "Registro {v0}, aviso: {v1}",
+    "zh_CN": "记录 {v0}，警告：{v1}"
+  },
+  "— à choisir —": {
+    "en": "— to choose —",
+    "es": "— por elegir —",
+    "zh_CN": "— 请选择 —"
+  },
+  "Plusieurs jeux de couleur sont mappés ({v0}) : choisissez le jeu principal.": {
+    "en": "Several colour sets are mapped ({v0}): choose the principal set.",
+    "es": "Hay varios conjuntos de color asignados ({v0}): elija el conjunto principal.",
+    "zh_CN": "映射了多个颜色组（{v0}）：请选择主数值组。"
+  },
+  "Jeu principal : {v0} ; les autres jeux mappés sont conservés en alternatives.": {
+    "en": "Principal set: {v0}; the other mapped sets are kept as alternatives.",
+    "es": "Conjunto principal: {v0}; los demás conjuntos asignados se conservan como alternativas.",
+    "zh_CN": "主数值组：{v0}；其他已映射的组保留为备选。"
+  },
+  "Conditions : {v0}": {
+    "en": "Conditions: {v0}",
+    "es": "Condiciones: {v0}",
+    "zh_CN": "条件：{v0}"
+  },
+  "Échantillon : {v0}": {
+    "en": "Sample: {v0}",
+    "es": "Muestra: {v0}",
+    "zh_CN": "样品：{v0}"
+  },
+  "Une sauvegarde existe ({v0}) : « Restaurer » la remet en place et conserve le fichier actuel à côté, tel quel.": {
+    "en": "A backup exists ({v0}): “Restore” puts it back and keeps the current file next to it, as is.",
+    "es": "Existe una copia de seguridad ({v0}): «Restaurar» la repone y conserva el archivo actual al lado, tal cual.",
+    "zh_CN": "存在备份（{v0}）：“恢复”会将其放回，并原样保留当前文件在旁边。"
+  },
+  "Aucune sauvegarde à restaurer ; le fichier n’est pas modifié.": {
+    "en": "No backup to restore; the file is left unchanged.",
+    "es": "No hay copia de seguridad que restaurar; el archivo no se modifica.",
+    "zh_CN": "没有可恢复的备份；文件未被修改。"
+  },
+  "SCI (spéculaire inclus)": {
+    "en": "SCI (specular included)",
+    "es": "SCI (especular incluido)",
+    "zh_CN": "SCI（包含镜面反射）"
+  },
+  "SCE (spéculaire exclu)": {
+    "en": "SCE (specular excluded)",
+    "es": "SCE (especular excluido)",
+    "zh_CN": "SCE（排除镜面反射）"
+  },
+  "Lab (L*, a*, b*)": {
+    "en": "Lab (L*, a*, b*)",
+    "es": "Lab (L*, a*, b*)",
+    "zh_CN": "Lab (L*, a*, b*)"
+  },
+  "RGB": {
+    "en": "RGB",
+    "es": "RGB",
+    "zh_CN": "RGB"
+  },
+  "Lab": {
+    "en": "Lab",
+    "es": "Lab",
+    "zh_CN": "Lab"
+  },
+  "saisie manuelle": {
+    "en": "manual entry",
+    "es": "entrada manual",
+    "zh_CN": "手动输入"
+  },
+  "texte collé": {
+    "en": "pasted text",
+    "es": "texto pegado",
+    "zh_CN": "粘贴的文本"
+  },
+  "fichier CSV/TSV": {
+    "en": "CSV/TSV file",
+    "es": "archivo CSV/TSV",
+    "zh_CN": "CSV/TSV 文件"
+  },
+  "Nombre attendu, pas un booléen.": {
+    "en": "A number is expected, not a boolean.",
+    "es": "Se esperaba un número, no un booleano.",
+    "zh_CN": "需要数字，而不是布尔值。"
+  },
+  "Nombre attendu.": {
+    "en": "A number is expected.",
+    "es": "Se esperaba un número.",
+    "zh_CN": "需要数字。"
+  },
+  "Nombre manquant ou trop long.": {
+    "en": "Number missing or too long.",
+    "es": "Número ausente o demasiado largo.",
+    "zh_CN": "数字缺失或过长。"
+  },
+  "Syntaxe numérique ambiguë : « {v0} ».": {
+    "en": "Ambiguous number syntax: “{v0}”.",
+    "es": "Sintaxis numérica ambigua: «{v0}».",
+    "zh_CN": "数字语法不明确：“{v0}”。"
+  },
+  "Nombre invalide : « {v0} ».": {
+    "en": "Invalid number: “{v0}”.",
+    "es": "Número no válido: «{v0}».",
+    "zh_CN": "无效数字：“{v0}”。"
+  },
+  "Nombre fini requis (NaN et infini refusés).": {
+    "en": "A finite number is required (NaN and infinity are refused).",
+    "es": "Se requiere un número finito (NaN e infinito se rechazan).",
+    "zh_CN": "需要有限数值（拒绝 NaN 和无穷大）。"
+  },
+  "{v0} : texte attendu.": {
+    "en": "{v0}: text expected.",
+    "es": "{v0}: se esperaba texto.",
+    "zh_CN": "{v0}：需要文本。"
+  },
+  "{v0} : {v1} caractères maximum.": {
+    "en": "{v0}: {v1} characters maximum.",
+    "es": "{v0}: {v1} caracteres como máximo.",
+    "zh_CN": "{v0}：最多 {v1} 个字符。"
+  },
+  "{v0} : caractères de contrôle refusés.": {
+    "en": "{v0}: control characters are refused.",
+    "es": "{v0}: caracteres de control rechazados.",
+    "zh_CN": "{v0}：拒绝控制字符。"
+  },
+  "Composante {v0} manquante.": {
+    "en": "Component {v0} missing.",
+    "es": "Falta la componente {v0}.",
+    "zh_CN": "缺少分量 {v0}。"
+  },
+  "Composante {v0} : nombre fini requis.": {
+    "en": "Component {v0}: a finite number is required.",
+    "es": "Componente {v0}: se requiere un número finito.",
+    "zh_CN": "分量 {v0}：需要有限数值。"
+  },
+  "Bloc « original » invalide.": {
+    "en": "Invalid “original” block.",
+    "es": "Bloque «original» no válido.",
+    "zh_CN": "“original”块无效。"
+  },
+  "Espace colorimétrique non pris en charge : {v0}.": {
+    "en": "Unsupported colour space: {v0}.",
+    "es": "Espacio de color no admitido: {v0}.",
+    "zh_CN": "不支持的色彩空间：{v0}。"
+  },
+  "Composantes manquantes.": {
+    "en": "Components missing.",
+    "es": "Faltan componentes.",
+    "zh_CN": "缺少分量。"
+  },
+  "HEX sRGB : six chiffres hexadécimaux requis.": {
+    "en": "sRGB HEX: six hexadecimal digits are required.",
+    "es": "HEX sRGB: se requieren seis dígitos hexadecimales.",
+    "zh_CN": "sRGB HEX：需要六位十六进制数字。"
+  },
+  "Canal {v0} : entier entre 0 et 255 requis.": {
+    "en": "Channel {v0}: an integer between 0 and 255 is required.",
+    "es": "Canal {v0}: se requiere un entero entre 0 y 255.",
+    "zh_CN": "通道 {v0}：需要 0 到 255 之间的整数。"
+  },
+  "L* doit être compris entre 0 et 100.": {
+    "en": "L* must be between 0 and 100.",
+    "es": "L* debe estar entre 0 y 100.",
+    "zh_CN": "L* 必须介于 0 和 100 之间。"
+  },
+  "Lexèmes invalides.": {
+    "en": "Invalid lexemes.",
+    "es": "Lexemas no válidos.",
+    "zh_CN": "词素无效。"
+  },
+  "Lexème inconnu : {v0}.": {
+    "en": "Unknown lexeme: {v0}.",
+    "es": "Lexema desconocido: {v0}.",
+    "zh_CN": "未知词素：{v0}。"
+  },
+  "Alternatives invalides.": {
+    "en": "Invalid alternatives.",
+    "es": "Alternativas no válidas.",
+    "zh_CN": "备选项无效。"
+  },
+  "Alternative invalide.": {
+    "en": "Invalid alternative.",
+    "es": "Alternativa no válida.",
+    "zh_CN": "备选项无效。"
+  },
+  "Conditions de mesure invalides.": {
+    "en": "Invalid measurement conditions.",
+    "es": "Condiciones de medición no válidas.",
+    "zh_CN": "测量条件无效。"
+  },
+  "Condition inconnue : {v0}.": {
+    "en": "Unknown condition: {v0}.",
+    "es": "Condición desconocida: {v0}.",
+    "zh_CN": "未知条件：{v0}。"
+  },
+  "Illuminant : D65, D50, « other » ou inconnu.": {
+    "en": "Illuminant: D65, D50, “other” or unknown.",
+    "es": "Iluminante: D65, D50, «other» o desconocido.",
+    "zh_CN": "光源：D65、D50、“other”或未知。"
+  },
+  "Observateur : 2°, 10° ou inconnu.": {
+    "en": "Observer: 2°, 10° or unknown.",
+    "es": "Observador: 2°, 10° o desconocido.",
+    "zh_CN": "观察者：2°、10° 或未知。"
+  },
+  "Un illuminant « autre » doit être décrit.": {
+    "en": "An “other” illuminant must be described.",
+    "es": "Un iluminante «otro» debe describirse.",
+    "zh_CN": "“其他”光源必须加以描述。"
+  },
+  "Mesure invalide.": {
+    "en": "Invalid measurement.",
+    "es": "Medición no válida.",
+    "zh_CN": "测量无效。"
+  },
+  "Nom de mesure requis.": {
+    "en": "A measurement name is required.",
+    "es": "Se requiere un nombre de medición.",
+    "zh_CN": "需要测量名称。"
+  },
+  "Rôle : cible ou échantillon de filament.": {
+    "en": "Role: target or filament sample.",
+    "es": "Rol: objetivo o muestra de filamento.",
+    "zh_CN": "角色：目标或线材样品。"
+  },
+  "Horodatage de création manquant.": {
+    "en": "Creation timestamp missing.",
+    "es": "Falta la marca de tiempo de creación.",
+    "zh_CN": "缺少创建时间戳。"
+  },
+  "Horodatage de création invalide.": {
+    "en": "Invalid creation timestamp.",
+    "es": "Marca de tiempo de creación no válida.",
+    "zh_CN": "创建时间戳无效。"
+  },
+  "Provenance invalide.": {
+    "en": "Invalid provenance.",
+    "es": "Procedencia no válida.",
+    "zh_CN": "来源无效。"
+  },
+  "Méthode : manual, paste ou csv.": {
+    "en": "Method: manual, paste or csv.",
+    "es": "Método: manual, paste o csv.",
+    "zh_CN": "方式：manual、paste 或 csv。"
+  },
+  "Numéro d'enregistrement invalide.": {
+    "en": "Invalid record number.",
+    "es": "Número de registro no válido.",
+    "zh_CN": "记录编号无效。"
+  },
+  "Empreinte de fichier invalide.": {
+    "en": "Invalid file digest.",
+    "es": "Huella de archivo no válida.",
+    "zh_CN": "文件摘要无效。"
+  },
+  "Échantillon invalide.": {
+    "en": "Invalid sample.",
+    "es": "Muestra no válida.",
+    "zh_CN": "样品无效。"
+  },
+  "Type d'échantillon inconnu.": {
+    "en": "Unknown sample type.",
+    "es": "Tipo de muestra desconocido.",
+    "zh_CN": "未知样品类型。"
+  },
+  "Association invalide : un SKU exact est requis.": {
+    "en": "Invalid link: an exact SKU is required.",
+    "es": "Asociación no válida: se requiere un SKU exacto.",
+    "zh_CN": "关联无效：需要精确的 SKU。"
+  },
+  "Registre invalide : objet JSON attendu.": {
+    "en": "Invalid registry: a JSON object is expected.",
+    "es": "Registro no válido: se esperaba un objeto JSON.",
+    "zh_CN": "登记表无效：需要 JSON 对象。"
+  },
+  "Registre : schéma inconnu.": {
+    "en": "Registry: unknown schema.",
+    "es": "Registro: esquema desconocido.",
+    "zh_CN": "登记表：未知模式。"
+  },
+  "Registre : version {v0} non prise en charge.": {
+    "en": "Registry: version {v0} is not supported.",
+    "es": "Registro: versión {v0} no admitida.",
+    "zh_CN": "登记表：不支持版本 {v0}。"
+  },
+  "Registre : mesures invalides.": {
+    "en": "Registry: invalid measurements.",
+    "es": "Registro: mediciones no válidas.",
+    "zh_CN": "登记表：测量无效。"
+  },
+  "Registre : plus de {v0} mesures.": {
+    "en": "Registry: more than {v0} measurements.",
+    "es": "Registro: más de {v0} mediciones.",
+    "zh_CN": "登记表：超过 {v0} 条测量。"
+  },
+  "Identifiant de mesure invalide : {v0}.": {
+    "en": "Invalid measurement identifier: {v0}.",
+    "es": "Identificador de medición no válido: {v0}.",
+    "zh_CN": "测量标识符无效：{v0}。"
+  },
+  "Code HEX manquant.": {
+    "en": "HEX code missing.",
+    "es": "Falta el código HEX.",
+    "zh_CN": "缺少 HEX 代码。"
+  },
+  "HEX sRGB : six chiffres hexadécimaux requis (ex. #74CABF).": {
+    "en": "sRGB HEX: six hexadecimal digits are required (e.g. #74CABF).",
+    "es": "HEX sRGB: se requieren seis dígitos hexadecimales (p. ej. #74CABF).",
+    "zh_CN": "sRGB HEX：需要六位十六进制数字（例如 #74CABF）。"
+  },
+  "Composante {v0}* manquante.": {
+    "en": "Component {v0}* missing.",
+    "es": "Falta la componente {v0}*.",
+    "zh_CN": "缺少分量 {v0}*。"
+  },
+  "autre éclairage : {v0}": {
+    "en": "other illuminant: {v0}",
+    "es": "otro iluminante: {v0}",
+    "zh_CN": "其他光源：{v0}"
+  },
+  "éclairage inconnu": {
+    "en": "unknown illuminant",
+    "es": "iluminante desconocido",
+    "zh_CN": "光源未知"
+  },
+  "{v0}°": {
+    "en": "{v0}°",
+    "es": "{v0}°",
+    "zh_CN": "{v0}°"
+  },
+  "observateur inconnu": {
+    "en": "unknown observer",
+    "es": "observador desconocido",
+    "zh_CN": "观察者未知"
+  },
+  "sRGB · contexte déclaré : {v0}": {
+    "en": "sRGB · declared context: {v0}",
+    "es": "sRGB · contexto declarado: {v0}",
+    "zh_CN": "sRGB · 声明的环境：{v0}"
+  },
+  "Texte attendu.": {
+    "en": "Text expected.",
+    "es": "Se esperaba texto.",
+    "zh_CN": "需要文本。"
+  },
+  "Texte collé trop long (maximum {v0} Kio).": {
+    "en": "Pasted text too long (maximum {v0} KiB).",
+    "es": "Texto pegado demasiado largo (máximo {v0} KiB).",
+    "zh_CN": "粘贴的文本过长（最多 {v0} KiB）。"
+  },
+  "Espace « {v0} » non pris en charge : seules les valeurs sRGB sont acceptées ; aucune conversion n’est faite.": {
+    "en": "Colour space “{v0}” is not supported: only sRGB values are accepted; nothing is converted.",
+    "es": "Espacio «{v0}» no admitido: solo se aceptan valores sRGB; no se realiza ninguna conversión.",
+    "zh_CN": "不支持色彩空间“{v0}”：仅接受 sRGB 值；不进行任何转换。"
+  },
+  "RGB « {v0} » refusé : trois entiers 0–255 sans décimale sont requis.": {
+    "en": "RGB “{v0}” refused: three integers 0–255 without decimals are required.",
+    "es": "RGB «{v0}» rechazado: se requieren tres enteros 0–255 sin decimales.",
+    "zh_CN": "RGB“{v0}”被拒绝：需要三个 0–255 的整数，不带小数。"
+  },
+  "RGB hors de 0–255 ignoré : {v0}": {
+    "en": "RGB outside 0–255 ignored: {v0}",
+    "es": "RGB fuera de 0–255 ignorado: {v0}",
+    "zh_CN": "忽略超出 0–255 的 RGB：{v0}"
+  },
+  "Coordonnées L*, a*, b* incomplètes : {v0} (les trois sont requises).": {
+    "en": "Incomplete L*, a*, b* coordinates: {v0} (all three are required).",
+    "es": "Coordenadas L*, a*, b* incompletas: {v0} (se requieren las tres).",
+    "zh_CN": "L*、a*、b* 坐标不完整：{v0}（三者都必需）。"
+  },
+  "Lab ignoré ({v0})": {
+    "en": "Lab ignored ({v0})",
+    "es": "Lab ignorado ({v0})",
+    "zh_CN": "已忽略 Lab（{v0}）"
+  },
+  "Observateur « {v0} » refusé : notations admises 2°, 10°.": {
+    "en": "Observer “{v0}” refused: accepted notations 2°, 10°.",
+    "es": "Observador «{v0}» rechazado: notaciones admitidas 2°, 10°.",
+    "zh_CN": "观察者“{v0}”被拒绝：允许的写法为 2°、10°。"
+  },
+  "Plusieurs illuminants mentionnés : {v0}": {
+    "en": "Several illuminants mentioned: {v0}",
+    "es": "Se mencionan varios iluminantes: {v0}",
+    "zh_CN": "提到了多个光源：{v0}"
+  },
+  "Plusieurs observateurs mentionnés : {v0}": {
+    "en": "Several observers mentioned: {v0}",
+    "es": "Se mencionan varios observadores: {v0}",
+    "zh_CN": "提到了多个观察者：{v0}"
+  },
+  "Le mot « Lab » apparaît mais les coordonnées ne sont pas étiquetées L*, a*, b*.": {
+    "en": "The word “Lab” appears but the coordinates are not labelled L*, a*, b*.",
+    "es": "Aparece la palabra «Lab» pero las coordenadas no están etiquetadas L*, a*, b*.",
+    "zh_CN": "出现了“Lab”一词，但坐标未标注 L*、a*、b*。"
+  },
+  "HEX et RGB ne correspondent pas : choisissez le jeu principal.": {
+    "en": "HEX and RGB do not match: choose the principal set.",
+    "es": "HEX y RGB no coinciden: elija el conjunto principal.",
+    "zh_CN": "HEX 与 RGB 不一致：请选择主数值组。"
+  },
+  "Aucune valeur étiquetée reconnue (HEX, RGB ou L*/a*/b*).": {
+    "en": "No labelled value recognised (HEX, RGB or L*/a*/b*).",
+    "es": "No se reconoce ningún valor etiquetado (HEX, RGB o L*/a*/b*).",
+    "zh_CN": "未识别到带标签的值（HEX、RGB 或 L*/a*/b*）。"
+  },
+  "Le fichier n'est pas en UTF-8 : choisissez explicitement un encodage (CP1252 ou Latin-1).": {
+    "en": "The file is not UTF-8: choose an encoding explicitly (CP1252 or Latin-1).",
+    "es": "El archivo no está en UTF-8: elija explícitamente una codificación (CP1252 o Latin-1).",
+    "zh_CN": "文件不是 UTF-8：请明确选择一种编码（CP1252 或 Latin-1）。"
+  },
+  "Encodage non pris en charge : {v0}.": {
+    "en": "Unsupported encoding: {v0}.",
+    "es": "Codificación no admitida: {v0}.",
+    "zh_CN": "不支持的编码：{v0}。"
+  },
+  "Plus de {v0} enregistrements : fichier refusé.": {
+    "en": "More than {v0} records: file refused.",
+    "es": "Más de {v0} registros: archivo rechazado.",
+    "zh_CN": "超过 {v0} 条记录：文件被拒绝。"
+  },
+  "Plus de {v0} colonnes : fichier refusé.": {
+    "en": "More than {v0} columns: file refused.",
+    "es": "Más de {v0} columnas: archivo rechazado.",
+    "zh_CN": "超过 {v0} 列：文件被拒绝。"
+  },
+  "Cellule de plus de {v0} caractères : fichier refusé.": {
+    "en": "Cell longer than {v0} characters: file refused.",
+    "es": "Celda de más de {v0} caracteres: archivo rechazado.",
+    "zh_CN": "单元格超过 {v0} 个字符：文件被拒绝。"
+  },
+  "CSV illisible : {v0}": {
+    "en": "Unreadable CSV: {v0}",
+    "es": "CSV ilegible: {v0}",
+    "zh_CN": "CSV 无法读取：{v0}"
+  },
+  "Séparateur inconnu.": {
+    "en": "Unknown separator.",
+    "es": "Separador desconocido.",
+    "zh_CN": "未知分隔符。"
+  },
+  "Séparateur décimal : point ou virgule.": {
+    "en": "Decimal mark: point or comma.",
+    "es": "Separador decimal: punto o coma.",
+    "zh_CN": "小数符号：点或逗号。"
+  },
+  "Jeu principal « {v0} » absent des colonnes mappées.": {
+    "en": "Principal set “{v0}” is not among the mapped columns.",
+    "es": "El conjunto principal «{v0}» no está entre las columnas asignadas.",
+    "zh_CN": "主数值组“{v0}”不在已映射的列中。"
+  },
+  "valeur manquante": {
+    "en": "missing value",
+    "es": "valor ausente",
+    "zh_CN": "缺少数值"
+  },
+  "« {v0} » utilise un point alors que la virgule décimale est confirmée": {
+    "en": "“{v0}” uses a point although the decimal comma was confirmed",
+    "es": "«{v0}» usa un punto aunque se confirmó la coma decimal",
+    "zh_CN": "“{v0}”使用了点，但已确认使用小数逗号"
+  },
+  "« {v0} » utilise une virgule alors que le point décimal est confirmé": {
+    "en": "“{v0}” uses a comma although the decimal point was confirmed",
+    "es": "«{v0}» usa una coma aunque se confirmó el punto decimal",
+    "zh_CN": "“{v0}”使用了逗号，但已确认使用小数点"
+  },
+  "canal {v0} : entier 0–255 requis": {
+    "en": "channel {v0}: an integer 0–255 is required",
+    "es": "canal {v0}: se requiere un entero 0–255",
+    "zh_CN": "通道 {v0}：需要 0–255 的整数"
+  },
+  "colonnes de couleur non mappées (L*/a*/b*, HEX ou R/G/B)": {
+    "en": "colour columns not mapped (L*/a*/b*, HEX or R/G/B)",
+    "es": "columnas de color sin asignar (L*/a*/b*, HEX o R/G/B)",
+    "zh_CN": "颜色列未映射（L*/a*/b*、HEX 或 R/G/B）"
+  },
+  "jeu {v0} ignoré : {v1}": {
+    "en": "set {v0} ignored: {v1}",
+    "es": "conjunto {v0} ignorado: {v1}",
+    "zh_CN": "已忽略 {v0} 组：{v1}"
+  },
+  "HEX et RGB diffèrent ({v0}) ; le jeu principal {v1} est conservé, l’autre reste en alternative.": {
+    "en": "HEX and RGB differ ({v0}); the principal set {v1} is kept, the other stays as an alternative.",
+    "es": "HEX y RGB difieren ({v0}); se conserva el conjunto principal {v1}, el otro queda como alternativa.",
+    "zh_CN": "HEX 与 RGB 不同（{v0}）；保留主数值组 {v1}，另一组作为备选。"
+  },
+  "observateur inconnu : « {v0} » (notations admises : 2, 2°, 10, 10°)": {
+    "en": "unknown observer: “{v0}” (accepted notations: 2, 2°, 10, 10°)",
+    "es": "observador desconocido: «{v0}» (notaciones admitidas: 2, 2°, 10, 10°)",
+    "zh_CN": "未知观察者：“{v0}”（允许的写法：2、2°、10、10°）"
+  },
+  "Registre limité à {v0} mesures.": {
+    "en": "Registry limited to {v0} measurements.",
+    "es": "Registro limitado a {v0} mediciones.",
+    "zh_CN": "登记表最多 {v0} 条测量。"
+  },
+  "Mesure introuvable.": {
+    "en": "Measurement not found.",
+    "es": "Medición no encontrada.",
+    "zh_CN": "未找到测量。"
+  },
+  "Référence de filament requise.": {
+    "en": "A filament reference is required.",
+    "es": "Se requiere una referencia de filamento.",
+    "zh_CN": "需要线材参考。"
+  },
+  "{v0} : fichier de {v1} octets au-delà de la limite ({v2} octets) ; non chargé.": {
+    "en": "{v0}: file of {v1} bytes beyond the limit ({v2} bytes); not loaded.",
+    "es": "{v0}: archivo de {v1} bytes por encima del límite ({v2} bytes); no cargado.",
+    "zh_CN": "{v0}：文件 {v1} 字节超出限制（{v2} 字节）；未加载。"
+  },
+  "{v0} : fichier de plus de {v2} octets ; non chargé.": {
+    "en": "{v0}: file over {v2} bytes; not loaded.",
+    "es": "{v0}: archivo de más de {v2} bytes; no cargado.",
+    "zh_CN": "{v0}：文件超过 {v2} 字节；未加载。"
+  },
+  "{v0} : {v1}": {
+    "en": "{v0}: {v1}",
+    "es": "{v0}: {v1}",
+    "zh_CN": "{v0}：{v1}"
+  },
+  "Document trop volumineux : {v0} octets (maximum {v1}).": {
+    "en": "Document too large: {v0} bytes (maximum {v1}).",
+    "es": "Documento demasiado grande: {v0} bytes (máximo {v1}).",
+    "zh_CN": "文档过大：{v0} 字节（最多 {v1}）。"
+  },
+  "Sauvegarde absente : {v0}": {
+    "en": "Backup missing: {v0}",
+    "es": "Copia de seguridad ausente: {v0}",
+    "zh_CN": "备份缺失：{v0}"
+  },
+  "Sauvegarde invalide : {v0} : {v1}": {
+    "en": "Invalid backup: {v0}: {v1}",
+    "es": "Copia de seguridad no válida: {v0}: {v1}",
+    "zh_CN": "备份无效：{v0}：{v1}"
+  },
+  "{v0} : JSON invalide : {v1}": {
+    "en": "{v0}: invalid JSON: {v1}",
+    "es": "{v0}: JSON no válido: {v1}",
+    "zh_CN": "{v0}：JSON 无效：{v1}"
   }
 }

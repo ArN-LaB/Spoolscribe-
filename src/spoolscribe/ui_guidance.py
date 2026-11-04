@@ -93,9 +93,15 @@ class ColourGuidance(GuidanceDialog):
         method.addWidget(FlowLabel(tr('Maximum 3 signifie ΔE ≤ 3, sans marge ni pourcentage. L’écran arrondit au centième supérieur : un dépassement ne devient pas artificiellement 3,00. Le filtre utilise le score calculé, à six décimales.')))
         method.addStretch(1)
 
-    def update_result(self, target, total, excluded, effects, limit=None, outside_limit=0):
-        self.target.setText(tr("Couleur comparée : #{v0}", v0=target))
-        self.swatch.setStyleSheet(f"background:#{target}; border-radius:5px;")
+    def update_result(self, target, total, excluded, effects, limit=None, outside_limit=0, target_label=None, basis=None):
+        if target_label:
+            self.target.setText(tr("Mesure comparée : {v0}", v0=target_label) + (f"\n{tr('Référentiel : {v0}', v0=tr(basis))}" if basis else "")
+                                + "\n" + tr("Proximité indicative : les candidats sont des codes déclarés, pas des mesures."))
+        else:
+            self.target.setText(tr("Couleur comparée : #{v0}", v0=target))
+        self.swatch.setVisible(bool(target))
+        if target:
+            self.swatch.setStyleSheet(f"background:#{target}; border-radius:5px;")
         self.scope.setText(tr("{v0} couleurs affichées · {v1} au-delà de la limite", v0=total, v1=outside_limit)
                            + (f" (ΔE {limit:g})" if limit is not None else ""))
         self.comparable.value.setText(str(total)); self.excluded.value.setText(str(sum(excluded.values())))
