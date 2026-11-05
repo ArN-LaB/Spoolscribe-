@@ -167,7 +167,10 @@ class QrWindowCorrectionTests(unittest.TestCase):
                 label = f"{language} {size} details={details}"
                 # Never forced beyond the screen; only as tall as the legible code needs.
                 self.assertLessEqual(qr.minimumHeight(), available.height(), label)
-                self.assertEqual(qr.height(), max(size[1], qr.minimumHeight()), label)
+                # Content changes may grow/shrink the window; the code must stay
+                # legible and the automatic fit must remain within the screen.
+                self.assertGreaterEqual(qr.height(), qr.minimumHeight(), label)
+                self.assertLessEqual(qr.height(), max(size[1], available.height() - 80), label)
                 self.assertEqual(qr.width(), size[0], label)
                 self.assert_whole_code_visible(qr, label)
                 self.assert_labels_fit(qr, label)

@@ -69,24 +69,27 @@ class QrWindowTests(unittest.TestCase):
     def test_secondary_action_beside_the_existing_ones(self):
         w = self.window
         self.assertEqual(w.btn_qr.objectName(), "secondary")
-        self.assertEqual(w.btn_qr.text(), "Afficher le QR Code…")
+        self.assertIn("SpoolScribe Companion", w.btn_qr.text())
         self.assertTrue(w.btn_qr.isEnabled())
         # The catalogue update button is the sidebar's own action; the export panel keeps one primary.
         primary = [b for b in w.detail_footer.findChildren(QPushButton) if b.objectName() == "primary" and b.isVisible()]
         self.assertEqual(primary, [w.btn_generate])
+        w.resize(1450,850);w.splitter.setSizes([250,450,700]);w.app.processEvents();w.app.processEvents()
+        self.assertTrue(w._export_actions_inline)
         left = lambda b: b.mapTo(w, b.rect().topLeft()).x()
         right = lambda b: b.mapTo(w, b.rect().topRight()).x()
         top = lambda b: b.mapTo(w, b.rect().topLeft()).y()
-        # Existing row unchanged; the QR action below it, on the same outer edges.
+        # Export and QR share the action row when the pane is wide enough.
         self.assertEqual(top(w.btn_inspect), top(w.btn_open_out))
-        self.assertGreater(top(w.btn_qr), top(w.btn_open_out))
-        self.assertEqual((left(w.btn_qr), right(w.btn_qr)), (left(w.btn_inspect), right(w.btn_open_out)))
-        self.assertEqual((left(w.btn_generate), right(w.btn_generate)), (left(w.btn_inspect), right(w.btn_open_out)))
-        self.assertEqual({b.height() for b in (w.btn_inspect, w.btn_qr, w.btn_open_out)}, {w.btn_inspect.height()})
+        self.assertEqual(top(w.btn_qr), top(w.btn_generate))
+        self.assertGreater(left(w.btn_qr), right(w.btn_generate))
+        self.assertEqual((left(w.btn_generate), right(w.btn_qr)), (left(w.btn_inspect), right(w.btn_open_out)))
+        self.assertEqual(w.btn_qr.height(), w.btn_generate.height())
+        self.assertEqual(w.btn_inspect.height(), w.btn_open_out.height())
         for width in (1100, 1280):
             w.resize(width, 800); w.app.processEvents()
             for button in (w.btn_inspect, w.btn_qr, w.btn_open_out):
-                self.assertGreaterEqual(button.width(), button.fontMetrics().horizontalAdvance(button.text()) + 12, (width, button.text()))
+                self.assertGreaterEqual(button.width(), max(button.fontMetrics().horizontalAdvance(line) for line in button.text().splitlines()) + 12, (width, button.text()))
 
     def test_every_blocked_export_blocks_the_qr(self):
         w = self.window
@@ -130,6 +133,7 @@ class QrWindowTests(unittest.TestCase):
     def test_opentag_snapshot_is_the_ndef_never_the_writer_container(self):
         self.select_opentag()
         w = self.window
+        w.opentag_output.setCurrentIndex(w.opentag_output.findData("nfctools-desktop"))  # Explicit legacy container, not the new GUI default.
         prepared = w._prepare_opentag()
         snap = ui_qr.snapshot(w)
         self.assertEqual(snap.ndef, opentag3d.ndef(prepared.payload))
@@ -282,11 +286,11 @@ class QrWindowTests(unittest.TestCase):
         cfg = core.load_config(); cfg["qr_label"] = {}; core.save_config(cfg)
         opened = []
         qr = self.open_qr(printer_factory=lambda: self.pdf_printer("dense.pdf")[0], print_dialog=lambda p, parent: opened.append(1) or True)
-        self.assertEqual(qr.support.currentData(), "d101-25x50")
-        self.assertEqual(qr.plan().status, "refused")
+        self.assertEqual(qr.support.currentData(), "screen")
+        self.assertIsNone(qr.plan())
         self.assertFalse(qr.btn_print.isEnabled())
         self.assertFalse(qr._print()); self.assertEqual(opened, [])
-        self.assertIn("trop dense", qr.status.text())
+        self.assertIn("support", qr.status.text())
         self.assertFalse((Path(core.DATA_HOME) / "dense.pdf").exists())
         # A driver lowering the resolution after the dialog makes the same label too dense.
         printer, path = self.pdf_printer("low.pdf")
@@ -297,6 +301,9 @@ class QrWindowTests(unittest.TestCase):
     def test_small_format_is_an_explicit_choice(self):
         self.select_opentag()
         qr = self.open_qr()
+        qr.support.setCurrentIndex(qr.support.findData('custom'))
+        for key,value in [('width_mm',25),('height_mm',50),('margin',1)]:qr.custom_fields[key].setValue(value)
+        qr.custom_dpi.setValue(203)
         self.assertEqual((qr.symbol.version, qr.plan().status, qr.plan().reason), (8, "refused", "needs_small"))
         self.assertIn("petit format", qr.result.text().lower())
         qr.small.setChecked(True)
@@ -365,7 +372,7 @@ class QrWindowTests(unittest.TestCase):
         self.assertEqual(saved["qr_label"], {"preset": "a4", "small_format": True, "error": "M"})
         self.assertEqual({k: v for k, v in saved.items() if k != "qr_label"}, {k: v for k, v in before.items() if k != "qr_label"})
         again = self.open_qr()
-        self.assertEqual((again.support.currentData(), again.small.isChecked()), ("a4", True))
+        self.assertEqual((again.support.currentData(), again.small.isChecked()), ("screen", True))  # Paper settings survive; a new transfer always opens digitally.
         target = Path(core.DATA_HOME) / "settings.json"
         core.export_settings(target)
         cfg = core.load_config(); cfg["qr_label"] = {}; core.save_config(cfg)
@@ -379,7 +386,7 @@ class QrWindowTests(unittest.TestCase):
             core.import_settings(target)
         self.assertEqual(Path(core.CONFIG_PATH).read_bytes(), raw)
         cfg = core.load_config(); cfg["qr_label"] = {"preset": "elsewhere"}; core.save_config(cfg)
-        self.assertEqual(self.open_qr().support.currentData(), "d101-25x50")  # Invalid stored section: safe default
+        self.assertEqual(self.open_qr().support.currentData(), "screen")  # Invalid stored section: safe default
 
     def test_custom_support_is_bounded(self):
         qr = self.open_qr()

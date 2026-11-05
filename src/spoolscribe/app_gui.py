@@ -42,7 +42,7 @@ from .i18n import tr, configure_language, LANGUAGES, display_quality
 from .app_lifecycle import RESTART_EXIT_CODE, launch_replacement
 from .ui_catalogue import CatalogueUx, ClearableTable, ClearableList
 from .ui_detail import DetailUx
-from .ui_widgets import SearchField, SpoolPreview, MetricGrid, WrapLabel, FilamentDelegate, spool_icon, product_label, DetailScrollArea, CONTROL_HEIGHT
+from .ui_widgets import SearchField, SpoolPreview, MetricGrid, WrapLabel, FilamentDelegate, spool_icon, product_label, display_delta, DetailScrollArea, CONTROL_HEIGHT
 
 # The inspector lives inside the scroll area; toggling never changes the window.
 _INSPECTOR_H = 210
@@ -660,9 +660,10 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.list_stack = QStackedWidget()
 
         # Vue liste (table)
-        self.table = ClearableTable(0, 9)
-        self._column_keys = ("", "reference", "product", "color_name", "brand", "material", "diameter", "weight", "quality")
-        self.table.setHorizontalHeaderLabels(["", tr('Référence'), tr('Produit'), tr('Couleur'), tr('Fabricant'), tr('Matière'), "Ø mm", tr('Masse g'), tr('État des données')])
+        self.table = ClearableTable(0, 10)
+        self._delta_column = 9
+        self._column_keys = ("", "reference", "product", "color_name", "brand", "material", "diameter", "weight", "quality", "")
+        self.table.setHorizontalHeaderLabels(["", tr('Référence'), tr('Produit'), tr('Couleur'), tr('Fabricant'), tr('Matière'), "Ø mm", tr('Masse g'), tr('État des données'), tr('Écart ΔE')])
         self.table.verticalHeader().setVisible(False)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -695,7 +696,10 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         # Référence, diamètre et masse restent disponibles dans « Colonnes » ;
         # masqués par défaut : la fiche liste les références de chaque
         # conditionnement, et le produit garde une largeur lisible.
-        for column in (1, 6, 7):
+        hh.setSectionResizeMode(self._delta_column, QHeaderView.Fixed)
+        self.table.setColumnWidth(self._delta_column, 86)
+        hh.moveSection(hh.visualIndex(self._delta_column), 4)
+        for column in (1, 6, 7, self._delta_column):
             self.table.setColumnHidden(column, True)
         self.table.itemSelectionChanged.connect(self._on_select)
         self.table.before_clear = lambda: self._confirm_draft_transition()
@@ -761,12 +765,16 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.nfc_note.hide()
         self._build_export_explanation(self.footer_layout)
         self.last_export_label=WrapLabel();self.last_export_label.setObjectName('exportState');self.footer_layout.addWidget(self.last_export_label)
-        self.footer_layout.addWidget(self.btn_generate)
+        self.export_action_grid=QGridLayout();self.export_action_grid.setContentsMargins(0,0,0,0);self.export_action_grid.setSpacing(8)
+        self.export_action_grid.addWidget(self.btn_generate,0,0);self.export_action_grid.addWidget(self.btn_qr,0,1)
+        self.export_action_grid.setColumnStretch(0,1);self.export_action_grid.setColumnStretch(1,1)
+        self._export_actions_inline=True
+        self.footer_layout.addLayout(self.export_action_grid)
         actions=QHBoxLayout();actions.setContentsMargins(0,0,0,0);actions.setSpacing(8)
-        self.btn_inspect.setFixedHeight(32);self.btn_open_out.setFixedHeight(32);self.btn_qr.setFixedHeight(32)
+        self.btn_inspect.setFixedHeight(32);self.btn_open_out.setFixedHeight(32);self.btn_qr.setFixedHeight(self.btn_generate.height())
         actions.addWidget(self.btn_inspect,1);actions.addWidget(self.btn_open_out,1)
         # Own row: three labels do not fit side by side in every language and width.
-        self.footer_layout.addLayout(actions);self.footer_layout.addWidget(self.btn_qr);detail_layout.addWidget(self.detail_footer)
+        self.footer_layout.addLayout(actions);detail_layout.addWidget(self.detail_footer)
         detail_scroll.viewportChanged.connect(self._align_detail_footer)
         self.stack.addWidget(detail_panel)
 
@@ -997,10 +1005,11 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.btn_open_out.setObjectName("secondary")
         self.btn_open_out.setCursor(Qt.PointingHandCursor)
         self.btn_open_out.clicked.connect(self._open_output)
-        self.btn_qr = QPushButton(tr('Afficher le QR Code…'))
+        self.btn_qr = QPushButton(tr('Afficher le QR Code\nSpoolScribe Companion'))
         self.btn_qr.setObjectName("secondary")
+        self.btn_qr.setProperty("actionTone", "companion")
         self.btn_qr.setCursor(Qt.PointingHandCursor)
-        self.btn_qr.setAccessibleName(tr('Afficher le message NFC en QR Code'))
+        self.btn_qr.setAccessibleName(tr('Afficher le QR Code pour SpoolScribe Companion'))
         self.btn_qr.setEnabled(False)
         self.btn_qr.clicked.connect(self._open_qr)
 
@@ -1058,6 +1067,14 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
             f"QPushButton#secondary {{ background:{t['sec_bg']}; border:1px solid {t['border']};"
             f" border-radius:7px; padding:6px 12px; }}"
             f"QPushButton#secondary:hover {{ background:{t['sec_hover']}; }}"
+        )
+        qr_ink = "#cfb9ef" if t["dark"] else "#684494"
+        qr_bg = "#343043" if t["dark"] else "#f0eaf8"
+        qr_hover = "#443953" if t["dark"] else "#e6dcf2"
+        secondary_qss += (
+            f'QPushButton#secondary[actionTone="companion"] {{ background:{qr_bg}; color:{qr_ink}; border:1px solid {qr_ink}; }}'
+            f'QPushButton#secondary[actionTone="companion"]:hover {{ background:{qr_hover}; }}'
+            f'QPushButton#secondary[actionTone="companion"]:disabled {{ background:{t["sec_bg"]}; color:{faint}; border:1px solid {t["border"]}; }}'
         )
         search_qss = (
             f"QLineEdit#search {{ border:1px solid {t['border']}; border-radius:7px;"
@@ -1304,6 +1321,18 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
             # On odd viewport widths, put the spare pixel in the gap: both
             # characteristic actions keep equal widths and their outer edges.
             self.characteristic_actions.setSpacing(8+self.detail_scroll.viewport().width()%2)
+            self._arrange_export_actions()
+
+    def _arrange_export_actions(self):
+        if not hasattr(self,'export_action_grid'):return
+        buttons=(self.btn_generate,self.btn_qr)
+        need=2*max(max(b.fontMetrics().horizontalAdvance(line) for line in b.text().splitlines())+32 for b in buttons)+8
+        inline=self.detail_scroll.viewport().width()>=need
+        if inline==self._export_actions_inline:return
+        self._export_actions_inline=inline
+        for b in buttons:self.export_action_grid.removeWidget(b)
+        for i,b in enumerate(buttons):self.export_action_grid.addWidget(b,0 if inline else i,i if inline else 0)
+        self.export_action_grid.setColumnStretch(1,1 if inline else 0)
 
     def _show_card(self):
         self.stack.setCurrentIndex(1)
@@ -1337,6 +1366,10 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.table.setUpdatesEnabled(False)
         self.grid.setUpdatesEnabled(False)
         # Vue liste
+        if self._colour_query and self.table.isColumnHidden(self._delta_column):
+            header = self.table.horizontalHeader()
+            header.moveSection(header.visualIndex(self._delta_column), 4)
+        self.table.setColumnHidden(self._delta_column, not bool(self._colour_query))
         self.table.setRowCount(len(rows))
         for r, e in enumerate(rows):
             sw = self.table.item(r,0)
@@ -1364,12 +1397,20 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
                 if key == 'product' and e.get('diameter'):
                     item.setText(f"{product_label(e['product'],e.get('brand',''))} · {e['diameter']:g} mm")
             color_item = self.table.item(r, 3)
-            color_item.setText(e["color_name"] + (" ⚠" if e.get("hex_variants",0)>1 else "") + self._colour_suffix(e["sku"]))
+            color_item.setText(e["color_name"] + (" ⚠" if e.get("hex_variants",0)>1 else ""))
             color_item.setToolTip(f"#{e['hex']}" if e.get("hex") else tr('Couleur à renseigner'))
             if not e.get("hex"):
                 color_item.setForeground(QColor("#b00"))
             else:
                 color_item.setForeground(self.palette().text().color())
+            delta_item = self.table.item(r, self._delta_column)
+            delta = getattr(self, '_colour_deltas', {}).get(e['sku'], {}).get('delta')
+            delta_item.setText(display_delta(delta) if delta is not None else '—')
+            delta_item.setTextAlignment(Qt.AlignCenter)
+            font = delta_item.font(); font.setBold(True); delta_item.setFont(font)
+            delta_item.setData(Qt.UserRole, delta)
+            delta_item.setToolTip(tr('Plus l’écart ΔE est petit, plus la couleur d’écran est proche.') +
+                (tr('\nÉcart calculé : {v0}. Affichage arrondi au centième supérieur.', v0=f'{delta:.6f}') if delta is not None else ''))
         favorite_keys=set(core.load_config().get("favorite_filaments",[]))
         # Qt stores only the string SKU. Keep Python display data in the delegate;
         # passing whole nested catalogue records through QVariant is unnecessary.
@@ -1737,7 +1778,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
                 raise core.ExportValidationError(tr('Produit introuvable pour cette référence.'))
             entry = self.db["_skus"][self.current_sku]
             if mode=='nfc' and self._opentag_selected():
-                if not self._complete_opentag_settings():return
+                if not self._ensure_opentag_settings():return
                 prepared=self._prepare_opentag()
                 directory=QFileDialog.getExistingDirectory(self,tr('Choisir le dossier d’export'),core.export_directory())
                 if not directory:return
@@ -1776,7 +1817,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
             self.status.showMessage(tr('Enregistrez ou annulez le brouillon avant d’exporter.'), 8000)
             return
         if self._opentag_selected() and not self.inspector.isVisible():
-            if not self._complete_color() or not self._complete_opentag_settings():return
+            if not self._complete_color() or not self._ensure_opentag_settings():return
         if self.inspector.isVisible():
             self.inspector.setVisible(False)
             self.btn_inspect.setText(tr('Voir l’export') if self._opentag_selected() else tr('Voir le JSON'))

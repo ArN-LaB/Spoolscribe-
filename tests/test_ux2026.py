@@ -559,7 +559,7 @@ class UxGuiTests(unittest.TestCase):
         self.assertTrue(w.colour_panel.isVisibleTo(w)); self.assertEqual(w.colour_hex.text(), "#070908")
         deltas = [w._colour_deltas[r["sku"]]["delta"] for r in w._filtered_rows]
         self.assertEqual(deltas, sorted(deltas)); self.assertEqual(deltas[0], 0.0)
-        self.assertIn("ΔE", w.table.item(0, 3).text()); self.assertEqual(w._colour_report["total"], len(w._filtered_rows))
+        self.assertFalse(w.table.isColumnHidden(w._delta_column)); self.assertEqual(w.table.item(0, w._delta_column).text(), "0.00"); self.assertEqual(w._colour_report["total"], len(w._filtered_rows))
         self.assertIn("Teintes proches de #070908", w.filter_summary.toolTip())
         order = [r["sku"] for r in w._filtered_rows]; w._apply_filter(); self.assertEqual([r["sku"] for r in w._filtered_rows], order)
         w._choose_brand("Polymaker", remember=False)

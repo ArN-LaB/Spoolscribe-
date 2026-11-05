@@ -1,4 +1,4 @@
-# Develop and build SpoolScribe v0.7.0 (pre-release)
+# Develop and build SpoolScribe v0.8.0 (pre-release)
 
 [Documentation](README.md) · [Contributing](../.github/CONTRIBUTING.md) · [Repository layout](REPOSITORY.md)
 
@@ -56,7 +56,7 @@ Output stays `dist/SpoolScribe.exe` (Windows), `dist/SpoolScribe` (Linux) and
 The [workflow](../.github/workflows/build.yml) runs four test configurations before
 three builds, then checks TLS, the frozen UI in four languages, resource integrity
 and NTAG215/216 exports offline, including all three OpenTag3D containers. Only a version tag can publish a release, after
-all six assets are verified. The release workflow marks `v0.4.0`, `v0.5.0`, `v0.6.0`, `v0.7.0` and suffixed
+all six assets are verified. The release workflow marks `v0.4.0`, `v0.5.0`, `v0.6.0`, `v0.7.0`, `v0.8.0` and suffixed
 version tags as pre-releases; their publication uses `--latest=false`. The stable
 `v0.3.5` downloads and tag remain intact. A pre-release is downloaded explicitly;
 the application's stable-release check continues to follow the latest stable.

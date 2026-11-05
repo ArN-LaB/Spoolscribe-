@@ -1,9 +1,9 @@
-"""« Mesurer / importer une couleur… » : saisie, collage, import CSV et registre de mesures.
+"""« Valeurs couleur : Lab, RGB, fichier… » : saisie, collage, import CSV et registre de mesures.
 
 Presentation and orchestration only. Values are parsed by ``colour_import`` /
 ``colour_measurements``, stored by ``measurement_store`` and ranked through
-``colour_targets``. Nothing here writes the catalogue, a personal copy, a
-configuration file or an NFC/QR encoder. External text (pasted or imported)
+``colour_targets``. Nothing here writes the catalogue, a personal copy or an NFC/QR encoder.
+Device presets are stored separately only on explicit request. External text (pasted or imported)
 is shown as plain text only.
 
 Each entry (Saisir, Coller, Enregistrées) owns its draft: the actions below
@@ -16,13 +16,14 @@ import hashlib
 import os
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDialog, QFileDialog, QFormLayout, QFrame, QGridLayout,
+from PySide6.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDialog, QFileDialog, QFrame, QGridLayout,
     QHBoxLayout, QInputDialog, QLabel, QLineEdit, QListWidget, QListWidgetItem, QMessageBox, QPlainTextEdit, QPushButton,
     QSizePolicy, QStackedWidget, QTableWidget, QTableWidgetItem, QToolButton, QVBoxLayout, QWidget)
 
 from scripts import db_io
 
 from . import colour_import as ci, colour_measurements as cm, colour_targets as ct, measurement_store as ms
+from .device_profiles import DeviceProfiles
 from .i18n import tr
 from .ui_guidance import FlowLabel, InfoTile
 from .ui_surfaces import ReadingTabs, fit_dialog
@@ -54,7 +55,8 @@ TAB_KEYS = {0: "manual", 1: "paste", 2: None, 3: "saved"}
 
 
 def _combo(choices, current=None):
-    box = QComboBox(); box.setFixedHeight(CONTROL_HEIGHT)
+    box = QComboBox(); box.setFixedHeight(CONTROL_HEIGHT); box.setMinimumWidth(0)
+    box.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon); box.setMinimumContentsLength(8)
     for value, label in choices:
         box.addItem(tr(label), value)
     if current is not None:
@@ -71,6 +73,33 @@ def _field(placeholder="", width=None):
     return edit
 
 
+def _section(title):
+    card = QFrame(); card.setObjectName("guidanceTile")
+    layout = QVBoxLayout(card); layout.setContentsMargins(12, 10, 12, 10); layout.setSpacing(8)
+    heading = FlowLabel(title); heading.setObjectName("guidanceTitle"); layout.addWidget(heading)
+    return card, layout
+
+
+def _labelled(label, widget, hint=None):
+    """Labels above bounded-width fields: no competing nested form label columns."""
+    cell = QWidget(); layout = QVBoxLayout(cell); layout.setContentsMargins(0, 0, 0, 0); layout.setSpacing(4)
+    caption = FlowLabel(label); caption.setObjectName("guidanceNote"); layout.addWidget(caption)
+    caption.setBuddy(widget)
+    if not widget.accessibleName(): widget.setAccessibleName(label)
+    widget.setMinimumWidth(0); layout.addWidget(widget)
+    if hint:
+        note = FlowLabel(hint); note.setObjectName("guidanceNote"); layout.addWidget(note)
+    return cell
+
+
+def _toggle(label):
+    button = QToolButton(); button.setText(label); button.setCheckable(True)
+    button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon); button.setArrowType(Qt.RightArrow)
+    button.setMinimumHeight(CONTROL_HEIGHT); button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+    button.toggled.connect(lambda checked: button.setArrowType(Qt.DownArrow if checked else Qt.RightArrow))
+    return button
+
+
 def _error(exc) -> str:
     return cm.error_text(exc, tr)
 
@@ -81,22 +110,30 @@ class ConditionsForm(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        form = QFormLayout(self); form.setContentsMargins(0, 0, 0, 0)
+        form = QGridLayout(self); form.setContentsMargins(0, 0, 0, 0); form.setSpacing(8)
+        form.setColumnStretch(0, 1); form.setColumnStretch(1, 1)
         self.illuminant = _combo(ILLUMINANT_CHOICES); self.illuminant.setAccessibleName(tr("Éclairage de la mesure"))
         self.illuminant_note = _field(tr("Nom de l’éclairage, ex. TL84")); self.illuminant_note.setMaxLength(cm.LIMITS["short"]); self.illuminant_note.hide()
         self.observer = _combo(OBSERVER_CHOICES); self.observer.setAccessibleName(tr("Observateur"))
-        form.addRow(tr("Éclairage de la mesure"), self.illuminant); form.addRow("", self.illuminant_note)
-        form.addRow(tr("Observateur"), self.observer)
-        self.advanced_toggle = QToolButton(); self.advanced_toggle.setText(tr("Conditions documentées (géométrie, SCI/SCE, ouverture, calibration)"))
-        self.advanced_toggle.setCheckable(True); self.advanced_toggle.setFixedHeight(CONTROL_HEIGHT); form.addRow("", self.advanced_toggle)
-        self.advanced = QWidget(); advanced = QFormLayout(self.advanced); advanced.setContentsMargins(0, 0, 0, 0)
+        form.addWidget(_labelled(tr("Éclairage de la mesure"), self.illuminant), 0, 0)
+        form.addWidget(_labelled(tr("Observateur"), self.observer), 0, 1)
+        form.addWidget(self.illuminant_note, 1, 0, 1, 2)
+        note = FlowLabel(tr("Recopiez ces deux réglages depuis votre appareil. Pour comparer au catalogue : D65 et 2°. Si vous ne savez pas, vous pouvez conserver la mesure sans la comparer."))
+        note.setObjectName("guidanceNote"); form.addWidget(note, 2, 0, 1, 2)
+        self.advanced_toggle = _toggle(tr("Réglages avancés")); form.addWidget(self.advanced_toggle, 3, 0, 1, 2)
+        self.advanced = QWidget(); advanced = QGridLayout(self.advanced); advanced.setContentsMargins(0, 0, 0, 0); advanced.setSpacing(8)
+        advanced.setColumnStretch(0, 1); advanced.setColumnStretch(1, 1)
         self.geometry = _field(tr("ex. 45/0, d/8")); self.specular = _combo(SPECULAR_CHOICES); self.specular.setAccessibleName(tr("Composante spéculaire"))
         self.aperture = _field(tr("ex. 8 mm")); self.calibration = _field(tr("Date ou référence de calibration")); self.profile_note = _field(tr("Profil ou réglage de l’application"))
-        for edit in (self.geometry, self.aperture, self.calibration, self.profile_note):
-            edit.setMaxLength(cm.LIMITS["short"])
-        advanced.addRow(tr("Géométrie"), self.geometry); advanced.addRow(tr("SCI/SCE"), self.specular); advanced.addRow(tr("Ouverture"), self.aperture)
-        advanced.addRow(tr("Calibration"), self.calibration); advanced.addRow(tr("Profil"), self.profile_note)
-        self.advanced.hide(); self.advanced_toggle.toggled.connect(self.advanced.setVisible); form.addRow("", self.advanced)
+        hint = FlowLabel(tr("Facultatif : recopiez uniquement les informations documentées. Ne les déduisez pas du nom de l’appareil.")); hint.setObjectName("guidanceNote"); advanced.addWidget(hint, 0, 0, 1, 2)
+        fields = ((tr("Géométrie"), self.geometry), (tr("SCI/SCE"), self.specular), (tr("Ouverture"), self.aperture), (tr("Calibration"), self.calibration), (tr("Profil"), self.profile_note))
+        for i, (label, field) in enumerate(fields):
+            if isinstance(field, QLineEdit): field.setMaxLength(cm.LIMITS["short"])
+            advanced.addWidget(_labelled(label, field), 1 + i // 2, i % 2)
+        self.geometry.setToolTip(tr("Disposition de l’éclairage et du capteur, indiquée par le fabricant."))
+        self.specular.setToolTip(tr("SCI inclut les reflets ; SCE les exclut. Recopiez le réglage de l’appareil."))
+        self.aperture.setToolTip(tr("Diamètre de la zone mesurée, indiqué par votre appareil."))
+        self.advanced.hide(); self.advanced_toggle.toggled.connect(self.advanced.setVisible); form.addWidget(self.advanced, 4, 0, 1, 2)
         self.illuminant.currentIndexChanged.connect(lambda *_: (self.illuminant_note.setVisible(self.illuminant.currentData() == "other"), self.changed.emit()))
         for box in (self.observer, self.specular):
             box.currentIndexChanged.connect(lambda *_: self.changed.emit())
@@ -135,7 +172,7 @@ class MeasurementWindow(QDialog):
 
     def __init__(self, parent, *, registry=None, current_sku_provider=None, db_provider=None):
         super().__init__(parent)
-        self.setWindowTitle(tr("Mesurer / importer une couleur"))
+        self.setWindowTitle(tr("Valeurs couleur : Lab, RGB, fichier"))
         self.setWindowModality(Qt.WindowModal); self.setMinimumSize(420, 420)
         self.registry = registry or ms.MeasurementRegistry()
         self._current_sku = current_sku_provider or (lambda: None)
@@ -147,8 +184,8 @@ class MeasurementWindow(QDialog):
         self._paste_result = None
         self._paste_text = None   # the text that was interpreted; editing it invalidates the proposal
         layout = QVBoxLayout(self); layout.setContentsMargins(16, 16, 16, 16); layout.setSpacing(10)
-        heading = FlowLabel(tr("Mesurer / importer une couleur")); heading.setObjectName("guidanceHeading"); layout.addWidget(heading)
-        layout.addWidget(FlowLabel(tr("Les couleurs du catalogue sont des codes déclarés par les sources, pas des mesures. Une mesure sert de cible indicative ou se lie à une référence sans la modifier.")))
+        heading = FlowLabel(tr("Valeurs couleur : Lab, RGB, fichier")); heading.setObjectName("guidanceHeading"); layout.addWidget(heading)
+        layout.addWidget(FlowLabel(tr("Recopiez une couleur, vérifiez ce qui peut être comparé, puis recherchez des filaments. Le catalogue reste inchangé.")))
         self.tabs = ReadingTabs(); layout.addWidget(self.tabs, 1)
         self.tabs.addTab(self._build_manual_page(), tr("Saisir"))
         self.tabs.addTab(self._build_paste_page(), tr("Coller"))
@@ -161,19 +198,22 @@ class MeasurementWindow(QDialog):
         self.swatch.setAccessibleName(tr("Aperçu du code sRGB confirmé")); self.swatch.hide(); level_row.addWidget(self.swatch, 0, Qt.AlignTop)
         self.level_tile = InfoTile(tr("Niveau de comparaison"), tone="neutral"); level_row.addWidget(self.level_tile, 1)
         self.level_tile.value.setText("—"); self.level_tile.note.show(); layout.addLayout(level_row)
-        actions = QHBoxLayout(); actions.setSpacing(8)
+        actions = QGridLayout(); actions.setSpacing(8)
+        self.action_grid = actions
         self.btn_save = QPushButton(tr("Enregistrer la mesure")); self.btn_save.clicked.connect(self._save_draft)
         self.btn_search = QPushButton(tr("Rechercher des filaments proches")); self.btn_search.setObjectName("primary")
         self.btn_search.clicked.connect(self._search_draft)
         self.btn_close = QPushButton(tr("Fermer")); self.btn_close.clicked.connect(self.reject)
-        for button in (self.btn_save, self.btn_search, self.btn_close):
-            button.setFixedHeight(CONTROL_HEIGHT); actions.addWidget(button)
+        for column, button in enumerate((self.btn_close, self.btn_save, self.btn_search)):
+            button.setFixedHeight(CONTROL_HEIGHT); actions.addWidget(button, 0, column)
+        actions.addWidget(self.btn_check, 0, 1); actions.addWidget(self.btn_import, 0, 2)
+        actions.setColumnStretch(1, 1); actions.setColumnStretch(2, 1)
         layout.addLayout(actions)
         self.feedback = FlowLabel(); self.feedback.setObjectName("guidanceNote"); self.feedback.setAccessibleName(tr("Message")); layout.addWidget(self.feedback)
         self._refresh_policy()
 
     def showEvent(self, event):
-        super().showEvent(event); fit_dialog(self, preferred_width=720)
+        super().showEvent(event); fit_dialog(self, preferred_width=820)
         self._load_registry(); self._refresh_saved()
 
     # ── drafts: one per entry ────────────────────────────────────────────
@@ -198,10 +238,11 @@ class MeasurementWindow(QDialog):
     # ── Saisir ───────────────────────────────────────────────────────────
     def _build_manual_page(self):
         page = QWidget(); layout = QVBoxLayout(page); layout.setContentsMargins(8, 12, 8, 12); layout.setSpacing(10)
-        layout.addWidget(FlowLabel(tr("Origine des valeurs : ce que vous lisez sur votre appareil ou dans son application.")))
-        form = QFormLayout(); form.setLabelAlignment(Qt.AlignLeft); form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
+        entry, entry_layout = _section(tr("1. Vos valeurs")); layout.addWidget(entry)
+        entry_layout.addWidget(FlowLabel(tr("Choisissez le format affiché par votre appareil ou son application. Recopiez les nombres sans les convertir.")))
+        form = QVBoxLayout(); form.setSpacing(8)
         self.space = _combo((("sRGB_HEX", "Code HEX sRGB"), ("sRGB_RGB8", "RGB sRGB 8 bits"), ("CIELAB", "CIELAB (L*, a*, b*)")))
-        self.space.setAccessibleName(tr("Format des valeurs")); form.addRow(tr("Format des valeurs"), self.space)
+        self.space.setAccessibleName(tr("Format des valeurs")); form.addWidget(_labelled(tr("Format des valeurs"), self.space))
         self.value_stack = QStackedWidget()
         hex_widget = QWidget(); hex_row = QHBoxLayout(hex_widget); hex_row.setContentsMargins(0, 0, 0, 0)
         self.hex_edit = _field("#74CABF", 160); self.hex_edit.setMaxLength(7); self.hex_edit.setAccessibleName(tr("Code HEX")); hex_row.addWidget(self.hex_edit); hex_row.addStretch(1)
@@ -214,25 +255,24 @@ class MeasurementWindow(QDialog):
         rgb_row.addStretch(1); self.value_stack.addWidget(rgb_widget)
         lab_widget = QWidget(); lab_row = QHBoxLayout(lab_widget); lab_row.setContentsMargins(0, 0, 0, 0)
         self.lab_edits = {}
-        for key, label in (("L", "L*"), ("a", "a*"), ("b", "b*")):
-            lab_row.addWidget(QLabel(label)); edit = _field("73,2", 110); edit.setMaxLength(cm.LIMITS["lexeme"]); edit.setAccessibleName(tr("Coordonnée {v0}", v0=label))
-            self.lab_edits[key] = edit; lab_row.addWidget(edit)
+        for key, label, example in (("L", "L*", "73,2"), ("a", "a*", "-25,6"), ("b", "b*", "-12,4")):
+            edit = _field(example, 130); edit.setMaxLength(cm.LIMITS["lexeme"]); edit.setAccessibleName(tr("Coordonnée {v0}", v0=label))
+            self.lab_edits[key] = edit; lab_row.addWidget(_labelled(label, edit), 1)
         lab_row.addStretch(1); self.value_stack.addWidget(lab_widget)
-        form.addRow(tr("Valeurs"), self.value_stack)
-        self.conditions_box = QWidget(); conditions = QVBoxLayout(self.conditions_box); conditions.setContentsMargins(0, 0, 0, 0); conditions.setSpacing(6)
+        form.addWidget(self.value_stack)
+        self.value_help = FlowLabel(); self.value_help.setObjectName("guidanceNote"); form.addWidget(self.value_help)
+        entry_layout.addLayout(form)
+        self.conditions_box, conditions = _section(tr("2. Conditions de comparaison"))
         self.manual_conditions = ConditionsForm(); conditions.addWidget(self.manual_conditions)
         # Short names kept for the existing flows and tests.
         self.illuminant, self.illuminant_note, self.observer = self.manual_conditions.illuminant, self.manual_conditions.illuminant_note, self.manual_conditions.observer
         self.geometry, self.specular, self.aperture = self.manual_conditions.geometry, self.manual_conditions.specular, self.manual_conditions.aperture
         self.calibration, self.profile_note = self.manual_conditions.calibration, self.manual_conditions.profile_note
-        help_note = FlowLabel(tr("Vérifiez la fiche ou l’application de votre appareil : D65 et 2° sont nécessaires pour comparer au catalogue. « Je ne sais pas » conserve la mesure sans la comparer."))
-        help_note.setObjectName("guidanceNote"); conditions.addWidget(help_note)
-        form.addRow("", self.conditions_box)
-        layout.addLayout(form)
-        self.details_toggle = QToolButton(); self.details_toggle.setText(tr("Plus de détails (nom, échantillon, appareil, note)")); self.details_toggle.setCheckable(True)
-        self.details_toggle.setFixedHeight(CONTROL_HEIGHT); layout.addWidget(self.details_toggle)
-        self.details = QWidget(); details = QFormLayout(self.details); details.setContentsMargins(0, 0, 0, 0)
-        self.name_edit = _field(tr("Nom de la mesure (proposé automatiquement sinon)")); self.name_edit.setMaxLength(cm.LIMITS["name"])
+        layout.addWidget(self.conditions_box)
+        self.details_toggle = _toggle(tr("Informations facultatives")); layout.addWidget(self.details_toggle)
+        self.details = QWidget(); details = QGridLayout(self.details); details.setContentsMargins(0, 0, 0, 0); details.setSpacing(8)
+        details.setColumnStretch(0, 1); details.setColumnStretch(1, 1)
+        self.name_edit = _field(tr("ex. Échantillon vert")); self.name_edit.setMaxLength(cm.LIMITS["name"])
         self.role = _combo(ROLE_CHOICES); self.sample_type = _combo(SAMPLE_CHOICES)
         self.device_manufacturer = _field(tr("Fabricant de l’appareil")); self.device_model = _field(tr("Modèle ou application"))
         self.sample_material = _field(tr("ex. PLA, PETG")); self.sample_finish = _field(tr("ex. mat, brillant, soyeux"))
@@ -242,11 +282,41 @@ class MeasurementWindow(QDialog):
         self.measured_at = _field(tr("Date de la mesure, si connue")); self.measured_at.setMaxLength(cm.LIMITS["short"])
         self.note_edit = _field(tr("Note libre")); self.note_edit.setMaxLength(cm.LIMITS["note"])
         self.sample_surface_note = _field(tr("État de surface, préparation")); self.sample_surface_note.setMaxLength(cm.LIMITS["note"])
-        details.addRow(tr("Nom"), self.name_edit); details.addRow(tr("Rôle"), self.role); details.addRow(tr("Échantillon"), self.sample_type)
-        details.addRow(tr("Matériau"), self.sample_material); details.addRow(tr("Finition"), self.sample_finish)
-        details.addRow(tr("Épaisseur"), self.sample_thickness); details.addRow(tr("Fond"), self.sample_backing); details.addRow(tr("Surface"), self.sample_surface_note)
-        details.addRow(tr("Appareil"), self.device_manufacturer); details.addRow("", self.device_model)
-        details.addRow(tr("Date"), self.measured_at); details.addRow(tr("Note"), self.note_edit)
+        identity, identity_layout = _section(tr("Nom et utilisation"))
+        identity_grid = QGridLayout(); identity_grid.setSpacing(8)
+        for i, (label, field) in enumerate(((tr("Nom"), self.name_edit), (tr("Rôle"), self.role), (tr("Date"), self.measured_at), (tr("Note"), self.note_edit))):
+            identity_grid.addWidget(_labelled(label, field), i // 2, i % 2)
+        identity_layout.addLayout(identity_grid); details.addWidget(identity, 0, 0, 1, 2)
+        sample, sample_layout = _section(tr("Échantillon mesuré"))
+        sample_grid = QGridLayout(); sample_grid.setSpacing(8)
+        for i, (label, field) in enumerate(((tr("Échantillon"), self.sample_type), (tr("Matériau"), self.sample_material), (tr("Finition"), self.sample_finish), (tr("Épaisseur"), self.sample_thickness), (tr("Fond"), self.sample_backing), (tr("Surface"), self.sample_surface_note))):
+            sample_grid.addWidget(_labelled(label, field), i // 2, i % 2)
+        sample_layout.addLayout(sample_grid); details.addWidget(sample, 1, 0, 1, 2)
+        device, device_layout = _section(tr("Votre appareil"))
+        device_grid = QGridLayout(); device_grid.setSpacing(8)
+        device_grid.addWidget(_labelled(tr("Fabricant"), self.device_manufacturer), 0, 0)
+        device_grid.addWidget(_labelled(tr("Modèle ou application"), self.device_model), 0, 1)
+        device_layout.addLayout(device_grid)
+        self.btn_profile_save = QPushButton(tr("Mémoriser ces réglages…")); self.btn_profile_save.setFixedHeight(CONTROL_HEIGHT)
+        self.btn_profile_save.clicked.connect(self._save_device_profile); device_layout.addWidget(self.btn_profile_save, 0, Qt.AlignRight)
+        details.addWidget(device, 2, 0, 1, 2)
+        # Selecting a default preset never applies scientific conditions without an explicit click.
+        self.device_profiles = DeviceProfiles(self.registry.path.with_name("colour_device_profiles.json"))
+        profile_card, profile_layout = _section(tr("Appareil mémorisé"))
+        profile_row = QHBoxLayout(); self.device_profile = _combo(())
+        self.device_profile.setAccessibleName(tr("Appareil mémorisé")); profile_row.addWidget(self.device_profile, 1)
+        self.btn_profile_apply = QPushButton(tr("Utiliser ces réglages")); self.btn_profile_apply.setFixedHeight(CONTROL_HEIGHT)
+        self.btn_profile_apply.clicked.connect(self._apply_device_profile); profile_row.addWidget(self.btn_profile_apply)
+        profile_layout.addLayout(profile_row)
+        self.profile_status = FlowLabel(tr("Un profil prépare la saisie ; il ne certifie ni l’appareil ni sa calibration.")); self.profile_status.setObjectName("guidanceNote"); profile_layout.addWidget(self.profile_status)
+        profile_actions = QHBoxLayout(); self.profile_default = QCheckBox(tr("Proposer au prochain démarrage")); profile_actions.addWidget(self.profile_default); profile_actions.addStretch()
+        self.btn_profile_delete = QPushButton(tr("Oublier…")); self.btn_profile_delete.setFixedHeight(CONTROL_HEIGHT); profile_actions.addWidget(self.btn_profile_delete)
+        profile_layout.addLayout(profile_actions); layout.insertWidget(0, profile_card)
+        self.profile_card = profile_card
+        self.device_profile.currentIndexChanged.connect(self._profile_selected)
+        self.profile_default.clicked.connect(self._set_default_profile)
+        self.btn_profile_delete.clicked.connect(self._delete_device_profile)
+        self._load_device_profiles()
         self.details.hide(); self.details_toggle.toggled.connect(self.details.setVisible); layout.addWidget(self.details)
         self.manual_error = FlowLabel(); self.manual_error.setObjectName("guidanceCaution"); self.manual_error.hide(); layout.addWidget(self.manual_error)
         layout.addStretch(1)
@@ -260,6 +330,10 @@ class MeasurementWindow(QDialog):
     def _space_changed(self, *_):
         index = self.space.currentIndex(); self.value_stack.setCurrentIndex(index)
         self.conditions_box.setVisible(self.space.currentData() == "CIELAB")
+        hints = {"CIELAB": tr("L* : clarté de 0 à 100 · a* : axe vert/rouge · b* : axe bleu/jaune. Gardez les signes + ou − indiqués par votre appareil."),
+                 "sRGB_HEX": tr("HEX : six chiffres ou lettres, par exemple #74CABF."),
+                 "sRGB_RGB8": tr("RGB : trois nombres entiers de 0 à 255, dans l’ordre rouge, vert, bleu.")}
+        self.value_help.setText(hints[self.space.currentData()])
         self._manual_changed()
 
     def _manual_conditions(self):
@@ -280,6 +354,67 @@ class MeasurementWindow(QDialog):
         self.manual_error.hide()
         self._set_draft("manual", {"original": original, "conditions": self._manual_conditions(), "method": "manual"})
 
+    # ── explicit device entry presets ──────────────────────────────────
+    def _load_device_profiles(self, selected=None):
+        try:
+            document = self.device_profiles.load()
+        except (db_io.DatabaseError, cm.MeasurementError, OSError) as exc:
+            self.profile_status.setText(_error(exc)); self.btn_profile_save.setEnabled(False)
+            document = {"profiles": {}, "default": None}
+        self.device_profile.blockSignals(True); self.device_profile.clear()
+        self.device_profile.addItem(tr("Aucun appareil mémorisé"), None)
+        for identifier, profile in document["profiles"].items():
+            self.device_profile.addItem(profile["name"], identifier)
+        chosen = selected or document["default"]
+        self.device_profile.setCurrentIndex(max(0, self.device_profile.findData(chosen)))
+        self.device_profile.blockSignals(False); self._profile_selected()
+        self.profile_card.setVisible(bool(document["profiles"]))
+
+    def _profile_selected(self, *_):
+        identifier = self.device_profile.currentData()
+        self.btn_profile_apply.setEnabled(bool(identifier)); self.btn_profile_delete.setEnabled(bool(identifier))
+        self.profile_default.setEnabled(bool(identifier))
+        self.profile_default.setChecked(bool(identifier) and self.device_profiles.document["default"] == identifier)
+        if identifier:
+            self.profile_status.setText(tr("Vérifiez les réglages de votre appareil, puis cliquez sur « Utiliser ces réglages ». Les valeurs de couleur et la calibration ne sont jamais reprises."))
+
+    def _save_device_profile(self):
+        name, accepted = QInputDialog.getText(self, tr("Mémoriser un appareil"), tr("Nom du profil :"), text=self.device_model.text().strip())
+        if not accepted or not name.strip(): return
+        try:
+            identifier = self.device_profiles.add(name.strip(), self.manual_conditions.values(), self.device_manufacturer.text().strip(), self.device_model.text().strip())
+        except (db_io.DatabaseError, cm.MeasurementError, OSError) as exc:
+            self._say(_error(exc), error=True); return
+        self._load_device_profiles(identifier)
+        self._say(tr("Réglages mémorisés. Cochez « Proposer au prochain démarrage » si vous souhaitez les retrouver par défaut."))
+
+    def _apply_device_profile(self):
+        profile = self.device_profiles.document["profiles"].get(self.device_profile.currentData())
+        if not profile: return
+        # Explicit reuse only: calibration, values, sample and date remain untouched.
+        conditions = dict(profile["conditions"])
+        if self.calibration.text().strip(): conditions["calibration"] = self.calibration.text().strip()
+        self.manual_conditions.set_values(conditions)
+        self.device_manufacturer.setText(profile["manufacturer"]); self.device_model.setText(profile["model"])
+        self._manual_changed()
+        self.profile_status.setText(tr("Réglages repris. Vérifiez qu’ils correspondent à cette mesure ; la calibration reste à documenter pour chaque séance."))
+
+    def _set_default_profile(self, checked):
+        try:
+            self.device_profiles.set_default(self.device_profile.currentData() if checked else None)
+        except (db_io.DatabaseError, cm.MeasurementError, OSError) as exc:
+            self._say(_error(exc), error=True); self._profile_selected()
+
+    def _delete_device_profile(self):
+        identifier = self.device_profile.currentData()
+        if not identifier: return
+        if QMessageBox.question(self, tr("Oublier cet appareil"), tr("Oublier ces réglages mémorisés ? Les mesures enregistrées ne changent pas."), QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes: return
+        try:
+            self.device_profiles.delete(identifier)
+        except (db_io.DatabaseError, cm.MeasurementError, OSError) as exc:
+            self._say(_error(exc), error=True); return
+        self._load_device_profiles()
+
     # ── Coller ───────────────────────────────────────────────────────────
     def _build_paste_page(self):
         page = QWidget(); layout = QVBoxLayout(page); layout.setContentsMargins(8, 12, 8, 12); layout.setSpacing(10)
@@ -294,7 +429,7 @@ class MeasurementWindow(QDialog):
         self.paste_candidates.setAccessibleName(tr("Jeux de valeurs reconnus")); self.paste_candidates.itemSelectionChanged.connect(self._paste_choice_changed)
         layout.addWidget(self.paste_candidates)
         self.paste_conditions = FlowLabel(); self.paste_conditions.setObjectName("guidanceNote"); layout.addWidget(self.paste_conditions)
-        self.paste_conditions_form = ConditionsForm(); layout.addWidget(self.paste_conditions_form)
+        self.paste_conditions_form = ConditionsForm(); self.paste_conditions_form.hide(); layout.addWidget(self.paste_conditions_form)
         self.paste_illuminant, self.paste_observer = self.paste_conditions_form.illuminant, self.paste_conditions_form.observer
         self.paste_illuminant_note = self.paste_conditions_form.illuminant_note
         self.paste_conditions_form.changed.connect(self._paste_choice_changed)
@@ -310,6 +445,7 @@ class MeasurementWindow(QDialog):
         self.paste_candidates.blockSignals(True); self.paste_candidates.clear(); self.paste_candidates.blockSignals(False)
         self.paste_conditions.setText(tr("Texte modifié : cliquez sur « Interpréter » pour une nouvelle proposition."))
         self.paste_errors.hide()
+        self.paste_conditions_form.hide()
         self._set_draft("paste", None)
 
     def _interpret_paste(self):
@@ -325,6 +461,7 @@ class MeasurementWindow(QDialog):
                 label = tr("Lab {v0}", v0=" · ".join(f"{k}* {candidate['lexemes'][k]}" for k in ("L", "a", "b")))
             item = QListWidgetItem(label); item.setData(Qt.UserRole, result["candidates"].index(candidate)); self.paste_candidates.addItem(item)
         self.paste_candidates.blockSignals(False)
+        self.paste_conditions_form.setVisible(any(c["space"] == "CIELAB" for c in result["candidates"]))
         conditions = result["conditions"]
         self.paste_conditions_form.set_values(conditions)
         found = []
@@ -368,40 +505,53 @@ class MeasurementWindow(QDialog):
         row = QHBoxLayout(); self.btn_file = QPushButton(tr("Choisir un fichier…")); self.btn_file.setFixedHeight(CONTROL_HEIGHT)
         self.btn_file.clicked.connect(self._choose_file); row.addWidget(self.btn_file)
         self.file_label = FlowLabel(tr("Aucun fichier choisi")); self.file_label.setObjectName("guidanceNote"); row.addWidget(self.file_label, 1); layout.addLayout(row)
+        self.import_setup = QWidget(); setup_layout = QVBoxLayout(self.import_setup); setup_layout.setContentsMargins(0, 0, 0, 0); setup_layout.setSpacing(8)
         options = QHBoxLayout()
         self.encoding = _combo((("utf-8", "UTF-8 (ou BOM)"), ("cp1252", "Windows-1252"), ("latin-1", "Latin-1")))
         self.delimiter = _combo(((",", "virgule"), (";", "point-virgule"), ("\t", "tabulation")))
         self.decimal = _combo(((".", "point décimal"), (",", "virgule décimale")))
         for label, box in ((tr("Encodage"), self.encoding), (tr("Séparateur"), self.delimiter), (tr("Décimales"), self.decimal)):
-            options.addWidget(QLabel(label)); options.addWidget(box, 1)
-        layout.addLayout(options)
+            options.addWidget(_labelled(label, box), 1)
+        setup_layout.addLayout(options)
         self.encoding.currentIndexChanged.connect(lambda *_: self._reload_preview(auto=True))
         for box in (self.delimiter, self.decimal):
             box.currentIndexChanged.connect(lambda *_: self._reload_preview())
         self.import_note = FlowLabel(); self.import_note.setObjectName("guidanceNote"); layout.addWidget(self.import_note)
         self.preview = QTableWidget(0, 0); self.preview.setEditTriggers(QAbstractItemView.NoEditTriggers); self.preview.setMaximumHeight(170)
-        self.preview.setAccessibleName(tr("Aperçu des cinq premières lignes")); self.preview.setSelectionMode(QAbstractItemView.NoSelection); layout.addWidget(self.preview)
-        layout.addWidget(FlowLabel(tr("Correspondance des colonnes (par position ; une colonne non choisie n’est pas importée) :")))
+        self.preview.setAccessibleName(tr("Aperçu des cinq premières lignes")); self.preview.setSelectionMode(QAbstractItemView.NoSelection); setup_layout.addWidget(self.preview)
+        setup_layout.addWidget(FlowLabel(tr("Associez les colonnes de couleur, puis vérifiez les lignes. Les colonnes non choisies ne seront pas importées.")))
+        self.mapping_panel = QWidget(); mapping_layout = QVBoxLayout(self.mapping_panel); mapping_layout.setContentsMargins(0, 0, 0, 0)
+        self.extra_mapping_toggle = _toggle(tr("Colonnes facultatives"))
+        self.extra_mapping = QWidget(); extra_grid = QGridLayout(self.extra_mapping); extra_grid.setContentsMargins(0, 0, 0, 0)
+        extra_grid.setColumnStretch(0, 1); extra_grid.setColumnStretch(1, 1)
         self.mapping_grid = QGridLayout(); self.mapping_grid.setHorizontalSpacing(8); self.mapping_combos = {}
         for i, (key, label) in enumerate(COLUMN_ROLES):
-            box = QComboBox(); box.setFixedHeight(CONTROL_HEIGHT); box.setAccessibleName(tr("Colonne pour {v0}", v0=tr(label)))
-            self.mapping_combos[key] = box; self.mapping_grid.addWidget(QLabel(tr(label)), i // 2, (i % 2) * 2); self.mapping_grid.addWidget(box, i // 2, (i % 2) * 2 + 1)
+            box = _combo(()); box.setAccessibleName(tr("Colonne pour {v0}", v0=tr(label)))
+            self.mapping_combos[key] = box
+            grid = self.mapping_grid if i < 7 else extra_grid
+            index = i if i < 7 else i - 7
+            grid.addWidget(_labelled(tr(label), box), index // 3 if i < 7 else index // 2, index % 3 if i < 7 else index % 2)
             box.currentIndexChanged.connect(lambda *_: self._mapping_changed())
-        layout.addLayout(self.mapping_grid)
+        for col in range(3): self.mapping_grid.setColumnStretch(col, 1)
+        mapping_layout.addLayout(self.mapping_grid); mapping_layout.addWidget(self.extra_mapping_toggle)
+        mapping_layout.addWidget(self.extra_mapping); self.extra_mapping.hide(); self.extra_mapping_toggle.toggled.connect(self.extra_mapping.setVisible)
+        setup_layout.addWidget(self.mapping_panel)
         principal_row = QHBoxLayout(); self.principal_label = QLabel(tr("Jeu principal (plusieurs jeux de couleur sont mappés)"))
         self.principal = QComboBox(); self.principal.setFixedHeight(CONTROL_HEIGHT); self.principal.setAccessibleName(tr("Jeu de valeurs principal"))
-        principal_row.addWidget(self.principal_label); principal_row.addWidget(self.principal, 1); layout.addLayout(principal_row)
+        principal_row.addWidget(self.principal_label); principal_row.addWidget(self.principal, 1); setup_layout.addLayout(principal_row)
         self.principal_label.hide(); self.principal.hide(); self.principal.currentIndexChanged.connect(lambda *_: self._reset_report())
-        defaults = QHBoxLayout(); defaults.addWidget(QLabel(tr("Conditions par défaut si absentes du fichier")))
+        defaults = QHBoxLayout()
         self.import_illuminant = _combo(ILLUMINANT_CHOICES); self.import_observer = _combo(OBSERVER_CHOICES)
-        defaults.addWidget(self.import_illuminant); defaults.addWidget(self.import_observer); layout.addLayout(defaults)
+        defaults.addWidget(_labelled(tr("Éclairage si absent du fichier"), self.import_illuminant), 1)
+        defaults.addWidget(_labelled(tr("Observateur si absent du fichier"), self.import_observer), 1); setup_layout.addLayout(defaults)
+        layout.addWidget(self.import_setup); self.import_setup.hide()
         for box in (self.import_illuminant, self.import_observer):
             box.currentIndexChanged.connect(lambda *_: self._mapping_changed())
-        check_row = QHBoxLayout(); self.btn_check = QPushButton(tr("Vérifier les lignes")); self.btn_check.setFixedHeight(CONTROL_HEIGHT)
-        self.btn_check.clicked.connect(self._check_rows); check_row.addWidget(self.btn_check)
-        self.partial_confirm = QCheckBox(tr("Enregistrer seulement les lignes valides")); self.partial_confirm.hide(); check_row.addWidget(self.partial_confirm)
+        self.btn_check = QPushButton(tr("Vérifier les lignes")); self.btn_check.setFixedHeight(CONTROL_HEIGHT)
+        self.btn_check.clicked.connect(self._check_rows); self.btn_check.setEnabled(False)
+        self.partial_confirm = QCheckBox(tr("Enregistrer seulement les lignes valides")); self.partial_confirm.hide(); layout.addWidget(self.partial_confirm)
         self.btn_import = QPushButton(tr("Enregistrer les mesures")); self.btn_import.setObjectName("primary"); self.btn_import.setFixedHeight(CONTROL_HEIGHT)
-        self.btn_import.clicked.connect(self._import_rows); self.btn_import.setEnabled(False); check_row.addWidget(self.btn_import); layout.addLayout(check_row)
+        self.btn_import.clicked.connect(self._import_rows); self.btn_import.setEnabled(False)
         self.partial_confirm.toggled.connect(lambda *_: self._refresh_import_buttons())
         self.import_summary = FlowLabel(); self.import_summary.setObjectName("guidanceTitle"); layout.addWidget(self.import_summary)
         self.import_errors = QPlainTextEdit(); self.import_errors.setReadOnly(True); self.import_errors.setMaximumHeight(110); self.import_errors.hide()
@@ -417,6 +567,7 @@ class MeasurementWindow(QDialog):
             data = ci.read_local_file(path)   # size checked before and during the read
         except (OSError, ValueError) as exc:
             self.import_note.setText(_error(exc)); return
+        self.import_setup.show(); self.btn_check.setEnabled(True)
         self._import_state = {"path": path, "data": data, "sha256": hashlib.sha256(data).hexdigest(), "records": []}
         self.file_label.setText(tr("{v0} · {v1} Kio", v0=os.path.basename(path), v1=max(1, len(data) // 1024)))
         self.encoding.setCurrentIndex(0)
@@ -468,6 +619,7 @@ class MeasurementWindow(QDialog):
                 box.addItem(f"{i + 1}: {name}" if name else tr("{v0}: (sans titre)", v0=i + 1), i)
             chosen = proposal["mapping"].get(key)
             box.setCurrentIndex(max(0, box.findData(chosen)) if chosen is not None else 0); box.blockSignals(False)
+        self.extra_mapping_toggle.setChecked(any(self.mapping_combos[key].currentData() is not None for key, _ in COLUMN_ROLES[7:]))
         if proposal["duplicates"]:
             labels = {key: label for key, label in COLUMN_ROLES}
             self.import_note.setText(self.import_note.text() + " · " + tr("Colonnes en double, à choisir vous-même : {v0}",
@@ -553,6 +705,7 @@ class MeasurementWindow(QDialog):
         self.registry_info = FlowLabel(); self.registry_info.setObjectName("guidanceNote"); layout.addWidget(self.registry_info)
         self.registry_problem = FlowLabel(); self.registry_problem.setObjectName("guidanceCaution"); self.registry_problem.hide(); layout.addWidget(self.registry_problem)
         self.saved_list = QListWidget(); self.saved_list.setObjectName("facets"); self.saved_list.setAccessibleName(tr("Mesures enregistrées"))
+        self.saved_list.setWordWrap(True)
         self.saved_list.itemSelectionChanged.connect(self._saved_selection_changed); layout.addWidget(self.saved_list, 1)
         self.saved_detail = FlowLabel(); self.saved_detail.setObjectName("guidanceNote"); layout.addWidget(self.saved_detail)
         grid = QGridLayout(); grid.setSpacing(6)
@@ -562,8 +715,12 @@ class MeasurementWindow(QDialog):
         self.btn_detach = QPushButton(tr("Détacher")); self.btn_detach.clicked.connect(self._detach_saved)
         self.btn_delete = QPushButton(tr("Supprimer…")); self.btn_delete.clicked.connect(self._delete_saved)
         self.btn_restore = QPushButton(tr("Restaurer la sauvegarde du registre…")); self.btn_restore.clicked.connect(self._restore_registry)
-        for i, button in enumerate((self.btn_use, self.btn_rename, self.btn_link, self.btn_detach, self.btn_delete, self.btn_restore)):
-            button.setFixedHeight(CONTROL_HEIGHT); grid.addWidget(button, i // 3, i % 3)
+        self.btn_use.hide()
+        self.btn_use.setParent(page)
+        self.btn_restore.setText(tr("Restaurer le registre…"))
+        for i, button in enumerate((self.btn_rename, self.btn_link, self.btn_detach, self.btn_delete, self.btn_restore)):
+            button.setFixedHeight(CONTROL_HEIGHT); grid.addWidget(button, i // 2, i % 2)
+        grid.setColumnStretch(0, 1); grid.setColumnStretch(1, 1)
         layout.addLayout(grid)
         return page
 
@@ -581,7 +738,7 @@ class MeasurementWindow(QDialog):
             context = self.registry.resolve_association(measurement, db)
             link = {"none": "", "resolved": tr(" · lié à {v0}", v0=context.get("sku")), "unresolved": tr(" · lien non résolu ({v0})", v0=context.get("sku"))}[context["state"]]
             level = cm.comparison_policy(measurement)["level"]
-            text = f"{measurement['name']} — {cm.summary_values(measurement)} · {cm.describe_conditions(measurement, tr)} · {tr(LEVEL_LABELS[level])}{link}"
+            text = f"{measurement['name']}\n{cm.summary_values(measurement)} · {cm.describe_conditions(measurement, tr)} · {tr(LEVEL_LABELS[level])}{link}"
             item = QListWidgetItem(text); item.setData(Qt.UserRole, identifier); item.setToolTip(text); self.saved_list.addItem(item)
             if identifier == current:
                 self.saved_list.setCurrentItem(item)
@@ -751,6 +908,11 @@ class MeasurementWindow(QDialog):
     def _refresh_policy(self):
         if not hasattr(self, "level_tile"):
             return  # pages are built before the level tile and the actions
+        importing = self.tabs.currentIndex() == 2
+        saved = self.tabs.currentIndex() == 3
+        self.btn_check.setVisible(importing); self.btn_import.setVisible(importing)
+        self.btn_save.setVisible(not importing and not saved); self.btn_search.setVisible(not importing)
+        self.level_tile.setVisible(not importing)
         try:
             measurement = self._draft_measurement()
         except cm.MeasurementError as exc:

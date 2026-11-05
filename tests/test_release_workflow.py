@@ -106,7 +106,7 @@ class ReleasePublicationTests(unittest.TestCase):
         channel = next(line for line in workflow.splitlines() if 'RELEASE_PRERELEASE:' in line)
         expression = channel.split('${{', 1)[1].split('}}', 1)[0].strip()
         expression = expression.replace('||', ' or ').replace('&&', ' and ')
-        for tag, expected in (('v0.7.0', True), ('v0.3.5', False)):
+        for tag, expected in (('v0.8.0', True), ('v0.7.0', True), ('v0.3.5', False)):
             with self.subTest(tag=tag):
                 # Evaluate the actual, constant workflow condition, not a forced channel.
                 prerelease = eval(expression, {'__builtins__': {}}, {

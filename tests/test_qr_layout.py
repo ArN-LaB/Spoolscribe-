@@ -210,7 +210,7 @@ class SettingsTests(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 L.validate_settings(value)
         self.assertEqual(L.settings_profile({"preset": "custom", "custom": custom}), L.profile_from_dict(custom))
-        self.assertEqual(L.settings_profile({"preset": "bogus"}), D101)
+        self.assertIsNone(L.settings_profile({"preset": "bogus"}))
 
 
 if __name__ == "__main__":

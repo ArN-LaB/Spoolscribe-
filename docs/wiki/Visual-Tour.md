@@ -1,16 +1,16 @@
-# SpoolScribe v0.7.0 — a visual tour
+# SpoolScribe v0.8.0 — a visual tour
 
-[Home](Home.md) · [Get started](Getting-Started.md) · [Download pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.7.0)
+[Home](Home.md) · [Get started](Getting-Started.md) · [Download pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0)
 
 **Find a spool → compare its colour → check your reader → prepare the file or QR.**
-v0.7.0 adds [colour entry/import and a local registry](Measuring-Colours.md).
+v0.8.0 adds [colour entry/import and a local registry](Measuring-Colours.md).
 The unchanged catalogue, hardware and QR areas are illustrated below with
-real v0.6.0 captures with public fixtures, offline settings and no personal
+real v0.8.0 captures with public fixtures, offline settings and no personal
 data. Click an image for full size. Demonstration counts are not live coverage.
 
 ## 1. Start with the filament
 
-[![v0.6.0 list, manufacturer and material filters, filament details and export state](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)
+[![v0.8.0 list, manufacturer and material filters, filament details and export state](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png)
 
 | Look here | What to do |
 | --- | --- |
@@ -18,7 +18,7 @@ data. Click an image for full size. Demonstration counts are not live coverage.
 | Centre: catalogue | Search, sort column headers, select a reference or switch to the grid. |
 | Right: spool card | Confirm colour and packaging. Edit a protected personal copy if needed. |
 
-[![v0.6.0 grid cards with coloured spool previews and a selected one-kilogram refill](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/collection.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/collection.png)
+[![v0.8.0 grid cards with coloured spool previews and a selected one-kilogram refill](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/collection.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/collection.png)
 
 **Spool or refill?** Select the actual packaging. Set your usual size in
 **Settings → Spools**. A missing value stays unknown; a preview is not a measured
@@ -81,4 +81,4 @@ reader. SSQR1 software tests do not certify every physical configuration.
 [Share your configuration and result](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml).
 
 [Image provenance and regeneration](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/images/README.md) ·
-[Release validation](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.7.0.md).
+[Release validation](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.8.0.md).

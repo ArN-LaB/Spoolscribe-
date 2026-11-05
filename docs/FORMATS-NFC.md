@@ -3,13 +3,13 @@
 **Non.** OpenSpool est un format de données parmi plusieurs. Une puce NFC,
 un encodage et un logiciel de lecteur compatibles sont trois conditions distinctes.
 La version stable SpoolScribe 0.3.5 prépare **OpenSpool 1.0** uniquement ; elle n’écrit pas
-physiquement le tag. La [préversion v0.7.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.7.0)
+physiquement le tag. La [préversion v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0)
 ajoute OpenTag3D 2.004. Vérification documentaire : 1er novembre 2026.
 
 | Format | Encodage et support documentés | Export dans SpoolScribe |
 | --- | --- | --- |
 | OpenSpool 1.0 | JSON, enregistrement NDEF `application/json`, NTAG215/216. Le champ `version` vaut `1.0` dans les exemples du projet | Oui, compact pour NFC et archive complète ; mêmes règles existantes |
-| OpenTag3D | Standard distinct, version publiée 2.004 à la consultation ; structure binaire, NDEF `application/opentag3d`, NTAG215/216 selon sa spécification | Non en v0.3.5 ; [disponible en préversion v0.7.0](OPENTAG3D.md) |
+| OpenTag3D | Standard distinct, version publiée 2.004 à la consultation ; structure binaire, NDEF `application/opentag3d`, NTAG215/216 selon sa spécification | Non en v0.3.5 ; [disponible en préversion v0.8.0](OPENTAG3D.md) |
 | OpenPrintTag | NDEF `application/vnd.openprinttag`, sections CBOR ; la spécification décrit ISO/IEC 15693-3/NFC-V | Non |
 | Formats des fabricants | Encodages et conditions de lecture propres aux équipements ; certains demandent des clés. La présence de RFID/NFC ne signifie pas que le lecteur accepte OpenSpool | Non, sauf lecture OpenSpool par une configuration explicitement documentée |
 
@@ -39,7 +39,7 @@ OpenSpool ou OpenTag3D**, selon la configuration. Une imprimante peut lire son p
 OpenPrintTag sans accepter un export OpenSpool de SpoolScribe. Consulter les fiches
 de filament reste possible dans les autres catégories.
 
-## Préversion v0.7.0
+## Préversion v0.8.0
 
 L’[export OpenTag3D 2.004](OPENTAG3D.md) ajoute un encodage indépendant et des profils NFC Tools. Il ne transforme pas les tags OpenSpool existants et ne fournit pas d’encodeur OpenPrintTag. La recette physique reste distincte des tests logiciels.
 

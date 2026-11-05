@@ -13,6 +13,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-05
+
+### Pre-release — colour and QR workflow refinements
+
+- OpenTag3D : les réglages déjà enregistrés et valides sont réutilisés à l’export et dans l’aperçu, sans confirmation répétée ; la modification explicite reste disponible.
+- Exemple de référence commerciale en italique pour le support 62 × 100 mm, sans correspondance universelle imposée.
+
+- Colonne ΔE temporaire en vue liste ; nom fabricant non répété dans les tuiles.
+- Accès « Lab, RGB ou fichier… », distinct du champ HEX, avec saisie et import guidés.
+- Fenêtres recalculées au dépliage et au repli ; hauteur des informations QR adaptée au contenu.
+- Parcours de mesure guidé, conditions CIELAB regroupées et détails facultatifs compacts.
+- Actions contextuelles par onglet et import progressif après choix du fichier.
+- Profils d’appareil déclarés par l’utilisateur, réutilisation explicite, sans calibration ni valeurs de mesure.
+- Action QR Companion distinguée par une teinte violette discrète.
+
+### QR and label journey
+
+- New QR windows start with no paper selected. PNG/SVG and the complete SSQR1
+  message stay available; optional paper sizes and system printing are separate.
+- The Companion QR action sits beside NFC export (stacked only when too narrow).
+  One Companion availability page serves both mobile platforms; no store link is invented.
+- QR protection M/Q is visible with an explanation. Technical data is grouped
+  into readable cards, with an explicit SHA-256 copy action.
+- Removed the branded writer selector from the hardware journey. Desktop
+  OpenTag3D file export defaults to raw NDEF; legacy NFC Tools containers remain
+  available through the CLI/API and settings import. NFC payloads are unchanged.
+- OpenTag3D temperature proposals must be reviewed and explicitly confirmed:
+  matching U1 Orca targets first, otherwise a labelled midpoint estimate from
+  known bounds, on the existing 5 °C grid. Chamber heating is never guessed;
+  “No heating” is an explicit user action. Short source hints keep the fields
+  aligned; a checkable temperature-review button sits next to Save. Edits withdraw
+  the confirmation.
+- Paper help separates A4 sheets (Avery L7165/J8165 examples and manufacturer templates) from label rolls. Product codes are informative, not universal or a market-share ranking.
+- Paper selection no longer recommends a particular small label printer.
+  See the documented format/resolution guide; no physical printer certification.
+
 ## [0.7.0] - 2026-11-04
 
 ### Pre-release — colour measurements (Desktop P1)

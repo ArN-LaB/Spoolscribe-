@@ -1,8 +1,8 @@
-# Utiliser SpoolScribe v0.7.0 · Pre-release
+# Utiliser SpoolScribe v0.8.0 · Pre-release
 
-[Accueil](../README.md) · [Documentation](README.md) · [Préversion v0.7.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.7.0) · [Stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
+[Accueil](../README.md) · [Documentation](README.md) · [Préversion v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0) · [Stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
 
-[Parcours visuel de v0.7.0 : catalogue, ΔE, imprimantes et QR](wiki/Visual-Tour.md).
+[Parcours visuel de v0.8.0 : catalogue, ΔE, imprimantes et QR](wiki/Visual-Tour.md).
 Les captures sont réelles, en anglais ; le même parcours existe dans les quatre langues.
 
 ## Langue de l’interface
@@ -130,9 +130,9 @@ ouvre une fenêtre organisée : **Les résultats** présente la couleur, les eff
 cartes expliquant les exclusions ; **La méthode** explique le classement et ses limites.
 Sans couleur choisie, seule la méthode est proposée, sans résultat fictif.
 
-### Mesurer ou importer une couleur (v0.7.0)
+### Lab, RGB ou fichier : saisir des valeurs couleur
 
-Dans **Teintes**, « Mesurer / importer une couleur… » ouvre une fenêtre à trois
+Dans **Teintes**, « Lab, RGB ou fichier… » ouvre une fenêtre à trois
 entrées : **Saisir** (HEX, RGB ou L*a*b*), **Coller** (texte copié depuis
 l’application de votre appareil ; seules les valeurs étiquetées sont reconnues
 et vous confirmez le jeu principal) et **Importer** (CSV/TSV : encodage,
@@ -151,7 +151,7 @@ détails » ou par les colonnes du fichier. Chaque entrée garde son propre
 brouillon : les boutons agissent sur l’entrée affichée ; modifier un texte collé
 retire la proposition jusqu’à une nouvelle interprétation ; si un fichier mappe
 à la fois Lab, HEX ou RGB, vous choisissez le jeu principal. Un petit écart ne
-garantit pas le rendu imprimé. Disponible en v0.7.0 ; les binaires v0.6.0 antérieurs ne contiennent pas cette fonction.
+garantit pas le rendu imprimé. Saisie de couleurs disponible depuis v0.7.0 ; parcours guidé et profils d’appareil affinés en v0.8.0.
 
 ## Choisir le conditionnement
 
@@ -217,7 +217,7 @@ l’étiquette. L’archive JSON complète reste disponible dans le menu génér
 ### QR numérique SSQR1 (v0.6.0, préversion)
 
 Le contrat numérique SSQR1 est validé pour OpenSpool 1.0 et OpenTag3D 2.004.
-L’impression, la D101 et les essais physiques sont différés ; les commandes
+L’impression et les essais physiques sont différés ; les commandes
 d’impression déjà présentes ne font pas partie de cette validation.
 
 **Afficher le QR Code…**, sur sa propre ligne sous **Voir le JSON** et **Afficher le fichier**,
@@ -241,15 +241,20 @@ la partie basse, qui défile sans réduire le code. **Imprimer…** passe par le
 d’impression du système, relit le format et la résolution acceptés par le pilote, puis refuse
 d’envoyer une page trop dense.
 « Tâche transmise au système » ne prouve pas qu’une étiquette est sortie ni qu’elle se lit :
-faites un essai de lecture. Le **Support** (NIIMBOT D101 25 × 50 mm par défaut, étiquettes
-50 × 50, 62 × 100, A4 ou personnalisé) et, dans **Détails techniques**, la correction
-M/Q et le **Petit format — essai de lecture requis** sont mémorisés.
+faites un essai de lecture.
 
-Sur la D101 (24 mm imprimables, 203 ppp), les QR OpenSpool du catalogue sont trop grands :
-l’impression y est refusée, avec la largeur nécessaire. Choisissez une étiquette plus
-large, ou le profil NFC essentiel si votre lecteur l’accepte. SpoolScribe ne retire aucune
-donnée et ne change pas de format de lui-même. L’impression Bluetooth directe sur D101
-n’est pas prise en charge. [Format du QR et tailles](QR_FORMAT.md).
+**Dans v0.8.0 :** chaque ouverture commence avec
+**Aucun — QR à l’écran**. Choisir une étiquette est facultatif ; les dimensions
+précédentes restent mémorisées pour un usage ultérieur. Les supports proposés sont
+50 × 50, 62 × 100, 100 × 150 mm, A4 et un format personnalisé. Le pilote fournit
+la zone réellement imprimable ; une géométrie trop dense reste refusée.
+
+**Protection du QR** se trouve avant les options d’impression : Standard (M) ou
+Renforcée (Q). La protection ajoute de la redondance pour aider à lire un code
+abîmé ; elle peut le rendre plus grand. Ce n’est pas une promesse de lecture.
+Les **Détails techniques** regroupent message, structure du QR, étiquette NFC
+et papier éventuel ; l’empreinte de contrôle peut être copiée séparément.
+[Choisir un support et une imprimante](PRINTING_GUIDE.md).
 
 ## Configurer l’imprimante
 
@@ -351,3 +356,5 @@ Aucun de ces nombres ne certifie une correspondance de couleur après impression
 Après ouverture ou remise en page native, une fenêtre peut encore gagner en hauteur
 si son contenu défile alors qu’il reste de la place sur son écran. La limite de l’écran
 et les boutons restent respectés ; les contenus trop longs continuent à défiler.
+
+Les liens de téléchargement mobile seront regroupés sur la [page Companion](COMPANION.md), accessible depuis la fenêtre QR. Les [références papier et gabarits](PRINTING_GUIDE.md) sont informatifs ; aucune planche multi-étiquettes n’est créée automatiquement.

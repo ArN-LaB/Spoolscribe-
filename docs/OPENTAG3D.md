@@ -1,8 +1,8 @@
-# OpenTag3D — SpoolScribe v0.7.0 Pre-release
+# OpenTag3D — SpoolScribe v0.8.0 Pre-release
 
-[Documentation](README.md) · [Installations de lecture](PRINTER-CONFIGURATIONS.md) · [Formats NFC](FORMATS-NFC.md) · [Validation](validation/v0.7.0.md)
+[Documentation](README.md) · [Installations de lecture](PRINTER-CONFIGURATIONS.md) · [Formats NFC](FORMATS-NFC.md) · [Validation](validation/v0.8.0.md)
 
-**Disponible dans la [préversion v0.7.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.7.0).**
+**Disponible dans la [préversion v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).**
 La version stable v0.3.5 continue à exporter OpenSpool uniquement. Cette préversion
 ajoute OpenTag3D **2.004** ;
 elle ne remplace pas OpenSpool et n’ajoute pas OpenPrintTag.
@@ -126,5 +126,33 @@ L’archive historique reste OpenSpool ; la combinaison OpenTag3D/archive est re
 L’encodeur SpoolScribe est une implémentation indépendante fondée sur les champs
 et unités du standard. Aucun code du site OpenTag3D ou d’OpenRFID n’est embarqué.
 Les essais logiciels et leurs limites sont détaillés dans le
-[rapport de validation](validation/v0.7.0.md). La validation physique des imports,
+[rapport de validation](validation/v0.8.0.md). La validation physique des imports,
 des tags et des imprimantes reste à réaliser avant de revendiquer leur recette.
+
+## Températures proposées et confirmation
+
+Disponible dans les téléchargements v0.8.0.
+L’ouverture du formulaire propose, pour les cibles manquantes, une valeur unique
+explicite du profil Orca U1 correspondant, uniquement si une U1 est sélectionnée.
+À défaut, une plage connue permet une estimation de son milieu, arrondie à un
+multiple de 5 °C dans les bornes. Son origine est indiquée : ce n’est pas une
+nouvelle recommandation fabricant. Un plateau avec plusieurs valeurs de profil
+différentes ne donne pas de cible documentée unique.
+
+Sans plage exploitable, le champ reste vide. L’enceinte n’est pas estimée à partir
+de la matière : choisissez explicitement « Sans chauffage » si cela correspond à
+votre installation, ou indiquez la valeur. Les valeurs déjà confirmées ne sont
+pas remplacées. Toute édition retire la confirmation ; « Enregistrer » reste bloqué tant que
+le bouton « Valider les températures », placé juste à côté, n’a pas été activé. Annuler n’enregistre
+aucune suggestion. Le catalogue et les encodeurs restent inchangés.
+
+Le parcours matériel ne demande plus de choisir NFC Tools téléphone/ordinateur.
+Le fichier OpenTag3D produit par défaut par l’interface est un message NDEF brut ;
+les conteneurs historiques restent disponibles dans les commandes CLI/API et
+les réglages importés. Le QR transmet toujours exactement le même message NDEF.
+
+Une fois les valeurs enregistrées et l’étiquette valide, l’export NFC et l’aperçu
+réutilisent ces réglages sans rouvrir le formulaire. La validité du message complet
+est contrôlée à chaque action. Des valeurs manquantes ou devenues incompatibles
+ramènent à la préparation ; « Modifier les valeurs de l’étiquette… » ouvre toujours
+le formulaire et demande une nouvelle confirmation avant tout enregistrement.

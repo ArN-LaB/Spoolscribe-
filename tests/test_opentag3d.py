@@ -156,16 +156,17 @@ class OpenTagGuiTests(unittest.TestCase):
         w.firmware.setCurrentIndex(w.firmware.findData('stock'));self.assertFalse(w.btn_generate.isEnabled())
 
     def fill_dialog(self,dialog):
-        from PySide6.QtWidgets import QLineEdit,QDialogButtonBox
+        from PySide6.QtWidgets import QLineEdit,QDialogButtonBox,QToolButton
         p=core.get_sku_view(self.window.db,'PB05001').product_data
         chosen={'print_temp':p['min_temp'],'bed_temp':p['bed_min_temp'],'chamber_temp':0,'weight':1000}
         for key,value in chosen.items():dialog.findChild(QLineEdit,'opentag_'+key).setText(str(value))
         box=dialog.findChild(QDialogButtonBox)
-        next(b for b in box.buttons() if b.text()=='Enregistrer').click()
+        dialog.findChild(QToolButton,'opentag_confirmed').setChecked(True)
+        box.button(QDialogButtonBox.Save).click()
         return dialog.result()
 
     def test_real_dialog_validation_then_writer_export_preserves_source_db(self):
-        w=self.select_reader();before=Path(core.DB_PATH).read_bytes()
+        w=self.select_reader();w.opentag_output.setCurrentIndex(w.opentag_output.findData('nfctools-mobile'));before=Path(core.DB_PATH).read_bytes()
         with patch('spoolscribe.ui_catalogue.QDialog.exec',new=lambda dialog:self.fill_dialog(dialog)),patch('spoolscribe.app_gui.QMessageBox.information'):
             w._generate()
         files=list(Path(core.OUTPUT_DIR).glob('*opentag3d*.json'));self.assertEqual(len(files),1)
@@ -191,7 +192,7 @@ class OpenTagGuiTests(unittest.TestCase):
         w.show();w.inspector.show();w.app.processEvents();w._refresh_inspector()
         self.select_reader()
         self.assertEqual(core.load_config()['nfc_format'],'opentag3d')
-        self.assertIn('nfc-tools-profiles',w.inspector.toPlainText())
+        self.assertIn('"format": "OpenTag3D"',w.inspector.toPlainText())
         w.printer.setCurrentIndex(w.printer.findData('u1'))
         w.firmware.setCurrentIndex(w.firmware.findData('paxx12'))
         self.assertEqual(core.load_config()['nfc_format'],'openspool')

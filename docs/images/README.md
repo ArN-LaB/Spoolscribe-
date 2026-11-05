@@ -1,9 +1,9 @@
-# SpoolScribe v0.6.0 — real interface captures
+# SpoolScribe v0.8.0 — real interface captures
 
-Generated on 3 November 2026 from the actual v0.6.0 source at
-`074f76e65739f9cd49837e6db92c1fe32b4fd81e` (the published tag target),
-using Python 3.12 / PySide6 6.11.3 and Qt offscreen. English, light theme.
-The renderer script is a documentation-only follow-up; application modules are unchanged.
+Generated on 5 November 2026 from the v0.8.0 release working tree based on
+`de46ea5662f8889a28dfe4464cde1b134078e3c2`, using Python 3.12 / PySide6 6.11.3
+and Qt offscreen. English, light theme. The manifest records the checkout base;
+image hashes identify the reviewed capture bytes, not a physical hardware test.
 
 | File | What it shows |
 | --- | --- |

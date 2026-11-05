@@ -1,9 +1,9 @@
-# Measure or import a colour
+# Lab, RGB or a file: use a reference colour
 
-[Home](Home.md) · [Visual tour](Visual-Tour.md) · [Download v0.7.0 Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.7.0)
+[Home](Home.md) · [Visual tour](Visual-Tour.md) · [Download v0.8.0 Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0)
 
 **Keep a reference colour without changing the filament catalogue.**
-Open **Colours → Measure / import a colour…**.
+Open **Colours → Lab, RGB or file…**.
 
 | 1. Choose an entry | 2. Check the interpretation | 3. Save or search |
 | --- | --- | --- |
@@ -34,4 +34,6 @@ an explicit partial-import decision before any write.
 
 P1 adds no USB/Bluetooth connection, instrument SDK or certified manufacturer
 export format. Generic CSV/TSV support does not imply validation with a device.
-[Full guide and scientific limits](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COLOUR_MEASUREMENTS.md) · [Validation](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.7.0.md).
+[Full guide and scientific limits](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COLOUR_MEASUREMENTS.md) · [Validation](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.8.0.md).
+
+Device entry presets can be saved and explicitly reapplied. Their name never implies calibration or D65/2° conditions. Comparison adds a dedicated ΔE column in list view; it disappears when comparison stops.
