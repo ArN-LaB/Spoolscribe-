@@ -57,9 +57,24 @@ avec domaine contrôlé et configuration mobile. Aucun lien de store n’est inv
 
 Le contrôle du dépôt, des légendes, des empreintes des captures, des fichiers
 orphelins, des versions et de la condition de publication est exécuté avant la PR.
-Les quatre checks GitHub requis restent appliqués sans contournement. Les résultats
-CI définitifs sont accessibles dans la PR de cette passe ; le journal de publication
-conserve les identifiants et empreintes avant/après promotion.
+Les quatre checks GitHub requis restent appliqués sans contournement.
+La [PR #21](https://github.com/ArN-LaB/Spoolscribe-/pull/21) est fusionnée au commit
+`afeef1d71532106bbb01928804332e52d64d3440` après [CI réussie](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41959317795) :
+618 tests dans chacune des quatre configurations. Les builds de cette passe
+strictement documentaire sont ignorés, et ne sont pas comptés comme réussis :
+les trois builds natifs réels restent ceux de la [publication initiale](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41954082388).
+
+La release v0.8.0 est promue stable avec `prerelease=false`, `draft=false` et
+l’API `releases/latest` pointe sur v0.8.0. Les six URL publiques répondent HTTP 200 ;
+identifiants, tailles et empreintes des six artefacts restent identiques au relevé
+initial. Le tag annoté demeure `552576556b2d0f1cc9cd4c7328173e314e6996c8`,
+sur le commit logiciel `89c08a657bcd752c9f6b95e15192c8390d54d156`.
+Le wiki est publié depuis les mêmes sources, avec les routes adaptées au wiki.
+
+Le rendu HTML GitHub a été contrôlé pour le README et deux pages représentatives :
+centrage, titres et légendes sont conservés. Aucun navigateur automatisable n’étant
+disponible pour cette passe, la page complète n’a pas fait l’objet d’une recette
+visuelle dans un navigateur ; les captures Qt, elles, ont été revues.
 
 Les captures Qt sont réelles, avec données publiques ou exemples synthétiques
 signalés (mesures, réglages d’appareil et rapport d’actualisation). Elles ne sont

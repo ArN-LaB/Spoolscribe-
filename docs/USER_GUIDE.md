@@ -203,8 +203,9 @@ Les accents sont discrets : violet pour la recherche de teintes, bleu pour le pa
 matériel, vert lorsque le fichier tient et ambre pour une étape à compléter. Les libellés
 et actions donnent toujours le sens de l’état ; la couleur seule ne porte aucune instruction.
 
-Pour OpenTag3D, **Voir l’export** affiche le profil NFC Tools ; le NDEF brut affiche
-ses champs décodés et octets. **Préparer l’étiquette…**, proposé comme action principale
+Pour OpenTag3D, **Voir l’export** présente le NDEF brut, ses champs décodés
+et ses octets. Les anciens conteneurs de logiciels d’écriture restent accessibles
+par les interfaces de compatibilité décrites dans le guide OpenTag3D. **Préparer l’étiquette…**, proposé comme action principale
 si des valeurs manquent, demande les cibles et la masse explicites. Pour les modifier
 ensuite : **Détails → Votre parcours → Modifier les valeurs de l’étiquette…**.
 Un seul bouton de préparation apparaît dans la fiche. [Guide OpenTag3D](OPENTAG3D.md).

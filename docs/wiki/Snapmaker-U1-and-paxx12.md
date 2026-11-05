@@ -30,7 +30,7 @@ firmware project’s current instructions for the exact installed release.
 
 | 1. Select | 2. Export | 3. Write & read back | 4. Check on the U1 |
 | --- | --- | --- | --- |
-| Find the product, colour and actual packaging. | Choose U1, reader and installed solution using the buttons. Select the format and tag, then export. | Use an OpenSpool writer for JSON, or import the OpenTag3D profile into the matching NFC Tools app. | Confirm the detected material and colour against the spool. |
+| Find the product, colour and actual packaging. | Choose U1, reader and installed solution using the buttons. Select the format and tag, then export. | Use a compatible writer for OpenSpool JSON or the raw OpenTag3D NDEF file; Companion will provide its own QR scanner when available. | Confirm the detected material and colour against the spool. |
 
 [Writing guide](Writing-RFID-Tags.md) · [All printer configurations](Printers-and-Readers.md)
 

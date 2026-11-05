@@ -41,7 +41,7 @@ de filament reste possible dans les autres catégories.
 
 ## Version stable v0.8.0
 
-L’[export OpenTag3D 2.004](OPENTAG3D.md) ajoute un encodage indépendant et des profils NFC Tools. Il ne transforme pas les tags OpenSpool existants et ne fournit pas d’encodeur OpenPrintTag. La recette physique reste distincte des tests logiciels.
+L’[export OpenTag3D 2.004](OPENTAG3D.md) ajoute un encodage indépendant : NDEF brut dans le parcours graphique, avec anciens conteneurs d’écriture conservés dans la CLI/API. Il ne transforme pas les tags OpenSpool existants et ne fournit pas d’encodeur OpenPrintTag. La recette physique reste distincte des tests logiciels.
 
 ## Le QR SSQR1 transporte le format choisi
 
