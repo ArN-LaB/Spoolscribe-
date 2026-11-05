@@ -36,7 +36,7 @@ DatabaseError = db_io.DatabaseError
 # APP_VERSION est la référence de version. spoolscribe.spec la lit ici ;
 # la CI vérifie que la version déclarée dans pyproject.toml reste alignée.
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.7.0"
+APP_VERSION = "0.8.0"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
@@ -1690,6 +1690,52 @@ def write_opentag3d(export,output_dir):
     if destination.resolve().parent!=directory:raise ExportValidationError('Chemin d’export invalide.')
     db_io.atomic_write(destination,export.data)
     return str(destination)
+
+
+def opentag_temperature_suggestions(fields, orca_profile=None):
+    """Unconfirmed proposals only. Never applied by an encoder or saved here.
+
+    Use an unambiguous matching Orca target when it fits the current bounds;
+    otherwise propose the middle of a known range on the 5 °C grid. Missing
+    ranges and chamber heating requirements are never inferred from material.
+    """
+    def valid(v):
+        return type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 1275
+    profile = orca_profile if isinstance(orca_profile, dict) else {}
+    def explicit(keys):
+        values = []
+        for key in keys:
+            if key not in profile:
+                continue
+            raw = profile[key]
+            if not isinstance(raw, list) or not raw:
+                return None
+            for item in raw:
+                if isinstance(item, bool):
+                    return None
+                try: v = float(item)
+                except (ValueError, TypeError): return None
+                if not valid(v) or v % 5:
+                    return None
+                values.append(v)
+        return int(values[0]) if values and len(set(values)) == 1 else None
+    result = {}
+    for key, low, high, source_keys in (
+        ('print_temp', 'min_print_temp', 'max_print_temp', ('nozzle_temperature',)),
+        ('bed_temp', 'min_bed_temp', 'max_bed_temp', ('cool_plate_temp', 'eng_plate_temp', 'hot_plate_temp', 'textured_plate_temp')),
+        ('chamber_temp', None, None, ('chamber_temperature',))):
+        if fields.get(key) is not None:
+            continue  # A confirmed personal value always wins.
+        lo, hi = fields.get(low), fields.get(high)
+        candidate = explicit(source_keys)
+        if candidate is not None and (lo is None or valid(lo) and candidate >= lo) and (hi is None or valid(hi) and candidate <= hi):
+            result[key] = dict(value=candidate, source='orca')
+        elif low and valid(lo) and valid(hi) and lo <= hi:
+            first, last = math.ceil(lo / 5) * 5, math.floor(hi / 5) * 5
+            if first <= last:
+                value = min(last, max(first, math.floor((lo + hi) / 10 + .5) * 5))
+                result[key] = dict(value=value, source='range')
+    return result
 
 
 def opentag_settings(sku):

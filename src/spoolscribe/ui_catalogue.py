@@ -1,5 +1,6 @@
 """Catalogue interaction, persistent workspace settings and guided exports."""
 import re
+from pathlib import Path
 from PySide6.QtCore import Qt, QByteArray, QThread, Signal, QUrl, QTimer, QSize
 from PySide6.QtGui import QDesktopServices, QPixmap, QPainter, QColor, QImage, QKeySequence, QShortcut, QIcon
 from PySide6.QtWidgets import (QTableWidget, QListWidget, QListWidgetItem, QCompleter, QMenu, QDialog, QVBoxLayout,
@@ -448,7 +449,7 @@ class CatalogueUx:
         self._save_ui_preferences()
 
     def _header_indicators(self):
-        labels = ['', tr('Référence'), tr('Produit'), tr('Couleur'), tr('Fabricant'), tr('Matière'), 'Ø mm', tr('Masse g'), tr('État des données')]
+        labels = ['', tr('Référence'), tr('Produit'), tr('Couleur'), tr('Fabricant'), tr('Matière'), 'Ø mm', tr('Masse g'), tr('État des données'), tr('Écart ΔE')]
         for i, key in enumerate(self._column_keys):
             for rank, combo, direction in ((1, self.sort1, self.sort1_direction), (2, self.sort2, self.sort2_direction)):
                 if key and combo.currentData() == key:
@@ -457,12 +458,16 @@ class CatalogueUx:
 
     def _add_column_choices(self, menu):
         for col in range(1, self.table.columnCount()):
+            if col == self._delta_column and not self._colour_query: continue
             action = menu.addAction(self.table.horizontalHeaderItem(col).text())
             action.setCheckable(True); action.setChecked(not self.table.isColumnHidden(col))
+            if col == self._delta_column:
+                action.setEnabled(False); action.setToolTip(tr('Cette colonne apparaît pendant la comparaison des couleurs.'))
             action.triggered.connect(lambda checked, c=col: self._set_column_visible(c, checked))
 
     def _set_column_visible(self, col, visible):
-        if not visible and sum(not self.table.isColumnHidden(i) for i in range(1, self.table.columnCount())) == 1:
+        if col == self._delta_column: return
+        if not visible and sum(not self.table.isColumnHidden(i) for i in range(1, self._delta_column)) == 1:
             return
         self.table.setColumnHidden(col, not visible)
         self._save_ui_preferences()
@@ -815,7 +820,7 @@ class CatalogueUx:
         self.opentag_output=QComboBox(self.hardware_page)
         for label,key in [(tr('NFC Tools mobile (.json)'),'nfctools-mobile'),(tr('NFC Tools Desktop (.json)'),'nfctools-desktop'),(tr('Message NDEF brut (.ndef)'),'ndef')]:
             self.opentag_output.addItem(label,key)
-        self.opentag_output.setCurrentIndex(max(0,self.opentag_output.findData(cfg.get('opentag3d_output','nfctools-mobile'))))
+        self.opentag_output.setCurrentIndex(max(0,self.opentag_output.findData('ndef')))
         self.opentag_output.hide()
         self.writer_buttons=ChoiceButtons();self.writer_buttons.setChoices([(tr('Téléphone · NFC Tools'),'nfctools-mobile'),(tr('Ordinateur · NFC Tools'),'nfctools-desktop'),(tr('Autre logiciel (expert)'),'ndef')]);layout.addWidget(self.writer_buttons)
         self.writer_expert=self.writer_buttons.buttons['ndef'];self.writer_expert.setText(tr('NDEF brut (expert)'))
@@ -902,9 +907,7 @@ class CatalogueUx:
                     'inventory':tr('Suivi dans l’inventaire externe ; l’écran de l’imprimante reste inchangé.'),
                     'standalone':tr('Étiquette pour votre lecteur ; liaison à l’imprimante à vérifier.')}[cfg['effect']]
             effect+='\n'+tr('Étiquette : {v0} · {v1}',v0=self.tag_choice.currentData(),v1=self.nfc_format.currentText())
-            if self._opentag_selected():
-                button=self.writer_buttons.buttons.get(self.opentag_output.currentData())
-                if button:effect+='\n'+tr('Fichier : {v0}',v0=button.text())
+
         self.setup_result.setText(effect);self.setup_result.setToolTip(title)
 
     def _fill_firmware_combo(self,printer_id,firmware_id=None):
@@ -1155,9 +1158,9 @@ class CatalogueUx:
         self.format_label.setVisible(can);self.nfc_format.hide();self.format_buttons.setVisible(can)
         self.format_buttons.setChoices((self.nfc_format.itemText(i),self.nfc_format.itemData(i)) for i in range(self.nfc_format.count()))
         self.format_buttons.setChoice(self.nfc_format.currentData())
-        self.writer_label.setVisible(can and is_opentag);self.opentag_output.hide();self.writer_buttons.setVisible(can and is_opentag)
+        self.writer_label.hide();self.opentag_output.hide();self.writer_buttons.hide()
         self.writer_buttons.setChoice(self.opentag_output.currentData())
-        self.writer_expert.setVisible(can and is_opentag)
+        self.writer_expert.hide()
         self._refresh_setup_result()
         self.nfc_profile.setVisible(not is_opentag)
         if hasattr(self,'btn_opentag_settings'):self.btn_opentag_settings.setVisible(can and is_opentag and bool(self.current_sku))
@@ -1203,10 +1206,10 @@ class CatalogueUx:
             if is_opentag:
                 prepared=self._prepare_opentag();size=prepared.size
                 writer=self.opentag_output.currentText() or self.opentag_output.currentData()
-                self.nfc_note.setText(tr('Importez le profil dans NFC Tools. Le fichier JSON contient un enregistrement binaire OpenTag3D, pas un JSON OpenSpool.') if self.opentag_output.currentData()!='ndef' else tr('Message NDEF brut : le logiciel d’écriture doit accepter ce format.'))
+                self.nfc_note.setText(tr('Message NFC complet. Le QR le transmet sans logiciel d’écriture à choisir ici.'))
                 budget=dict(payload=size['payload'],ndef=size['ndef'],occupied=size['occupied'],
                             reserved=reserve,remaining=size['remaining'],capacity=size['capacity'])
-                technical_format=f'OpenTag3D 2.004 · {writer}'
+                technical_format='OpenTag3D 2.004'
                 remaining=size['remaining']
             else:
                 payload=self._build_payload()
@@ -1496,6 +1499,19 @@ class CatalogueUx:
             tag_type=self.tag_type.currentData(),reserved_bytes=self.nfc_reserve.value(),
             output=self.opentag_output.currentData(),use_orca_overrides=core.load_config().get('orca_overrides') is True)
 
+    def _ensure_opentag_settings(self):
+        """Reuse saved label values when the current export still validates.
+
+        The explicit editor always asks for confirmation. Normal export/preview
+        only returns to it when saved values are missing or no longer valid.
+        No proposals are silently accepted here.
+        """
+        try:
+            self._prepare_opentag()
+        except ValueError:
+            return self._complete_opentag_settings()
+        return True
+
     def _complete_opentag_settings(self,*_):
         if not self.current_sku or self._variant_needs_choice():return False
         view=core.get_sku_view(self.db,self.current_sku)
@@ -1505,9 +1521,16 @@ class CatalogueUx:
                 core.opentag_settings(self.current_sku),use_orca_overrides=core.load_config().get('orca_overrides') is True)
         except ValueError as exc:
             QMessageBox.warning(self,tr('OpenTag3D'),str(exc));return False
-        dialog=QDialog(self);dialog.setWindowTitle(tr('Préparer l’étiquette OpenTag3D'));dialog.resize(600,580)
+        profile=None
+        if self.printer.currentData()=='u1':
+            path=core.find_orca_profile(self.db['_skus'][self.current_sku].get('product',''))
+            if path:
+                try: profile=core.db_io.parse_json(Path(path).read_bytes())
+                except (ValueError,OSError): pass
+        suggestions=core.opentag_temperature_suggestions(values,profile)
+        dialog=QDialog(self);dialog.setWindowTitle(tr('Préparer l’étiquette OpenTag3D'));dialog.resize(720,700)
         lay=QVBoxLayout(dialog);lay.setContentsMargins(16,16,16,16);lay.setSpacing(12)
-        lay.addWidget(WrapLabel(tr('Ces valeurs servent à cette étiquette. Le catalogue source reste intact. Aucune température cible n’est déduite.')))
+        lay.addWidget(WrapLabel(tr('Vérifiez les températures proposées pour votre bobine et votre imprimante. Elles ne sont enregistrées qu’après votre confirmation ; le catalogue reste intact.')))
         fields={};form=QGridLayout();form.setHorizontalSpacing(12);form.setVerticalSpacing(8);form.setColumnStretch(1,1)
         for key,label in [('manufacturer',tr('Fabricant (nom court)')),('material',tr('Matière (nom court)')),
                           ('material_mod',tr('Variante (facultatif)')),('color_name',tr('Nom de couleur (facultatif)')),
@@ -1521,18 +1544,32 @@ class CatalogueUx:
         for row,label,keys in [(1,tr('Buse (°C)'),('min_print_temp','print_temp','max_print_temp')),
                                (2,tr('Plateau (°C)'),('min_bed_temp','bed_temp','max_bed_temp')),
                                (3,tr('Enceinte (°C)'),(None,'chamber_temp',None))]:
-            grid.addWidget(QLabel(label),row,0)
+            row_label=QLabel(label);row_label.setFixedHeight(CONTROL_HEIGHT);grid.addWidget(row_label,row,0,Qt.AlignTop)
             for col,key in enumerate(keys,1):
                 if key:
                     edit=QLineEdit(str(values.get(key,'')));edit.setObjectName('opentag_'+key)
-                    edit.setFixedHeight(CONTROL_HEIGHT);edit.setMinimumWidth(0);grid.addWidget(edit,row,col);fields[key]=edit
+                    edit.setFixedHeight(CONTROL_HEIGHT);edit.setMinimumWidth(0);fields[key]=edit
+                    cell=QWidget();cell_lay=QVBoxLayout(cell);cell_lay.setContentsMargins(0,0,0,0);cell_lay.setSpacing(4);cell_lay.addWidget(edit)
+                    if key in suggestions:
+                        edit.setText(str(suggestions[key]['value']))
+                        note=WrapLabel(tr('Suggestion · profil Orca U1') if suggestions[key]['source']=='orca' else tr('Estimation · milieu de plage'))
+                        note.setObjectName('guidanceNote');note.setStyleSheet('font-size:10px; font-weight:400;');note.setToolTip(tr('Profil Orca U1 — à confirmer') if suggestions[key]['source']=='orca' else tr('Milieu de la plage — estimation à confirmer'));cell_lay.addWidget(note)
+                    if key=='chamber_temp':
+                        unheated=QPushButton(tr('Sans chauffage'));unheated.setObjectName('secondary');unheated.setFixedHeight(CONTROL_HEIGHT)
+                        unheated.clicked.connect(lambda:fields['chamber_temp'].setText('0'));cell_lay.addWidget(unheated)
+                    grid.addWidget(cell,row,col,Qt.AlignTop)
                 grid.setColumnStretch(col,1)
         lay.addLayout(grid)
+        confirmed=QToolButton();confirmed.setText(tr('Valider les températures'));confirmed.setCheckable(True);confirmed.setObjectName('opentag_confirmed');confirmed.setFixedHeight(CONTROL_HEIGHT);confirmed.setToolTip(tr('J’ai vérifié les températures pour cette bobine.'))
         buttons=QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
-        save=buttons.button(QDialogButtonBox.Save);save.setText(tr('Enregistrer'))
+        save=buttons.button(QDialogButtonBox.Save);save.setText(tr('Enregistrer'));save.setEnabled(False)
+        confirmed.toggled.connect(save.setEnabled)
+        confirmed.toggled.connect(lambda checked:confirmed.setText(tr('Températures vérifiées') if checked else tr('Valider les températures')))
+        for field in fields.values():field.textChanged.connect(lambda *_:confirmed.setChecked(False))
         cancel=buttons.button(QDialogButtonBox.Cancel);cancel.setText(tr('Annuler'))
         for button in [save,cancel]:button.setFixedHeight(CONTROL_HEIGHT)
         def accept():
+            if not confirmed.isChecked():return
             try:
                 numbers={'weight','print_temp','min_print_temp','max_print_temp','bed_temp','min_bed_temp','max_bed_temp','chamber_temp'}
                 settings={key:(float(edit.text().strip().replace(',','.')) if edit.text().strip() else None) if key in numbers else edit.text().strip() for key,edit in fields.items()}
@@ -1541,7 +1578,9 @@ class CatalogueUx:
             except (ValueError,OSError) as exc:
                 QMessageBox.warning(dialog,tr('Étiquette incomplète'),str(exc));return
             dialog.accept()
-        save.clicked.connect(accept);cancel.clicked.connect(dialog.reject);lay.addWidget(buttons)
+        save.clicked.connect(accept);cancel.clicked.connect(dialog.reject)
+        buttons.removeButton(cancel)
+        footer=QHBoxLayout();footer.setSpacing(8);footer.addWidget(cancel);footer.addStretch(1);footer.addWidget(confirmed);footer.addWidget(buttons);lay.addLayout(footer)
         fit_dialog(dialog,preferred_width=700)
         result=dialog.exec()==QDialog.Accepted
         if result:self._refresh_nfc_capacity()

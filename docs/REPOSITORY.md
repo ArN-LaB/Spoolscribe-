@@ -2,11 +2,11 @@
 
 [Documentation](README.md) · [Ressources](../data/README.md) · [Fixtures](../tests/fixtures/README.md) · [Développement](DEVELOPMENT.md)
 
-**Préversion actuelle v0.7.0 :** les encodeurs NFC et SSQR1 sont conservés.
+**Préversion actuelle v0.8.0 :** les encodeurs NFC et SSQR1 sont conservés.
 `colour_measurements.py`, `colour_import.py`, `colour_targets.py`,
 `measurement_store.py` et `ui_colour_measurements.py` ajoutent la saisie/import
 et un registre de mesures distinct du catalogue.
-[Validation actuelle](validation/v0.7.0.md) · [Captures et génération](images/README.md).
+[Validation actuelle](validation/v0.8.0.md) · [Captures et génération](images/README.md).
 Les résultats de structure ci-dessous restent datés de v0.3.5 : ils ne sont pas
 présentés comme les résultats de la version actuelle.
 

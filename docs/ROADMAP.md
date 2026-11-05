@@ -87,3 +87,13 @@ reconnaissance par le firmware. La validation matérielle reste à effectuer.
 - No instrument SDK, USB/Bluetooth driver or Companion development in this step.
   Authentic manufacturer exports and physical colour/RFID acceptance remain untested.
 - v0.3.5 remains the latest stable release.
+
+## v0.8.0 — colour and QR journey refinements, pre-release
+
+- Guided Lab/RGB/file entry and explicit, user-declared device presets.
+- Temporary ΔE list column, simpler cards and dialogs that grow and shrink.
+- OpenTag3D temperature proposals reviewed once, valid saved values reused.
+- Screen-only QR by default, optional printing references and one Companion page.
+- OpenSpool, OpenTag3D and SSQR1 wire contracts unchanged. Physical printer/tag
+  acceptance and published mobile apps remain separate validation work.
+- [Validation](validation/v0.8.0.md) · [Companion availability](COMPANION.md).

@@ -108,3 +108,12 @@ Measurements and their backups are not sent to catalogue sources and are not
 embedded in NFC/SSQR1 exports. Importing a file never uploads or rewrites it.
 No instrument connection, USB/Bluetooth driver, SDK or new network service is added.
 See [measurement storage and controls](COLOUR_MEASUREMENTS.md).
+
+## Local device entry presets (v0.8.0)
+
+On explicit save, `colour_device_profiles.json` stores user-declared device names
+and reusable entry conditions next to the colour registry. It is not uploaded,
+not bundled and not included in settings exports. Coordinates, calibration,
+sample information and measurement dates are never reused by a device preset.
+The new Companion and paper-guide buttons open public information pages in your
+browser only when clicked; no new background request or store detection is added.

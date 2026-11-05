@@ -5625,7 +5625,7 @@
     "zh_CN": "设备制造商"
   },
   "Modèle ou application": {
-    "en": "Model or application",
+    "en": "Model or app",
     "es": "Modelo o aplicación",
     "zh_CN": "型号或应用"
   },
@@ -7108,5 +7108,545 @@
     "en": "{v0}: invalid JSON: {v1}",
     "es": "{v0}: JSON no válido: {v1}",
     "zh_CN": "{v0}：JSON 无效：{v1}"
+  },
+  "1. Sans papier": {
+    "en": "1. No paper",
+    "es": "1. Sin papel",
+    "zh_CN": "1. 无纸传输"
+  },
+  "2. Étiqueteuse grand format": {
+    "en": "2. Wide label printer",
+    "es": "2. Impresora de etiquetas anchas",
+    "zh_CN": "2. 宽幅标签打印机"
+  },
+  "3. Laser ou jet d’encre": {
+    "en": "3. Laser or inkjet",
+    "es": "3. Láser o inyección de tinta",
+    "zh_CN": "3. 激光或喷墨打印机"
+  },
+  "Aucun support sélectionné": {
+    "en": "No paper selected",
+    "es": "Ningún soporte seleccionado",
+    "zh_CN": "未选择纸张"
+  },
+  "Aucun — QR à l’écran": {
+    "en": "None — on-screen QR",
+    "es": "Ninguno — QR en pantalla",
+    "zh_CN": "无 — 屏幕二维码"
+  },
+  "Aucune imprimante ni dimension d’étiquette à choisir pour le transfert numérique.": {
+    "en": "Digital transfer needs no printer or label size.",
+    "es": "La transferencia digital no necesita impresora ni tamaño de etiqueta.",
+    "zh_CN": "数字传输无需选择打印机或标签尺寸。"
+  },
+  "Choisir un support d’impression": {
+    "en": "Choose printing paper",
+    "es": "Elegir un soporte de impresión",
+    "zh_CN": "选择打印介质"
+  },
+  "Choisissez un support uniquement pour imprimer. Le QR à l’écran et les fichiers restent disponibles.": {
+    "en": "Choose paper only for printing. The on-screen QR and files remain available.",
+    "es": "Elija un soporte solo para imprimir. El QR en pantalla y los archivos siguen disponibles.",
+    "zh_CN": "仅在打印时选择纸张。屏幕二维码和文件仍然可用。"
+  },
+  "Confirmer et enregistrer": {
+    "en": "Confirm and save",
+    "es": "Confirmar y guardar",
+    "zh_CN": "确认并保存"
+  },
+  "Copier l’empreinte de contrôle": {
+    "en": "Copy verification hash",
+    "es": "Copiar huella de verificación",
+    "zh_CN": "复制校验哈希"
+  },
+  "Données transmises": {
+    "en": "Transferred data",
+    "es": "Datos transferidos",
+    "zh_CN": "传输的数据"
+  },
+  "Feuille adhésive ou papier": {
+    "en": "Adhesive sheet or paper",
+    "es": "Hoja adhesiva o papel",
+    "zh_CN": "不干胶纸或普通纸"
+  },
+  "Impression (facultatif)": {
+    "en": "Printing (optional)",
+    "es": "Impresión (opcional)",
+    "zh_CN": "打印（可选）"
+  },
+  "J’ai vérifié les températures pour cette bobine.": {
+    "en": "I have checked the temperatures for this spool.",
+    "es": "He comprobado las temperaturas de esta bobina.",
+    "zh_CN": "我已核对此卷耗材的温度。"
+  },
+  "La largeur utile et la résolution comptent plus que la marque. Le calcul ci-dessous vérifie chaque QR ; aucun modèle n’est certifié ici.": {
+    "en": "Usable width and resolution matter more than brand. The calculation checks each QR; no model is certified here.",
+    "es": "La anchura útil y la resolución importan más que la marca. El cálculo comprueba cada QR; no se certifica ningún modelo aquí.",
+    "zh_CN": "有效宽度和分辨率比品牌更重要。程序会计算每个二维码的适配情况，此处不认证具体机型。"
+  },
+  "La lecture imprimée reste à vérifier.": {
+    "en": "Test the printed code before use.",
+    "es": "Pruebe el código impreso antes de usarlo.",
+    "zh_CN": "使用前请测试打印的二维码。"
+  },
+  "La protection aide à lire un QR abîmé. Renforcée ajoute de la redondance et peut agrandir le code ; elle ne garantit pas sa lecture.": {
+    "en": "Protection helps read a damaged QR. Enhanced adds redundancy and may enlarge the code; reading is not guaranteed.",
+    "es": "La protección ayuda a leer un QR dañado. Reforzada añade redundancia y puede ampliar el código; no garantiza su lectura.",
+    "zh_CN": "容错保护有助于读取受损二维码。增强模式增加冗余，可能使二维码变大，但不保证可读。"
+  },
+  "Le QR à l’écran suffit": {
+    "en": "The on-screen QR is enough",
+    "es": "Basta con el QR en pantalla",
+    "zh_CN": "屏幕二维码即可"
+  },
+  "Le bon format": {
+    "en": "The right size",
+    "es": "El tamaño adecuado",
+    "zh_CN": "合适的尺寸"
+  },
+  "L’empreinte SHA-256 sert à vérifier que les données sont intactes. Ce n’est pas une signature d’authenticité.": {
+    "en": "The SHA-256 hash checks that data is intact. It is not an authenticity signature.",
+    "es": "La huella SHA-256 comprueba la integridad de los datos. No es una firma de autenticidad.",
+    "zh_CN": "SHA-256 哈希用于检查数据完整性，并非真实性签名。"
+  },
+  "L’impression ouvre les imprimantes installées dans votre système. Vérifiez la lecture du résultat avant de coller l’étiquette.": {
+    "en": "Printing opens your system’s installed printers. Test scanning before attaching the label.",
+    "es": "La impresión muestra las impresoras instaladas en su sistema. Pruebe la lectura antes de pegar la etiqueta.",
+    "zh_CN": "打印时会列出系统已安装的打印机。粘贴标签前请测试扫描。"
+  },
+  "Message NFC complet. Le QR le transmet sans logiciel d’écriture à choisir ici.": {
+    "en": "Complete NFC message. The QR transfers it without choosing a writing app here.",
+    "es": "Mensaje NFC completo. El QR lo transfiere sin elegir aquí una aplicación de escritura.",
+    "zh_CN": "完整的 NFC 消息。二维码传输无需在此选择写入软件。"
+  },
+  "Milieu de la plage — estimation à confirmer": {
+    "en": "Range midpoint — estimate to confirm",
+    "es": "Punto medio del intervalo — estimación por confirmar",
+    "zh_CN": "范围中点 — 估计值，待确认"
+  },
+  "Profil Orca U1 — à confirmer": {
+    "en": "Matching U1 Orca profile — confirm",
+    "es": "Perfil Orca U1 correspondiente — confirmar",
+    "zh_CN": "匹配的 U1 Orca 配置 — 待确认"
+  },
+  "Protection du QR": {
+    "en": "QR protection",
+    "es": "Protección del QR",
+    "zh_CN": "二维码容错保护"
+  },
+  "QR prêt à afficher ou à enregistrer — message NFC complet.": {
+    "en": "QR ready to display or save — complete NFC message.",
+    "es": "QR listo para mostrar o guardar — mensaje NFC completo.",
+    "zh_CN": "二维码可显示或保存 — 包含完整 NFC 消息。"
+  },
+  "Quel support choisir ?": {
+    "en": "Which paper should I choose?",
+    "es": "¿Qué soporte elegir?",
+    "zh_CN": "如何选择打印介质？"
+  },
+  "Renforcée (Q) — QR plus dense": {
+    "en": "Enhanced (Q) — denser QR",
+    "es": "Reforzada (Q) — QR más denso",
+    "zh_CN": "增强（Q）— 更密集的二维码"
+  },
+  "Respectez les dimensions réelles, la marge blanche et une impression à taille réelle, sans ajustement automatique.": {
+    "en": "Keep the true dimensions and white margin. Print at actual size with no automatic fitting.",
+    "es": "Respete las dimensiones reales y el margen blanco. Imprima a tamaño real, sin ajuste automático.",
+    "zh_CN": "保持实际尺寸和留白，按原尺寸打印，勿自动缩放。"
+  },
+  "Réserve : {v0} octets": {
+    "en": "Reserved: {v0} bytes",
+    "es": "Reserva: {v0} bytes",
+    "zh_CN": "预留：{v0} 字节"
+  },
+  "SSQR1 · {v0} caractères · {v1}": {
+    "en": "SSQR1 · {v0} characters · {v1}",
+    "es": "SSQR1 · {v0} caracteres · {v1}",
+    "zh_CN": "SSQR1 · {v0} 个字符 · {v1}"
+  },
+  "Sans chauffage": {
+    "en": "No heating",
+    "es": "Sin calefacción",
+    "zh_CN": "不加热"
+  },
+  "Standard (M)": {
+    "en": "Standard (M)",
+    "es": "Estándar (M)",
+    "zh_CN": "标准（M）"
+  },
+  "Structure du QR": {
+    "en": "QR structure",
+    "es": "Estructura del QR",
+    "zh_CN": "二维码结构"
+  },
+  "Sur le papier": {
+    "en": "On paper",
+    "es": "En papel",
+    "zh_CN": "纸面尺寸"
+  },
+  "Une zone imprimable assez large": {
+    "en": "Enough printable width",
+    "es": "Suficiente anchura imprimible",
+    "zh_CN": "足够的可打印宽度"
+  },
+  "Version {v0} · {v1}": {
+    "en": "Version {v0} · {v1}",
+    "es": "Versión {v0} · {v1}",
+    "zh_CN": "版本 {v0} · {v1}"
+  },
+  "Vérifiez les températures proposées pour votre bobine et votre imprimante. Elles ne sont enregistrées qu’après votre confirmation ; le catalogue reste intact.": {
+    "en": "Check the proposed temperatures for your spool and printer. They are saved only after your confirmation; the catalogue stays intact.",
+    "es": "Compruebe las temperaturas propuestas para su bobina e impresora. Solo se guardan tras su confirmación; el catálogo permanece intacto.",
+    "zh_CN": "请核对为您的耗材和打印机建议的温度。仅在您确认后保存，目录保持不变。"
+  },
+  "{v0} mm · {v1} ppp": {
+    "en": "{v0} mm · {v1} dpi",
+    "es": "{v0} mm · {v1} ppp",
+    "zh_CN": "{v0} 毫米 · {v1} dpi"
+  },
+  "{v0} × {v0} modules ; marge blanche de 4 modules": {
+    "en": "{v0} × {v0} modules; 4-module white margin",
+    "es": "{v0} × {v0} módulos; margen blanco de 4 módulos",
+    "zh_CN": "{v0} × {v0} 模块；四周 4 模块留白"
+  },
+  "Étiquette 100 × 150 mm": {
+    "en": "100 × 150 mm label",
+    "es": "Etiqueta de 100 × 150 mm",
+    "zh_CN": "100 × 150 毫米标签"
+  },
+  "Afficher le QR Code\nSpoolScribe Companion": {
+    "en": "Show QR Code\nSpoolScribe Companion",
+    "es": "Mostrar código QR\nSpoolScribe Companion",
+    "zh_CN": "显示二维码\nSpoolScribe Companion"
+  },
+  "Afficher le QR Code pour SpoolScribe Companion": {
+    "en": "Show QR Code for SpoolScribe Companion",
+    "es": "Mostrar el código QR para SpoolScribe Companion",
+    "zh_CN": "显示用于 SpoolScribe Companion 的二维码"
+  },
+  "QR pour le futur SpoolScribe Companion. Android / iOS : bientôt disponible.": {
+    "en": "QR for the future SpoolScribe Companion. Android / iOS: coming soon.",
+    "es": "QR para el futuro SpoolScribe Companion. Android / iOS: próximamente.",
+    "zh_CN": "为未来的 SpoolScribe Companion 准备的二维码。Android / iOS：即将推出。"
+  },
+  "Suggestion · profil Orca U1": {
+    "en": "Suggestion · U1 Orca profile",
+    "es": "Sugerencia · perfil Orca U1",
+    "zh_CN": "建议值 · U1 Orca 配置"
+  },
+  "Estimation · milieu de plage": {
+    "en": "Estimate · range midpoint",
+    "es": "Estimación · punto medio",
+    "zh_CN": "估计值 · 范围中点"
+  },
+  "Valider les températures": {
+    "en": "Check temperatures",
+    "es": "Validar temperaturas",
+    "zh_CN": "确认温度"
+  },
+  "Températures vérifiées": {
+    "en": "Temperatures checked",
+    "es": "Temperaturas verificadas",
+    "zh_CN": "温度已确认"
+  },
+  "QR pour SpoolScribe Companion — {v0}": {
+    "en": "QR for SpoolScribe Companion — {v0}",
+    "es": "QR para SpoolScribe Companion — {v0}",
+    "zh_CN": "用于 SpoolScribe Companion 的二维码 — {v0}"
+  },
+  "Android — bientôt disponible": {
+    "en": "Android — coming soon",
+    "es": "Android — próximamente",
+    "zh_CN": "Android — 即将推出"
+  },
+  "iOS — bientôt disponible": {
+    "en": "iOS — coming soon",
+    "es": "iOS — próximamente",
+    "zh_CN": "iOS — 即将推出"
+  },
+  "Aucun lien de téléchargement officiel disponible pour le moment.": {
+    "en": "No official download link is available yet.",
+    "es": "Todavía no hay enlace oficial de descarga.",
+    "zh_CN": "目前尚无官方下载链接。"
+  },
+  "Recopiez une couleur, vérifiez ce qui peut être comparé, puis recherchez des filaments. Le catalogue reste inchangé.": {
+    "en": "Enter a colour, check what can be compared, then find filaments. The catalogue stays unchanged.",
+    "es": "Introduzca un color, compruebe qué se puede comparar y busque filamentos. El catálogo no cambia.",
+    "zh_CN": "输入颜色，确认可比较的内容，然后查找耗材。目录保持不变。"
+  },
+  "1. Vos valeurs": {
+    "en": "1. Your values",
+    "es": "1. Sus valores",
+    "zh_CN": "1. 颜色数值"
+  },
+  "2. Conditions de comparaison": {
+    "en": "2. Comparison conditions",
+    "es": "2. Condiciones de comparación",
+    "zh_CN": "2. 比较条件"
+  },
+  "Choisissez le format affiché par votre appareil ou son application. Recopiez les nombres sans les convertir.": {
+    "en": "Choose the format shown by your device or its app. Copy the numbers without converting them.",
+    "es": "Elija el formato de su dispositivo o aplicación. Copie los números sin convertirlos.",
+    "zh_CN": "选择设备或应用显示的格式，直接抄录数值，无需转换。"
+  },
+  "L* : clarté de 0 à 100 · a* : axe vert/rouge · b* : axe bleu/jaune. Gardez les signes + ou − indiqués par votre appareil.": {
+    "en": "L*: lightness from 0 to 100 · a*: green/red axis · b*: blue/yellow axis. Keep the + or − signs shown by your device.",
+    "es": "L*: claridad de 0 a 100 · a*: eje verde/rojo · b*: eje azul/amarillo. Conserve los signos + o − del dispositivo.",
+    "zh_CN": "L*：明度，范围0至100；a*：绿/红轴；b*：蓝/黄轴。请保留设备显示的正负号。"
+  },
+  "HEX : six chiffres ou lettres, par exemple #74CABF.": {
+    "en": "HEX: six digits or letters, for example #74CABF.",
+    "es": "HEX: seis cifras o letras, por ejemplo #74CABF.",
+    "zh_CN": "HEX：六位数字或字母，例如 #74CABF。"
+  },
+  "RGB : trois nombres entiers de 0 à 255, dans l’ordre rouge, vert, bleu.": {
+    "en": "RGB: three whole numbers from 0 to 255, in red, green, blue order.",
+    "es": "RGB: tres enteros de 0 a 255, en orden rojo, verde y azul.",
+    "zh_CN": "RGB：三个0至255的整数，依次代表红、绿、蓝。"
+  },
+  "Recopiez ces deux réglages depuis votre appareil. Pour comparer au catalogue : D65 et 2°. Si vous ne savez pas, vous pouvez conserver la mesure sans la comparer.": {
+    "en": "Copy these two settings from your device. Catalogue comparisons require D65 and 2°. If unknown, you can save the measurement without comparing it.",
+    "es": "Copie estos dos ajustes del dispositivo. La comparación con el catálogo requiere D65 y 2°. Si no los conoce, puede guardar la medida sin compararla.",
+    "zh_CN": "请抄录设备上的这两个设置。与目录比较需要 D65 和2°。若不确定，仍可保存测量而不进行比较。"
+  },
+  "Facultatif : recopiez uniquement les informations documentées. Ne les déduisez pas du nom de l’appareil.": {
+    "en": "Optional: copy documented information only. Do not infer it from the device name.",
+    "es": "Opcional: copie solo información documentada. No la deduzca del nombre del dispositivo.",
+    "zh_CN": "可选：仅抄录已明确记录的信息，请勿根据设备名称推断。"
+  },
+  "Disposition de l’éclairage et du capteur, indiquée par le fabricant.": {
+    "en": "Lighting and sensor arrangement, as documented by the manufacturer.",
+    "es": "Disposición de la luz y del sensor, según el fabricante.",
+    "zh_CN": "制造商记录的照明与传感器布局。"
+  },
+  "SCI inclut les reflets ; SCE les exclut. Recopiez le réglage de l’appareil.": {
+    "en": "SCI includes reflections; SCE excludes them. Copy your device setting.",
+    "es": "SCI incluye los reflejos; SCE los excluye. Copie el ajuste del dispositivo.",
+    "zh_CN": "SCI包含镜面反射，SCE排除镜面反射。请抄录设备设置。"
+  },
+  "Diamètre de la zone mesurée, indiqué par votre appareil.": {
+    "en": "Diameter of the measured area, as specified by your device.",
+    "es": "Diámetro de la zona medida, según su dispositivo.",
+    "zh_CN": "设备标明的测量区域直径。"
+  },
+  "Informations facultatives": {
+    "en": "Optional information",
+    "es": "Información opcional",
+    "zh_CN": "可选信息"
+  },
+  "Nom et utilisation": {
+    "en": "Name and purpose",
+    "es": "Nombre y uso",
+    "zh_CN": "名称与用途"
+  },
+  "Échantillon mesuré": {
+    "en": "Measured sample",
+    "es": "Muestra medida",
+    "zh_CN": "测量样本"
+  },
+  "Votre appareil": {
+    "en": "Your device",
+    "es": "Su dispositivo",
+    "zh_CN": "您的设备"
+  },
+  "Mémoriser ces réglages…": {
+    "en": "Save these settings…",
+    "es": "Guardar estos ajustes…",
+    "zh_CN": "保存这些设置…"
+  },
+  "Appareil mémorisé": {
+    "en": "Saved device",
+    "es": "Dispositivo guardado",
+    "zh_CN": "已保存设备"
+  },
+  "Utiliser ces réglages": {
+    "en": "Use these settings",
+    "es": "Usar estos ajustes",
+    "zh_CN": "使用这些设置"
+  },
+  "Un profil prépare la saisie ; il ne certifie ni l’appareil ni sa calibration.": {
+    "en": "A preset helps you enter values; it does not certify the device or its calibration.",
+    "es": "Un perfil facilita la entrada; no certifica el dispositivo ni su calibración.",
+    "zh_CN": "预设用于辅助输入，并不认证设备或校准状态。"
+  },
+  "Proposer au prochain démarrage": {
+    "en": "Offer at next launch",
+    "es": "Proponer al próximo inicio",
+    "zh_CN": "下次启动时推荐"
+  },
+  "Oublier…": {
+    "en": "Forget…",
+    "es": "Olvidar…",
+    "zh_CN": "移除…"
+  },
+  "Aucun appareil mémorisé": {
+    "en": "No saved device",
+    "es": "Ningún dispositivo guardado",
+    "zh_CN": "没有已保存设备"
+  },
+  "Vérifiez les réglages de votre appareil, puis cliquez sur « Utiliser ces réglages ». Les valeurs de couleur et la calibration ne sont jamais reprises.": {
+    "en": "Check your device settings, then click “Use these settings”. Colour values and calibration are never copied.",
+    "es": "Compruebe los ajustes del dispositivo y pulse «Usar estos ajustes». Nunca se copian los valores de color ni la calibración.",
+    "zh_CN": "请检查设备设置后点击“使用这些设置”。颜色数值和校准信息不会被复制。"
+  },
+  "Mémoriser un appareil": {
+    "en": "Save a device",
+    "es": "Guardar un dispositivo",
+    "zh_CN": "保存设备"
+  },
+  "Nom du profil :": {
+    "en": "Preset name:",
+    "es": "Nombre del perfil:",
+    "zh_CN": "预设名称："
+  },
+  "Réglages mémorisés. Cochez « Proposer au prochain démarrage » si vous souhaitez les retrouver par défaut.": {
+    "en": "Settings saved. Select “Offer at next launch” to make this your default preset.",
+    "es": "Ajustes guardados. Marque «Proponer al próximo inicio» para ofrecer este perfil por defecto.",
+    "zh_CN": "设置已保存。如需默认推荐，请勾选“下次启动时推荐”。"
+  },
+  "Réglages repris. Vérifiez qu’ils correspondent à cette mesure ; la calibration reste à documenter pour chaque séance.": {
+    "en": "Settings applied. Check that they match this measurement; calibration must be documented for each session.",
+    "es": "Ajustes aplicados. Compruebe que corresponden a esta medida; documente la calibración en cada sesión.",
+    "zh_CN": "设置已应用。请确认其适用于本次测量；每次测量的校准信息仍需单独记录。"
+  },
+  "Oublier cet appareil": {
+    "en": "Forget this device",
+    "es": "Olvidar este dispositivo",
+    "zh_CN": "移除此设备"
+  },
+  "Oublier ces réglages mémorisés ? Les mesures enregistrées ne changent pas.": {
+    "en": "Forget these saved settings? Saved measurements will not change.",
+    "es": "¿Olvidar estos ajustes? Las medidas guardadas no cambian.",
+    "zh_CN": "移除这些预设？已保存测量不会改变。"
+  },
+  "Associez les colonnes de couleur, puis vérifiez les lignes. Les colonnes non choisies ne seront pas importées.": {
+    "en": "Match the colour columns, then check the rows. Unselected columns will not be imported.",
+    "es": "Asocie las columnas de color y compruebe las filas. No se importan las columnas no seleccionadas.",
+    "zh_CN": "匹配颜色列，然后检查各行。未选择的列不会导入。"
+  },
+  "Colonnes facultatives": {
+    "en": "Optional columns",
+    "es": "Columnas opcionales",
+    "zh_CN": "可选列"
+  },
+  "Éclairage si absent du fichier": {
+    "en": "Illuminant if missing from file",
+    "es": "Iluminante si falta en el archivo",
+    "zh_CN": "文件未提供时的光源"
+  },
+  "Observateur si absent du fichier": {
+    "en": "Observer if missing from file",
+    "es": "Observador si falta en el archivo",
+    "zh_CN": "文件未提供时的观察者"
+  },
+  "Restaurer le registre…": {
+    "en": "Restore registry…",
+    "es": "Restaurar registro…",
+    "zh_CN": "恢复测量记录…"
+  },
+  "Fichier de réglages d’appareil invalide.": {
+    "en": "Invalid device settings file.",
+    "es": "Archivo de ajustes del dispositivo no válido.",
+    "zh_CN": "设备设置文件无效。"
+  },
+  "ex. Échantillon vert": {
+    "en": "e.g. Green sample",
+    "es": "p. ej. Muestra verde",
+    "zh_CN": "例如：绿色样本"
+  },
+  "Écart ΔE": {
+    "en": "ΔE distance",
+    "es": "Diferencia ΔE",
+    "zh_CN": "ΔE 色差"
+  },
+  "Cette colonne apparaît pendant la comparaison des couleurs.": {
+    "en": "This column appears during colour comparison.",
+    "es": "Esta columna aparece al comparar colores.",
+    "zh_CN": "此列仅在颜色比较时显示。"
+  },
+  "Trouver un filament par couleur": {
+    "en": "Find a filament by colour",
+    "es": "Buscar un filamento por color",
+    "zh_CN": "按颜色查找耗材"
+  },
+  "Rechercher par couleur…": {
+    "en": "Search by colour…",
+    "es": "Buscar por color…",
+    "zh_CN": "按颜色搜索…"
+  },
+  "Exemple de consommable : Brother DK-11202 (62 × 100 mm). Vérifiez la compatibilité avec votre imprimante.": {
+    "en": "Example supply: Brother DK-11202 (62 × 100 mm). Check compatibility with your printer.",
+    "es": "Ejemplo de consumible: Brother DK-11202 (62 × 100 mm). Compruebe la compatibilidad con su impresora.",
+    "zh_CN": "耗材示例：Brother DK-11202（62 × 100 毫米）。请确认与您的打印机兼容。"
+  },
+  "Lab, RGB ou fichier…": {
+    "en": "Lab, RGB or file…",
+    "es": "Lab, RGB o archivo…",
+    "zh_CN": "Lab、RGB 或文件…"
+  },
+  "Valeurs couleur : Lab, RGB, fichier": {
+    "en": "Colour values: Lab, RGB, file",
+    "es": "Valores de color: Lab, RGB, archivo",
+    "zh_CN": "颜色数值：Lab、RGB、文件"
+  },
+  "SpoolScribe Companion — disponibilité…": {
+    "en": "SpoolScribe Companion — availability…",
+    "es": "SpoolScribe Companion — disponibilidad…",
+    "zh_CN": "SpoolScribe Companion — 获取信息…"
+  },
+  "Une page commune pour iOS et Android. Aucun téléchargement officiel disponible pour le moment.": {
+    "en": "One page for iOS and Android. No official download is available yet.",
+    "es": "Una página para iOS y Android. Aún no hay descarga oficial.",
+    "zh_CN": "iOS 和 Android 共用信息页。目前尚无官方下载。"
+  },
+  "Formats et références d’étiquettes…": {
+    "en": "Label sizes and product codes…",
+    "es": "Tamaños y referencias de etiquetas…",
+    "zh_CN": "标签尺寸与产品编号…"
+  },
+  "Références papier": {
+    "en": "Paper product codes",
+    "es": "Referencias de papel",
+    "zh_CN": "纸张产品编号"
+  },
+  "Planche A4 · laser": {
+    "en": "A4 sheet · laser",
+    "es": "Hoja A4 · láser",
+    "zh_CN": "A4 标签纸 · 激光"
+  },
+  "Planche A4 · jet d’encre": {
+    "en": "A4 sheet · inkjet",
+    "es": "Hoja A4 · inyección de tinta",
+    "zh_CN": "A4 标签纸 · 喷墨"
+  },
+  "Rouleau · étiqueteuse": {
+    "en": "Roll · label printer",
+    "es": "Rollo · impresora de etiquetas",
+    "zh_CN": "卷装 · 标签打印机"
+  },
+  "8 étiquettes par feuille. Utilisez le gabarit L7165 du fabricant pour placer le PNG/SVG.": {
+    "en": "8 labels per sheet. Use the manufacturer’s L7165 template to position the PNG/SVG.",
+    "es": "8 etiquetas por hoja. Use la plantilla L7165 del fabricante para colocar el PNG/SVG.",
+    "zh_CN": "每张 8 枚标签。使用厂商的 L7165 模板放置 PNG/SVG。"
+  },
+  "Même taille, papier pour jet d’encre. Reprenez le code inscrit sur votre boîte, pas seulement les dimensions.": {
+    "en": "Same size, inkjet paper. Use the code on your box, not just the dimensions.",
+    "es": "Mismo tamaño, papel para inyección de tinta. Use el código de su caja, además de las dimensiones.",
+    "zh_CN": "尺寸相同，适用于喷墨。请使用包装上的编号，而不只是尺寸。"
+  },
+  "Exemple pour une imprimante acceptant ce rouleau. Aucun modèle n’est certifié ici.": {
+    "en": "Example for a printer accepting this roll. No model is certified here.",
+    "es": "Ejemplo para una impresora que acepte este rollo. No se certifica ningún modelo.",
+    "zh_CN": "适用于支持该卷装的打印机。此处未认证任何机型。"
+  },
+  "Ce sont des exemples commerciaux, pas des codes universels. SpoolScribe crée le QR ; le gabarit de planche et le pilote restent gérés par votre logiciel d’impression.": {
+    "en": "These are commercial examples, not universal codes. SpoolScribe creates the QR; your printing software handles the sheet template and driver.",
+    "es": "Son ejemplos comerciales, no códigos universales. SpoolScribe crea el QR; su software de impresión gestiona la plantilla y el controlador.",
+    "zh_CN": "这些是商业产品示例，并非通用编号。SpoolScribe 生成二维码；标签纸模板和驱动由打印软件管理。"
+  },
+  "Guide des supports et gabarits fabricant…": {
+    "en": "Paper and manufacturer template guide…",
+    "es": "Guía de soportes y plantillas del fabricante…",
+    "zh_CN": "纸张与厂商模板指南…"
   }
 }

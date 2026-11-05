@@ -17,7 +17,7 @@ from tests import test_gui as fixture
 if fixture.HAS_QT:
     from PySide6.QtCore import Qt, QPoint, QItemSelectionModel
     from PySide6.QtTest import QTest
-    from PySide6.QtWidgets import QDialog, QDialogButtonBox, QLineEdit, QPushButton
+    from PySide6.QtWidgets import QDialog, QDialogButtonBox, QLineEdit, QPushButton, QToolButton
 
 
 def db_bytes():
@@ -162,7 +162,9 @@ class CorrectionGuiTests(unittest.TestCase):
         def fill(dialog):
             for key, value in (("min_print_temp", "250"), ("max_print_temp", "260")):
                 dialog.findChild(QLineEdit, "opentag_" + key).setText(value)
-            next(b for b in dialog.findChildren(QPushButton) if b.text() == "Enregistrer").click(); return dialog.result()
+            from PySide6.QtWidgets import QCheckBox
+            dialog.findChild(QToolButton,"opentag_confirmed").setChecked(True)
+            dialog.findChild(QDialogButtonBox).button(QDialogButtonBox.Save).click(); return dialog.result()
         with patch.object(QDialog, "exec", fill):
             w.btn_opentag_settings.click()
         self.assertEqual(opentag3d.decode(w._prepare_opentag().payload)["min_print_temp"], 250); self.assertEqual(self.shown_min(), 250)
@@ -325,7 +327,9 @@ class CorrectionGuiTests(unittest.TestCase):
         self.assertEqual(w.draft_fields["min_temp"].text(), "235")
         w.grid.favoriteRequested.emit(other); w.favorites_only.setChecked(True)
         self.assertTrue(all(delegate.rows[r["sku"]]["_distance"] for r in w._rows))
-        w._set_view_mode("list"); self.assertIn("ΔE", w.table.item(0, 3).text())
+        w._set_view_mode("list"); self.assertFalse(w.table.isColumnHidden(w._delta_column))
+        self.assertEqual(w.table.item(0, w._delta_column).data(Qt.UserRole), w._colour_deltas[w._rows[0]["sku"]]["delta"])
+        self.assertTrue(w.table.item(0, w._delta_column).text())
 
     # R8 ───────────────────────────────────────────────────────────────
     def test_r8_opentag_capacity_routes_to_tag_settings_at_the_exact_limit(self):

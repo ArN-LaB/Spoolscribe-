@@ -660,7 +660,7 @@ class DetailUx:
         self._export_context.update(printer=tr(profile["label"]), effect=self._configuration_effect(),
             tag=tag, format=format_name if can else tr("Non disponible"),
             configuration=self.hardware_summary.toolTip(),
-            writer=self.opentag_output.currentText() if can and self._opentag_selected() else "",
+            writer="",
             reason=self.nfc_capacity.text(), state="ready" if ready else "blocked")
         if self.export_details is not None:
             self.export_details.update_context(self._export_context)
@@ -689,12 +689,13 @@ class DetailUx:
         self._primary_kind = kind
         self.btn_generate.setText(text)
         self.btn_generate.setEnabled(enabled)
+        if hasattr(self,'_arrange_export_actions'):self._arrange_export_actions()
         self.btn_generate.setToolTip(tip or tr("Ctrl+E : exporter pour NFC"))
         if hasattr(self, "btn_qr"):
             # Same verdict as the export itself: no QR for a message that cannot be exported.
             available = kind == "export" and enabled
             self.btn_qr.setEnabled(available)
-            self.btn_qr.setToolTip(tr("Afficher, enregistrer ou imprimer le message NFC sous forme de QR Code.") if available
+            self.btn_qr.setToolTip(tr("QR pour le futur SpoolScribe Companion. Android / iOS : bientôt disponible.") if available
                                    else tr("Disponible lorsque l’export NFC est possible."))
 
     def _primary_action(self, *_):
@@ -827,9 +828,9 @@ class DetailUx:
             button.setProperty('colourControl', True)
             button.setFixedHeight(CONTROL_HEIGHT); button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed); actions.addWidget(button, 1)
         box.addLayout(actions)
-        self.colour_measure_btn = QToolButton(); self.colour_measure_btn.setText(tr("Mesurer / importer une couleur…"))
+        self.colour_measure_btn = QToolButton(); self.colour_measure_btn.setText(tr("Lab, RGB ou fichier…"))
         self.colour_measure_btn.setToolTip(tr("Saisir, coller ou importer une mesure de couleur, puis l’utiliser comme cible ou la lier à une fiche"))
-        self.colour_measure_btn.setAccessibleName(tr("Mesurer / importer une couleur…")); self.colour_measure_btn.setProperty('colourControl', True)
+        self.colour_measure_btn.setAccessibleName(tr("Valeurs couleur : Lab, RGB, fichier")); self.colour_measure_btn.setProperty('colourControl', True)
         self.colour_measure_btn.setFixedHeight(CONTROL_HEIGHT); self.colour_measure_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.colour_measure_btn.clicked.connect(self._open_measurements); box.addWidget(self.colour_measure_btn)
         self.measurement_window = None

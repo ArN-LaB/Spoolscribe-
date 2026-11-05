@@ -5,7 +5,7 @@ Presentation only. Scroll buttons keep Qt's native navigation and focus handling
 from PySide6.QtCore import Qt, QSize, QRect, QRectF, QTimer, QObject, QEvent
 from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
 from PySide6.QtWidgets import (QApplication, QDialog, QFrame, QScrollArea, QSizePolicy,
-    QStyle, QStyleOptionTab, QStylePainter, QTabBar, QTabWidget, QToolButton)
+    QWidget, QStyle, QStyleOptionTab, QStylePainter, QTabBar, QTabWidget, QToolButton)
 
 
 class ReadingTabBar(QTabBar):
@@ -96,7 +96,7 @@ class ReadingTabs(QTabWidget):
     def addTab(self,page,*args):
         if not isinstance(page,QScrollArea):
             scroll=QScrollArea();scroll.setWidgetResizable(True);scroll.setFrameShape(QFrame.NoFrame)
-            scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff);scroll.setWidget(page);page=scroll
+            scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded);scroll.setWidget(page);page=scroll
         index=super().addTab(page,*args)
         self.setTabToolTip(index,self.tabText(index));return index
 
@@ -112,16 +112,31 @@ class ReadingTabs(QTabWidget):
             QTimer.singleShot(0,dialog,lambda:fit_dialog(dialog,preferred_width=dialog.width()) if dialog.isVisible() else None)
 
 
+def _dialog_height(dialog, width):
+    custom = getattr(dialog, 'content_height_for_width', None)
+    if custom is not None: return custom(width)
+    height = _content_height(dialog, width)
+    for scroll in dialog.findChildren(QScrollArea):
+        if not scroll.widget() or not scroll.isVisibleTo(dialog): continue
+        ancestor = scroll.parentWidget(); managed = False
+        while ancestor and ancestor is not dialog:
+            if isinstance(ancestor, (ReadingTabs, QScrollArea)): managed = True; break
+            ancestor = ancestor.parentWidget()
+        if not managed:
+            height += _content_height(scroll, width - 32) - max(0, scroll.sizeHint().height())
+    return height
+
+
 class _DialogFitter(QObject):
-    """Account for native/late page layout, using measured scroll overflow."""
+    """Reflow on content changes in either direction; ignore unchanged user resizing."""
     def __init__(self,dialog):
-        super().__init__(dialog);self.dialog=dialog;self.pending=False;self.usable=QRect()
-        self.watched=set()
+        super().__init__(dialog);self.dialog=dialog;self.pending=False;self.usable=QRect();self.last_natural=None;self.last_width=None;self.fitting=False
+        self.watched=set();self.hints={}
     def watch(self):
-        for widget in [self.dialog]+[s.widget() for s in self.dialog.findChildren(QScrollArea) if s.widget()]:
+        for widget in [self.dialog]+[w for w in self.dialog.findChildren(QWidget) if w.layout()]+[s.widget() for s in self.dialog.findChildren(QScrollArea) if s.widget()]:
             if widget not in self.watched:widget.installEventFilter(self);self.watched.add(widget)
     def eventFilter(self,watched,event):
-        if event.type() in (QEvent.Show,QEvent.LayoutRequest):self.schedule()
+        if not self.fitting and event.type() in (QEvent.Show,QEvent.Hide,QEvent.LayoutRequest):self.schedule()
         return False
     def schedule(self):
         if self.pending:return
@@ -129,19 +144,31 @@ class _DialogFitter(QObject):
     def settle(self):
         self.pending=False;dialog=self.dialog
         if not dialog.isVisible() or self.usable.isEmpty():return
-        deficit=0
-        for scroll in dialog.findChildren(QScrollArea):
-            if not scroll.isVisibleTo(dialog):continue
-            ancestor=scroll.parentWidget();nested=False
-            while ancestor and ancestor is not dialog:
-                if isinstance(ancestor,QScrollArea):nested=True;break
-                ancestor=ancestor.parentWidget()
-            if not nested:deficit+=scroll.verticalScrollBar().maximum()
-        if deficit<=0:return
-        height=min(self.usable.height(),dialog.height()+deficit+2)
-        if height<=dialog.height():return
-        dialog.resize(dialog.width(),height)
-        dialog.move(dialog.x(),max(self.usable.top(),min(dialog.y(),self.usable.bottom()-height+1)))
+        self.watch()
+        self.fitting = True
+        try:
+            for tabs in dialog.findChildren(ReadingTabs):
+                hint = (tabs.currentIndex(), tabs.heightForWidth(dialog.width()))
+                if self.hints.get(tabs) != hint:
+                    self.hints[tabs] = hint; tabs.updateGeometry()
+            for scroll in dialog.findChildren(QScrollArea):
+                if not scroll.widget(): continue
+                hint = _content_height(scroll.widget(), max(1, scroll.viewport().width()))
+                if self.hints.get(scroll) != hint:
+                    self.hints[scroll] = hint; scroll.updateGeometry()
+            if dialog.layout(): dialog.layout().activate()
+            natural = _dialog_height(dialog, dialog.width())
+            if self.last_width != dialog.width():
+                self.last_width = dialog.width(); self.last_natural = natural
+                return  # A user width change is not a request to resize their window again.
+            if self.last_natural is not None and abs(natural - self.last_natural) <= 1: return
+            self.last_natural = natural
+            height = min(self.usable.height(), max(dialog.minimumHeight(), natural, 120))
+            if abs(height - dialog.height()) > 1:
+                dialog.resize(dialog.width(), height)
+                dialog.move(dialog.x(), max(self.usable.top(), min(dialog.y(), self.usable.bottom() - height + 1)))
+        finally:
+            self.fitting = False
 
 
 def fit_dialog(dialog,*,preferred_width=640,preferred_height=None,available=None):
@@ -161,16 +188,8 @@ def fit_dialog(dialog,*,preferred_width=640,preferred_height=None,available=None
     # Set width first so native height-for-width text uses its actual line breaks.
     dialog.resize(width,min(dialog.height(),max_height))
     if dialog.layout():dialog.layout().invalidate();dialog.layout().activate()
-    height=preferred_height if preferred_height is not None else _content_height(dialog,width)
-    if preferred_height is None:
-        for scroll in dialog.findChildren(QScrollArea):
-            if not scroll.widget() or not scroll.isVisibleTo(dialog):continue
-            ancestor=scroll.parentWidget();inside_tabs=False
-            while ancestor and ancestor is not dialog:
-                if isinstance(ancestor,ReadingTabs):inside_tabs=True;break
-                ancestor=ancestor.parentWidget()
-            if not inside_tabs:
-                height+=_content_height(scroll,width-32)-max(0,scroll.sizeHint().height())
+    natural_height = _dialog_height(dialog, width)
+    height = preferred_height if preferred_height is not None else natural_height
     height=min(max_height,max(height,dialog.minimumHeight(),120))
     # Existing layouts may impose a larger minimum than a small screen. Scroll
     # areas keep their content reachable; the dialog itself must remain bounded.
@@ -183,5 +202,5 @@ def fit_dialog(dialog,*,preferred_width=640,preferred_height=None,available=None
     dialog.move(x,y)
     fitter=getattr(dialog,'_content_fitter',None)
     if fitter is None:fitter=dialog._content_fitter=_DialogFitter(dialog)
-    fitter.usable=usable;fitter.watch();fitter.schedule()
+    fitter.usable=usable;fitter.last_natural=natural_height;fitter.last_width=width;fitter.watch();fitter.schedule()
     return dialog.size()

@@ -83,13 +83,15 @@ class LabelProfile:
 
 
 PRESETS = {
+    "screen": ("Aucun — QR à l’écran", None),
     # D101: 25 mm roll, 24 mm printable; 0.5 mm more kept on each side (23 mm, 183 dots).
     "d101-25x50": ("NIIMBOT D101 · 25 × 50 mm", LabelProfile(25, 50, (1.0, 1.0, 1.0, 1.0), 203)),
     "label-50x50": ("Étiquette 50 × 50 mm", LabelProfile(50, 50, (1.5, 1.5, 1.5, 1.5), 203)),
     "label-62x100": ("Étiquette 62 × 100 mm", LabelProfile(62, 100, (1.5, 1.5, 1.5, 1.5), 300)),
+    "label-100x150": ("Étiquette 100 × 150 mm", LabelProfile(100,150,(2.0,2.0,2.0,2.0),300)),
     "a4": ("Page A4", LabelProfile(210, 297, (10, 10, 10, 10), 300)),
 }
-DEFAULT_PRESET = "d101-25x50"
+DEFAULT_PRESET = "screen"
 
 
 def _number(value, low, high, name):
@@ -334,7 +336,7 @@ def profile_to_dict(profile: LabelProfile) -> dict:
                 dpi=profile.dpi, orientation=profile.orientation)
 
 
-def settings_profile(value) -> LabelProfile:
+def settings_profile(value) -> LabelProfile | None:
     try:
         settings = validate_settings(value)
     except ValueError:

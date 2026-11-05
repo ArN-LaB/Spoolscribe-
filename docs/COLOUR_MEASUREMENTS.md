@@ -1,12 +1,12 @@
-# Colour measurements — Desktop P1, v0.7.0 Pre-release
+# Colour measurements — Desktop P1, v0.8.0 Pre-release
 
-Available in [v0.7.0 Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.7.0).
+Available in [v0.8.0 Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).
 The software checks do not certify an instrument, its proprietary export format
-or a physical printed colour. [Validation and limits](validation/v0.7.0.md).
+or a physical printed colour. [Validation and limits](validation/v0.8.0.md).
 
 ## What it does
 
-From *Teintes* → **Mesurer / importer une couleur…** the user can:
+From *Teintes* → **Lab, RGB ou fichier…** the user can:
 
 1. **Enter** a HEX sRGB code, 8-bit RGB channels or CIELAB coordinates
    (decimal point or comma, never a thousands separator).
@@ -56,6 +56,43 @@ From *Teintes* → **Mesurer / importer une couleur…** the user can:
    saved measurements with equal values are two targets; distances already
    computed for the same values are reused, the identity is not.
 
+## Colour entry and navigation in v0.8.0
+
+**Lab, RGB ou fichier…** opens **Valeurs couleur : Lab, RGB, fichier**: the
+application uses entered values or imported readings; it does not measure through
+a connected device. Colour ranking has a dedicated **ΔE distance** column in
+list view, automatically shown only while comparison is active. Card headings keep
+the manufacturer once; the product range/material below the colour omits its repeated prefix.
+
+Dialogs resize when details open **and close**, within the available screen.
+QR information follows its visible content; scrollbars appear when space runs out.
+Manual resizing remains available.
+
+The measurement window groups **values**, **comparison conditions** and optional
+**sample / device information**. Labels sit above their fields; advanced geometry,
+specular and calibration details stay collapsed until needed. L*, a* and b* are
+explained without converting or guessing values.
+
+The footer follows the active entry: save / search for manual and pasted values,
+check rows / save batch for CSV, one search action for saved measurements. CSV
+preview and column mapping appear only after choosing a readable file. Optional
+columns detected in the file are expanded for review. Editing mappings or defaults
+still withdraws the checked import report.
+
+**Device entry presets** can be saved from the optional device section and offered
+at the next launch. Selecting a preset does not apply its conditions: the user
+checks the device and clicks **Use these settings**. A preset stores only the
+user-declared manufacturer/model, illuminant/observer, geometry, specular mode,
+aperture and profile note. It never stores colour coordinates, sample preparation,
+measurement date or calibration. Calibration is recorded separately for each session.
+Unknown conditions stay unknown; names never imply D65/2° or certification.
+
+Presets live in `colour_device_profiles.json` next to the measurement registry,
+with strict schema/size/count bounds, revision checks and a `.bak` backup. Opening
+the dialog creates no file. Save, default choice and deletion are explicit actions;
+a corrupt or concurrently changed preset file is not overwritten. Settings export
+continues to exclude these device presets and measurements.
+
 ## What it never does
 
 - No instrument, SDK, driver, network, OCR, spectral data, ICC profile, LCh/XYZ.
@@ -104,4 +141,5 @@ certificate of the printed result (gloss, translucency, thickness, backing).
 - `src/spoolscribe/measurement_store.py` — registry over `scripts.db_io.save_validated_json`.
 - `src/spoolscribe/colour_targets.py` — target adapter for the existing ranking.
 - `src/spoolscribe/ui_colour_measurements.py` — the window.
+- `src/spoolscribe/device_profiles.py` — explicit local device entry presets (preview).
 - `tests/fixtures/measurements/` — synthetic fixtures only (see its README).

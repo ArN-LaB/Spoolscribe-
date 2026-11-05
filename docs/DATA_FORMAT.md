@@ -247,10 +247,20 @@ A personal copy adds its own `USER-<uuid>` SKU and private product key, leaving 
 
 Source reconciliation excludes personal SKUs from identity/article/family matching. Copied fields carry high-priority `Copie personnelle` provenance; explicit physical edits use `Utilisateur`. An explicit HEX edit of a copy is stored on the copy's own SKU with `Utilisateur` provenance; only edited fields become `Utilisateur`, never the whole copied record. Copying a colour does not silently confirm an implausible source HEX. Existing explicit corrections and null values remain protected. Standard reference exports are unchanged. The display name is used in personal export filenames and full payloads; the suffix is an application label, not a new printer material type or NFC standard.
 
-## OpenTag3D 2.004 (préversion actuelle : v0.7.0)
+## OpenTag3D 2.004 (préversion actuelle : v0.8.0)
 
 This independent binary format does not change the historical OpenSpool JSON
 contract. It uses MIME `application/opentag3d`, not `application/json`, with NFC
 Tools mobile/Desktop profile envelopes or a raw NDEF message. Required targets
 and filament mass are explicit; no range midpoint or silently rounded value is
 substituted. [Fields, sizes and writer formats](OPENTAG3D.md).
+
+## Device entry presets (v0.8.0)
+
+`colour_device_profiles.json` is separate from measurements and the catalogue.
+Schema `spoolscribe-device-presets`, version 1, up to 32 profiles and 64 KiB;
+each profile has a UUID key, name, manufacturer, model and whitelisted conditions.
+The optional default points to an existing profile. Applying it is explicit.
+Only declared illuminant/observer, geometry, specular mode, aperture and profile
+note are reusable; no colour coordinates, calibration, date or sample data.
+Revision-checked writes preserve a backup and refuse corrupt or concurrent data.

@@ -8,16 +8,19 @@ import hashlib
 import os
 import time
 
-from PySide6.QtCore import QMarginsF, QRect, QSize, QSizeF, Qt, QTimer
-from PySide6.QtGui import QColor, QFont, QImage, QPageLayout, QPageSize, QPainter, QPen
+from PySide6.QtCore import QMarginsF, QRect, QSize, QSizeF, Qt, QTimer, QUrl
+from PySide6.QtGui import QColor, QDesktopServices, QFont, QImage, QPageLayout, QPageSize, QPainter, QPen
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QDoubleSpinBox, QFileDialog, QFrame, QGridLayout,
     QHBoxLayout, QLabel, QMessageBox, QPushButton, QScrollArea, QSlider, QSpinBox, QStackedWidget, QToolButton,
     QVBoxLayout, QWidget)
 
 from . import core, opentag3d, qr_layout, qr_transfer
 from .i18n import tr
-from .ui_guidance import FlowLabel
+from .ui_guidance import FlowLabel, InfoTile, GuidanceDialog
 from .ui_widgets import CONTROL_HEIGHT, ChoiceButtons
+from .ui_surfaces import fit_dialog, _content_height
+
+COMPANION_URL = "https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COMPANION.md"
 
 
 @dataclass(frozen=True)
@@ -93,6 +96,9 @@ class QrCanvas(QWidget):
         self.setMinimumSize(240, 240)
         self.setFocusPolicy(Qt.StrongFocus)
         self.setAccessibleName(tr("QR Code de transfert"))
+
+    def sizeHint(self):
+        return QSize(350, 350)
 
     def scale(self):
         return min(self.width(), self.height()) // self.symbol.total_modules
@@ -171,15 +177,15 @@ MIN_WIDTH = 420
 
 
 class LowerArea(QScrollArea):
-    """Vertical scrolling band whose preferred height ignores the folded details."""
+    """Natural-height information area; scroll only when the screen is too small."""
     def __init__(self):
         super().__init__()
         self.setWidgetResizable(True); self.setFrameShape(QFrame.NoFrame)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setMinimumHeight(CONTROL_HEIGHT * 2 + 10)
 
     def sizeHint(self):
-        return QSize(super().sizeHint().width(), 8 * CONTROL_HEIGHT)
+        return QSize(400, _content_height(self.widget(), max(280, self.width() - 16)) if self.widget() else 80)
 
 
 class QrWindow(QDialog):
@@ -194,7 +200,7 @@ class QrWindow(QDialog):
             self.settings = dict(qr_layout.validate_settings(cfg))
         except ValueError:
             self.settings = {}
-        self.setWindowTitle(tr("QR Code — {v0}", v0=self._identity()))
+        self.setWindowTitle(tr("QR pour SpoolScribe Companion — {v0}", v0=self._identity()))
         self.setWindowModality(Qt.NonModal)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         layout = QVBoxLayout(self); layout.setContentsMargins(16, 16, 16, 16); layout.setSpacing(10)
@@ -204,7 +210,7 @@ class QrWindow(QDialog):
         self.view_choice.setChoices([(tr("QR Code"), "qr"), (tr("Aperçu de l’étiquette"), "label")])
         self.view_choice.setChoice("qr"); self.view_choice.choiceChanged.connect(self._show_view)
         layout.addWidget(self.view_choice)
-        self.stack = QStackedWidget(); layout.addWidget(self.stack, 1)
+        self.stack = QStackedWidget(); layout.addWidget(self.stack)
         self.symbol = None
         self._build_symbol()
         self.canvas = QrCanvas(self.symbol); self.stack.addWidget(self.canvas)
@@ -227,37 +233,48 @@ class QrWindow(QDialog):
         self.btn_png.clicked.connect(lambda: self._save("png")); self.btn_svg.clicked.connect(lambda: self._save("svg"))
         layout.addLayout(actions)
         self.status = FlowLabel(); self.status.setObjectName("exportState"); self.status.hide(); layout.addWidget(self.status)
-        # Secondary: paper, printing and technical details scroll inside a band of stable height,
-        # so opening them never takes room from the code.
-        self.lower = LowerArea(); layout.addWidget(self.lower)
+        # The information area follows its content; it scrolls only at the screen limit.
+        self.lower = LowerArea(); layout.addWidget(self.lower, 1)
         lower_page = QWidget(); lower = QVBoxLayout(lower_page); lower.setContentsMargins(0, 0, 4, 0); lower.setSpacing(10)
         self.lower.setWidget(lower_page)
         support = QHBoxLayout(); support.setSpacing(8)
-        support_label = QLabel(tr("Support")); support.addWidget(support_label)
+        support_label = QLabel(tr("Impression (facultatif)")); support.addWidget(support_label)
         self.support = QComboBox(); self.support.setFixedHeight(CONTROL_HEIGHT)
         for key, (name, _) in qr_layout.PRESETS.items():
-            self.support.addItem(tr(name), key)
+            if key != "d101-25x50":self.support.addItem(tr(name), key)
         self.support.addItem(tr("Support personnalisé"), "custom")
         self.support.setAccessibleName(tr("Support d’impression"))
         support_label.setBuddy(self.support)
         self.companion = FlowLabel(tr("Ce QR Code contient tout le message de l’étiquette NFC. La programmation d’une puce demandera la future application SpoolScribe Companion ; un lecteur QR ordinaire affiche seulement un texte de transfert."))
         self.companion.setObjectName("guidanceNote"); lower.addWidget(self.companion)
+        self.companion_button = QPushButton(tr("SpoolScribe Companion — disponibilité…"))
+        self.companion_button.setFixedHeight(CONTROL_HEIGHT)
+        self.companion_button.setToolTip(tr("Une page commune pour iOS et Android. Aucun téléchargement officiel disponible pour le moment."))
+        self.companion_button.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(COMPANION_URL)))
+        lower.insertWidget(1, self.companion_button)
         support.addWidget(self.support, 1); lower.addLayout(support)
+        self.support_reference = FlowLabel(tr("Exemple de consommable : Brother DK-11202 (62 × 100 mm). Vérifiez la compatibilité avec votre imprimante."))
+        self.support_reference.setObjectName("guidanceNote")
+        font = self.support_reference.font(); font.setItalic(True); self.support_reference.setFont(font)
+        self.support_reference.setToolTip("https://www.brother.eu/-/media/product-downloads/uk/ql1100-ql110nwb-brochure.pdf")
+        self.support_reference.hide(); lower.addWidget(self.support_reference)
         self.result_tile = QFrame(); self.result_tile.setObjectName("guidanceTile")  # Existing toned style.
         tile = QVBoxLayout(self.result_tile); tile.setContentsMargins(12, 8, 12, 8)
         self.result = FlowLabel(); tile.addWidget(self.result); lower.addWidget(self.result_tile)
         self.btn_print = QPushButton(tr("Imprimer…")); self.btn_print.setObjectName("secondary"); self.btn_print.setFixedHeight(CONTROL_HEIGHT)
         self.btn_print.clicked.connect(self._print); lower.addWidget(self.btn_print)
+        self.paper_help=QPushButton(tr("Formats et références d’étiquettes…"));self.paper_help.setFixedHeight(CONTROL_HEIGHT);self.paper_help.clicked.connect(self._paper_help);lower.addWidget(self.paper_help)
         self.details_toggle = QToolButton(); self.details_toggle.setText(tr("Détails techniques"))
         self.details_toggle.setCheckable(True); self.details_toggle.setArrowType(Qt.RightArrow)
         self.details_toggle.setToolButtonStyle(Qt.ToolButtonTextBesideIcon); self.details_toggle.setFixedHeight(CONTROL_HEIGHT)
         self.details_toggle.toggled.connect(self._toggle_details); lower.addWidget(self.details_toggle)
         self.details = QWidget(); details = QVBoxLayout(self.details); details.setContentsMargins(0, 0, 0, 0); details.setSpacing(8)
         options = QHBoxLayout(); options.setSpacing(8)
-        options.addWidget(QLabel(tr("Correction d’erreur")))
+        options.addWidget(QLabel(tr("Protection du QR")))
         self.error = QComboBox(); self.error.setFixedHeight(CONTROL_HEIGHT)
-        self.error.addItem(tr("M — standard"), "M"); self.error.addItem(tr("Q — renforcée, QR plus grand"), "Q")
-        self.error.setAccessibleName(tr("Correction d’erreur")); options.addWidget(self.error, 1); details.addLayout(options)
+        self.error.addItem(tr("Standard (M)"), "M"); self.error.addItem(tr("Renforcée (Q) — QR plus dense"), "Q")
+        self.error.setAccessibleName(tr("Protection du QR")); options.addWidget(self.error, 1); lower.insertLayout(2, options)
+        self.error_note=FlowLabel(tr("La protection aide à lire un QR abîmé. Renforcée ajoute de la redondance et peut agrandir le code ; elle ne garantit pas sa lecture."));self.error_note.setObjectName("guidanceNote");lower.insertWidget(3,self.error_note)
         self.small = QCheckBox(tr("Petit format — essai de lecture requis"))
         self.small.setToolTip(tr("Autorise 3 points d’imprimante par module au lieu de 4. Vérifiez la lecture de l’étiquette imprimée."))
         details.addWidget(self.small)
@@ -272,8 +289,14 @@ class QrWindow(QDialog):
         self.custom_orientation = QComboBox(); self.custom_orientation.setFixedHeight(CONTROL_HEIGHT)
         self.custom_orientation.addItem(tr("Portrait"), "portrait"); self.custom_orientation.addItem(tr("Paysage"), "landscape")
         grid.addWidget(QLabel(tr("Orientation")), 4, 0); grid.addWidget(self.custom_orientation, 4, 1)
-        details.addWidget(self.custom)
-        self.technical = FlowLabel(); self.technical.setTextInteractionFlags(Qt.TextSelectableByMouse); details.addWidget(self.technical)
+        lower.insertWidget(lower.indexOf(self.result_tile),self.custom)
+        self.technical=FlowLabel();self.technical.hide()  # Plain diagnostic retained for accessibility/tests.
+        technical_grid=QGridLayout();technical_grid.setSpacing(8);self.technical_tiles={}
+        for i,(key,title) in enumerate((("message",tr("Données transmises")),("symbol",tr("Structure du QR")),("tag",tr("Étiquette NFC")),("paper",tr("Sur le papier")))):
+            tile=InfoTile(title);technical_grid.addWidget(tile,i//2,i%2);self.technical_tiles[key]=tile
+        technical_grid.setColumnStretch(0,1);technical_grid.setColumnStretch(1,1);details.addLayout(technical_grid)
+        self.hash_button=QPushButton(tr("Copier l’empreinte de contrôle"));self.hash_button.setFixedHeight(CONTROL_HEIGHT);self.hash_button.clicked.connect(lambda:QApplication.clipboard().setText(self.snap.sha256));details.addWidget(self.hash_button)
+        self.hash_note=FlowLabel(tr("L’empreinte SHA-256 sert à vérifier que les données sont intactes. Ce n’est pas une signature d’authenticité."));self.hash_note.setObjectName("guidanceNote");details.addWidget(self.hash_note)
         self.details.hide(); lower.addWidget(self.details); lower.addStretch(1)
         self._load_settings()
         for widget in (self.support, self.error, self.custom_orientation):
@@ -284,7 +307,7 @@ class QrWindow(QDialog):
         self._refresh()
         self._fit_code()
         available = (self.screen() or QApplication.primaryScreen()).availableGeometry().height()
-        self.resize(560, max(self.minimumHeight(), min(800, available - 80)))
+        self.resize(640, min(self.content_height_for_width(640), available - 80))
 
     def _fit_code(self):
         """Smallest code kept on screen: 3 pixels per module, 2 if the screen is too short."""
@@ -314,8 +337,31 @@ class QrWindow(QDialog):
             total += height; count += 1
         return total + layout.spacing() * max(0, count - 1)
 
+    def content_height_for_width(self, width):
+        """Read the current visible content, not the old scroll viewport height."""
+        layout = self.layout(); margins = layout.contentsMargins(); inner = width - margins.left() - margins.right()
+        total = margins.top() + margins.bottom(); count = 0
+        for i in range(layout.count()):
+            item = layout.itemAt(i); widget = item.widget()
+            if widget is not None and widget.isHidden(): continue
+            if widget is self.stack:
+                height = max(self.canvas.minimumHeight(), min(350, inner))
+            elif widget is self.lower:
+                height = _content_height(self.lower.widget(), max(1, inner - 20)) + 8
+            elif isinstance(widget, QLabel) and widget.wordWrap():
+                height = max(0, widget.heightForWidth(inner)) if widget.text() else 0
+            else:
+                height = max(0, item.sizeHint().height())
+            total += height; count += 1
+        return total + layout.spacing() * max(0, count - 1)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        fit_dialog(self, preferred_width=640)
+
     def _update_minimum(self):
-        self.setMinimumSize(MIN_WIDTH, self.needed_height(max(MIN_WIDTH, self.width())))
+        available = (self.screen() or QApplication.primaryScreen()).availableGeometry().height() - 80
+        self.setMinimumSize(MIN_WIDTH, min(available, self.needed_height(max(MIN_WIDTH, self.width()))))
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -342,7 +388,7 @@ class QrWindow(QDialog):
         widgets = (self.support, self.error, self.small, self.custom_orientation, *self.custom_fields.values(), self.custom_dpi)
         for widget in widgets:
             widget.blockSignals(True)
-        self.support.setCurrentIndex(max(0, self.support.findData(self.settings.get("preset", qr_layout.DEFAULT_PRESET))))
+        self.support.setCurrentIndex(self.support.findData("screen"))  # Every new transfer starts digitally; paper dimensions remain saved.
         self.error.setCurrentIndex(max(0, self.error.findData(self.settings.get("error", "M"))))
         self.small.setChecked(self.settings.get("small_format", False))
         custom = qr_layout.profile_from_dict(self.settings["custom"]) if "custom" in self.settings else qr_layout.LabelProfile(40, 60)
@@ -353,6 +399,7 @@ class QrWindow(QDialog):
             widget.blockSignals(False)
 
     def profile(self):
+        if self.support.currentData() == "screen":return None
         if self.support.currentData() == "custom":
             margin = self.custom_fields["margin"].value()
             return qr_layout.LabelProfile(self.custom_fields["width_mm"].value(), self.custom_fields["height_mm"].value(),
@@ -394,12 +441,17 @@ class QrWindow(QDialog):
     def plan(self):
         try:
             return qr_layout.plan_label(self.symbol.total_modules, self.profile(), small_format=self.small.isChecked())
-        except ValueError:
+        except (ValueError, TypeError):
             return None
 
     def _refresh(self):
         plan = self.plan()
+        paper=self.support.currentData() != "screen"
+        self.support_reference.setVisible(self.support.currentData() == "label-62x100")
         self.custom.setVisible(self.support.currentData() == "custom")
+        self.result_tile.setVisible(paper);self.btn_print.setVisible(paper);self.small.setVisible(paper)
+        self.view_choice.setVisible(paper)
+        if not paper:self._show_view("qr")
         self.subtitle.setText(tr("{v0} · référence {v1} · données figées à l’ouverture ({v2})",
                                  v0=self.snap.format_label, v1=self.snap.sku, v2=self.snap.opened_at)
                               + ("\n" + tr("Copie personnelle de {v0}", v0=self.snap.source_sku) if self.snap.personal else ""))
@@ -408,11 +460,17 @@ class QrWindow(QDialog):
         self.result.setText(self._result_text(plan))
         self.btn_print.setEnabled(bool(plan and plan.printable))
         self.btn_print.setToolTip("" if plan and plan.printable else tr("Impression refusée pour ce support ; l’affichage et l’enregistrement restent disponibles."))
-        self.preview.set_plan(plan, self._label_lines())
+        if plan:self.preview.set_plan(plan, self._label_lines())
         self.preview_note.setText(self._preview_text(plan))
         self.technical.setText(self._technical_text(plan))
-        self.summary.setText(tr("Transfert numérique : message NFC complet ({v0} octets), QR version {v1}-{v2}, sans serveur.",
-                                v0=self.symbol.ndef_bytes, v1=self.symbol.version, v2=self.symbol.error))
+        for key,value,note in (
+            ("message",tr("{v0} octets",v0=self.symbol.ndef_bytes),tr("SSQR1 · {v0} caractères · {v1}",v0=len(self.symbol.text),v1="Base45/zlib" if self.symbol.codec==qr_transfer.ZLIB else "Base45")),
+            ("symbol",tr("Version {v0} · {v1}",v0=self.symbol.version,v1=self.symbol.error),tr("{v0} × {v0} modules ; marge blanche de 4 modules",v0=self.symbol.size)),
+            ("tag",self.snap.tag_type,tr("Réserve : {v0} octets",v0=self.snap.reserved_bytes)),
+            ("paper",tr("{v0} mm · {v1} ppp",v0=_mm(plan.qr_mm),v1=plan.dpi) if plan and plan.printable else tr("Aucun support sélectionné"),tr("La lecture imprimée reste à vérifier."))):
+            tile=self.technical_tiles[key];tile.value.setText(value);tile.note.setText(note);tile.note.setVisible(bool(note))
+        self.technical_tiles['paper'].setVisible(paper)
+        self.summary.setText(tr("QR prêt à afficher ou à enregistrer — message NFC complet."))
         self.canvas.setAccessibleDescription(tr("Version {v0}, correction {v1}, {v2} modules", v0=self.symbol.version, v1=self.symbol.error, v2=self.symbol.size))
         self.canvas.update()
         self._update_minimum()
@@ -420,7 +478,7 @@ class QrWindow(QDialog):
     def _result_text(self, plan):
         name = self.support_name()
         if plan is None:
-            return tr("Support invalide : vérifiez ses dimensions et ses marges.")
+            return tr("Choisissez un support uniquement pour imprimer. Le QR à l’écran et les fichiers restent disponibles.") if self.support.currentData()=="screen" else tr("Support invalide : vérifiez ses dimensions et ses marges.")
         if plan.status == "ready":
             return tr("Prêt pour un essai d’impression sur {v0} : QR de {v1} mm, {v2} points par module. Vérifiez la lecture de l’étiquette imprimée.",
                       v0=name, v1=_mm(plan.qr_mm), v2=plan.dots_per_module)
@@ -460,6 +518,27 @@ class QrWindow(QDialog):
         lines.append(tr("SHA-256 détecte une altération accidentelle ; ce n’est pas une signature d’authenticité."))
         return "\n".join(lines)
 
+    def _paper_help(self):
+        guide=GuidanceDialog(tr("Choisir un support d’impression"),self)
+        page=guide.page(tr("Le bon format"))
+        for title,value,note in (
+            (tr("1. Sans papier"),tr("Le QR à l’écran suffit"),tr("Aucune imprimante ni dimension d’étiquette à choisir pour le transfert numérique.")),
+            (tr("2. Étiqueteuse grand format"),tr("Une zone imprimable assez large"),tr("La largeur utile et la résolution comptent plus que la marque. Le calcul ci-dessous vérifie chaque QR ; aucun modèle n’est certifié ici.")),
+            (tr("3. Laser ou jet d’encre"),tr("Feuille adhésive ou papier"),tr("Respectez les dimensions réelles, la marge blanche et une impression à taille réelle, sans ajustement automatique."))):
+            tile=InfoTile(title,note);tile.value.setText(value);page.addWidget(tile)
+        page.addWidget(FlowLabel(tr("L’impression ouvre les imprimantes installées dans votre système. Vérifiez la lecture du résultat avant de coller l’étiquette.")))
+        references = guide.page(tr("Références papier"))
+        for title, value, note in (
+            (tr("Planche A4 · laser"), "Avery L7165 · 99,1 × 67,7 mm", tr("8 étiquettes par feuille. Utilisez le gabarit L7165 du fabricant pour placer le PNG/SVG.")),
+            (tr("Planche A4 · jet d’encre"), "Avery J8165 · 99,1 × 67,7 mm", tr("Même taille, papier pour jet d’encre. Reprenez le code inscrit sur votre boîte, pas seulement les dimensions.")),
+            (tr("Rouleau · étiqueteuse"), "Brother DK-11202 · 62 × 100 mm", tr("Exemple pour une imprimante acceptant ce rouleau. Aucun modèle n’est certifié ici."))):
+            tile = InfoTile(title, note); tile.value.setText(value); references.addWidget(tile)
+        references.addWidget(FlowLabel(tr("Ce sont des exemples commerciaux, pas des codes universels. SpoolScribe crée le QR ; le gabarit de planche et le pilote restent gérés par votre logiciel d’impression.")))
+        link = QPushButton(tr("Guide des supports et gabarits fabricant…")); link.setFixedHeight(CONTROL_HEIGHT)
+        link.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/PRINTING_GUIDE.md")))
+        references.addWidget(link); references.addStretch(1)
+        page.addStretch(1);self._paper_guide=guide;guide.show()
+
     def _show_view(self, key):
         self.view_choice.setChoice(key)
         self.stack.setCurrentIndex(0 if key == "qr" else 1)
@@ -470,8 +549,18 @@ class QrWindow(QDialog):
     def _toggle_details(self, checked):
         self.details.setVisible(checked)
         self.details_toggle.setArrowType(Qt.DownArrow if checked else Qt.RightArrow)
-        if checked:  # Bring the opened details into the band, the code stays where it is.
-            QTimer.singleShot(0, lambda: self.lower.verticalScrollBar().setValue(self.details_toggle.y()))
+        # Keep the reading position when the contents fit. On a constrained screen,
+        # keep the disclosure control reachable without moving the QR itself.
+        if checked:
+            self._lower_before_details = self.lower.verticalScrollBar().value()
+            QTimer.singleShot(0, self, self._keep_details_reachable)
+        else:
+            QTimer.singleShot(0, self, lambda: self.lower.verticalScrollBar().setValue(getattr(self, '_lower_before_details', 0)))
+
+    def _keep_details_reachable(self):
+        if (self.details_toggle.isChecked() and self.lower.verticalScrollBar().maximum() > 0
+            and (self.details_toggle.visibleRegion().isEmpty() or self.details.visibleRegion().isEmpty())):
+            self.lower.verticalScrollBar().setValue(max(0, self.details_toggle.y() - 8))
 
     # ── Files ──────────────────────────────────────────────────────────
     def file_data(self, kind):

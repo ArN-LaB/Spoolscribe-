@@ -299,6 +299,15 @@ def product_label(text, brand):
     return text
 
 
+def card_product_label(text, brand):
+    """The manufacturer is already in the card header; keep the product range."""
+    text = product_label(text, brand)
+    if brand:
+        pattern = re.compile(r'^' + re.escape(brand) + r'(?:[™®])?\s+', re.IGNORECASE)
+        while pattern.match(text): text = pattern.sub('', text, count=1)
+    return text
+
+
 class WrapLabel(QLabel):
     """A scroll area's child must reserve the height of the wrapped text."""
     def __init__(self, text='', parent=None):
@@ -476,12 +485,12 @@ class FilamentDelegate(QStyledItemDelegate):
         if icon:icon.paint(painter,int(box.center().x()-50),int(box.top()+24),100,92)
         colour=row.get('color_name') or tr('Couleur à renseigner')
         colour+=' ⚠' if row.get('hex_variants',0)>1 else ''
-        painter.setPen(ink);font.setBold(True);font.setPointSize(12);painter.setFont(font)
+        painter.setPen(ink);font.setBold(True);font.setPointSize(13);painter.setFont(font)
         colour_rect=QRectF(box.left()+10,box.top()+118,box.width()-20,36)
         lines=painter.fontMetrics().elidedText(colour,Qt.ElideRight,int(2*colour_rect.width()-8))
         painter.drawText(colour_rect,Qt.TextWordWrap|Qt.AlignHCenter|Qt.AlignTop,lines)
-        font.setBold(False);font.setPointSize(10);painter.setFont(font);painter.setPen(quiet)
-        product=product_label(row.get('product',''),brand)
+        font.setBold(False);font.setPointSize(11);painter.setFont(font);painter.setPen(quiet)
+        product=card_product_label(row.get('product',''),brand)
         painter.drawText(QRectF(box.left()+10,box.top()+155,box.width()-20,18),Qt.AlignHCenter|Qt.AlignVCenter,
                          painter.fontMetrics().elidedText(product,Qt.ElideRight,int(box.width()-20)))
         state='' if row.get('ready') else tr('à vérifier') if 'vérifier' in str(row.get('quality','')).casefold() else tr('à compléter')

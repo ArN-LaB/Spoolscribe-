@@ -2,10 +2,10 @@
 
 [Documentation](README.md) · [Data format](DATA_FORMAT.md) · [Writing tags](wiki/Writing-RFID-Tags.md)
 
-**Introduced in v0.6.0; retained unchanged in v0.7.0 Pre-release: validated digital SSQR1 contract.** One standard QR Code
+**Introduced in v0.6.0; retained unchanged in v0.8.0 Pre-release: validated digital SSQR1 contract.** One standard QR Code
 carries the **whole NDEF message** of an NFC export, with no server, link or
 file transfer. SpoolScribe Desktop shows and saves it (PNG, SVG). Existing system-printing
-controls remain outside this digital validation; printing, D101 and Bluetooth
+controls remain outside this digital validation; printing and Bluetooth
 are deferred. A
 future **SpoolScribe Companion** app is meant to scan it, then write and read
 back the tag; that app does not exist yet. An ordinary QR reader only shows the
@@ -91,20 +91,23 @@ margins and resolution accepted by the driver, never from the screen zoom:
 | Exactly 3 dots per module | Only with **Small format — reading test required** |
 | Fewer than 3 dots, or no printable area | Printing refused; viewing and saving stay available |
 
-At 203 dpi, one dot is 25.4 / 203 ≈ 0.125 mm and 24 mm hold 191 dots (rounded
-down). The **NIIMBOT D101 25 × 50 mm** profile keeps 1 mm on each side (23 mm,
-183 dots): version 5 at 4 dots, version 9 at 3 dots at most. Every OpenSpool
-export of the historical catalogue needs version 10 or more in M, so none fits
-this roll; turning the label or using its 50 mm length does not widen it.
-Choose a wider label, or, if your reader accepts it, the essential NFC profile.
-SpoolScribe never removes fields or switches format by itself.
+The printer brand is not the sizing rule: printable width, margins, QR version
+and resolution decide whether a specific symbol fits. Paper sizes are not a
+universal QR label standard. See [paper and printer choices](PRINTING_GUIDE.md)
+for documented examples and the geometry calculation.
 
-These are geometric limits, not a reading guarantee: paper, print head,
-contrast and the scanner decide. No physical label print or scan has been
-validated yet, and the D101 is not driven over Bluetooth.
+**Since v0.8.0:** new transfers start with no
+paper selected. Error correction M/Q is available outside technical details;
+message, symbol, NFC tag and optional paper geometry are shown separately.
+An old paper preference retains its dimensions but does not force a paper
+workflow on a new transfer. No NDEF field, SSQR1 envelope or QR decoding rule changes.
 
-## Future link
+These are geometric limits, not a reading guarantee. Paper, print head,
+contrast and the scanner decide; no physical print/scan is claimed.
+
+## Future QR link
 
 A later HTTPS link could carry this text in a URL fragment, with its own size
-overhead. No domain, store or universal link is configured, and the QR does not
-depend on one.
+overhead. No domain or universal QR link is configured, and the QR does not
+depend on one. The separate [Companion availability page](COMPANION.md) is an
+information link in the desktop UI; it is never encoded into SSQR1.

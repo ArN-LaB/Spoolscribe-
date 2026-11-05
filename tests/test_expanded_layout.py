@@ -16,7 +16,10 @@ class ExpandedLayoutTests(unittest.TestCase):
         def inspect(dialog):
             dialog.resize(600,460);dialog.show();w.app.processEvents();before=dialog.size()
             toggle=next(b for b in dialog.findChildren(QToolButton) if b.text()=='Stockage et valeurs conservées');toggle.click();w.app.processEvents()
-            self.assertEqual(dialog.size(),before)
+            # The user now requests content-sized windows on both disclosure
+            # directions. A bounded storage view may shrink instead of keeping a blank tail.
+            self.assertEqual(dialog.width(), before.width())
+            self.assertLessEqual(dialog.height(), before.height())
             text=dialog.findChild(QPlainTextEdit,'storageDetails');self.assertIsNotNone(text);self.assertTrue(text.isVisible())
             self.assertLessEqual(text.height(),160)
             close=next(b for b in dialog.findChildren(QPushButton) if b.text()=='Fermer')
