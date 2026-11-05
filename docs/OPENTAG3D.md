@@ -1,10 +1,9 @@
-# OpenTag3D — SpoolScribe v0.8.0 Pre-release
+# OpenTag3D — SpoolScribe v0.8.0 stable
 
 [Documentation](README.md) · [Installations de lecture](PRINTER-CONFIGURATIONS.md) · [Formats NFC](FORMATS-NFC.md) · [Validation](validation/v0.8.0.md)
 
-**Disponible dans la [préversion v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).**
-La version stable v0.3.5 continue à exporter OpenSpool uniquement. Cette préversion
-ajoute OpenTag3D **2.004** ;
+**Disponible dans la [version stable v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).**
+Cette version stable prépare OpenTag3D **2.004** ;
 elle ne remplace pas OpenSpool et n’ajoute pas OpenPrintTag.
 
 ## Choisir le matériel avant le format
@@ -68,7 +67,7 @@ pris en charge dans cette première intégration restent non renseignés.
 
 Un profil `.json` NFC Tools n’est **pas** un JSON OpenSpool. Il doit être importé
 comme profil, pas écrit comme un simple enregistrement texte. La compatibilité
-avec l’import de fichiers SpoolFlux n’est pas établie par cette intégration.
+avec les conteneurs de fichiers propres à un autre logiciel d’écriture n’est pas établie par cette intégration.
 
 **Voir l’export** affiche exactement le JSON du profil généré. Pour le fichier
 binaire `.ndef`, l’aperçu montre les champs décodés et les octets hexadécimaux.

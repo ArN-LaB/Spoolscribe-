@@ -77,7 +77,7 @@ requires explicit label settings; see [the writing guide](Writing-RFID-Tags.md).
 <details>
 <summary><strong>How do I change the interface language?</strong></summary>
 
-Open **Settings → Interface**. Choose the system language or English, French, Spanish or Simplified Chinese. Save, then restart now or later. Your data and favourites remain intact.
+Open **Settings → Interface**. Choose the system language or English, Français, Español or 简体中文. Save, then restart now or later. Your data and favourites remain intact.
 
 </details>
 
@@ -107,7 +107,7 @@ works on any machine. Other OpenSpool-capable readers can use the same files.
 <details>
 <summary><strong>Which tag and which profile?</strong></summary>
 
-NTAG215 (504 bytes) or NTAG216 (888 bytes). The recommended *essential* profile
+NTAG215 or NTAG216. The app checks the usable capacity (respectively 504 or 872 bytes for this NDEF workflow), not just the chip’s advertised memory. The recommended *essential* profile
 (material, colours, temperatures, diameter, density) is the compact choice. The app checks the actual payload against your tag and reserve before export. The *full* profile adds names and brand metadata and is an explicit choice.
 These profiles apply to OpenSpool; OpenTag3D uses its own binary layout and explicit
 label settings. See [Writing RFID Tags](Writing-RFID-Tags.md).
@@ -117,11 +117,10 @@ label settings. See [Writing RFID Tags](Writing-RFID-Tags.md).
 <details>
 <summary><strong>Which tag hardware do I need?</strong></summary>
 
-For OpenSpool, an NFC writer able to write MIME `application/json`, such as
-SpoolFlux on iPhone. For OpenTag3D, import the generated profile into the matching
-NFC Tools mobile/Desktop app, or use a writer supporting raw NDEF. The files are
-not interchangeable. These profiles apply to OpenSpool; OpenTag3D uses its own binary layout and explicit
-label settings. See [Writing RFID Tags](Writing-RFID-Tags.md).
+SpoolScribe Companion is in development. Until an official download is available,
+use a writer compatible with the exported file: OpenSpool JSON or OpenTag3D raw
+NDEF. Desktop does not select or certify a third-party writing application.
+See [label export](Writing-RFID-Tags.md) and [Companion availability](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COMPANION.md).
 
 </details>
 

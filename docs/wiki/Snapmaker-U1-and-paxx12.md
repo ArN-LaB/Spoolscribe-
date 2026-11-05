@@ -4,11 +4,11 @@
 
 **Prepare OpenSpool or OpenTag3D labels with the matching paxx12 detection mode.**
 
-Available in [v0.8.0 · Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).
+Available in [v0.8.0 · stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).
 
 <table>
 <tr>
-<td width="30%" align="center"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/data/printers/photos/u1.webp" alt="Snapmaker U1 product image" width="170"></td>
+<td width="30%" align="center"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/data/printers/photos/u1.webp" alt="Snapmaker U1 product image" width="170"><br><strong>Snapmaker U1</strong><br><sub>Product illustration.</sub></td>
 <td><strong>Snapmaker U1</strong><br>Four independent toolheads · 270 × 270 × 270 mm build volume.<br><br>The installed firmware determines which tag formats its reader accepts.<br><a href="https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware">paxx12 firmware project →</a></td>
 </tr>
 </table>

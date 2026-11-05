@@ -1,0 +1,60 @@
+name: Printer and reader result
+description: Share a working setup or a reproducible compatibility issue
+labels: ["hardware-compatibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help document real hardware results. One report concerns the exact setup tested, not every model in a family. Do not include private catalogue files, Wi-Fi credentials or personal network addresses.
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result observed
+      options:
+        - Tag recognised and filament identified
+        - Tag written and read back, printer not yet tested
+        - Tag not recognised by the printer
+        - Another reproducible result
+    validations:
+      required: true
+  - type: input
+    id: app
+    attributes:
+      label: SpoolScribe version and operating system
+      placeholder: v0.8.0, macOS / Windows / Linux
+    validations:
+      required: true
+  - type: input
+    id: printer
+    attributes:
+      label: Exact printer model
+    validations:
+      required: true
+  - type: input
+    id: reader
+    attributes:
+      label: Reader and connection
+      placeholder: Built-in reader, or exact external model and USB/network connection
+    validations:
+      required: true
+  - type: input
+    id: software
+    attributes:
+      label: Firmware, plugin and versions
+      placeholder: Original/modified firmware, exact version and enabled detection mode
+    validations:
+      required: true
+  - type: input
+    id: tag
+    attributes:
+      label: Tag, format and writing application
+      placeholder: NTAG216, OpenSpool 1.0 or OpenTag3D 2.004, writer/version
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Steps, read-back and result
+      description: State what you actually tested, the date, and what remains untested. Attach a non-sensitive screenshot or error if useful.
+    validations:
+      required: true

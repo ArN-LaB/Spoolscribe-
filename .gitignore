@@ -29,3 +29,7 @@ Thumbs.db
 # IDE
 .vscode/settings.json
 .idea/
+
+# Local agent working dossiers; public evidence lives in docs/validation/.
+/docs/agent-runs/
+/docs/agents-prompts/

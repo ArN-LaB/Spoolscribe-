@@ -1,3 +1,1 @@
-**SpoolScribe v0.8.0 · Pre-release** · [Wiki home](Home.md) · [Download](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0) · [Help & feedback](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) · [Support the project](https://buymeacoffee.com/arn_lab)
-
-<sub>Free desktop app · English / Français / Español / 简体中文 · [Documentation source](https://github.com/ArN-LaB/Spoolscribe-/tree/main/docs/wiki)</sub>
+**SpoolScribe v0.8.0 · Desktop stable** · [Help](Home.md) · [Download](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0) · [Feedback](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) · [Support development](https://buymeacoffee.com/arn_lab)

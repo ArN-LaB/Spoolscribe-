@@ -2,7 +2,7 @@
 
 [Guide utilisateur](USER_GUIDE.md) · [Contrat SSQR1](QR_FORMAT.md)
 
-**v0.8.0 Pre-release.** Le transfert numérique est le parcours
+**v0.8.0 stable.** Le transfert numérique est le parcours
 par défaut : aucun support ni imprimante à choisir. Le Companion devra
 savoir décoder SSQR1 et écrire le message NFC. Les téléchargements officiels seront
 annoncés sur la [page Companion](COMPANION.md).

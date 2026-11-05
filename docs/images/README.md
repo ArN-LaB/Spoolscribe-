@@ -1,42 +1,69 @@
-# SpoolScribe v0.8.0 — real interface captures
+# Real interface captures — SpoolScribe v0.8.0
 
-Generated on 5 November 2026 from the v0.8.0 release working tree based on
-`de46ea5662f8889a28dfe4464cde1b134078e3c2`, using Python 3.12 / PySide6 6.11.3
-and Qt offscreen. English, light theme. The manifest records the checkout base;
-image hashes identify the reviewed capture bytes, not a physical hardware test.
+Generated on 5 November 2026 from the actual v0.8.0 application source. Application
+modules/resources match the published v0.8.0 tag; only documentation/maintenance
+files differ in this help follow-up. Python 3.12, PySide6/Qt 6.11.3, English,
+application light palette, offscreen Qt rendering. No AI or composited controls.
 
-| File | What it shows |
+The [manifest](captures.json) records version, checkout base, dimensions, SHA-256
+and scenario metadata. Images with QR data carry their expected NDEF digest.
+The public fixture catalogues are merged in memory and loaded into temporary user
+folders. A Python audit hook blocks network requests. Counts are demonstration
+data, not live source coverage. Lab values, device settings, CSV rows and update
+statuses are synthetic examples, not instrument readings or real network results.
+
+Every illustration in the current README/help has a short title and caption, and
+is centred. Clicking opens the full-size file. Native OS file and print dialogs
+vary by platform and are explained rather than passed off as universal screenshots.
+
+| Capture | Demonstrated screen |
 | --- | --- |
-| `catalogue.png` | List view, crossed manufacturer/material filters, selected Polymaker Aqua Blue and NFC state |
-| `collection.png` | Grid view, Bambu Lab PLA Basic Blue, actual 1 kg refill choice |
-| `colour-search.png` | Real PLA ranking for `#C8E6A0`, inclusive maximum `ΔE ≤ 10`, scores on cards |
-| `printers.png` | Searchable visual printer browser with real product photos and categories |
-| `hardware.png` | Snapmaker U1, built-in reader, modified paxx12 software, OpenSpool and NTAG216 |
-| `qr-transfer.png` | Complete SSQR1 QR with PNG/SVG digital saving; captured top of the real QR window, printing band omitted |
+| [catalogue.png](catalogue.png) | list catalogue with selected Polymaker filament |
+| [qr-transfer.png](qr-transfer.png) | Complete SSQR1 QR and digital PNG/SVG save actions |
+| [collection.png](collection.png) | grid catalogue with selected Bambu Lab filament |
+| [colour-search.png](colour-search.png) | PLA colour proximity with declared HEX and actual Delta E scores |
+| [hardware.png](hardware.png) | Compose a real printer, reader and tag setup |
+| [printers.png](printers.png) | Visual printer browser with photographs, search and compatibility categories |
+| [catalogue-status.png](catalogue-status.png) | Local fixture catalogue status; no update performed |
+| [update-report.png](update-report.png) | Example partial-update report using synthetic statuses, no live requests |
+| [export-details.png](export-details.png) | Current NFC export readiness, capacity and next steps |
+| [sources.png](sources.png) | Choose catalogue sources before any download |
+| [settings-catalogue.png](settings-catalogue.png) | Settings: catalogue |
+| [settings-spools.png](settings-spools.png) | Settings: spools |
+| [settings-export.png](settings-export.png) | Settings: export |
+| [settings-interface.png](settings-interface.png) | Settings: interface |
+| [settings-colours.png](settings-colours.png) | Settings: colours |
+| [favourites.png](favourites.png) | Saved filament favourites filter; clearing filters keeps the favourites |
+| [filament-details.png](filament-details.png) | Selected filament values and their provenance |
+| [personal-copy.png](personal-copy.png) | Personal copy editor; source reference stays unchanged |
+| [colour-list.png](colour-list.png) | Contextual Delta E column, visible only during colour comparison |
+| [columns-menu.png](columns-menu.png) | Column visibility choices rendered from the real menu without opening the native menu loop |
+| [colour-lab.png](colour-lab.png) | Enter documented Lab D65/2 degree example values |
+| [colour-saved.png](colour-saved.png) | Saved reference values, associations and backup actions |
+| [device-preset.png](device-preset.png) | User-declared device entry preset, explicitly applied |
+| [colour-paste.png](colour-paste.png) | Interpret labelled colour values copied from an application |
+| [colour-import.png](colour-import.png) | Review file settings, columns and parsed rows before importing |
+| [opentag-temperatures.png](opentag-temperatures.png) | Review OpenTag3D temperature proposals before explicit confirmation |
+| [qr-companion.png](qr-companion.png) | Offline QR transfer, Companion availability and optional paper choices |
+| [qr-details.png](qr-details.png) | QR technical cards, protection level and integrity digest |
+| [qr-paper.png](qr-paper.png) | Optional print geometry and product reference; not a physical print test |
+| [paper-references.png](paper-references.png) | A4 sheets and label rolls: commercial references and external templates |
 
-[captures.json](captures.json) records source commit, version, image dimensions,
-selected references and SHA-256 values. These are widget captures, without AI
-mockups, composite controls or personal catalogue data. The QR image contains
-only a public demonstration reference and can be decoded independently.
+## Reproduce
 
-The public repository snapshots are merged in memory through the normal merger,
-then loaded from a temporary database with isolated preferences. Python’s audit
-hook blocks network connections. No refresh, personal correction or physical
-NFC test is claimed. Counts are a fixture demonstration, not live source coverage.
+Run `python .github/scripts/render_readme_screenshots.py` in the documented build
+environment, then visually inspect the results and check every manifest hash.
+Modal dialogs are shown without committing their drafts. The column menu is
+rendered from the actual widget without entering the native menu event loop.
+The documented QR transfer is independently decoded; screenshot generation alone
+does not establish physical phone/print/NFC or native-desktop acceptance.
 
-Source and artwork credits: [data sources](../DATA_SOURCES.md),
-[trademarks](../TRADEMARKS.md), [printer visuals](../PRINTER_VISUALS.md).
-Documentation images and their manifest are excluded from application bundles.
+## Artwork and animation
 
-## Regenerate
+The animated logo `spoolscribe-animated.gif` is retained. It is a deterministic
+export of `data/app/spoolscribe_logo_animated.svg` (75 frames, 3-second loop),
+regenerated with `render_readme_logo.py`. No remote image dependency is added.
 
-`python .github/scripts/render_readme_screenshots.py` generates the six captures
-and manifest using the build/development environment. Review the images at full
-size; capture generation alone is not visual acceptance on each operating system.
-
-## Animated logo
-
-`spoolscribe-animated.gif` is preserved. It is a deterministic export of
-`data/app/spoolscribe_logo_animated.svg`. Regenerate with
-`python .github/scripts/render_readme_logo.py`: 75 frames, 3-second loop,
-no remote image dependency. The source animation is unchanged.
+Source/mark credits: [data sources](../DATA_SOURCES.md), [trademarks](../TRADEMARKS.md),
+[printer photographs](../PRINTER_VISUALS.md). Documentation captures and scan oracles
+are excluded from application resources. No catalogue or personal data is bundled.

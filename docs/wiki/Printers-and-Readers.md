@@ -5,8 +5,8 @@
 **Choose the printer, then its actual reader/software setup.** A USB socket,
 a reader powered by USB and a reader supported by the printer are different things.
 
-**[v0.8.0 · Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0):** OpenSpool and OpenTag3D are offered only for
-identified setups. The public stable v0.3.5 still exports OpenSpool only.
+**[v0.8.0 · stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0):** OpenSpool and OpenTag3D are offered only for
+identified setups. The older v0.3.5 remains available as a historical version; current Desktop stable is v0.8.0.
 
 <table>
 <tr>
@@ -15,9 +15,10 @@ identified setups. The public stable v0.3.5 still exports OpenSpool only.
 </tr>
 </table>
 
-[![v0.8.0 visual printer selector with real photographs and compatibility categories](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/printers.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/printers.png)
+<p align="center"><a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/printers.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/printers.png" alt="v0.8.0 visual printer selector with real photographs and compatibility categories" width="900"></a></p>
+<p align="center"><strong>Choose your real setup</strong><br><sub>Actual v0.8.0 interface.</sub></p>
 
-[See the actual reader/software/tag choices](Visual-Tour.md#3-choose-your-machine-and-its-real-setup).
+[See the actual reader/software/tag choices](Writing-RFID-Tags.md#1-select-the-real-reference-and-destination).
 
 ## Follow the data
 
@@ -107,3 +108,9 @@ Images illustrate named models, not every printer in a family. Accessories and
 reader support differ. [Image provenance](https://github.com/ArN-LaB/Spoolscribe-/blob/main/data/printers/photos/manifest.json).
 
 [Writing tags](Writing-RFID-Tags.md) · [U1 walkthrough](Snapmaker-U1-and-paxx12.md)
+
+## Documented is not physically tested
+
+**Documented** means a source describes the setup. **Software-validated** means the exporter and its data passed automated checks. **Physically tested** needs an actual printer, reader, firmware/plugin, tag and read-back result. An untested combination is not automatically incompatible. These are evidence descriptions, not new runtime badges.
+
+[Software release policy](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/RELEASE_POLICY.md) · [Share a hardware result](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose).

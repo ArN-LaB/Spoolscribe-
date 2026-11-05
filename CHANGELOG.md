@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation and release-channel maintenance
+
+- Illustrated task-based v0.8.0 help, concise centred captions, native language names and current project metadata.
+- v0.8.0 promoted from pre-release to Desktop stable after authorisation and audit; its tag and six existing downloads are unchanged. Hardware compatibility remains separately documented, not universally certified.
+- QR error correction and SSQR1 integrity are distinguished from future app routing; no wire-format change.
+- Local agent work is retained outside the public file selection; current structure and script roles are audited.
+
 ## [0.8.0] - 2026-11-05
 
 ### Pre-release — colour and QR workflow refinements

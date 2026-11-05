@@ -1,217 +1,125 @@
-<p align="center">
-  <img src="docs/images/spoolscribe-animated.gif" alt="SpoolScribe — animated spool logo" width="128" height="128">
-</p>
+<p align="center"><img src="docs/images/spoolscribe-animated.gif" alt="SpoolScribe animated logo" width="128" height="128"></p>
 
-<h1 align="center">SpoolScribe <sub>v0.8.0 · Pre-release</sub></h1>
+<h1 align="center">SpoolScribe <sub>v0.8.0</sub></h1>
 <p align="center"><strong>Find your filament. Prepare its NFC label.</strong></p>
-<p align="center">A filament catalogue for your desktop, with colour previews, OpenSpool and OpenTag3D exports.<br>Windows · macOS · Linux — free, open source, no account.</p>
-
+<p align="center">Windows · macOS · Linux<br>English · Français · Español · 简体中文</p>
 <p align="center">
-  <a href="https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0"><img src="https://img.shields.io/badge/v0.8.0-Pre--release-d4a017" alt="v0.8.0 pre-release"></a>
-  <a href="https://github.com/ArN-LaB/Spoolscribe-/releases/latest"><img src="https://img.shields.io/github/v/release/ArN-LaB/Spoolscribe-?color=008899&amp;label=stable" alt="Latest stable release"></a>
+  <a href="https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0"><img src="https://img.shields.io/badge/v0.8.0-stable-008899" alt="v0.8.0 stable"></a>
   <a href="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml"><img src="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml/badge.svg?branch=main" alt="Build and tests"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT licence"></a>
 </p>
-<p align="center"><a href="#download">Download</a> · <a href="#your-first-tag">Your first tag</a> · <a href="#will-it-work-with-my-printer">Compatibility</a> · <a href="docs/README.md">Documentation</a></p>
+<p align="center"><a href="#download">Download</a> · <a href="https://github.com/ArN-LaB/Spoolscribe-/wiki/Getting-Started">Get started</a> · <a href="https://github.com/ArN-LaB/Spoolscribe-/wiki">Help centre</a> · <a href="docs/COMPANION.md">Companion</a></p>
 
-[![SpoolScribe catalogue: searchable manufacturers, filament colours and NFC export](docs/images/catalogue.png)](docs/images/catalogue.png)
-<p align="center"><sub>Actual v0.8.0 interface, shown in English with public catalogue fixtures and temporary offline settings. Available in English, French, Spanish and Simplified Chinese.</sub></p>
+A free desktop filament catalogue with visual colour matching, personal references,
+**OpenSpool 1.0 / OpenTag3D 2.004 exports** and **offline SSQR1 QR transfer**.
+No account. Your catalogue stays local after its first download.
 
-**Current stable: [v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).**
-
-**Try [v0.8.0 — Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0):**
-New: **guided colour values, reusable device entry presets and a clearer QR journey** — enter HEX/RGB/CIELAB, interpret
-a pasted value or map a CSV/TSV, then save it in a separate local registry.
-Use eligible measurements as indicative ΔE targets without changing catalogue colours.
-SSQR1 digital QR transfer, personal copies and guided NFC export remain available.
-The downloads below are the pre-release builds; v0.3.5 remains the latest stable release.
-[OpenTag3D guide](docs/OPENTAG3D.md) · [Printer and reader setups](docs/PRINTER-CONFIGURATIONS.md).
-
-**Help verify real-world setups.** The v0.8.0 printer list describes documented
-configurations, not a hardware-tested certification. Automated tests check the
-software and exported data; testing every printer, reader and firmware combination
-would require access to all of that equipment. Physical NFC writing and printer
-read-back have not been validated by this project for these additions.
-[Share a successful test or report a problem in Issues](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose)
-with your printer model, reader, firmware/plugin versions, tag type, export format
-and what happened. Your feedback will help improve the compatibility list and fix problems.
-
-**SpoolScribe prepares the file.** A separate NFC writing app writes your NTAG215/216.
-Use [SpoolFlux](https://spoolflux.dingdongclick.de/?lang=us) or another compatible writer
-for OpenSpool JSON; use raw NDEF for OpenTag3D with a compatible writer.
-The [Companion availability page](docs/COMPANION.md) is the single entry for future mobile downloads.
-Your printer or external reader must support the selected format and configuration.
-
-**Interface languages:** English · Français · Español · 简体中文. The app follows your computer’s language, with English as the fallback. Override it in **Settings → Interface**. The app offers **Restart now** or **Later** after saving.
+<p align="center">
+  <a href="docs/images/catalogue.png"><img src="docs/images/catalogue.png" alt="Find and select a filament" width="980"></a>
+</p>
+<p align="center"><strong>Find and select a filament</strong><br><sub>Actual v0.8.0 interface · public demonstration data.</sub></p>
 
 ## Download
 
-**v0.8.0 · Pre-release** — guided colour entry, contextual ΔE column, reusable device presets and clearer QR/NFC actions.
-Prefer a stable build? [Download v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5).
+**v0.8.0 is the current stable Desktop release.** Software stability and hardware
+compatibility are separate: printer/reader setups are documented individually and
+are not all physically tested. [Validation](docs/validation/v0.8.0.md) · [Release policy](docs/RELEASE_POLICY.md).
 
-No Python installation needed. Download, unzip and open the app for your system.
-
-| System | Download | Checksum |
-|---|---|---|
-| **Windows 10 / 11 · x64** | [SpoolScribe.exe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-windows.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-windows.zip.sha256) |
-| **macOS · Apple Silicon** | [SpoolScribe.app — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-macos.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-macos.zip.sha256) |
-| **Linux · x64** | [SpoolScribe — ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-linux.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-linux.zip.sha256) |
-
-[Pre-release notes](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0) ·
-[First-launch help](docs/wiki/Getting-Started.md) · [Run from source](docs/DEVELOPMENT.md)
-
-<details>
-<summary><strong>First launch: macOS, Windows and Linux</strong></summary>
-
-- **macOS:** the bundle is signed ad hoc, without Apple notarisation. After verifying
-  the download and its origin, right-click the app and choose **Open**. If Gatekeeper
-  still blocks it, see the [installation guide](docs/wiki/Getting-Started.md).
-  The supplied binary is for Apple Silicon, not Intel Macs.
-- **Windows:** the executable has no commercial signing certificate. SmartScreen may
-  ask for confirmation; verify its origin and SHA-256 before choosing **More info → Run anyway**.
-- **Linux:** built on `ubuntu-latest`; requires a recent glibc and the Qt runtime
-  libraries `libegl1`, `libxkbcommon0` and `libdbus-1-3`. X11 also needs
-  the Qt XCB/XKB system dependencies; see [Linux runtime notes](docs/DEVELOPMENT.md#linux-desktop-runtime).
-
-The `.zip.sha256` file contains the expected hash. Compare it with `sha256sum`
-(Linux), `shasum -a 256` (macOS) or `Get-FileHash -Algorithm SHA256` (PowerShell).
-
-</details>
-
-## Less searching, more useful filament data
-
-| Find the right filament | Make it yours | Prepare the tag |
-|---|---|---|
-| Search across manufacturers, materials and colours. Switch between list and grid. | Pin favourite manufacturers and filaments. Save your preferred spool size. | Choose your reader and NTAG215/216. Preview the file that gets exported. |
-| Sort from the column headers and choose the columns you need. | Keep an independent `@Personal` copy of your adjustments through catalogue refreshes. | Check capacity before export, choose the destination folder and get a saved-file confirmation. |
-
-[![SpoolScribe grid: colour-matched spool previews and the selected filament card](docs/images/collection.png)](docs/images/collection.png)
-<p align="center"><sub>The spool preview follows the recorded filament colour. Unknown colours stay unknown until you choose one.</sub></p>
-
-## Find a close colour
-
-Choose a swatch or enter a HEX, then **Compare**. Your manufacturer and material
-filters still apply. The cards show **ΔE**: a smaller number means closer declared
-screen colours. **Maximum ΔE 10** means **ΔE ≤ 10**, not a percentage or a tolerance
-around 10. Adjust the limit in **Settings → Colours**.
-
-[![v0.8.0 colour proximity search: reference swatch, maximum Delta E and ranked filament cards](docs/images/colour-search.png)](docs/images/colour-search.png)
-
-Gloss, transparency and special effects can change the printed result. This helps
-compare catalogue colours; it is not a physical colour measurement.
-
-## Lab, RGB or a file: go beyond a HEX code
-
-| Enter | Paste or import | Keep and compare |
+| System | Application | Integrity check |
 | --- | --- | --- |
-| Type a HEX, RGB or CIELAB value from your reference. | Paste labelled values, or confirm a CSV/TSV file’s encoding, columns and decimal mark. | Save the original values and conditions in a local registry; use an eligible measurement as an indicative target. |
+| Windows 10 / 11 · x64 | [Download ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-windows.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-windows.zip.sha256) |
+| macOS · Apple Silicon | [Download ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-macos.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-macos.zip.sha256) |
+| Linux · x64 | [Download ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-linux.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.0/SpoolScribe-linux.zip.sha256) |
 
-Open **Colours → Lab, RGB or file…**. For CIELAB, use D65/2° only
-when those conditions are documented by your source; otherwise save the measurement
-without ranking it. Catalogue HEX codes remain declared colours, not physical measurements.
-No USB/Bluetooth driver or manufacturer format support is implied.
-[Colour measurement guide](docs/COLOUR_MEASUREMENTS.md).
+Unzip and open the application. No Python installation is needed.
+macOS uses an ad hoc signature without Apple notarisation; Windows is not
+commercially signed. Linux needs a recent glibc and Qt system libraries.
+[First-launch instructions](https://github.com/ArN-LaB/Spoolscribe-/wiki/Getting-Started) · [Build from source](docs/DEVELOPMENT.md).
 
-## Choose the printer, then its real setup
+## Find the right reference
 
-Search by model and use the visual categories. Next, select the reader and software
-actually installed. The result explains whether data goes to the printer or an
-external inventory; a USB connection alone does not establish compatibility.
+1. Select your catalogue sources and refresh after giving network permission.
+2. Choose a manufacturer and material: each filter narrows the other.
+3. Select the colour and the actual spool size. Pin useful favourites.
+4. Keep your adjustments in a personal copy; source refreshes preserve it.
 
-[![v0.8.0 visual printer selector with photographs and concise descriptions](docs/images/printers.png)](docs/images/printers.png)
+<p align="center">
+  <a href="docs/images/collection.png"><img src="docs/images/collection.png" alt="See the colour and spool size" width="980"></a>
+</p>
+<p align="center"><strong>See the colour and spool size</strong><br><sub>Switch between list and grid without losing your selection.</sub></p>
 
-[See the step-by-step hardware choices](docs/wiki/Visual-Tour.md#3-choose-your-machine-and-its-real-setup).
+[Filaments, filters, columns and favourites](docs/wiki/Filaments-and-Favourites.md).
 
-## Your first tag
+## Compare colours
 
-1. **Choose your sources.** On the first run, select the catalogue sources and click
-   **Refresh now** (*Actualiser maintenant* in French). The app downloads its database after your consent.
-2. **Find your filament.** Manufacturer and material filters narrow each other’s available choices. Search or filter, then select the colour and the actual
-   spool size. Save a favourite if you use it often.
-3. **Set up your hardware.** Open **My hardware** and choose your printer or
-   reader, then compose its actual installation with the buttons and choose the tag you bought.
-4. **Export and write.** Click **Export for NFC**, choose a folder, then use your
-   NFC writer to write the file. Read the tag back and check it on your reader.
+Enter a HEX code or choose a swatch, then **Compare**. A smaller **ΔE** means
+closer declared screen colours. The limit **ΔE ≤ 10** is a maximum distance,
+not a percentage. Effects, transparency and printing can change the real result.
 
-Your catalogue stays available offline after its first download. You can choose
-which sources to refresh and how often. Preferences and personal filament copies
-stay in your user folder.
+<p align="center">
+  <a href="docs/images/colour-search.png"><img src="docs/images/colour-search.png" alt="Find nearby colours" width="980"></a>
+</p>
+<p align="center"><strong>Find nearby colours</strong><br><sub>The same ΔE values are available in list view.</sub></p>
 
-## Take the NFC message with you
+Have Lab/RGB values or a file instead? Open **Lab, RGB or file…** to enter values,
+interpret labelled text or review CSV/TSV columns. Save references and explicitly
+reuse device entry settings without altering catalogue colours.
 
-**Show QR Code…** captures the complete current NFC export in one offline QR.
-Save **PNG** for sharing or **SVG** for a scalable digital file. The data is fixed
-when the QR window opens; reopen it after changing the filament or export options.
+<p align="center">
+  <a href="docs/images/colour-lab.png"><img src="docs/images/colour-lab.png" alt="Use documented colour values" width="800"></a>
+</p>
+<p align="center"><strong>Use documented colour values</strong><br><sub>CIELAB needs documented D65 and 2° conditions for catalogue comparison.</sub></p>
 
-[![v0.8.0 digital SSQR1 QR window with PNG and SVG save actions](docs/images/qr-transfer.png)](docs/images/qr-transfer.png)
-<p align="center"><sub>Digital section of the actual QR window; printing controls are outside this illustration and validation.</sub></p>
+[Colour entry, files and saved references](docs/wiki/Measuring-Colours.md).
 
-The **SSQR1 contract is validated for digital transfer**. SpoolScribe Companion,
-which will scan the code and write a tag, is a future application. An ordinary QR
-scanner only displays the transfer text. Physical scanning, printing, D101 and
-Bluetooth are deferred; no new printer compatibility is claimed.
-[QR format and safeguards](docs/QR_FORMAT.md).
+## Choose the real printer setup
 
-## Will it work with my printer?
+Select the model, then the reader and software actually installed. The result
+explains what the configuration can read. A USB reader alone is not proof that
+the printer firmware accepts a format.
 
-**An RFID/NFC reader does not by itself guarantee format compatibility.** The app's
-**My hardware** selector explains what your setup can read.
+<p align="center">
+  <a href="docs/images/hardware.png"><img src="docs/images/hardware.png" alt="Check the reader and software" width="780"></a>
+</p>
+<p align="center"><strong>Check the reader and software</strong><br><sub>Compatibility depends on the complete setup.</sub></p>
 
-| Your setup | What SpoolScribe provides |
-|---|---|
-| **Snapmaker U1 / paxx12, built-in Snapmaker detection** | OpenSpool files for NTAG215/216. Stock manufacturer firmware is a different setup. |
-| **The same U1 / paxx12, OpenRFID or OpenRFID Generic** | OpenSpool or OpenTag3D. Generic changes brand handling, not the available formats. |
-| **A documented USB or network integration** | Formats and prerequisites depend on the reader/plugin. External inventory and printer recognition are distinguished. |
-| **Native Bambu AMS, Prusa OpenPrintTag and other unsupported formats** | A reference sheet; native/proprietary tags are not generated. An added reader is a separate configuration. |
+[Printer setup help](docs/wiki/Printers-and-Readers.md).
 
-[Printer and reader guide](docs/wiki/Printers-and-Readers.md) ·
-[NFC formats explained](docs/FORMATS-NFC.md) · [Writing a tag](docs/wiki/Writing-RFID-Tags.md)
+## Take the label to Companion
 
-## Where does the catalogue come from?
+**Show QR Code — SpoolScribe Companion** displays the complete NFC message in an
+offline QR. Save PNG or SVG, or keep it on screen. The QR contains data, not a
+website or an App Store link.
 
-Selected public sources include **Open Filament Database**, **SpoolmanDB**,
-**Polymaker**, **Bambu Studio** profiles and **SUNLU** manufacturer information.
-Coverage varies by source and is not exhaustive.
+<p align="center">
+  <a href="docs/images/qr-companion.png"><img src="docs/images/qr-companion.png" alt="Transfer the complete NFC message" width="620"></a>
+</p>
+<p align="center"><strong>Transfer the complete NFC message</strong><br><sub>Companion mobile downloads are not yet available.</sub></p>
 
-- **Your corrections come first**, then manufacturer values, then community data.
-- Uncertain matches are kept aside; missing colours and physical values are not invented.
-- Source identifiers are distinguished from manufacturer article numbers.
-- The installer ships without a catalogue. Network access requires your consent;
-  no personal catalogue is uploaded.
+**SpoolScribe Companion is being developed for mobile use.** Official iOS and
+Android links will appear on the [shared availability page](docs/COMPANION.md).
+Until then, use a writer compatible with the chosen OpenSpool JSON or OpenTag3D
+NDEF file. Desktop does not write the physical NFC tag.
 
-[Sources and licences](docs/DATA_SOURCES.md) · [Privacy](docs/PRIVACY.md)
+A generic scanner can read SSQR1 text. QR error correction repairs damaged data;
+it does not restrict scanning to Companion. [QR help](docs/wiki/Companion-and-QR.md)
+explains the distinction and the future app-link path.
 
-<details>
-<summary><strong>For contributors: code, CLI and validation</strong></summary>
+## Help, privacy and feedback
 
-The app uses Python and PySide6, with a shared core for the desktop and command-line
-interfaces. See [development and CLI use](docs/DEVELOPMENT.md) and
-[how to contribute](.github/CONTRIBUTING.md).
+| Need | Start here |
+| --- | --- |
+| Learn each screen | [Illustrated help centre](docs/wiki/Home.md) |
+| Select labels or paper | [Product codes and manufacturer templates](docs/PRINTING_GUIDE.md) |
+| Understand stored data | [Privacy](docs/PRIVACY.md) · [Data sources](docs/DATA_SOURCES.md) |
+| Check software validation | [v0.8.0 evidence](docs/validation/v0.8.0.md) |
+| Report a problem or a working setup | [Issues](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) |
+| Contribute or support development | [Contributing](.github/CONTRIBUTING.md) · [Buy Me a Coffee](https://buymeacoffee.com/arn_lab) |
 
-The suite contains **590 offline tests**, including pre-release publication safety checks.
-CI runs Linux/Python 3.10 and 3.12, Windows/Python 3.12 and macOS/Python 3.12 before
-three native builds and their frozen-app, resource, TLS and export checks. See the
-[validation record](docs/validation/v0.8.0.md) and its release workflow links.
-These automated checks do not replace human desktop acceptance or physical NFC read-back.
+Report the model, reader, firmware/plugin, tag type and format when sharing a
+hardware result. Software CI is not a certification of every listed printer.
+**618 offline tests** run in each of four CI configurations; three native builds
+also exercise catalogue/NFC, colour entry and independent digital QR decoding.
 
-</details>
-
-## Help, ideas and the next steps
-
-[Visual tour of v0.8.0](docs/wiki/Visual-Tour.md) · [Documentation](docs/README.md) · [FAQ](docs/wiki/FAQ.md) ·
-[Report a bug](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) ·
-[Suggest an improvement](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) ·
-[Roadmap](docs/ROADMAP.md) · [Changelog](CHANGELOG.md)
-
-Built by [ArN-LaB](https://github.com/ArN-LaB) in my free time. Free and open source,
-with no paid features. If it helps you, feedback and contributions are welcome —
-and you can [buy me a coffee](https://buymeacoffee.com/arn_lab) if you feel like it.
-
-<p><a href="https://buymeacoffee.com/arn_lab"><img src="https://img.shields.io/badge/Buy_Me_a_Coffee-Support_the_project-FFDD00?logo=buymeacoffee&amp;logoColor=black" alt="Optional support via Buy Me a Coffee"></a></p>
-
-**MIT code** · [Licence](LICENSE) · [Attributions](NOTICE) · [Code of conduct](.github/CODE_OF_CONDUCT.md) · [Security](.github/SECURITY.md)
-
-Data and brand artwork keep their own licences and trademark rights. SpoolScribe
-is not affiliated with filament or printer manufacturers; see [trademarks](docs/TRADEMARKS.md).
-Thanks to the public data projects, OpenSpool, compatible-reader projects and
-independent NFC writers that make this workflow possible.
+SpoolScribe is independent of printer and filament manufacturers. Code: MIT.
+Data licences and artwork credits: [NOTICE](NOTICE) · [Trademarks](docs/TRADEMARKS.md).
