@@ -1,6 +1,6 @@
-# Colour measurements — Desktop P1, v0.8.0 Pre-release
+# Colour measurements — Desktop P1, v0.8.0 stable
 
-Available in [v0.8.0 Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).
+Available in [v0.8.0 stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).
 The software checks do not certify an instrument, its proprietary export format
 or a physical printed colour. [Validation and limits](validation/v0.8.0.md).
 

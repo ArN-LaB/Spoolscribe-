@@ -1,53 +1,31 @@
-# Documentation SpoolScribe v0.8.0 · Pre-release
+# Documentation SpoolScribe v0.8.0
 
-**[Télécharger la préversion v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0)** · **[Version stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)** · [Présentation](../README.md) · [Wiki](wiki/Home.md)
+[Présentation](../README.md) · [Télécharger la stable v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0) · [Centre d’aide illustré](wiki/Home.md)
 
 ## Utiliser l’application
 
-| Besoin | Guide |
+| Besoin | Aide |
 | --- | --- |
-| Découvrir le catalogue, ΔE, les imprimantes et le QR en images | [Parcours visuel v0.8.0](wiki/Visual-Tour.md) |
-| Installer et préparer une première étiquette | [Démarrage](wiki/Getting-Started.md) |
-| Saisir, coller ou importer une référence couleur et la conserver | [Mesures de couleur P1](COLOUR_MEASUREMENTS.md) · [Guide Wiki](wiki/Measuring-Colours.md) |
-| Langue, filtres croisés, favoris, bobines et copies personnelles | [Guide de l’interface](USER_GUIDE.md) |
-| Choisir une imprimante ou un lecteur | [Compatibilité](wiki/Printers-and-Readers.md) |
-| Écrire et relire une étiquette | [Guide NFC](wiki/Writing-RFID-Tags.md) · [Formats](FORMATS-NFC.md) |
-| QR sans papier et choix de supports (aperçu local non publié) | [Guide impression](PRINTING_GUIDE.md) |
-| Actualiser le catalogue et comprendre ses limites | [Actualisation](wiki/Updating-the-Database.md) · [Sources](DATA_SOURCES.md) |
-| Résoudre un problème | [FAQ](wiki/FAQ.md) |
+| Installation et premier catalogue | [Démarrer](wiki/Getting-Started.md) |
+| Filaments, filtres, tri, colonnes, favoris et copies personnelles | [Parcours filaments](wiki/Filaments-and-Favourites.md) |
+| HEX, ΔE, Lab/RGB, texte, fichiers et références enregistrées | [Parcours couleur](wiki/Measuring-Colours.md) |
+| Imprimante, lecteur et logiciel installé | [Compatibilité](wiki/Printers-and-Readers.md) |
+| Préparer l’étiquette et l’export NFC | [Export](wiki/Writing-RFID-Tags.md) |
+| QR numérique, Companion et impression facultative | [QR et Companion](wiki/Companion-and-QR.md) |
+| Sources, actualisation et sauvegardes | [Catalogue](wiki/Updating-the-Database.md) |
+| Cadence, bobine, export, langue et limite ΔE | [Les cinq onglets des paramètres](wiki/Settings.md) |
+| Repérer un écran | [Index visuel](wiki/Visual-Tour.md) |
 
-## Comprendre et contribuer
+Langues de l’interface : **English · Français · Español · 简体中文**.
+Le [guide en français](USER_GUIDE.md) complète les parcours illustrés.
 
-- [Développement, commandes et compilation](DEVELOPMENT.md).
-- [Structure du dépôt et maintenance](REPOSITORY.md).
-- [Contrat des données et de l’export](DATA_FORMAT.md) · [QR numérique autonome SSQR1 du message NFC](QR_FORMAT.md).
-- [Ressources de l’application](../data/README.md) · [Jeux de référence](../tests/fixtures/README.md).
-- [Langues de l’interface](../data/translations/README.md).
-- [Captures et logo animé : provenance et régénération](images/README.md).
-- [Validation de la préversion v0.8.0](validation/v0.8.0.md) · [Stable v0.3.5](validation/v0.3.5.md).
-- [Installation personnelle macOS](LOCAL_MACOS_INSTALL.md).
-- [Roadmap](ROADMAP.md) · [Changelog](../CHANGELOG.md) · [Contribuer](../.github/CONTRIBUTING.md).
-- [Confidentialité](PRIVACY.md) · [Marques](TRADEMARKS.md) · [Visuels des imprimantes](PRINTER_VISUALS.md) · [Licence](../LICENSE) · [Attributions](../NOTICE).
+## Comprendre les données et les limites
 
-La v0.8.0 ajoute la saisie et l’import de couleurs ainsi qu’un registre local distinct.
-Le QR numérique SSQR1 (PNG/SVG) reste inchangé pour le futur Companion ;
-l’impression et les essais matériels restent différés. [Contrat](QR_FORMAT.md).
+[Sources](DATA_SOURCES.md) · [Format du catalogue](DATA_FORMAT.md) · [Confidentialité Desktop](PRIVACY.md) · [Mesures couleur](COLOUR_MEASUREMENTS.md) · [OpenTag3D](OPENTAG3D.md) · [SSQR1](QR_FORMAT.md) · [Papier et gabarits](PRINTING_GUIDE.md).
 
-## Historique
+**Stable logiciel et compatibilité matérielle sont distincts.** Les configurations
+listées ne sont pas toutes testées physiquement. [Politique de versions](RELEASE_POLICY.md) · [Validation v0.8.0](validation/v0.8.0.md) · [Disponibilité Companion](COMPANION.md).
 
-La [validation v0.5.0](validation/v0.5.0.md) est conservée.
-L’[index historique](archive/README.md) donne accès aux audits, retours UX et journaux des
-versions précédentes dans leurs commits Git immuables. Leurs nombres de tests et états de publication sont datés ;
-ils ne décrivent pas la version actuelle.
+## Développer et maintenir
 
-Les tests automatisés et les sondes des exécutables ne remplacent pas une recette
-visuelle humaine ni une écriture/relecture NFC sur une imprimante réelle.
-
-## Préversion v0.8.0
-
-[Reader setup guide](PRINTER-CONFIGURATIONS.md) · [OpenTag3D export guide](OPENTAG3D.md) · [Validation status](validation/v0.8.0.md).
-La préversion propose trois ZIP et leurs SHA-256. La stable reste v0.3.5.
-Les tests logiciels ne certifient pas toutes les combinaisons imprimante/lecteur ;
-[retours de compatibilité bienvenus](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml).
-
-[Companion : disponibilité mobile](COMPANION.md) · [Formats, références papier et gabarits](PRINTING_GUIDE.md).
+[Développement](DEVELOPMENT.md) · [Structure du dépôt](REPOSITORY.md) · [Audit de maintenance v0.8.0](validation/repository-v0.8.0.md) · [Roadmap](ROADMAP.md) · [Captures et provenance](images/README.md) · [Marques](TRADEMARKS.md) · [Contribution](../.github/CONTRIBUTING.md).

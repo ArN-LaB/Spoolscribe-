@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Data format](DATA_FORMAT.md) · [Writing tags](wiki/Writing-RFID-Tags.md)
 
-**Introduced in v0.6.0; retained unchanged in v0.8.0 Pre-release: validated digital SSQR1 contract.** One standard QR Code
+**Introduced in v0.6.0; retained unchanged in v0.8.0 stable: validated digital SSQR1 contract.** One standard QR Code
 carries the **whole NDEF message** of an NFC export, with no server, link or
 file transfer. SpoolScribe Desktop shows and saves it (PNG, SVG). Existing system-printing
 controls remain outside this digital validation; printing and Bluetooth

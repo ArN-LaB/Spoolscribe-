@@ -1,6 +1,6 @@
-# Utiliser SpoolScribe v0.8.0 · Pre-release
+# Utiliser SpoolScribe v0.8.0 · stable
 
-[Accueil](../README.md) · [Documentation](README.md) · [Préversion v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0) · [Stable v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)
+[Accueil](../README.md) · [Documentation](README.md) · [Version stable v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0) · [Politique de versions](RELEASE_POLICY.md)
 
 [Parcours visuel de v0.8.0 : catalogue, ΔE, imprimantes et QR](wiki/Visual-Tour.md).
 Les captures sont réelles, en anglais ; le même parcours existe dans les quatre langues.
@@ -214,18 +214,17 @@ profils OpenSpool compact/complet et les réserves d’écriture restent dans le
 matériels avancés. SpoolScribe prépare le fichier ; une autre application écrit
 l’étiquette. L’archive JSON complète reste disponible dans le menu général.
 
-### QR numérique SSQR1 (v0.6.0, préversion)
+### QR numérique SSQR1 et Companion
 
 Le contrat numérique SSQR1 est validé pour OpenSpool 1.0 et OpenTag3D 2.004.
 L’impression et les essais physiques sont différés ; les commandes
 d’impression déjà présentes ne font pas partie de cette validation.
 
-**Afficher le QR Code…**, sur sa propre ligne sous **Voir le JSON** et **Afficher le fichier**,
+**Afficher le QR Code — SpoolScribe Companion**, à côté de **Exporter pour NFC**,
 n’est actif que si l’export NFC est possible : mêmes blocages (couleur, brouillon, configuration,
 capacité, valeurs OpenTag3D). Le QR contient **tout le message NFC** de l’export, sans
 serveur ni lien ; un lecteur QR ordinaire n’affiche qu’un texte de transfert. Écrire une
-puce depuis ce QR demandera la future application SpoolScribe Companion, qui n’existe pas
-encore.
+puce depuis ce QR demandera la future application SpoolScribe Companion, encore en développement, sans lien de téléchargement public.
 
 La fenêtre garde les données du moment de son ouverture (heure indiquée) : changer de
 fiche, de teinte ou d’étiquette dans la fenêtre principale ne modifie ni ce qui est

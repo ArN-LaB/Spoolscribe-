@@ -1,190 +1,61 @@
-# Writing RFID tags
+# Prepare and export an NFC label
 
-[Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
+[Help home](Home.md) · [Printer setup](Printers-and-Readers.md) · [Companion and QR](Companion-and-QR.md)
 
-**One file, one compatible tag, then a read-back check.**
+## 1. Select the real reference and destination
 
-| SpoolScribe | NFC writing app | Compatible reader |
-| --- | --- | --- |
-| Select a filament → export a file | Write an NDEF MIME record → read it back | Check the detected material and colour |
+Check the colour and spool size, then choose the reader, installed software,
+format and tag type. **NTAG215/216** describes tag capacity; it does not prove
+that a printer understands the selected data format.
 
-**v0.8.0 is a [pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).**
-Choose the printer first in **My hardware**, then combine the reader/software
-buttons and confirm the installed solution. The result distinguishes printer
-recognition from external inventory; only eligible formats are offered.
-[Check the exact setup and prerequisites](Printers-and-Readers.md).
+<p align="center">
+  <a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/hardware.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/hardware.png" alt="Match the complete reader setup" width="780"></a>
+</p>
+<p align="center"><strong>Match the complete reader setup</strong><br><sub>The firmware or external integration must accept the chosen format.</sub></p>
 
-| Format | Exported file | Writing application |
-| --- | --- | --- |
-| **OpenSpool 1.0** | UTF-8 JSON, MIME `application/json` | SpoolFlux or a compatible OpenSpool writer |
-| **OpenTag3D 2.004** | NFC Tools mobile or Desktop profile containing binary data | Import as a profile in the matching NFC Tools app; not as plain JSON text |
-| **OpenTag3D, expert output** | Raw `.ndef` message, MIME `application/opentag3d` | A writer that explicitly imports raw NDEF |
+## 2. Resolve missing information
 
-SpoolScribe prepares files, not physical tags. It does not write chip memory pages,
-change a Capability Container or associate a hardware UID. Native/proprietary
-manufacturer tags and OpenPrintTag are not generated. An external integration
-is a different configuration from the original printer reader.
+OpenSpool needs the selected record’s required identification fields. OpenTag3D
+also needs explicit temperature targets. Open **Prepare the label…**, review each
+proposal for your spool/printer and confirm next to **Save**.
 
-## OpenTag3D label preparation
+An Orca U1 target is proposed only for a matching U1 profile; otherwise a known
+range can produce a clearly labelled midpoint estimate. Missing chamber heating
+is never guessed. **No heating** is an explicit choice. Valid saved settings are
+reused by the next export; **Edit** remains available when you need a change.
 
-Confirm filament mass, target nozzle/bed temperatures and chamber temperature
-explicitly in **Prepare label…**. Nothing is inferred from the middle of a range;
-a non-heated chamber is zero only when you confirm it. Temperatures use 5 °C steps.
-Long names and unrepresentable values are refused, not silently truncated or rounded.
+<p align="center">
+  <a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/opentag-temperatures.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/opentag-temperatures.png" alt="Review temperature proposals" width="850"></a>
+</p>
+<p align="center"><strong>Review temperature proposals</strong><br><sub>Suggestions are not confirmed until you validate them.</sub></p>
 
-The binary payload is 224 bytes, complete NDEF 248, and tag occupancy 251 before
-writer additions: 245 bytes remain on NTAG215 and 621 on NTAG216, before your reserve.
-The size of a base64 JSON file is not its occupancy on the tag.
+## 3. Choose the next action
 
-[Full OpenTag3D guide and validation limits](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/OPENTAG3D.md).
-Physical import, writing and printer acceptance remain untested here for these additions.
-[Share a test or a problem](https://github.com/ArN-LaB/Spoolscribe-/issues/new?template=printer_compatibility.yml).
-
-## OpenSpool export profiles
-
-| Choice | Use it for |
+| Your next step | Action |
 | --- | --- |
-| **Essential · recommended** | A compact NFC payload with the supported filament fields. |
-| **Full · advanced** | Extra names and brand metadata, when capacity allows. |
-| **Readable archive** | An indented reference copy; not intended for writing verbatim to a tag. |
+| Use a compatible NFC writing application | **Export for NFC**, then choose the output directory |
+| Transfer to the future mobile Companion | **Show QR Code — SpoolScribe Companion** |
+| Inspect the data first | **Show JSON** for OpenSpool, **Show export** for OpenTag3D |
+| Locate the saved result | **Show file** after a successful export |
 
-<details>
-<summary><strong>Profile fields and command-line options</strong></summary>
+OpenSpool exports UTF-8 JSON. The standard Desktop OpenTag3D path exports the
+raw NDEF message; choose another writing app only if it supports that exact file
+and record format. Legacy file containers remain a CLI compatibility feature.
+No third-party writing application is preferred over Companion.
 
-- **Essential** — the recommended profile and the default (`auto`): protocol and
-  version, material type and subtype, brand, representative HEX, explicit alpha
-  and additional colours, nozzle and bed ranges, diameter and density. This is
-  the compact set supplied to compatible readers. SpoolScribe checks the actual payload against the selected tag and writing reserve before export.
-- **Full** — an explicit choice under **My hardware → Advanced settings** (or
-  `--nfc-profile full`): the essential fields plus the reference, product and colour names and
-  brand metadata (website, logo URL). Larger; extra names/branding do not replace the slicer profile.
-  Unknown metadata is omitted, never written as `null`.
-- **Readable archive** (**Export JSON archive…**): all
-  full-profile fields, indented, under an `_archive.json` filename. It may
-  exceed a tag's capacity and is not meant to be written verbatim.
+<p align="center">
+  <a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/export-details.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/export-details.png" alt="Check readiness and capacity" width="780"></a>
+</p>
+<p align="center"><strong>Check readiness and capacity</strong><br><sub>Available space applies to the selected format and tag.</sub></p>
 
-No colour or printing value is ever dropped to make an export fit: an oversized
-export is refused before anything is written.
+## 4. Write, read back, then try the reader
 
-CLI: `python -m spoolscribe.convert_profile` (interactive; `--export-format nfc` by default,
-`--export-format archive` for the archive), with `--tag-type NTAG215|NTAG216`,
-`--nfc-profile auto|essential|full` and `--reserve-bytes N`. `--compact` only
-changes the terminal display. `--brand`, `--material` and typed references are
-case-insensitive.
+Desktop prepares the file; it does not write the physical chip. Use a compatible
+writer or Companion when available, read the tag back and check it on your actual
+reader. A successful file export is not proof that a printer accepted the tag.
 
-The NFC inspector (**Show JSON**) uses the same serializer as the NFC
-file: what you see is what is written.
+If capacity is insufficient, reduce optional OpenSpool metadata or choose a larger
+tag if the reader supports it. Keep any writer-specific space reservation required
+by that writer. A zero reservation does not prove no additional bytes will be added.
 
-</details>
-
-## Choose your tag
-
-| Chip | User memory | Standard declared NDEF area |
-| --- | --- | --- |
-| **NTAG215** | 504 bytes | **496 bytes** |
-| **NTAG216** | 888 bytes | **872 bytes** |
-
-The app checks the complete payload against the selected tag and writing reserve.
-An export that does not fit is refused; colours and printing values are not silently dropped.
-
-<details>
-<summary><strong>Technical details: NDEF, byte budget and writer reserve</strong></summary>
-
-NTAG215/216 are chip models, not byte counts. NTAG215 has 504 bytes of user
-memory and its standard CC `E1103E00` declares 496 bytes for NDEF. NTAG216 has
-888 bytes of user memory and CC `E1106D00` declares 872 bytes. See the
-[NXP data sheet, sections 8.5.4–8.5.6](https://www.nxp.com/docs/en/data-sheet/NTAG213_215_216.pdf).
-
-For OpenSpool, use one **NDEF MIME `application/json` record** containing UTF-8 JSON, as in
-[OpenSpool](https://github.com/spuder/OpenSpool). A plain NDEF Text record is not
-accepted by the OpenRFID revision bundled in Paxx12-24.
-
-SpoolScribe counts the UTF-8 JSON bytes, the complete MIME record and its Type 2
-TLV plus terminator, assuming no record ID and no additional record. For a JSON
-payload of 256 bytes or more the budget is JSON bytes plus 22 bytes of NDEF
-header plus 5 bytes of TLV/terminator; shorter records use their shorter headers. The
-4-byte CC is outside the declared area and is not counted.
-
-The card shows the remaining margin for the chosen tag. The optional writer
-reserve (**Advanced settings**) subtracts the bytes your writer may add; a zero
-reserve does not mean that SpoolFlux or another writer adds nothing. The writer
-must check the tag's actual writable capacity and read the tag back.
-
-</details>
-
-## Colours: what to confirm
-
-| Colour state | What to do |
-| --- | --- |
-| **Unknown** | Enter an explicit representative HEX or cancel. |
-| **Conflicting sources** | Compare the shades in the card and confirm yours. |
-| **Transparent / multicolour** | Check the explicit source colours; reader support varies. |
-
-<details>
-<summary><strong>Alpha, additional colours and reader limitations</strong></summary>
-
-An unknown HEX never becomes black automatically. At export, enter an explicit
-six-character representative HEX or cancel; the value is saved locally. A
-source HEX that contradicts the colour name (black for "White") is flagged
-*Needs review* and must be confirmed in the card first.
-
-For transparency, an optional explicit `alpha` is available: `00` transparent,
-`FF` opaque. No alpha or colour is inferred from a product name. Explicit
-`additional_color_hexes` are retained, but not all readers use them: Paxx12-24
-OpenRFID uses alpha and ignores additional colours; it also ignores the exported
-density and bed temperatures and derives the bed temperature from its own table.
-Their presence in the JSON does not guarantee that a printer applies them.
-
-For imported multicolour records the source colours are shown in the colour
-dialog; choosing a representative HEX keeps the others. More than four
-additional colours, or an incompatible per-colour alpha, block export rather
-than being truncated.
-
-The OpenSpool version stays `1.0`. Temperatures are exported as integers,
-diameter/density as positive numbers, HEX as six uppercase characters.
-
-</details>
-
-## Digital QR transfer (SSQR1, v0.6.0 pre-release)
-
-**Show QR Code…**, below **Show JSON** and **Show file**, displays the complete NDEF message of
-the current export as one QR Code, with no server or link. It follows the export
-state exactly and can be saved as PNG/SVG. The digital SSQR1 contract is validated
-for OpenSpool 1.0 and OpenTag3D 2.004; existing system-printing controls are outside
-this validation. Printing, Bluetooth and physical acceptance are deferred.
-An ordinary QR reader only shows a transfer text; programming a tag from it is
-planned for a future companion app that does not exist yet. Dense codes are
-refused when the available printable width is too small, rather than shrunk. [QR transfer format](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/QR_FORMAT.md).
-
-[![Digital SSQR1 QR with PNG SVG saving in v0.8.0](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/qr-transfer.png)](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/qr-transfer.png)
-
-Digital section of the real window; existing printing controls are omitted here.
-[Step-by-step illustrated QR workflow](Visual-Tour.md#4-carry-the-complete-message-in-a-qr).
-
-## Write, read back, check
-
-1. In **My hardware**, choose the printer/reader and its firmware, the tag
-   (NTAG215 or NTAG216), optionally the profile and the writer reserve under
-   **Advanced settings**. These choices apply to the current session; **Set as default** next to the tag selector keeps them for later launches (CLI:
-   `--save-nfc-default`).
-2. Export the NFC file and check its size estimate in the card.
-3. Use the matching writer: OpenSpool JSON is MIME `application/json`; OpenTag3D
-   profiles must be imported by NFC Tools, or the raw NDEF file by a supported writer.
-4. Program the tag and read it back.
-5. Check the printer's detected brand, material and colour.
-
-<details>
-<summary><strong>Diagnosis: empty TLV, Capability Container and parser reference</strong></summary>
-
-`0300FE` denotes an empty NDEF TLV; it is not filament data. A reader error
-about CC `E1107F00` concerns tag formatting/compatibility. Neither is proof of a
-SpoolScribe defect; a JSON export cannot repair a tag's CC.
-
-The audit simulated the parser pinned by
-[Paxx12-24](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/v2.0.0-paxx12-24/overlays/firmware-extended/64-app-openrfid/pre-scripts/01-install-openrfid.sh),
-[OpenRFID a13bc9e](https://github.com/suchmememanyskill/OpenRFID/blob/a13bc9e181374e182f61db4e69abf9fa1786cc29/src/tag/openspool/processor.py).
-Physical iPhone/tag/printer acceptance remains a separate check.
-
-</details>
-
-[Check compatibility](Printers-and-Readers.md) · [Get help](FAQ.md)
+[QR help](Companion-and-QR.md) · [OpenTag3D details](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/OPENTAG3D.md)

@@ -1,11 +1,11 @@
 # SpoolScribe roadmap
 
-Current stable: **[v0.3.5](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.3.5)**,
-published 1 November 2026. This free-time project has no delivery deadlines.
+Current Desktop stable: **[v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0)**,
+promoted 5 November 2026 with unchanged binaries. [Release policy](RELEASE_POLICY.md). This free-time project has no delivery deadlines.
 
 ## Delivered in v0.3.5
 
-- [x] English, French, Spanish and Simplified Chinese UI; system detection and English fallback.
+- [x] English, Français, Español and 简体中文 UI; system detection and English fallback.
 - [x] Saved language choice and Restart now / Later after a change.
 - [x] Linked manufacturer/material filters and compatible choice counts.
 - [x] Clear-search control and explicit Refresh catalogue action.
@@ -64,7 +64,7 @@ reconnaissance par le firmware. La validation matérielle reste à effectuer.
 - [New pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.5.0): colour proximity with explicit inclusive limits, protected in-card editing, compact provenance and guided export.
 - Unified filters, visual printer choices, documented photos and content-aware dialogs.
 - [Validation](validation/v0.5.0.md) separates software checks from real printer/RFID acceptance.
-- v0.3.5 stays stable. Broader physical feedback is needed before promoting this development line.
+- At that publication, v0.3.5 stayed stable. The later v0.8.0 promotion separates software stability from hardware evidence.
 - Autonomous QR and any Spoolman bridge remain separate work; neither is included in this release.
 
 ## v0.6.0 — SSQR1 digital transfer, pre-release
@@ -74,7 +74,7 @@ reconnaissance par le firmware. La validation matérielle reste à effectuer.
 - [Validation](validation/v0.6.0.md) distinguishes independent software scans from
   physical phone, tag and printer acceptance. No NFC protocol or compatibility extension.
 - Companion remains a separate future project. Printing, D101 and Bluetooth are deferred.
-- v0.3.5 remains stable; v0.5.0 and previous tags remain unchanged.
+- At that publication, v0.3.5 remained stable. Earlier tags and binaries stay unchanged.
 
 ## v0.7.0 — colour measurements, pre-release
 
@@ -86,9 +86,9 @@ reconnaissance par le firmware. La validation matérielle reste à effectuer.
 - [Guide](COLOUR_MEASUREMENTS.md) · [Validation and remaining limits](validation/v0.7.0.md).
 - No instrument SDK, USB/Bluetooth driver or Companion development in this step.
   Authentic manufacturer exports and physical colour/RFID acceptance remain untested.
-- v0.3.5 remains the latest stable release.
+- At that publication, v0.3.5 was the latest stable release; v0.8.0 now supersedes it.
 
-## v0.8.0 — colour and QR journey refinements, pre-release
+## v0.8.0 — colour and QR journey refinements, Desktop stable
 
 - Guided Lab/RGB/file entry and explicit, user-declared device presets.
 - Temporary ΔE list column, simpler cards and dialogs that grow and shrink.

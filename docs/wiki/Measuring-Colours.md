@@ -1,39 +1,76 @@
-# Lab, RGB or a file: use a reference colour
+# Find a filament from colour values
 
-[Home](Home.md) · [Visual tour](Visual-Tour.md) · [Download v0.8.0 Pre-release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0)
+[Help home](Home.md) · [Filaments](Filaments-and-Favourites.md) · [Settings](Settings.md)
 
-**Keep a reference colour without changing the filament catalogue.**
-Open **Colours → Lab, RGB or file…**.
+## Start with a HEX code
 
-| 1. Choose an entry | 2. Check the interpretation | 3. Save or search |
+Enter a code or pick a swatch in **Colours**, then click **Compare**. Your other
+filters still apply. The closest declared catalogue colours appear first.
+
+<p align="center">
+  <a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-search.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-search.png" alt="Compare declared screen colours" width="1100"></a>
+</p>
+<p align="center"><strong>Compare declared screen colours</strong><br><sub>A smaller ΔE means a closer match.</sub></p>
+
+**Maximum ΔE 3** means **ΔE ≤ 3**, not “around 3” or a percentage. A value 3.04
+is excluded at 3 and included at 10. Displayed distances are rounded upward to
+the hundredth; the threshold uses the calculated value. Effects, gloss and
+transparency can change the printed result. **Remove** clears the colour comparison.
+Change the limit through **Maximum difference** or **Settings → Colours**.
+
+## Use Lab, RGB or a file
+
+The **Lab, RGB or file…** button is for values copied from another application,
+a document or a measuring device. Desktop does not control a device or take a measurement.
+
+| Your values | Choose | What to check |
 | --- | --- | --- |
-| **Enter:** HEX, RGB or CIELAB from your source. **Paste:** labelled text. **Import:** a CSV/TSV file you select. | Confirm the values, conditions and principal colour set. For files, confirm encoding, separator, decimal mark and columns. | Save to the local registry, or use an eligible value as an indicative target. A smaller ΔE means closer declared catalogue colours. |
+| HEX or RGB | sRGB HEX or 8-bit RGB | RGB uses integers 0–255. Do not enter Display P3/Adobe RGB as sRGB. |
+| L*, a*, b* | CIELAB | Copy the illuminant and observer from the source. Do not guess them. |
+| Text copied from an application | Paste | Review the interpreted set. Editing the text invalidates the previous interpretation. |
+| CSV/TSV file | Import | Confirm encoding, separator, decimals and mapped columns before saving. |
 
-## Can this value be compared?
+<p align="center">
+  <a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-lab.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-lab.png" alt="Enter documented Lab values" width="800"></a>
+</p>
+<p align="center"><strong>Enter documented Lab values</strong><br><sub>D65 and 2° are required for indicative catalogue comparison.</sub></p>
 
-| What you have | What the app does |
-| --- | --- |
-| A confirmed HEX or RGB sRGB code | Shows an indicative match against declared screen colours. |
-| CIELAB with D65 and 2° documented by the source | Uses the original Lab coordinates for an indicative search. |
-| Unknown conditions, D50, 10° or other conditions | Keeps the value; explains why ranking is unavailable. Do not guess missing conditions. |
+Unknown conditions, D50 or 10° can be **saved**, but cannot be ranked against the
+catalogue. D65/2° is not inferred from a device’s name. Optional sample information
+helps you recognise an entry later; it does not turn a declared HEX into a physical measurement.
 
-The catalogue contains declared HEX codes, not physical measurements. Gloss,
-translucency, printing and preparation can change the result. No match is a
-certificate of the printed colour.
+<p align="center">
+  <a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-paste.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-paste.png" alt="Review copied values" width="800"></a>
+</p>
+<p align="center"><strong>Review copied values</strong><br><sub>Choose the intended set before saving or searching.</sub></p>
+<p align="center">
+  <a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-import.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-import.png" alt="Check a file before import" width="850"></a>
+</p>
+<p align="center"><strong>Check a file before import</strong><br><sub>The input file is never modified.</sub></p>
 
-## Your saved references
+## Reuse device entry settings explicitly
 
-**Saved** lets you rename, link to an exact filament reference, detach, delete
-and restore a backup. Original values and provenance remain available. The
-registry is a separate local file; linking never replaces a catalogue HEX or
-changes an NFC/SSQR1 export. Editing numbers creates a new measurement.
+Under optional information, record the device and documented conditions, then
+**Save these settings…**. At a later entry, select the preset and click **Use these
+settings**. A default only proposes the preset: it does not silently apply it.
+Calibration, sample preparation, date and colour coordinates are never reused.
 
-An invalid RGB channel such as `RGB 116 202 191,5` is refused; it is never
-rounded or silently cut down to 191. A rejected import requires correction or
-an explicit partial-import decision before any write.
+<p align="center">
+  <a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/device-preset.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/device-preset.png" alt="Remember entry settings" width="800"></a>
+</p>
+<p align="center"><strong>Remember entry settings</strong><br><sub>A device preset is not a driver or a calibration.</sub></p>
 
-P1 adds no USB/Bluetooth connection, instrument SDK or certified manufacturer
-export format. Generic CSV/TSV support does not imply validation with a device.
-[Full guide and scientific limits](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COLOUR_MEASUREMENTS.md) · [Validation](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.8.0.md).
+## Save and find a reference again
 
-Device entry presets can be saved and explicitly reapplied. Their name never implies calibration or D65/2° conditions. Comparison adds a dedicated ΔE column in list view; it disappears when comparison stops.
+**Saved** keeps the original values and conditions. Select an entry to search,
+rename, link to an exact filament reference, detach or delete it. Registry backup
+restoration is explicit. Measurements and device presets live beside the user
+catalogue, not inside the installer or the settings export.
+
+<p align="center">
+  <a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-saved.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/colour-saved.png" alt="Keep identifiable reference values" width="800"></a>
+</p>
+<p align="center"><strong>Keep identifiable reference values</strong><br><sub>Equal colour values can still be different saved references.</sub></p>
+
+[Full scientific limits and file bounds](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COLOUR_MEASUREMENTS.md).
+No USB/Bluetooth driver, instrument certification or proprietary device format support is implied.

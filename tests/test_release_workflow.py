@@ -100,13 +100,13 @@ class ReleasePublicationTests(unittest.TestCase):
         self.assertIn('--prerelease=true', edits[0])
         self.assertIn('--latest=false', edits[0])
 
-    def test_v070_workflow_publishes_non_draft_without_replacing_stable(self):
+    def test_authorised_channels_preserve_historical_candidates_and_promote_v080(self):
         from types import SimpleNamespace
         workflow = (ROOT / '.github/workflows/build.yml').read_text(encoding='utf-8')
         channel = next(line for line in workflow.splitlines() if 'RELEASE_PRERELEASE:' in line)
         expression = channel.split('${{', 1)[1].split('}}', 1)[0].strip()
         expression = expression.replace('||', ' or ').replace('&&', ' and ')
-        for tag, expected in (('v0.8.0', True), ('v0.7.0', True), ('v0.3.5', False)):
+        for tag, expected in (('v0.8.0', False), ('v0.7.0', True), ('v0.3.5', False), ('v0.9.0-rc.1', True)):
             with self.subTest(tag=tag):
                 # Evaluate the actual, constant workflow condition, not a forced channel.
                 prerelease = eval(expression, {'__builtins__': {}}, {
