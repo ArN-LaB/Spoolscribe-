@@ -3,7 +3,7 @@
 <table width="100%">
 <tr>
 <td width="12%" valign="middle"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/spoolscribe-animated.gif" alt="SpoolScribe logo" width="72" height="72"></td>
-<td width="88%" valign="middle"><h3>From filament catalogue to NFC label</h3><p>Find a reference, compare colours, prepare an export and keep your own values safe. Choose a task below to follow the steps at your pace.</p><p><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1"><strong>Download stable v0.8.1</strong></a> · <a href="Visual-Tour.md">See the interface</a> · English · French · Spanish · Simplified Chinese</p></td>
+<td width="88%" valign="middle"><h3>From filament catalogue to NFC label</h3><p>Find a reference, compare colours, prepare an export and keep your own values safe. Choose a task below to follow the steps at your pace.</p><p><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1"><strong>Download stable v0.8.1</strong></a> · <a href="Visual-Tour.md">See the interface</a> · English · Français · Español · 简体中文</p></td>
 </tr>
 </table>
 

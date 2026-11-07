@@ -109,3 +109,5 @@ Place the original detailed test tables, full hashes and historical notes in one
 clearly labelled collapsed section. Do not delete evidence to shorten the page.
 Verify the wide desktop rendering and a narrow view; GitHub controls the outer
 page width, padding and sidebar, which release Markdown cannot override.
+
+Display language-choice labels in their own language: **English · Français · Español · 简体中文**. Surrounding explanations remain English; native language labels are intentional, not untranslated explanatory prose.

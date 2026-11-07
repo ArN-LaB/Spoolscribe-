@@ -8,7 +8,7 @@ The sections below record the capabilities and limits at each historical stage.
 
 ## Delivered in v0.3.5
 
-- [x] English, French, Spanish and Simplified Chinese UI; system detection and English fallback.
+- [x] English, Français, Español and 简体中文 UI; system detection and English fallback.
 - [x] Saved language choice and Restart now / Later after a change.
 - [x] Linked manufacturer/material filters and compatible choice counts.
 - [x] Clear-search control and explicit Refresh catalogue action.

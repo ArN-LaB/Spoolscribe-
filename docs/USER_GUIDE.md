@@ -7,7 +7,7 @@ The same workflows are available in all four application languages.
 
 ## Interface language
 
-SpoolScribe supports English, French, Spanish and Simplified Chinese. Automatic
+SpoolScribe supports English, Français, Español and 简体中文. Automatic
 uses a supported system language, otherwise English. Choose a language in
 **Settings → Interface**, save, then restart now or later. Data, favourites and
 preferences are retained. Filament names and external technical diagnostics are

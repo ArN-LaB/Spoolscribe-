@@ -2,7 +2,7 @@
 
 <h1 align="center">SpoolScribe <sub>v0.8.1</sub></h1>
 <p align="center"><strong>Find your filament. Prepare its NFC label.</strong></p>
-<p align="center">Windows · macOS · Linux<br>English · French · Spanish · Simplified Chinese</p>
+<p align="center">Windows · macOS · Linux<br>English · Français · Español · 简体中文</p>
 <p align="center">
   <a href="https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1"><img src="https://img.shields.io/badge/v0.8.1-stable-008899" alt="v0.8.1 stable"></a>
   <a href="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml"><img src="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml/badge.svg?branch=main" alt="Build and tests"></a>
