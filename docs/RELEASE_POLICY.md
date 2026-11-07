@@ -73,10 +73,10 @@ Use the same reading order for every release:
 | Section | Reader's question | Content |
 | --- | --- | --- |
 | Opening summary | What is this version for? | A short version-specific explanation and original publication/channel |
-| What changes for you | Why would I use it? | Connected paragraphs describing actual workflows and benefits |
-| Download and run | Which file do I need? | Platform/ZIP/checksum table and attested signing/system requirements |
-| Validation and limits | What is proven? | Actual evidence, skips, known limits and no invented hardware certification |
-| Further reading | Where do I learn more? | Current help and exact historical validation links when available |
+| What's new | Why would I use it? | Three concise, version-specific workflow explanations |
+| Download | Which file do I need? | Three platform cards with ZIP size, checksum and attested system requirements |
+| Validation & limits | What is proven? | Visible outcomes and limits; long evidence in one collapsed record |
+| Help & next steps | Where do I learn more? | Installation, help and support links with a short explanation |
 
 Keep the main explanation in paragraphs rather than dumping commit lists. Use
 tables for genuine comparisons. Long original technical records may be retained
@@ -84,3 +84,28 @@ in a clearly labelled collapsed details section; explain that old “latest stab
 statements describe the original publication stage. Do not hide failures or
 promote unmeasured coverage to PASS. Keep the same section titles across versions,
 and never give an old binary today's notarisation claim.
+
+## Release presentation rules
+
+Use a short native release title such as **v0.8.1 · Backups & recovery**. Do not
+repeat it as an H1 in the body. The repository header already identifies the
+product; avoid repeating “SpoolScribe Desktop” in every title, section or link.
+Keep original asset names and historical quotations intact.
+
+Write each prose paragraph on one source line in release bodies. GitHub's release
+renderer turns embedded line endings into visible breaks; wrapping source at
+80 characters produces narrow blocks even in a wide viewport. Let the browser
+wrap paragraphs naturally. Intentional line breaks belong only in small labels,
+code and data that actually require them.
+
+Use GitHub-supported HTML tables with `width="100%"`, equal-percentage cells and
+`valign="top"` for short feature, platform and help cards. Keep the cards concise,
+use semantic headings and links, and check the sanitised GitHub rendering rather
+than assuming arbitrary CSS or fixed-width spacers will work. Do not use scripts,
+inline styles, decorative blank images or manually padded spaces to force width.
+
+Keep known failures, unsupported coverage and important safety limits visible.
+Place the original detailed test tables, full hashes and historical notes in one
+clearly labelled collapsed section. Do not delete evidence to shorten the page.
+Verify the wide desktop rendering and a narrow view; GitHub controls the outer
+page width, padding and sidebar, which release Markdown cannot override.
