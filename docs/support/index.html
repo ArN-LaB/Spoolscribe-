@@ -1,42 +1,36 @@
 <!DOCTYPE html>
-<html lang="en" data-title-en="Support — SpoolScribe Companion" data-title-fr="Assistance — SpoolScribe Companion">
+<html lang="en" data-title-en="Support — SpoolScribe Companion">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="color-scheme" content="light dark">
 <title>Support — SpoolScribe Companion</title>
-<meta name="description" content="Help for the SpoolScribe Companion mobile prototype: what it does today, FAQ and how to report a problem, in English and French.">
+<meta name="description" content="Help for the SpoolScribe Companion mobile prototype: what it does today, FAQ and how to report a problem, in English.">
 <link rel="icon" href="../assets/spoolscribe.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/companion-public.css">
-<script src="../assets/companion-public.js" defer></script>
+<script src="../assets/companion-public.js?v=english-20261108" defer></script>
 </head>
 <body>
-<a class="skip-link" href="#content"><span data-l="en" lang="en">Skip to content</span><span class="lang-sep" aria-hidden="true"> / </span><span data-l="fr" lang="fr">Aller au contenu</span></a>
+<a class="skip-link" href="#content"><span data-l="en" lang="en">Skip to content</span></a>
 
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="../"><img src="../assets/spoolscribe.svg" alt="" width="36" height="36"><span>SpoolScribe Companion</span></a>
     <nav class="site-nav" aria-label="Site">
       <ul>
-        <li><a href="../support/" data-keep-lang aria-current="page"><span data-l="en" lang="en">Support</span><span class="lang-sep" aria-hidden="true"> / </span><span data-l="fr" lang="fr">Assistance</span></a></li>
-        <li><a href="../privacy/" data-keep-lang><span data-l="en" lang="en">Privacy</span><span class="lang-sep" aria-hidden="true"> / </span><span data-l="fr" lang="fr">Confidentialité</span></a></li>
-        <li><a href="https://github.com/ArN-LaB/Spoolscribe-"><span data-l="en" lang="en">Project on GitHub</span><span class="lang-sep" aria-hidden="true"> / </span><span data-l="fr" lang="fr">Projet sur GitHub</span></a></li>
-      </ul>
-    </nav>
-    <nav class="lang-switch" aria-label="Language / Langue">
-      <ul>
-        <li><a href="#en" hreflang="en" lang="en" data-lang-switch="en">English</a></li>
-        <li><a href="#fr" hreflang="fr" lang="fr" data-lang-switch="fr">Français</a></li>
+        <li><a href="../support/" data-keep-lang aria-current="page"><span data-l="en" lang="en">Support</span></a></li>
+        <li><a href="../privacy/" data-keep-lang><span data-l="en" lang="en">Privacy</span></a></li>
+        <li><a href="https://github.com/ArN-LaB/Spoolscribe-"><span data-l="en" lang="en">Project on GitHub</span></a></li>
       </ul>
     </nav>
   </div>
 </header>
 
 <main id="content" class="wrap" tabindex="-1">
-  <h1><span data-l="en" lang="en">Support</span><span class="lang-sep" aria-hidden="true"> · </span><span data-l="fr" lang="fr">Assistance</span></h1>
+  <h1><span data-l="en" lang="en">Support</span></h1>
 
-  <!-- ===================== ENGLISH ===================== -->
+  <!-- English content; legacy French section links are redirected by the local script. -->
   <article id="en" class="lang-block" lang="en" data-l="en">
     <div class="notice">
       <p><strong>Updated <time datetime="2026-11-05">5 November 2026</time>.</strong>
@@ -151,129 +145,13 @@
       <p>Writing by e-mail is voluntary; how those messages and this app’s data are handled: <a href="../privacy/#en" data-keep-lang>Companion privacy policy</a>.</p>
     </section>
   </article>
-
-  <!-- ===================== FRANÇAIS ===================== -->
-  <article id="fr" class="lang-block" lang="fr" data-l="fr">
-    <div class="notice">
-      <p><strong>Mise à jour du <time datetime="2026-11-05">5 novembre 2026</time>.</strong>
-      Companion est en développement et n’a pas encore de téléchargement officiel. Cette page décrit le prototype de développement&nbsp;; SpoolScribe Desktop dispose de sa propre documentation.</p>
-    </div>
-
-    <nav class="card toc" aria-label="Sur cette page">
-      <h2>Sur cette page</h2>
-      <ul>
-        <li><a href="#fr-about">Ce qu’est Companion</a></li>
-        <li><a href="#fr-flow">De Desktop à la puce</a></li>
-        <li><a href="#fr-devices">Téléphones et puces</a></li>
-        <li><a href="#fr-faq">Questions fréquentes</a></li>
-        <li><a href="#fr-report">Signaler un problème</a></li>
-        <li><a href="#fr-contact">Contact</a></li>
-      </ul>
-    </nav>
-
-    <section id="fr-about" class="card">
-      <h2>Ce qu’est Companion</h2>
-      <p>SpoolScribe Companion est le compagnon mobile de SpoolScribe Desktop. Desktop prépare l’étiquette NFC d’une bobine de filament et peut l’afficher sous forme de QR code SSQR1. Companion est destiné à scanner ce QR, à le vérifier, à écrire le même message NFC sur une puce puis à le relire.</p>
-      <p>Companion n’est pas un catalogue&nbsp;: il affiche uniquement le contenu du QR. Les filaments se choisissent et se modifient dans SpoolScribe Desktop.</p>
-      <div class="actions">
-        <a class="button button-primary" href="https://github.com/ArN-LaB/Spoolscribe-/releases/latest">SpoolScribe Desktop — dernière version</a>
-        <a class="button" href="https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COMPANION.md" hreflang="en">Disponibilité de Companion</a>
-      </div>
-      <p class="meta">Au moment de la rédaction, la dernière version de Desktop est la v0.8.0&nbsp;; il s’agit d’une version de Desktop, pas de Companion.</p>
-    </section>
-
-    <section id="fr-flow" class="card">
-      <h2>De Desktop à la puce</h2>
-      <p>Le parcours prévu, et ce que le prototype actuel fait réellement à chaque étape&nbsp;:</p>
-      <ol class="steps">
-        <li><span class="step-title">Dans SpoolScribe Desktop, sélectionnez un filament, puis la commande «&nbsp;Afficher le QR Code…&nbsp;».</span><br>
-          <span class="status">Disponible dans Desktop</span></li>
-        <li><span class="step-title">Scanner le QR avec Companion.</span><br>
-          <span class="status">Pas encore disponible</span> Le scanner par caméra n’est pas branché dans ce prototype.</li>
-        <li><span class="step-title">Vérifier le transfert et afficher l’aperçu de l’étiquette.</span><br>
-          <span class="status">Implémenté</span> Le décodage, le contrôle d’intégrité, la validation du format et l’aperçu fonctionnent dans l’app. Sans scanner, ils ne peuvent être essayés qu’avec des textes de démonstration dans les versions de développement.</li>
-        <li><span class="step-title">Écrire la puce NFC et la relire.</span><br>
-          <span class="status status-sim">Simulation uniquement</span> Aucune puce n’est programmée. Chaque résultat porte la mention «&nbsp;SIMULATION&nbsp;».</li>
-      </ol>
-      <p>Une app générique de lecture de QR peut afficher le texte de transfert, mais elle ne programme pas de puce et n’ouvre pas forcément Companion.</p>
-    </section>
-
-    <section id="fr-devices" class="card">
-      <h2>Téléphones et puces</h2>
-      <p>Aucun modèle de téléphone, aucune version de système d’exploitation ni aucune puce NFC n’est encore confirmé comme compatible avec Companion, et aucune version minimale n’est publiée. Les types de puces cités dans la documentation d’OpenSpool et d’OpenTag3D (comme NTAG215/216) sont des exemples propres à ces formats, pas des garanties pour Companion.</p>
-      <p>Le prototype ne demande pas d’accès à la caméra ni au NFC.</p>
-    </section>
-
-    <section id="fr-faq" class="card">
-      <h2>Questions fréquentes</h2>
-
-      <h3 id="fr-faq-ssqr1">Qu’est-ce qu’un QR SSQR1, et pourquoi un lecteur ordinaire ne programme-t-il pas ma puce&nbsp;?</h3>
-      <p>SSQR1 est le format de transfert de SpoolScribe&nbsp;: le texte <code>SSQR1:</code> suivi de données Base45 contenant le message NFC complet (OpenSpool 1.0 ou OpenTag3D 2.004), sa longueur et une empreinte SHA-256 — sans serveur ni lien. Un lecteur de QR générique affiche seulement ce texte. Écrire une puce nécessite une app qui décode et valide le message puis utilise le NFC du téléphone, rôle prévu pour Companion. Détails&nbsp;: <a href="https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/QR_FORMAT.md" hreflang="en">contrat SSQR1</a> (en anglais).</p>
-
-      <h3 id="fr-faq-camera">Pourquoi le bouton caméra est-il indisponible&nbsp;?</h3>
-      <p>Ce prototype n’utilise pas encore la caméra&nbsp;; le bouton l’indique. Le scan réel est prévu dans une phase ultérieure. Aucune date n’est annoncée.</p>
-
-      <h3 id="fr-faq-refused">Que vérifie SHA-256, et pourquoi mon QR est-il refusé&nbsp;?</h3>
-      <p>Companion recalcule l’empreinte SHA-256 du message NFC décodé et la compare à celle du QR. Un texte endommagé ou modifié, un préfixe erroné, des caractères invalides, un texte trop long ou un contenu qui n’est pas un OpenSpool 1.0 ou un OpenTag3D 2.004 valide est refusé, et aucune donnée d’étiquette n’en est affichée. Affichez de nouveau le QR dans SpoolScribe Desktop. SHA-256 détecte les modifications&nbsp;; il ne prouve pas qui a créé le QR et ne le chiffre pas.</p>
-
-      <h3 id="fr-faq-fields">Pourquoi un champ ou une référence manque-t-il, ou diffère-t-il entre OpenSpool et OpenTag3D&nbsp;?</h3>
-      <p>Les deux formats transportent des champs différents. Companion affiche les valeurs reçues dans le QR, telles quelles, pour ce format&nbsp;: il ne les fusionne pas avec une autre source, ne reconstruit pas un nom manquant et ne remplit pas un champ vide. Une valeur absente est affichée comme non fournie.</p>
-      <p>Les références en sont un exemple. Dans SpoolScribe Desktop v0.8.0, le <code>sku</code> OpenSpool est la référence de catalogue utilisée lors de la préparation de l’étiquette, tandis que le <code>sku</code> OpenTag3D provient de la référence du fabricant. Les deux ne sont pas interchangeables.</p>
-
-      <h3 id="fr-faq-simulation">Que signifient les résultats simulés&nbsp;?</h3>
-      <p>Dans le prototype, chaque écriture est une simulation, signalée par «&nbsp;SIMULATION — aucune puce programmée&nbsp;». Les versions de développement peuvent choisir une issue — réussite, absence de puce, format non pris en charge, puce en lecture seule, capacité insuffisante, écriture interrompue, relecture différente, NFC indisponible — pour montrer la réaction de l’app. Une réussite simulée signifie seulement que la relecture simulée correspondait aux octets attendus en mémoire. Ces résultats ne sont pas des mesures d’un téléphone ou d’une puce réels.</p>
-
-      <h3 id="fr-faq-hardware">Quels téléphones et quelles puces sont confirmés&nbsp;?</h3>
-      <p>Aucun pour l’instant. Voir <a href="#fr-devices">Téléphones et puces</a>.</p>
-
-      <h3 id="fr-faq-report">Comment signaler un problème&nbsp;?</h3>
-      <p>Voir <a href="#fr-report">Signaler un problème</a>.</p>
-    </section>
-
-    <section id="fr-report" class="card">
-      <h2>Signaler un problème</h2>
-      <p>Canal privilégié&nbsp;: écrivez à SpoolScribe Support, <a href="mailto:spoolscribe@arnlab.simplelogin.com">spoolscribe@<wbr>arnlab.simplelogin.com</a>. Commencez l’objet par <code>Companion — </code>.</p>
-      <div class="actions">
-        <a class="button button-primary" href="mailto:spoolscribe@arnlab.simplelogin.com">Écrire à SpoolScribe Support</a>
-      </div>
-      <p>Facultatif, pour un problème public qui ne contient rien de sensible&nbsp;: ouvrez une issue sur le dépôt GitHub de SpoolScribe. Ses formulaires sont partagés avec SpoolScribe Desktop et rédigés en anglais&nbsp;: commencez le titre par <code>Companion — </code> et décrivez l’app mobile dans le corps du message. Un compte GitHub est nécessaire pour ouvrir une issue&nbsp;; les issues existantes se lisent sans compte.</p>
-      <div class="actions">
-        <a class="button" href="https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose">Ouvrir une issue GitHub</a>
-        <a class="button" href="https://github.com/ArN-LaB/Spoolscribe-/issues">Lire les issues existantes</a>
-      </div>
-      <p>Merci d’indiquer&nbsp;:</p>
-      <ul>
-        <li>la version ou le build de Companion utilisé (ou la révision du code source si vous l’avez compilé vous-même)&nbsp;;</li>
-        <li>le système d’exploitation et sa version&nbsp;;</li>
-        <li>le modèle de téléphone, ou le simulateur&nbsp;;</li>
-        <li>le protocole&nbsp;: OpenSpool 1.0 ou OpenTag3D 2.004&nbsp;;</li>
-        <li>pour un futur essai avec une puce réelle&nbsp;: le type de puce et sa capacité annoncée&nbsp;;</li>
-        <li>les étapes, le résultat attendu et le résultat observé.</li>
-      </ul>
-      <p><strong>Les issues sont publiques.</strong> Utilisez un exemple synthétique. Ne publiez jamais dans une issue un QR confidentiel, un catalogue personnel, des identifiants ou des données personnelles&nbsp;; si un signalement nécessite des détails privés, envoyez-le plutôt par e-mail.</p>
-      <p>Il s’agit d’un projet personnel&nbsp;: aucun délai de réponse n’est garanti.</p>
-      <p>Failles de sécurité&nbsp;: signalez-les en privé via le <a href="https://github.com/ArN-LaB/Spoolscribe-/security/advisories/new">signalement de vulnérabilité GitHub</a>, pas dans une issue publique.</p>
-    </section>
-
-    <section id="fr-contact" class="card">
-      <h2>Contact</h2>
-      <p>ArN-LaB est le nom public du projet. Son développeur et éditeur est établi en France.</p>
-      <ul>
-        <li>Aide technique (canal privilégié)&nbsp;: SpoolScribe Support, <a href="mailto:spoolscribe@arnlab.simplelogin.com">spoolscribe@<wbr>arnlab.simplelogin.com</a>.</li>
-        <li>Questions de confidentialité et demandes privées&nbsp;: ArN-LaB Privacy, <a href="mailto:privacy@arnlab.simplelogin.com">privacy@<wbr>arnlab.simplelogin.com</a>.</li>
-        <li>Contact général&nbsp;: ArN-LaB Support, <a href="mailto:support@arnlab.simplelogin.com">support@<wbr>arnlab.simplelogin.com</a>.</li>
-        <li>Problèmes publics sans rien de sensible (facultatif)&nbsp;: <a href="https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose">Issues GitHub</a>.</li>
-      </ul>
-      <p>Écrire par e-mail est volontaire&nbsp;; traitement de ces messages et des données de l’app&nbsp;: <a href="../privacy/#fr" data-keep-lang>politique de confidentialité de Companion</a>.</p>
-    </section>
-  </article>
 </main>
 
 <footer class="site-footer">
   <div class="wrap">
-    <p><span data-l="en" lang="en">SpoolScribe Companion is part of the <a href="https://github.com/ArN-LaB/Spoolscribe-">SpoolScribe project</a> by ArN-LaB.</span><span class="lang-sep" aria-hidden="true"> </span><span data-l="fr" lang="fr">SpoolScribe Companion fait partie du <a href="https://github.com/ArN-LaB/Spoolscribe-">projet SpoolScribe</a> d’ArN-LaB.</span></p>
-    <p><span data-l="en" lang="en">SpoolScribe logo and source code: © 2026 SpoolScribe contributors, <a href="https://github.com/ArN-LaB/Spoolscribe-/blob/main/LICENSE">MIT License</a>. Manufacturer names and marks belong to their owners.</span><span class="lang-sep" aria-hidden="true"> </span><span data-l="fr" lang="fr">Logo et code source de SpoolScribe&nbsp;: © 2026 SpoolScribe contributors, <a href="https://github.com/ArN-LaB/Spoolscribe-/blob/main/LICENSE" hreflang="en">licence MIT</a>. Les noms et marques de fabricants appartiennent à leurs titulaires.</span></p>
-    <p><a href="../support/" data-keep-lang><span data-l="en" lang="en">Support</span><span class="lang-sep" aria-hidden="true"> / </span><span data-l="fr" lang="fr">Assistance</span></a> · <a href="../privacy/" data-keep-lang><span data-l="en" lang="en">Privacy</span><span class="lang-sep" aria-hidden="true"> / </span><span data-l="fr" lang="fr">Confidentialité</span></a></p>
+    <p><span data-l="en" lang="en">SpoolScribe Companion is part of the <a href="https://github.com/ArN-LaB/Spoolscribe-">SpoolScribe project</a> by ArN-LaB.</span></p>
+    <p><span data-l="en" lang="en">SpoolScribe logo and source code: © 2026 SpoolScribe contributors, <a href="https://github.com/ArN-LaB/Spoolscribe-/blob/main/LICENSE">MIT License</a>. Manufacturer names and marks belong to their owners.</span></p>
+    <p><a href="../support/" data-keep-lang><span data-l="en" lang="en">Support</span></a> · <a href="../privacy/" data-keep-lang><span data-l="en" lang="en">Privacy</span></a></p>
   </div>
 </footer>
 </body>

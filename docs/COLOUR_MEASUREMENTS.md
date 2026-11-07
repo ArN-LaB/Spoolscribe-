@@ -6,7 +6,7 @@ or a physical printed colour. [Validation and limits](validation/v0.8.0.md).
 
 ## What it does
 
-From *Teintes* → **Lab, RGB ou fichier…** the user can:
+From *Colours* → **Lab, RGB or file…** the user can:
 
 1. **Enter** a HEX sRGB code, 8-bit RGB channels or CIELAB coordinates
    (decimal point or comma, never a thousands separator).
@@ -51,14 +51,14 @@ From *Teintes* → **Lab, RGB ou fichier…** the user can:
    progressive “more details” of the manual entry, the pasted-text conditions
    or the CSV columns. A small swatch previews a confirmed HEX/RGB code; a
    Lab value never gets a preview.
-6. **Use a measurement as target** of *Teintes proches*. The target is the
+6. **Use a measurement as target** of *Nearby colours*. The target is the
    acquisition itself (identifier and name), never its colour alone: two
    saved measurements with equal values are two targets; distances already
    computed for the same values are reused, the identity is not.
 
 ## Colour entry and navigation in v0.8.0
 
-**Lab, RGB ou fichier…** opens **Valeurs couleur : Lab, RGB, fichier**: the
+**Lab, RGB or file…** opens **Colour values: Lab, RGB, file**: the
 application uses entered values or imported readings; it does not measure through
 a connected device. Colour ranking has a dedicated **ΔE distance** column in
 list view, automatically shown only while comparison is active. Card headings keep
@@ -106,8 +106,8 @@ continues to exclude these device presets and measurements.
 
 | Measurement | Ranking against the catalogue | Level shown |
 |---|---|---|
-| HEX / RGB8 (sRGB) | unchanged HEX engine (`colour_distance.rank`) | Proximité indicative |
-| CIELAB, D65, 2° | original Lab vs Lab of each declared HEX, same CIEDE2000 | Proximité indicative |
+| HEX / RGB8 (sRGB) | unchanged HEX engine (`colour_distance.rank`) | Indicative proximity |
+| CIELAB, D65, 2° | original Lab vs Lab of each declared HEX, same CIEDE2000 | Indicative proximity |
 | CIELAB, D50 | none (no chromatic adaptation in P1) | Conditions insuffisantes |
 | CIELAB, 10°, other or unknown illuminant/observer | none | Conditions insuffisantes |
 | Huge finite values | none (arithmetic overflow guarded) | Conditions insuffisantes |

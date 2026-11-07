@@ -1,29 +1,27 @@
-# Ressources de l’application
+# Application resources
 
-Ce dossier contient uniquement les ressources utilisées par SpoolScribe.
-Il ne contient ni catalogue de filaments utilisateur, ni ancien export, ni profil
-de régression. [Documentation](../docs/README.md) · [Données de test](../tests/fixtures/README.md)
+This directory contains resources used by SpoolScribe, not user filament data,
+old exports or regression profiles. [Documentation](../docs/README.md) ·
+[Test data](../tests/fixtures/README.md)
 
-| Emplacement | Contenu et usage |
+| Location | Contents and use |
 | --- | --- |
-| `app/` | Icônes Windows/macOS/Linux et sources SVG du logo statique/animé |
-| `ui/` | Icônes SVG utilisées par les contrôles Qt |
-| `brands/manifest.json` | 147 entrées de provenance, empreintes et chemins des logos revus |
-| `brands/logos/` | 141 images référencées par le manifeste, plus le logo historique ROSA3D de repli |
-| `printers/photos/` | 15 photographies produit et leur manifeste de provenance |
-| `translations/` | Catalogue local des quatre langues et consignes de traduction |
-| `licenses/` | Licences des sources, attribution TheFilamentDB et licence BSD de Segno |
-| `printers.json` | Catalogue matériel public et embarqué ; chemin stable utilisé par les versions déjà publiées |
+| `app/` | Windows/macOS/Linux icons and static/animated logo SVG sources |
+| `ui/` | SVG icons used by Qt controls |
+| `brands/manifest.json` | 147 reviewed brand entries with provenance, hashes and logo paths |
+| `brands/logos/` | 141 manifest-referenced images plus the historical ROSA3D fallback logo |
+| `printers/photos/` | 15 product photographs and provenance manifest |
+| `translations/` | Local four-language catalogue and translation guidance |
+| `licenses/` | Source licences, TheFilamentDB attribution and Segno BSD licence |
+| `printers.json` | Public/bundled hardware catalogue at a stable path used by released versions |
 
-Plusieurs entrées de marque peuvent référencer une même image **strictement
-identique**, sans dupliquer les octets ni perdre les noms et sources de provenance.
-Les anciens chemins de logos restent lisibles via `scripts/resource_paths.py` :
-les fichiers personnels ne sont ni déplacés, ni écrasés.
+Several brand entries may share one **byte-identical** image without duplicating
+bytes or losing names/provenance. Legacy logo paths remain readable through
+`scripts/resource_paths.py`; personal files are neither moved nor overwritten.
+Catalogues, audits, Orca profiles and the historical TheFilamentDB snapshot live
+in `tests/fixtures/` with their prior hashes unchanged. User data stays in the
+normal system-specific data folder, outside the repository.
 
-Les catalogues, audits, profils Orca et l’instantané historique TheFilamentDB sont
-dans `tests/fixtures/`, avec leurs empreintes antérieures inchangées.
-La base de l’utilisateur reste dans son dossier système habituel, hors du dépôt.
-
-Le packaging utilise une liste de ressources déclarées ; une image ajoutée sans
-référence dans les manifestes n’est pas embarquée. Le contrôle du dépôt refuse
-les ressources orphelines et les images binaires identiques en double.
+Packaging uses explicitly declared resources. An image added without a manifest
+reference is not bundled. Repository checks reject orphan resources and duplicate
+binary images.

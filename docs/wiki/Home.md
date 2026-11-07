@@ -1,7 +1,7 @@
 # SpoolScribe help · v0.8.1
 
 <p align="center"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/spoolscribe-animated.gif" alt="SpoolScribe animated logo" width="80" height="80"></p>
-<p align="center"><strong>Choose what you want to do.</strong><br><sub>English · Français · Español · 简体中文</sub></p>
+<p align="center"><strong>Choose what you want to do.</strong><br><sub>English · French · Spanish · Simplified Chinese</sub></p>
 
 | Your task | Step-by-step help |
 | --- | --- |

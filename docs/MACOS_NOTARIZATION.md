@@ -1,141 +1,160 @@
-# Signer et notariser SpoolScribe pour macOS (procédure locale)
+# Sign and notarise SpoolScribe for macOS locally
 
-[Développement](DEVELOPMENT.md) · [Politique de versions](RELEASE_POLICY.md) · [Installation personnelle](LOCAL_MACOS_INSTALL.md)
+[Development](DEVELOPMENT.md) · [Release policy](RELEASE_POLICY.md) · [Personal installation](LOCAL_MACOS_INSTALL.md)
 
-Cette procédure produit la distribution macOS **hors Mac App Store** : signature
-Developer ID, Hardened Runtime, notarisation Apple, ticket staplé, puis
-`SpoolScribe-macos.zip`. Elle est **locale d'abord** et pilotée par
-[`packaging/macos_notarize.py`](../packaging/macos_notarize.py) (bibliothèque standard).
+This procedure creates a macOS distribution **outside the Mac App Store**:
+Developer ID signature, Hardened Runtime, Apple notarisation, a stapled ticket
+and `SpoolScribe-macos.zip`. It runs **locally first**, using the standard-library
+[`packaging/macos_notarize.py`](../packaging/macos_notarize.py) tool.
 
-État des versions : v0.8.0 reste historiquement signée ad hoc et **non notarisée**.
-La release v0.8.1 utilise un nouveau build local Developer ID, notarisé et staplé ;
-les résultats exacts sont consignés dans la [validation v0.8.1](validation/v0.8.1.md).
-Le [workflow](../.github/workflows/build.yml) ne signe ni ne notarise. Cette procédure ne publie
-rien, ne crée ni tag ni release et ne remplace aucun fichier existant. Le pilote couvre **arm64
-seulement** ; Intel/universal2 et les versions de macOS en deçà du minOS relevé ne sont pas promis.
+The historical v0.8.0 archive remains ad hoc signed and **not notarised**.
+v0.8.1 uses a new local Developer ID build, notarised and stapled; exact results
+are recorded in [v0.8.1 validation](validation/v0.8.1.md).
+The [workflow](../.github/workflows/build.yml) does not apply Developer ID signing
+or notarisation. This local tool publishes nothing, creates no tag/release and
+replaces no existing file. Its pilot covers **arm64 only**; Intel/universal2 and
+macOS versions below the measured minOS are not promised.
 
-## Prérequis à réunir par le titulaire du compte
+## Prerequisites supplied by the account holder
 
-1. Xcode, `notarytool`, `stapler` et un interpréteur **Python 3.12** arm64 explicite.
-2. Une identité **Developer ID Application** valide, avec sa clé dans le trousseau.
-   Apple Development, Apple Distribution, Developer ID Installer et la signature ad hoc sont refusés.
-   Le sujet d'un certificat de compte individuel peut afficher le **nom légal** du titulaire, lisible
-   dans tout binaire distribué : relire ce sujet en privé et accepter cette conséquence avant diffusion.
-3. Un profil `notarytool` créé par le titulaire, par saisie interactive (aucun mot de passe en option) :
+Use Xcode, `notarytool`, `stapler` and an explicit arm64 **Python 3.12** interpreter.
+A valid **Developer ID Application** identity and its private key must be in the
+keychain. Apple Development, Apple Distribution, Developer ID Installer and ad
+hoc identities are refused. An individual-account certificate may expose the
+holder's **legal name** in every distributed signed binary: review the subject
+privately and accept that consequence before distribution.
 
-   ```sh
-   xcrun notarytool store-credentials "spoolscribe-notary-local"
-   ```
-
-La procédure ne crée aucun certificat, n'exporte aucune clé, ne modifie ni trousseau ni compte
-Apple. Elle reçoit seulement l'empreinte SHA-1 de l'identité choisie et le **nom** du profil.
-
-## Étapes
-
-Lancer l'outil depuis le checkout relu ; `WS` est un dossier **neuf**, absolu, hors du checkout et
-hors stockage synchronisé (iCloud, Proton Drive, File Provider). Il est créé en mode 0700 avec un
-marqueur ; les étapes suivantes refusent tout autre dossier, lien ou copie déplacée.
+The account holder creates a `notarytool` profile interactively, without putting
+a password in a command argument:
 
 ```sh
-PY312=/chemin/python3.12
-WS=/chemin/prive/spoolscribe-notarisation-AAAAMMJJ
-python3 -B packaging/macos_notarize.py preflight --python "$PY312" [--identity SHA1] [--profile NOM]
-python3 -B packaging/macos_notarize.py prepare --workspace "$WS" --commit SHA_COMPLET --python "$PY312"
+xcrun notarytool store-credentials "spoolscribe-notary-local"
+```
+
+The tool creates no certificate, exports no key and changes neither the keychain
+nor the Apple account. It receives only the selected identity's SHA-1 fingerprint
+and the profile **name**.
+
+## Procedure
+
+Run from the reviewed checkout. `WS` must be a **new absolute folder**, outside
+the checkout and synchronised storage (iCloud, Proton Drive, File Provider).
+It is created with mode 0700 and an ownership marker. Later steps refuse another
+folder, a symlink or a moved copy.
+
+```sh
+PY312=/path/python3.12
+WS=/private/path/spoolscribe-notarisation-YYYYMMDD
+python3 -B packaging/macos_notarize.py preflight --python "$PY312" [--identity SHA1] [--profile PROFILE]
+python3 -B packaging/macos_notarize.py prepare --workspace "$WS" --commit FULL_SHA --python "$PY312"
 python3 -B packaging/macos_notarize.py build    --workspace "$WS"
 python3 -B packaging/macos_notarize.py inspect  --workspace "$WS"
 python3 -B packaging/macos_notarize.py probes   --workspace "$WS"
 python3 -B packaging/macos_notarize.py sanitize --workspace "$WS"
-# Étapes réseau/Apple : chacune exige l'accord explicite du pilote et sa propre confirmation.
+# Each signing/Apple/network step needs explicit pilot authorisation and its confirmation.
 python3 -B packaging/macos_notarize.py sign     --workspace "$WS" --identity SHA1 --confirm-signing
 python3 -B packaging/macos_notarize.py probes   --workspace "$WS"
-python3 -B packaging/macos_notarize.py notarize --workspace "$WS" --profile NOM --confirm-submission
+python3 -B packaging/macos_notarize.py notarize --workspace "$WS" --profile PROFILE --confirm-submission
 python3 -B packaging/macos_notarize.py staple   --workspace "$WS" --confirm-stapling
 python3 -B packaging/macos_notarize.py package  --workspace "$WS"
 python3 -B packaging/macos_notarize.py assess   --workspace "$WS" --confirm-assessment
 python3 -B packaging/macos_notarize.py status   --workspace "$WS"
 ```
 
-Codes de sortie : 0 étape réussie ; 1 bloqué ; 2 usage ; 3 **READY TO NOTARIZE — PRÉREQUIS
-HUMAINS MANQUANTS** (outillage présent, identité ou profil absent) ; 4 **PENDING**.
+Exit codes: **0** success; **1** blocked; **2** usage error; **3** tooling ready
+but human identity/profile prerequisites missing; **4 PENDING**. The tool may
+print its historical French wording for some statuses; the numeric contract is unchanged.
 
-| Étape | Ce qu'elle fait | Ce qu'elle ne fait jamais |
+| Step | Performs | Never performs |
 | --- | --- | --- |
-| `preflight` | Outils, interpréteur, nombre d'identités par type | Build, signature, appel Apple, profil deviné |
-| `prepare` | `git archive` du commit approuvé, contrôle blob par blob, venv privée au snapshot `requirements-build.txt` | Déplacer une ref, inclure des changements non commités |
-| `build` | PyInstaller avec la spec inchangée, cache PyInstaller privé | Réutiliser le `dist/` du checkout |
-| `inspect` | Mach-O par en-tête, `lipo`, `otool` (minOS/SDK, rpaths, dépendances), liens, Info.plist, ressources, plan de signature | Modifier le candidat |
-| `probes` | Oracles QA installés après PyInstaller, quatre sondes gelées hors ligne, candidat inchangé | Lancer sur un candidat staplé |
-| `sanitize` | Retire `com.apple.FinderInfo` / `com.apple.ResourceFork` de la copie neuve | Toucher le checkout ou la quarantaine |
-| `sign` | Code imbriqué puis bundles, de l'intérieur vers l'extérieur, `--options runtime --timestamp` | `--deep` pour signer, ad hoc, entitlements par défaut |
-| `notarize` | ZIP de soumission privé, envoi, attente bornée, `info`, lecture du journal | Mot de passe en argument, renvoi automatique |
-| `staple` | `stapler staple` + `validate` + `codesign --verify --deep --strict` | Stapler un ZIP, re-signer après stapling |
-| `package` | `ditto -c -k --norsrc --noextattr --keepParent`, `.sha256` après création, extraction neuve vérifiée | Changer le workflow si le ticket est perdu |
-| `assess` | `spctl --assess --type execute -vvv` sur une nouvelle extraction | Prétendre mesurer l'essai utilisateur |
+| `preflight` | Tools, interpreter and identity counts by type | Build, signing, Apple request or guessing a profile |
+| `prepare` | Approved `git archive`, blob-by-blob verification and private pinned build venv | Moving a ref or including uncommitted changes |
+| `build` | PyInstaller with the unchanged spec and private cache | Reusing the checkout's `dist/` |
+| `inspect` | Mach-O headers, `lipo`, `otool` (minOS/SDK, rpaths, dependencies), symlinks, Info.plist, resources and signing plan | Modifying the candidate |
+| `probes` | QA oracles installed after PyInstaller; four offline frozen checks; candidate unchanged | Running on an already stapled candidate |
+| `sanitize` | Removes `com.apple.FinderInfo` / `com.apple.ResourceFork` from the fresh copy | Touching the checkout or quarantine |
+| `sign` | Nested code then bundles, inside out, with `--options runtime --timestamp` | Signing with `--deep`, ad hoc identity or default entitlements |
+| `notarize` | Private submission ZIP, upload, bounded wait, `info` and log examination | Password arguments or automatic resubmission |
+| `staple` | `stapler staple`, `validate`, `codesign --verify --deep --strict` | Stapling a ZIP or re-signing afterwards |
+| `package` | `ditto -c -k --norsrc --noextattr --keepParent`, checksum and verified fresh extraction | Changing the workflow if a ticket is lost |
+| `assess` | `spctl --assess --type execute -vvv` on a fresh extraction | Claiming a standard-user walkthrough was measured |
 
-## Garde-fous de signature et de notarisation
+## Signing and notarisation safeguards
 
-- Inventaire par format Mach-O, pas par extension. Les frameworks Qt sont signés par
-  version (`Versions/A`, etc.) ; les liens (`Versions/Current`, alias racine) sont conservés et
-  jamais signés. Un lien cassé, absolu, en boucle ou sortant du bundle bloque la suite, comme une
-  dépendance absolue hors système.
-- Les frameworks QtQml/QtQuick embarqués par le plugin de clavier virtuel ne sont pas retirés.
-  Leur présence ne justifie **aucune** exception JIT. Aucun entitlement par défaut ; une exception
-  (`allow-jit`, `allow-unsigned-executable-memory`, `disable-library-validation`) exige un échec
-  reproduit, documenté et validé, puis s'applique à l'app seulement. `get-task-allow` est interdit.
-- Vérification de chaque objet : type Developer ID Application, chaîne Developer ID, équipe unique,
-  drapeau `runtime`, `Timestamp` sécurisé (un `Signed Time` seul est refusé), entitlements embarqués.
-  Chaque lecture doit avoir réussi avant d'être interprétée : une extraction d'entitlements en échec,
-  expirée ou partielle bloque, elle ne vaut jamais « aucun entitlement ». Une exception approuvée vaut
-  pour l'app et son exécutable principal, aucun autre objet. Les sorties détaillées restent privées.
-- Statut Apple : seul `Accepted` avec un journal relu (identifiant, empreinte du ZIP soumis,
-  issues, couverture `ticketContents`) permet le stapling. Les types du journal sont validés avant
-  toute normalisation : un champ absent ou `null` est admis, une valeur trompeuse (`{}`, `false`,
-  `0`, `""`) est une erreur de schéma. `Invalid`, statut inconnu, JSON inattendu ou erreur
-  d'authentification bloquent ; `--acknowledge-log-warnings` ne lève qu'un avertissement relu,
-  jamais une erreur.
-- Une attente interrompue ou expirée vaut **PENDING**. Reprendre avec l'identifiant conservé :
+Inventory follows the Mach-O format, not filename extensions. Qt frameworks are
+signed by version (`Versions/A`, etc.); symlinks (`Versions/Current`, root aliases)
+are preserved and never signed. Broken, absolute, cyclic or escaping links block
+progress, as does a non-system absolute dependency.
 
-  ```sh
-  python3 -B packaging/macos_notarize.py notary-status --workspace "$WS" --profile NOM \
-      --confirm-apple-query [--wait-timeout 30m]
-  ```
+QtQml/QtQuick frameworks bundled by the virtual-keyboard plugin are retained.
+Their presence does not justify a JIT exception. No entitlements are added by
+default. An exception (`allow-jit`, `allow-unsigned-executable-memory`,
+`disable-library-validation`) needs a reproduced, documented and approved failure
+and applies only to the app. `get-task-allow` is forbidden.
 
-- Toute modification du candidat après signature invalide la suite : reconstruire dans un nouvel espace.
+Every object is checked for Developer ID Application type, Developer ID chain,
+a single team, the `runtime` flag, a secure `Timestamp` (a mere `Signed Time` is
+refused) and embedded entitlements. Every read must succeed before interpretation:
+a failed, timed-out or partial entitlement extraction blocks progress; it never
+means “no entitlements”. An approved app exception covers only the app and its
+main executable. Detailed outputs stay private.
 
-## Gatekeeper et essai utilisateur standard (manuel)
+Only Apple **Accepted**, with the log examined for submission identifier,
+submitted-ZIP digest, issues and `ticketContents` coverage, permits stapling.
+Log types are validated before normalisation: absent or `null` is allowed where
+documented; deceptive values (`{}`, `false`, `0`, `""`) are schema errors.
+`Invalid`, unknown status, unexpected JSON or authentication failure blocks the
+procedure. `--acknowledge-log-warnings` acknowledges reviewed warnings, never errors.
 
-`spctl` accepté ne prouve pas le parcours réel. Sur un Mac ou un compte **standard** n'ayant jamais
-approuvé SpoolScribe, avec Gatekeeper actif : télécharger le ZIP par un navigateur (quarantaine
-effective), extraire, lancer depuis le Finder, noter les dialogues. Refaire un lancement hors ligne.
-Avant tout lancement de test, isoler les données :
+An interrupted or expired wait remains **PENDING**. Resume the retained submission
+without uploading again:
 
 ```sh
-export SPOOLSCRIBE_DATA_HOME=/chemin/test/donnees
-export SPOOLSCRIBE_CONFIG_PATH=/chemin/test/config.json
+python3 -B packaging/macos_notarize.py notary-status --workspace "$WS" --profile PROFILE \
+    --confirm-apple-query [--wait-timeout 30m]
 ```
 
-Sans cet environnement, consigner **NON MESURÉ**. Ne jamais retirer la quarantaine pour obtenir un PASS.
+Any candidate modification after signing invalidates subsequent steps. Rebuild
+in a new private workspace.
 
-## Traces
+## Gatekeeper and standard-user walkthrough
 
-`WS/logs/` et `WS/private/` (journaux de commandes, journal notarial, sujet de l'identité,
-sorties `codesign -dvvv`, `spctl`) restent privés, hors dépôt, hors Pages et hors archive.
-Les sorties partageables (terminal, `status`, `WS/summary.md`) ne montrent que des catégories
-d'un vocabulaire fermé, des compteurs et l'emplacement privé du détail : jamais le texte d'un
-diagnostic Apple, une identité, une équipe ou un chemin personnel. Une erreur interne inattendue
-affiche seulement son type ; sa trace va dans `WS/private/`.
+An accepted `spctl` assessment does not prove the real first-launch journey.
+On a Mac or **standard account** that has never approved SpoolScribe, keep
+Gatekeeper enabled, download the ZIP in a browser (effective quarantine), extract
+it and launch from Finder. Record the dialogs and repeat a launch offline.
+Isolate data before any test launch:
 
-## Intégration CI future (non réalisée)
+```sh
+export SPOOLSCRIBE_DATA_HOME=/test/path/data
+export SPOOLSCRIBE_CONFIG_PATH=/test/path/config.json
+```
 
-Après un pilote local validé, et par un mandat séparé : étape macOS de confiance avant le packaging
-et son checksum, environnement GitHub protégé, aucun secret sur PR/fork, trousseau temporaire et
-supprimé en fin de job, aucune clé dans le dépôt, les journaux ou les artefacts (base64 n'est pas
-un chiffrement), permissions globales `contents: read` conservées. Un échec de signature ou de
-notarisation devra empêcher toute release partielle. Une distribution notarisée utilisera une
-nouvelle version ; ne jamais relancer un ancien tag pour remplacer ses fichiers.
+Without that environment, record **NOT MEASURED**. Never remove quarantine to
+obtain a PASS.
 
-Références Apple : [notarisation](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution),
-[workflow personnalisé](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow),
-[problèmes courants](https://developer.apple.com/documentation/security/resolving-common-notarization-issues),
+## Evidence and privacy
+
+`WS/logs/` and `WS/private/` contain command logs, the notarisation log, certificate
+subject, `codesign -dvvv` and `spctl` details. They stay private, outside the
+repository, Pages and archives. Shareable output (terminal, `status`,
+`WS/summary.md`) uses closed-vocabulary categories, counts and a private-detail
+location. It must not expose Apple diagnostics, identity, team or personal paths.
+An unexpected internal error prints only its type; its traceback stays in
+`WS/private/`.
+
+## Future CI integration — not implemented
+
+A separately authorised follow-up after the local pilot could add a trusted
+macOS signing step before packaging/checksums, a protected GitHub environment,
+no secrets on PRs/forks, and a temporary keychain deleted at job end. No key may
+enter the repository, logs or artifacts; base64 is not encryption. Keep global
+`contents: read`. Signing or notarisation failure must prevent a partial release.
+A notarised distribution needs a new version: never rerun an old tag to replace
+its files.
+
+Apple references: [notarisation](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution),
+[custom workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow),
+[common issues](https://developer.apple.com/documentation/security/resolving-common-notarization-issues),
 [TN2206](https://developer.apple.com/library/archive/technotes/tn2206/_index.html),
 [QA1940](https://developer.apple.com/library/archive/qa/qa1940/_index.html).

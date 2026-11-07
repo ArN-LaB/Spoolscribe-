@@ -2,7 +2,7 @@
 
 [Documentation actuelle](../README.md) · [Validation de la release v0.3.5](../validation/v0.3.5.md)
 
-Les anciens rapports intermédiaires ont été retirés de l’arborescence active. Ils restent accessibles ci-dessous dans un commit Git immuable, avec leur contenu et leurs résultats datés. Ces campagnes ne valident pas le code actuel.
+Earlier intermediate reports were removed from active navigation. The immutable Git links below retain their original content and dated results. Those campaigns do not validate the current code.
 
 ## v0.2.2
 

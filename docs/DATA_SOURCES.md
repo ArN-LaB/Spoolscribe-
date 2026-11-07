@@ -16,7 +16,7 @@ the adapter uses it and what it refuses to guess.
 | [SUNLU PLA product page](https://www.sunlu.com/products/pla-3d-printing-filament) | SUNLU | Public product page; factual values | Density, bed range, official colour codes of SUNLU PLA | Facts only |
 | [Polymaker-Preset](https://github.com/Polymaker3D/Polymaker-Preset) (optional source) | Polymaker (official) | **MIT** | OrcaSlicer profiles for the Snapmaker U1 (temperature overrides at export) | Keep the upstream notice |
 | [TheFilamentDB](https://thefilamentdb.issou.best/) (legacy, developer snapshot) | issou.best | **CC-BY 4.0** | Historical colour HEX of the curated brands (ROSA3D is absent from the snapshot: a warning, not a failure) | **Attribution required**: see `data/licenses/TheFilamentDB-ATTRIBUTION.txt` and below |
-| [Printer list](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/data/printers.json) (optional, on click) | This project | **MIT** (repository file) | Printers/readers, firmwares and tag protocols shown in **Mon matériel** | Downloaded only on request; validated; installed only when newer than the bundled copy |
+| [Printer list](https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/data/printers.json) (optional, on click) | This project | **MIT** (repository file) | Printers/readers, firmwares and tag protocols shown in **My hardware** | Downloaded only on request; validated; installed only when newer than the bundled copy |
 | Manufacturer logos | Respective brands | **Trademarks**, not covered by any of the licences above | Identification of the selected brand in the interface | Identification only; removal on request ([TRADEMARKS.md](TRADEMARKS.md)) |
 
 A new source is added as a group in `core.SOURCE_GROUPS` (name, hosts, worker
@@ -99,7 +99,7 @@ SpoolmanDB only adds manufacturers that no other source already covers.
   light colour name, a white HEX for a dark name, a nozzle temperature outside
   120–500 °C, a bed temperature outside 0–200 °C or a bed maximum of 0 °C, a
   density outside 0.5–4.0 g/cm³ or a diameter outside 1.0–3.2 mm mark the record
-  **À vérifier** in the data-state column. Export is refused until the value is
+  **Needs review** in the data-state column. Export is refused until the value is
   corrected explicitly, which also makes it yours. Only your own corrections
   (source `Utilisateur`) are exempt; fields of unknown provenance are checked
   like any source value.
@@ -248,7 +248,7 @@ including incomplete records. Counts describe that snapshot, not the total
 manufacturer range and not the number of unique selectable filaments after
 reconciliation. A successful refresh means the selected sources were processed;
 colour differences and uncertain identities can remain. The report labels this
-**Sources actualisées** and shows unresolved counts separately.
+**Sources refreshed** and shows unresolved counts separately.
 
 The native macOS package now resolves the `Frameworks/data` → `Resources/data`
 link before applying the path containment check. Historical Polymaker, Prusament
@@ -263,3 +263,10 @@ The visual workspace adds original manufacturer images for U1, X1 Carbon and
 QIDI Plus4 and a separate presentation module. These files do not change the
 filament catalogue or printer compatibility flags. They are bundled rather
 than downloaded at runtime; see [PRINTER_VISUALS.md](PRINTER_VISUALS.md).
+
+### Literal stored identifiers
+
+`Utilisateur` and the French text inside backticks in the provenance examples
+are legacy stored identifiers/messages, not English documentation headings. They
+are retained exactly to describe existing files; translating explanatory text
+does not change catalogue or protocol values.

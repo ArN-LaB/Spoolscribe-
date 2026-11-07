@@ -1,52 +1,53 @@
-# OpenSpool 1.0 est-il le seul format RFID/NFC pour imprimante 3D ?
+# Is OpenSpool 1.0 the only RFID/NFC format for 3D printers?
 
-**Non.** OpenSpool est un format de données parmi plusieurs. Une puce NFC,
-un encodage et un logiciel de lecteur compatibles sont trois conditions distinctes.
-La [version stable v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0) prépare **OpenSpool 1.0** et **OpenTag3D 2.004**, sans écrire physiquement le tag.
-Les descriptions de formats ci-dessous sont des vérifications documentaires, pas
-une certification de toutes les imprimantes.
+**No.** OpenSpool is one of several data formats. A compatible NFC chip, encoding
+and reader software are three separate requirements. The current
+[stable Desktop release](https://github.com/ArN-LaB/Spoolscribe-/releases/latest)
+prepares **OpenSpool 1.0** and **OpenTag3D 2.004** without physically writing a tag.
+The descriptions below are documentary checks, not certification of every printer.
 
-| Format | Encodage et support documentés | Export dans SpoolScribe |
+| Format | Documented encoding and medium | SpoolScribe export |
 | --- | --- | --- |
-| OpenSpool 1.0 | JSON, enregistrement NDEF `application/json`, NTAG215/216. Le champ `version` vaut `1.0` dans les exemples du projet | Oui, compact pour NFC et archive complète ; mêmes règles existantes |
-| OpenTag3D | Standard distinct, version publiée 2.004 à la consultation ; structure binaire, NDEF `application/opentag3d`, NTAG215/216 selon sa spécification | Non en v0.3.5 ; [disponible en version stable v0.8.0](OPENTAG3D.md) |
-| OpenPrintTag | NDEF `application/vnd.openprinttag`, sections CBOR ; la spécification décrit ISO/IEC 15693-3/NFC-V | Non |
-| Formats des fabricants | Encodages et conditions de lecture propres aux équipements ; certains demandent des clés. La présence de RFID/NFC ne signifie pas que le lecteur accepte OpenSpool | Non, sauf lecture OpenSpool par une configuration explicitement documentée |
+| OpenSpool 1.0 | JSON, one `application/json` NDEF record, NTAG215/216; project examples set `version` to `1.0` | Compact NFC output and a full archive, using the existing rules |
+| OpenTag3D | Separate standard, published version 2.004 at the time of review; binary structure, `application/opentag3d` NDEF, NTAG215/216 according to its specification | Absent in v0.3.5; [available in subsequent releases](OPENTAG3D.md) |
+| OpenPrintTag | `application/vnd.openprinttag` NDEF with CBOR sections; the specification describes ISO/IEC 15693-3/NFC-V | Not implemented |
+| Manufacturer formats | Device-specific encoding and reading requirements; some require keys. An RFID/NFC reader does not necessarily accept OpenSpool | No proprietary encoder; OpenSpool reading only for an explicitly documented setup |
 
-Sources primaires : [OpenSpool, protocole et exemple 1.0](https://github.com/spuder/OpenSpool#-openspool-protocol),
-[spécification OpenTag3D](https://opentag3d.info/spec.html),
-[format des données OpenPrintTag](https://github.com/OpenPrintTag/openprinttag-specification/blob/main/docs_src/nfc_data_format.md).
-Les numéros 1.0 d’OpenSpool et 2.004 d’OpenTag3D ne désignent pas deux versions d’un
-même format. Remplacer simplement `version` dans un JSON ne convertit pas le tag.
+Primary sources: [OpenSpool protocol and 1.0 example](https://github.com/spuder/OpenSpool#-openspool-protocol),
+[OpenTag3D specification](https://opentag3d.info/spec.html),
+[OpenPrintTag data format](https://github.com/OpenPrintTag/openprinttag-specification/blob/main/docs_src/nfc_data_format.md).
+OpenSpool 1.0 and OpenTag3D 2.004 are versions of **different formats**. Changing a
+JSON `version` value does not convert a tag.
 
-## Cas du Snapmaker U1
+## Snapmaker U1
 
-La [documentation OpenSpool du firmware étendu](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/develop/docs/design/openspool.md)
-décrit le JSON OpenSpool 1.0, ses champs et des extensions U1. Sa
-[matrice lecteurs RFID](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/develop/docs/design/rfid.md)
-documente aussi OpenRFID et d’autres formats/lecteurs : OpenSpool n’est donc pas
-le seul format décrit pour cet écosystème. Il s’agit de la branche **develop**,
-pas d’une vérification du firmware effectivement installé sur votre machine.
+The [extended firmware OpenSpool documentation](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/develop/docs/design/openspool.md)
+describes OpenSpool 1.0 JSON, its fields and U1 extensions. Its
+[RFID reader matrix](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/develop/docs/design/rfid.md)
+also documents OpenRFID and other formats/readers. OpenSpool is therefore not the
+only format described for that ecosystem. These sources are on **develop**;
+they do not verify the firmware installed on your machine.
 
-La recette doit contrôler le firmware, le système de détection choisi et le tag
-réel. L’ajout de l’encodeur OpenTag3D ne modifie pas Paxx12 et ne remplace pas un
-essai NFC physique. Les installations et leurs prérequis sont décrits dans [Imprimantes et lecteurs](wiki/Printers-and-Readers.md).
+Acceptance testing must check the actual firmware, detection system and tag.
+Adding the OpenTag3D encoder neither changes Paxx12 nor replaces a physical NFC
+test. See [Printers and readers](wiki/Printers-and-Readers.md) for setup requirements.
 
-## Conséquence pour l’interface
+## What compatibility means in the interface
 
-« Compatible SpoolScribe » indique ici la possibilité de lire son **export
-OpenSpool ou OpenTag3D**, selon la configuration. Une imprimante peut lire son propre RFID ou
-OpenPrintTag sans accepter un export OpenSpool de SpoolScribe. Consulter les fiches
-de filament reste possible dans les autres catégories.
+Compatibility with SpoolScribe means the ability to read its **OpenSpool or
+OpenTag3D export** for the selected setup. A printer may read its own RFID or
+OpenPrintTag without accepting a SpoolScribe OpenSpool export. You can still
+browse filament information for other printer categories.
 
-## Version stable v0.8.0
+[OpenTag3D 2.004 export](OPENTAG3D.md) uses a separate encoding: raw NDEF in the GUI,
+with legacy writer containers retained in the CLI/API. It does not convert
+existing OpenSpool tags or provide an OpenPrintTag encoder. Physical acceptance
+remains separate from software tests.
 
-L’[export OpenTag3D 2.004](OPENTAG3D.md) ajoute un encodage indépendant : NDEF brut dans le parcours graphique, avec anciens conteneurs d’écriture conservés dans la CLI/API. Il ne transforme pas les tags OpenSpool existants et ne fournit pas d’encodeur OpenPrintTag. La recette physique reste distincte des tests logiciels.
+## SSQR1 transports the selected format
 
-## Le QR SSQR1 transporte le format choisi
-
-SSQR1 n’est pas un troisième format NFC : il transporte **le message NDEF entier**
-OpenSpool ou OpenTag3D, sans le convertir. Le QR reste numérique, affichable et
-enregistrable en PNG/SVG. Le futur Companion devra le décoder avant d’écrire la
-puce ; un lecteur QR ordinaire n’effectue pas cette écriture.
-[Contrat numérique](QR_FORMAT.md) · [Exemple visuel](wiki/Companion-and-QR.md).
+SSQR1 is not a third NFC format. It carries the **complete OpenSpool or OpenTag3D
+NDEF message** without converting it. The digital QR can be displayed or saved
+as PNG/SVG. A Companion implementation must decode it before writing a chip;
+a generic QR reader does not perform that write.
+[Digital contract](QR_FORMAT.md) · [Illustrated workflow](wiki/Companion-and-QR.md).

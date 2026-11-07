@@ -37,16 +37,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pre-release — colour and QR workflow refinements
 
-- OpenTag3D : les réglages déjà enregistrés et valides sont réutilisés à l’export et dans l’aperçu, sans confirmation répétée ; la modification explicite reste disponible.
-- Exemple de référence commerciale en italique pour le support 62 × 100 mm, sans correspondance universelle imposée.
+- OpenTag3D: valid saved settings are reused for export and preview without repeated confirmation; explicit editing remains available.
+- An italic commercial-reference example for 62 × 100 mm paper, without imposing a universal product mapping.
 
-- Colonne ΔE temporaire en vue liste ; nom fabricant non répété dans les tuiles.
-- Accès « Lab, RGB ou fichier… », distinct du champ HEX, avec saisie et import guidés.
-- Fenêtres recalculées au dépliage et au repli ; hauteur des informations QR adaptée au contenu.
-- Parcours de mesure guidé, conditions CIELAB regroupées et détails facultatifs compacts.
-- Actions contextuelles par onglet et import progressif après choix du fichier.
-- Profils d’appareil déclarés par l’utilisateur, réutilisation explicite, sans calibration ni valeurs de mesure.
-- Action QR Companion distinguée par une teinte violette discrète.
+- Temporary Delta E column in list view; manufacturer names are not repeated in cards.
+- A separate Lab, RGB or file entry, distinct from HEX, with guided input and import.
+- Windows resize when sections expand/collapse; QR information height follows its content.
+- Guided measurement workflow, grouped CIELAB conditions and compact optional details.
+- Contextual tab actions and progressive import after file selection.
+- User-declared device presets with explicit reuse, excluding calibration and measurement values.
+- The Companion QR action uses a restrained purple accent.
 
 ### QR and label journey
 
@@ -73,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pre-release — colour measurements (Desktop P1)
 
-- **Mesurer / importer une couleur…** in the *Teintes* section: enter a HEX /
+- **Measure / import a colour…** in the *Colours* section: enter a HEX /
   RGB / CIELAB value, paste a labelled measurement text, or map a CSV/TSV file
   (encoding, separator, decimal mark and every column confirmed by the user).
   Measurements are kept in a separate local registry (`colour_measurements.json`
@@ -81,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (illuminant, observer, …) and provenance; they can be renamed, linked to an
   exact reference or personal copy, detached, deleted and restored. The
   catalogue, personal copies, settings and NFC/QR exports never change.
-- A measurement can be the target of *Teintes proches*: sRGB values go through
+- A measurement can be the target of *Nearby colours*: sRGB values go through
   the unchanged HEX engine; CIELAB D65/2° values are compared directly to the
   Lab of the declared catalogue HEX with the same CIEDE2000. D50, 10°, other or
   unknown conditions are stored but never ranked. Against the catalogue the
@@ -382,7 +382,7 @@ Data integrity:
 - A source that stops publishing a value never empties the local one; the case
   is reported as a conserved conflict. A refresh returning less than half of a
   source's previous references is refused before merging.
-- Source values that contradict themselves are flagged **À vérifier** and cannot
+- Source values that contradict themselves are flagged **Needs review** and cannot
   reach a tag until explicitly corrected: black HEX for a light colour name,
   white HEX for a dark one, nozzle/bed/density/diameter outside printable ranges,
   bed maximum of 0 °C. User corrections and historical entries are trusted.
@@ -395,8 +395,8 @@ Data integrity:
   failing at import; 12 new integrity tests.
 
 Synchronisation:
-- Launch refresh follows a cadence (**Paramètres**: every launch / daily (default)
-  / weekly / manual); the **Mettre à jour** button always forces a refresh. An
+- Launch refresh follows a cadence (**Settings**: every launch / daily (default)
+  / weekly / manual); the **Refresh** button always forces a refresh. An
   empty database still triggers the first download.
 - OFD, SpoolmanDB and the Bambu index send `If-None-Match`; an unchanged source
   answers 304 and the step ends immediately without re-downloading.
@@ -428,8 +428,8 @@ NFC:
   45 of the 1,008 historical exports differ only by those omitted keys (the
   fixture keeps the v0.2.2 digest and the verification note).
 - Saved NFC default: changing the tag, profile or reserve no longer rewrites
-  the default; **Définir par défaut** (next to the tag selector) stores it and
-  shows **Par défaut** when the current choice is the default. The CLI reads
+  the default; **Set as default** (next to the tag selector) stores it and
+  shows **Default** when the current choice is the default. The CLI reads
   the same default and stores one with `--save-nfc-default`.
 - CLI: `--nfc-profile auto` (default), case-insensitive `--brand`/`--material`
   and reference lookup, strict argument parsing, empty-database hint for
@@ -440,9 +440,9 @@ Interface:
   disabled fields look disabled, quick-access manufacturers are chips, the
   column chooser is a labelled button, and Ctrl+F / Ctrl+E / Ctrl+U / Escape
   shortcuts are available.
-- The **Référence** column shows the manufacturer article when known
+- The **Reference** column shows the manufacturer article when known
   (internal `OFD-…`/`SMDB-…` identifiers stay in the tooltip and in a separate
-  *Réf. interne* sort key); **Produit** stretches so the table fits 1440 px.
+  *Internal reference* sort key); **Product** stretches so the table fits 1440 px.
 - Typing in the search field and dragging columns/splitter no longer write the
   settings file at every event: search is debounced (180 ms) and preferences
   are written once, 700 ms after the last change. Search keys are normalised
@@ -484,16 +484,16 @@ provenance, created by an earlier preview build that bundled the catalogue):
   is the best-documented one (user > manufacturer > OFD > SpoolmanDB > legacy).
 - **Synchronisation.** An orphan historical reference no longer aborts the
   Polymaker worker (`KeyError 'Fiberon PPS-CF10'`); HTTP 429/503 are retried
-  after `Retry-After` then reported as "source saturée"; worker timeouts raised
+  after `Retry-After` then reported as "source throttled"; worker timeouts raised
   (OFD 900 s, SpoolmanDB 300 s, Polymaker 300 s, Bambu 600 s) because 2 MB
   downloads took minutes on the tested link; a report window replaces the
-  "Mise à jour partielle" box (references, ready filaments, manufacturers,
+  "Partial update" box (references, ready filaments, manufacturers,
   conserved values, pending matches, per-source table); the sources dialog
   shows each source's last result.
 - **Interface.** Sidebar with manufacturers (recent pinned, list filter,
   counts), material families and data state replaces the three dropdowns and
   quick-access chips; the card shows characteristics, references, provenance
-  and a hardware summary; **Mon matériel** (main menu / *Modifier…*) holds the
+  and a hardware summary; **My hardware** (main menu / *Edit…*) holds the
   printer/reader, firmware, tag and defaults.
 - **Printers and readers** live in `data/printers.json` (native OpenSpool,
   via external reader, proprietary, no reader) with per-firmware "reads
@@ -613,7 +613,7 @@ tidied repository.
   `pyproject.toml` is kept aligned — no more "sync the version number" releases.
 - **Reworked detail panel.** The colour preview is a labelled band showing the
   HEX directly on the swatch; characteristics live in a card; the primary
-  "Générer le tag NFC" action is emphasised with secondary actions grouped below.
+  "Generate NFC tag" action is emphasised with secondary actions grouped below.
 - **Header cleanup.** A single animated logo (no duplicate wordmark); the window
   title carries the product name.
 - **JSON inspector resizes the window** instead of overflowing, so no stray
@@ -714,7 +714,7 @@ These were same-day iterations, kept here for traceability:
 ### Changed
 - **Reworked the detail panel for clarity.** The colour preview is now a labelled
   band that displays the HEX value directly on the swatch; characteristics sit in
-  a card; the primary “Générer le tag NFC” action is emphasised with secondary
+  a card; the primary “Generate NFC tag” action is emphasised with secondary
   actions grouped below.
 
 ### Fixed

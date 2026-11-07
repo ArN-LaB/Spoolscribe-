@@ -2,7 +2,7 @@
 
 <h1 align="center">SpoolScribe <sub>v0.8.1</sub></h1>
 <p align="center"><strong>Find your filament. Prepare its NFC label.</strong></p>
-<p align="center">Windows · macOS · Linux<br>English · Français · Español · 简体中文</p>
+<p align="center">Windows · macOS · Linux<br>English · French · Spanish · Simplified Chinese</p>
 <p align="center">
   <a href="https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1"><img src="https://img.shields.io/badge/v0.8.1-stable-008899" alt="v0.8.1 stable"></a>
   <a href="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml"><img src="https://github.com/ArN-LaB/Spoolscribe-/actions/workflows/build.yml/badge.svg?branch=main" alt="Build and tests"></a>
@@ -27,7 +27,7 @@ are not all physically tested. [Validation](docs/validation/v0.8.1.md) · [Relea
 
 | System | Application | Integrity check |
 | --- | --- | --- |
-| Windows 10 / 11 · x64 | [Download ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.1/SpoolScribe-windows.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.1/SpoolScribe-windows.zip.sha256) |
+| Windows · x64 | [Download ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.1/SpoolScribe-windows.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.1/SpoolScribe-windows.zip.sha256) |
 | macOS · Apple Silicon | [Download ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.1/SpoolScribe-macos.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.1/SpoolScribe-macos.zip.sha256) |
 | Linux · x64 | [Download ZIP](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.1/SpoolScribe-linux.zip) | [SHA-256](https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.1/SpoolScribe-linux.zip.sha256) |
 

@@ -98,7 +98,7 @@ and steps to reproduce. See also [SECURITY.md](SECURITY.md) for private reports.
 ## Architecture
 
 - `src/spoolscribe/core.py` — **pure logic, no `print`/`input`**. Put business logic here.
-- `src/spoolscribe/app_gui.py`, `src/spoolscribe/ui_catalogue.py` — Qt UI only (sidebar, card, **Mon matériel**,
+- `src/spoolscribe/app_gui.py`, `src/spoolscribe/ui_catalogue.py` — Qt UI only (sidebar, card, **My hardware**,
   sources and report dialogs).
 - `src/spoolscribe/printer_profiles.py` + `data/printers.json` — printers/readers catalogue.
 - `src/spoolscribe/convert_profile.py` — terminal UI only.
@@ -134,3 +134,12 @@ application resources. [Provenance](../docs/images/README.md).
 ## Agent development traces
 
 Agents start with [docs/UNIVERSAL.md](../docs/UNIVERSAL.md) for phases, loops, human handoffs, Markdown reports, evidence and test-environment lifecycle. The technical, privacy, network, test and publication requirements above remain applicable. This documentary check does not authorize product tests, another agent or Git operations.
+
+## Public documentation language
+
+Publish repository descriptions, README/help pages, Wiki, issue/PR templates and
+release descriptions in English. The application remains multilingual. Preserve
+canonical file paths, protocol identifiers, literal input/error tokens and
+historical results; explain non-English literal values in English rather than
+changing stored data. Use the common release layout in
+[Release policy](../docs/RELEASE_POLICY.md).

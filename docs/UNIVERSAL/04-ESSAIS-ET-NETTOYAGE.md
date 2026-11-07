@@ -1,43 +1,74 @@
-# Cycle de vie universel des essais et nettoyage raisonné
+# Test-resource lifecycle and careful cleanup
 
-**Version : 4.0 — 2026-11-07.** Ces règles valent pour les copies de projet, laboratoires, clones, worktrees, caches, builds, environnements virtuels, VM, containers, navigateurs, Xcode, simulateurs et autres bancs d'essai ; elles n'imposent aucun outil spécifique.
+**Version: 4.0 — 2026-11-07.** These rules cover project copies, laboratories,
+clones/worktrees, caches/builds, virtual environments, VMs, containers, browsers,
+Xcode, simulators and other test setups without imposing a particular tool.
 
-## 1. À la création
+## 1. Register resources at creation
 
-Quand un essai crée une ressource distincte, enregistrer **immédiatement** son `T001`, le projet courant, la phase/boucle, l'objectif, l'auteur, le chemin absolu réel, la source/révision, le processus éventuel, son état et les conditions de fin de vie. Ne pas multiplier les copies complètes pour de simples tests répétables si un build isolé ou une fixture suffit.
+When a test creates a distinct resource, record its T001 identifier
+**immediately**: current project, phase/loop, objective, author, real absolute
+path, source/revision, any process, current state and end-of-life conditions.
+Do not multiply complete project copies for a repeatable test that only needs
+an isolated build or fixture.
 
-Le registre de phase est `70-REGISTRE-ESSAIS.md` ou un journal technique existant référencé depuis celui-ci. Un essai terminé n'est pas « supprimé de l'histoire » : son résultat, sa conclusion et l'emplacement de ses preuves restent lisibles.
+Use the phase's `70-REGISTRE-ESSAIS.md`, or an existing technical register linked
+from it. Completing a test does not erase its history: keep the result,
+conclusion and evidence location accessible.
 
-## 2. Après un essai, une QA ou la fin de phase
+## 2. Assess after a test, QA or phase
 
-Vérifier que les résultats utiles, erreurs, conclusions, décisions, diffs uniques et preuves nécessaires à la reproduction sont conservés **hors de la copie à nettoyer**. Préciser si la copie possède du code non intégré, des branches/commits uniques, données, secrets, profils, identifiants ou dépendances de tests encore ouverts.
+Before cleanup, retain useful results, errors, conclusions, unique diffs and
+reproduction evidence **outside the resource to be cleaned**. Identify unintegrated
+code, unique branches/commits, data, secrets/profiles/identities and dependencies
+on still-open tests.
 
-Classement :
+| Stable state code | Meaning |
+| --- | --- |
+| `ACTIF` | Used by an active process/campaign; do not touch |
+| `CONSERVER` | Essential for reproduction, pending QA or unique work |
+| `PARTAGE` | Shared across stages/projects; not an exclusive temporary resource |
+| `INCERTAIN` | Origin, diff or usefulness unproven; preserve |
+| `NETTOYABLE_APRES_ACCORD` | Redundancy/no unique content demonstrated; targeted permission pending |
+| `QUARANTAINE` | Reversible move requiring a restoration manifest; no default space-reclaimed claim |
+| `NETTOYE` | Attested deletion with exact path and measured outcome |
 
-- `ACTIF` : utilisé par un processus ou une campagne encore en cours ; ne pas toucher.
-- `CONSERVER` : essentiel à la reproduction, à une QA en attente ou unique.
-- `PARTAGE` : partagé avec d'autres étapes/projets ; ne pas traiter comme un temporaire exclusif.
-- `INCERTAIN` : origine, diff ou utilité non démontrés ; conserver en l'état.
-- `NETTOYABLE_APRES_ACCORD` : redondance et absence de valeur unique démontrées ; attente d'autorisation ciblée.
-- `QUARANTAINE` : déplacement réversible, manifeste de restauration obligatoire, **aucun gain disque revendiqué par défaut**.
-- `NETTOYE` : action de suppression attestée, chemin exact et mesure réelle du résultat.
+## 3. Who may clean what?
 
-## 3. Qui peut nettoyer quoi ?
+At execution end, close only **your own** processes, sessions, sockets, servers
+and temporary profiles with proven ownership/lifecycle. The mandate must
+authorise removing the created resource. Never stop a pre-existing user instance
+or use broad patterns, `pkill` or `killall`.
 
-**À la fin d'une exécution**, l'agent ferme uniquement **ses propres** processus, sessions, sockets, serveurs et profils temporaires, dont il a prouvé la propriété et le cycle de vie. Le mandat doit autoriser le retrait de la ressource créée. Pas de fermeture d'une instance utilisateur préexistante ni de `pkill`, `killall` ou suppression par motif large.
+After QA, permanently deleting a complete copy, VM, simulator, worktree,
+snapshot, historical shared cache or quarantine requires **separate targeted
+human permission naming the paths**, with proof of no unique work and no ongoing
+use. QA PASS or documentary closure does not imply deletion permission.
 
-**Après la QA**, une suppression permanente de copie complète, VM, simulateur, worktree, snapshot, cache historique partagé ou quarantaine demande une **autorisation humaine distincte et ciblée sur les chemins**, avec preuve de non-unicité et absence de travail en cours. Ne pas déduire une autorisation de suppression d'une QA PASS ou d'une clôture documentaire.
+Strictly regenerable caches may be purged only under explicit mandate and after
+an inactivity check. Unknown environments remain protected.
 
-Les caches strictement régénérables peuvent être purgés seulement selon l'autorisation explicite du mandat et après contrôle d'inactivité ; des environnements inconnus restent protégés.
+## 4. Copies elsewhere
 
-## 4. Copie ailleurs sur le Mac ou sur une autre machine
+Never automatically search outside the current project. A human must authorise
+the locations and inventory purpose. A similar name is not ownership evidence:
+corroborate a Git reference, creation manifest, declared origin or relevant
+content match **without inspecting neighbouring projects**. Do not follow
+out-of-root symlinks, traverse unauthorised volumes/synchronisation areas or ask
+for `sudo`.
 
-La recherche d'un clone extérieur au projet courant **n'est jamais automatique**. L'utilisateur doit autoriser explicitement les emplacements et le but de l'inventaire. Un simple nom ressemblant n'est pas une preuve d'appartenance : corroborer par une référence Git, un manifeste de création, une origine déclarée et/ou une correspondance de contenu pertinente, **sans consulter les projets voisins**. Ne pas suivre de liens symboliques hors racine, traverser des volumes/synchronisations non autorisés ou demander `sudo`.
+Distinguish parent/child projects, product copies versus a separately authorised
+Wiki repository, signed distributions versus caches, and simulator profiles
+versus simple temporary fixtures.
 
-Ne pas confondre deux projets parents et enfants, une copie du produit avec un dépôt wiki, une distribution signée et un cache de build, ou un profil de simulateur avec une simple ressource temporaire.
+## 5. Operational closure and disk space
 
-## 5. Clôture opérationnelle et espace disque
+`90-BILAN.md` summarises test outcomes once, cleaned/quarantined/protected/uncertain
+resources, restoration manifests, **bytes permanently deleted**, **observed free
+space before/after** and limits. APFS hard links, clones and snapshots mean logical
+size alone does not prove reclaimed space. Moving to Trash on the same volume
+does not reclaim it at that stage.
 
-Le `90-BILAN.md` récapitule une fois : résultats de tests ; objets nettoyés ; objets en quarantaine ; objets protégés/incertains ; manifestes pour restauration ; **octets définitivement supprimés**, **espace disque disponible observé avant/après** et limites. Sur APFS, liens durs, clones et snapshots peuvent empêcher de déduire le gain réel de la seule taille logique. Déplacer dans la Corbeille sur le même volume ne libère pas l'espace à ce stade.
-
-Aucun vidage global de Corbeille, suppression opportuniste de téléchargements/archives, ou purge générale de DerivedData, simulateurs, VMs ou snapshots. Préférer un lot consolidé d'actions qualifiées à des dizaines de micro-nettoyages. Le nettoyage doit être simple, mesuré et réversible chaque fois que possible.
+No global Trash emptying, opportunistic archive/download deletion or broad
+DerivedData/simulator/VM/snapshot purge. Prefer one consolidated qualified batch
+to dozens of small cleanups. Keep cleanup simple, measured and reversible wherever possible.

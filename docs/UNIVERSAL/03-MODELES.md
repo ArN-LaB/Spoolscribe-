@@ -1,119 +1,137 @@
-# Modèles universels pour les nouvelles traces
+# Universal templates for new traces
 
-**Version : 4.0 — 2026-11-07.** Exemples adaptables, pas des fichiers à créer intégralement à chaque fois. **Ne jamais créer une QA, une décision ou un dossier PREUVES fictifs.**
+**Version: 4.0 — 2026-11-07.** Adapt these examples; do not create every file on
+every run. **Never manufacture a QA, decision or PREUVES folder.** Canonical
+filenames, schema keys, status codes and placeholder identifiers remain unchanged.
 
 ## 1. `docs/agent-runs/INDEX.md`
 
 ```markdown
-# Historique du développement — [nom réel du projet]
+# Development history — [actual project name]
 
-| Phase (lien) | Début attesté | Objectif | État | Dernière QA | Dernière décision humaine | Prochaine action autorisée |
-|---|---|---|---|---|---|---|
-| [AAAA-MM-JJ-SUJET](AAAA-MM-JJ-SUJET/00-PHASE.md) | AAAA-MM-JJ | ... | EN_COURS | NON_REALISEE | AUCUNE | Attendre cadrage |
+| Phase | Attested start | Objective | State | Latest QA | Latest human decision | Next authorised action |
+| --- | --- | --- | --- | --- | --- | --- |
+| [AAAA-MM-JJ-SUJET](AAAA-MM-JJ-SUJET/00-PHASE.md) | YYYY-MM-DD | ... | EN_COURS | NON_REALISEE | AUCUNE | Await framing |
 
-## Dépendances / parallélismes
-- ... (seulement si attestés)
+## Dependencies and overlaps
+- ... (only when attested)
 ```
 
 ## 2. `00-PHASE.md`
 
 ```markdown
-# Phase — [objectif explicite]
+# Phase — [explicit objective]
 
-- **Début attesté :** AAAA-MM-JJ / date non établie
-- **Objectif :** ...
-- **Périmètre / hors périmètre :** ...
-- **État :** EN_COURS / EN_ATTENTE_HUMAIN / BLOQUEE / CLOTUREE / ABANDONNEE
-- **Source de la décision d'ouverture :** référence, ou NON_ETABLIE
-- **Dernière QA :** lien ou NON_REALISEE
-- **Dernière décision humaine :** lien ou AUCUNE_ETABLIE
-- **Prochaine action autorisée :** ...
+- **Attested start:** YYYY-MM-DD / date not established
+- **Objective:** ...
+- **Scope and exclusions:** ...
+- **State:** EN_COURS / EN_ATTENTE_HUMAIN / BLOQUEE / CLOTUREE / ABANDONNEE
+- **Opening decision source:** reference / NON_ETABLIE
+- **Latest QA:** link / NON_REALISEE
+- **Latest human decision:** link / AUCUNE_ETABLIE
+- **Next authorised action:** ...
 
-## Boucles réelles
+## Actual loops
 - [B01-OBJECTIF](B01-OBJECTIF/00-BOUCLE.md) — ...
 
-## Synthèse / bilan
-- [Synthèse](80-SYNTHESE.md) si créée
-- [Bilan](90-BILAN.md) si créé
+## Synthesis and assessment
+- [Synthesis](80-SYNTHESE.md) if actually created
+- [Assessment](90-BILAN.md) if actually created
 ```
 
 ## 3. `00-BOUCLE.md`
 
 ```markdown
-# Boucle B01 — [objectif]
+# Loop B01 — [objective]
 
-- **Phase :** ...
-- **But précis :** ...
-- **Statut :** EN_COURS / EN_ATTENTE_HUMAIN / QA_FAIL / QA_PASS / INCOMPLETE_ENV / TERMINEE
-- **Mandat humain :** lien / NON_ETABLI
+- **Phase:** ...
+- **Specific goal:** ...
+- **State:** EN_COURS / EN_ATTENTE_HUMAIN / QA_FAIL / QA_PASS / INCOMPLETE_ENV / TERMINEE
+- **Human mandate:** link / NON_ETABLI
 
-## Événements dans l'ordre réel
-| Date/ordre attesté | Auteur | Pièce | État de transmission / résultat |
-|---|---|---|---|
-| AAAA-MM-JJ | Codex | [Mission](02-CODEX-MISSION-CLAUDE.md) | PREPAREE, NON TRANSMISE |
+## Events in actual order
+| Attested date/order | Author | Document | Transmission/result |
+| --- | --- | --- | --- |
+| YYYY-MM-DD | Codex | [Mission](02-CODEX-MISSION-CLAUDE.md) | PREPARED, NOT TRANSMITTED |
 
-## Dernière QA, conclusion et suite
-- **Verdict et preuve :** ... / NON_REALISEE
-- **Décision humaine :** ... / EN_ATTENTE
-- **Prochaine étape permise :** ...
+## Latest QA, conclusion and next step
+- **Verdict and evidence:** ... / NON_REALISEE
+- **Human decision:** ... / EN_ATTENTE
+- **Permitted next step:** ...
 ```
 
-## 4. Métadonnées d'un rapport (`NN-AUTEUR-TYPE.md`)
+## 4. Report metadata (`NN-AUTHOR-TYPE.md`)
 
 ```yaml
 ---
-trace_id: "PROJET:PHASE:B01:02"
+trace_id: "PROJECT:PHASE:B01:02"
 phase: "AAAA-MM-JJ-SUJET"
-boucle: "B01-OBJECTIF"
+boucle: "B01-OBJECTIVE"
 sequence: 2
 auteur: "CODEX"
 fonction: "MISSION-CLAUDE"
-date: "AAAA-MM-JJ"
+date: "YYYY-MM-DD"
 statut: "PREPARE"
 transmis: false
 source_ref: "NON_ETABLI"
 ---
 ```
 
-Puis : `## Objectif`, `## Faits observés et hypothèses`, `## Périmètre et exclusions`, `## Travail demandé ou réalisé`, `## Preuves et tests`, `## Limites`, `## État et prochaine action`.
+Follow with objective, observed facts/hypotheses, scope/exclusions, requested or
+performed work, evidence/tests, limits, state and next action.
 
-### Passation Codex → Claude (facultative, après cadrage)
+### Optional Codex → Claude handoff after framing
 
-`02-CODEX-MISSION-CLAUDE.md` : objectif unique ; faits vérifiés ; base de travail et modifications préexistantes ; fichiers autorisés et exclus ; critères d'acceptation ; tests ; livrables ; **STOP et transmission humaine exclusivement**. Ne jamais écrire « transmises » avant acte humain.
+`02-CODEX-MISSION-CLAUDE.md` gives one objective, verified facts, source/baseline
+and pre-existing work, allowed/excluded files, acceptance criteria, tests and
+deliverables. **STOP; personal human transmission only.** Never claim transmission
+before the human acts.
 
-### Rapport Claude → utilisateur et préparation de QA
+### Claude report and preparation for QA
 
-`03-CLAUDE-IMPLEMENTATION.md` : fichiers réellement modifiés, résultats et limites, commandes/tests et environnements réels, preuves. `04-CLAUDE-PASSATION-CODEX.md` : delta et points de re-QA à examiner **indépendamment**. **STOP ; pas de lancement de Codex.**
+`03-CLAUDE-IMPLEMENTATION.md` records actual changes, results/limits, commands,
+tests, real environments and evidence. `04-CLAUDE-PASSATION-CODEX.md` identifies
+the delta and points needing **independent** re-QA. **STOP; do not launch Codex.**
 
-### QA Codex
+### Codex QA
 
-`05-CODEX-QA.md` : version vérifiée, diff réel, tests reproduits ou non exécutés, preuves, risques, verdict (`PASS`, `PASS_AVEC_RESERVES`, `FAIL`, `INCOMPLET_ENV`, `BLOQUE_HUMAIN`), action proposée et **STOP pour décision humaine**. Ne jamais changer le verdict d'une ancienne QA après un correctif.
+`05-CODEX-QA.md` records the checked version, actual diff, reproduced/unexecuted
+tests, evidence, risks, verdict (`PASS`, `PASS_AVEC_RESERVES`, `FAIL`,
+`INCOMPLET_ENV`, `BLOQUE_HUMAIN`), proposed action and **STOP for a human decision**.
+A later correction never changes an earlier report's verdict.
 
-### Décision humaine
+### Human decision
 
-`06-HUMAIN-DECISION.md` **uniquement sur décision réelle de l'humain**, avec source et portée. Sa présence n'autorise pas implicitement commit, push ou publication.
+Create `06-HUMAIN-DECISION.md` **only for an actual human decision**, with source
+and scope. Its presence does not implicitly authorise Git or publication.
 
-## 5. `70-REGISTRE-ESSAIS.md` (uniquement si essai réel)
+## 5. `70-REGISTRE-ESSAIS.md` — only for actual resources
 
 ```markdown
-# Registre des essais — [phase]
+# Test-resource register — [phase]
 
-| ID | Boucle | Environnement/copie | Chemin réel | Créateur / date | Version de référence | Résultat / preuve | État de fin de vie | Décision de nettoyage |
-|---|---|---|---|---|---|---|---|---|
-| T001 | B01 | build de test isolé | chemin absolu | ... | ... | ... | CONSERVER | À déterminer après QA |
+| ID | Loop | Environment/copy | Actual path | Creator/date | Source version | Result/evidence | Lifecycle state | Cleanup decision |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| T001 | B01 | isolated test build | absolute path | ... | ... | ... | CONSERVER | Decide after QA |
 ```
 
-L'enregistrement peut rester dans un registre technique déjà existant si un pointeur fiable est ajouté ici ; pas de duplication de volumes.
+An existing technical register may hold the entries if the phase register links
+to it reliably. Do not duplicate resource volumes.
 
-## 6. `PREUVES/MANIFESTE.csv` (uniquement avec preuves)
+## 6. `PREUVES/MANIFESTE.csv` — only for actual evidence
 
 ```csv
 preuve_id,chemin_relatif,type,horodatage,essai_id,environnement,commande_ou_methode,resultat,sha256_ou_NON_MESURE,retention
-E001,E001-TEST-SUJET.txt,TEST,2026-11-07T10:00:00+08:00,T001,LOCAL,commande-executee,PASS,NON_MESURE,CONSERVER
+E001,E001-TEST-SUBJECT.txt,TEST,2026-11-07T10:00:00+08:00,T001,LOCAL,executed-command,PASS,NON_MESURE,CONSERVER
 ```
 
-L'exemple illustre le schéma, **pas un test réellement exécuté**. Ne pas réutiliser la ligne fictive dans un vrai manifeste.
+This illustrates the schema, **not an executed test**. Never copy the fictional
+row into a real manifest.
 
-## 7. `80-SYNTHESE.md` et `90-BILAN.md`
+## 7. `80-SYNTHESE.md` and `90-BILAN.md`
 
-**Synthèse** : objectif, boucles accomplies, résultats, échecs, choix retenus/abandonnés, connaissances utiles, limites et action suivante. **Bilan** : état (provisoire ou clôturé sur acte humain), liens vers QA et décisions, produits livrés, essais en cours ou terminés, nettoyage réalisé ou non, occupation et gain disque **mesurés**, suites permises. Ne jamais inscrire `CLOTUREE` en l'absence d'une décision humaine requise.
+**Synthesis:** objective, actual loops, results/failures, adopted/rejected choices,
+lessons, limits and next action. **Assessment:** provisional state or closure
+supported by a human act, QA/decision links, deliveries, active/completed tests,
+cleanup performed or absent, **measured** occupation/reclaimed space, permitted
+next steps. Never write `CLOTUREE` without the required human closure decision.
