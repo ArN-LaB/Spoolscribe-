@@ -57,3 +57,29 @@ privacy policy must describe the shipped Companion experience, including its act
 data and NFC permissions. The Desktop policy is not automatically a mobile policy.
 See Apple's [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/),
 sections 1.5, 2.3 and 5.1.1, consulted 5 November 2026.
+
+## Public language and common release layout
+
+All editable product descriptions, README/help pages, Wiki pages and release
+titles/bodies are maintained in **English**. The application remains multilingual.
+Do not rewrite Git history, move tags, replace assets or translate literal
+protocol identifiers merely to change documentation language. A historical
+release can have its explanatory wording translated without changing its dated
+outcomes, channel or binaries.
+
+Use the same reading order for every release:
+
+| Section | Reader's question | Content |
+| --- | --- | --- |
+| Opening summary | What is this version for? | A short version-specific explanation and original publication/channel |
+| What changes for you | Why would I use it? | Connected paragraphs describing actual workflows and benefits |
+| Download and run | Which file do I need? | Platform/ZIP/checksum table and attested signing/system requirements |
+| Validation and limits | What is proven? | Actual evidence, skips, known limits and no invented hardware certification |
+| Further reading | Where do I learn more? | Current help and exact historical validation links when available |
+
+Keep the main explanation in paragraphs rather than dumping commit lists. Use
+tables for genuine comparisons. Long original technical records may be retained
+in a clearly labelled collapsed details section; explain that old “latest stable”
+statements describe the original publication stage. Do not hide failures or
+promote unmeasured coverage to PASS. Keep the same section titles across versions,
+and never give an old binary today's notarisation claim.

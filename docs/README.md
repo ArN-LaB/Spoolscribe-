@@ -1,33 +1,36 @@
-# Documentation SpoolScribe v0.8.1
+# SpoolScribe v0.8.1 documentation
 
-[Présentation](../README.md) · [Télécharger la stable v0.8.1](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1) · [Centre d’aide illustré](wiki/Home.md)
+[Overview](../README.md) · [Download v0.8.1 stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1) · [Illustrated help](wiki/Home.md)
 
-## Utiliser l’application
+## Use the application
 
-| Besoin | Aide |
+| Task | Guide |
 | --- | --- |
-| Installation et premier catalogue | [Démarrer](wiki/Getting-Started.md) |
-| Filaments, filtres, tri, colonnes, favoris et copies personnelles | [Parcours filaments](wiki/Filaments-and-Favourites.md) |
-| HEX, ΔE, Lab/RGB, texte, fichiers et références enregistrées | [Parcours couleur](wiki/Measuring-Colours.md) |
-| Imprimante, lecteur et logiciel installé | [Compatibilité](wiki/Printers-and-Readers.md) |
-| Préparer l’étiquette et l’export NFC | [Export](wiki/Writing-RFID-Tags.md) |
-| QR numérique, Companion et impression facultative | [QR et Companion](wiki/Companion-and-QR.md) |
-| Sources, actualisation et sauvegardes | [Catalogue](wiki/Updating-the-Database.md) |
-| Cadence, bobine, export, langue et limite ΔE | [Les six onglets des paramètres](wiki/Settings.md) |
-| Repérer un écran | [Index visuel](wiki/Visual-Tour.md) |
+| Install and download the first catalogue | [Getting started](wiki/Getting-Started.md) |
+| Filaments, filters, sorting, columns, favourites and personal copies | [Filament workflow](wiki/Filaments-and-Favourites.md) |
+| HEX, Delta E, Lab/RGB, text/files and saved references | [Colour workflow](wiki/Measuring-Colours.md) |
+| Printer, reader and installed software | [Compatibility](wiki/Printers-and-Readers.md) |
+| Prepare a label and NFC export | [Export workflow](wiki/Writing-RFID-Tags.md) |
+| Digital QR, Companion and optional printing | [QR and Companion](wiki/Companion-and-QR.md) |
+| Sources, refresh and backups | [Catalogue updates](wiki/Updating-the-Database.md) |
+| Refresh cadence, spool, export, language and Delta E threshold | [Six settings tabs](wiki/Settings.md) |
+| Recognise a screen | [Visual tour](wiki/Visual-Tour.md) |
 
-Langues de l’interface : **English · Français · Español · 简体中文**.
-Le [guide en français](USER_GUIDE.md) complète les parcours illustrés.
+The interface supports **English, French, Spanish and Simplified Chinese**.
+The [user guide](USER_GUIDE.md) complements the illustrated workflows.
 
-## Comprendre les données et les limites
+## Understand data and limits
 
-[Sources](DATA_SOURCES.md) · [Format du catalogue](DATA_FORMAT.md) · [Confidentialité Desktop](PRIVACY.md) · [Mesures couleur](COLOUR_MEASUREMENTS.md) · [OpenTag3D](OPENTAG3D.md) · [SSQR1](QR_FORMAT.md) · [Papier et gabarits](PRINTING_GUIDE.md).
+[Sources](DATA_SOURCES.md) · [Catalogue format](DATA_FORMAT.md) · [Desktop privacy](PRIVACY.md) · [Colour measurements](COLOUR_MEASUREMENTS.md) · [OpenTag3D](OPENTAG3D.md) · [SSQR1](QR_FORMAT.md) · [Paper and templates](PRINTING_GUIDE.md).
 
-**Stable logiciel et compatibilité matérielle sont distincts.** Les configurations
-listées ne sont pas toutes testées physiquement. [Politique de versions](RELEASE_POLICY.md) · [Validation v0.8.1](validation/v0.8.1.md) · [Disponibilité Companion](COMPANION.md).
+**Software stability and hardware compatibility are separate.** Not every listed
+setup has been physically tested. [Release policy](RELEASE_POLICY.md) ·
+[v0.8.1 validation](validation/v0.8.1.md) · [Companion availability](COMPANION.md).
 
-## Développer et maintenir
+## Develop and maintain
 
-[Développement](DEVELOPMENT.md) · [Structure du dépôt](REPOSITORY.md) · [Audit de maintenance historique v0.8.0](validation/repository-v0.8.0.md) · [Roadmap](ROADMAP.md) · [Captures et provenance](images/README.md) · [Marques](TRADEMARKS.md) · [Contribution](../.github/CONTRIBUTING.md).
+[Development](DEVELOPMENT.md) · [Repository structure](REPOSITORY.md) · [Historical v0.8.0 maintenance audit](validation/repository-v0.8.0.md) · [Roadmap](ROADMAP.md) · [Capture provenance](images/README.md) · [Trademarks](TRADEMARKS.md) · [Contributing](../.github/CONTRIBUTING.md).
 
-Organisation des traces de développement et consignes permanentes des agents : [UNIVERSAL](UNIVERSAL.md), puis la chronologie locale `docs/agent-runs/INDEX.md` (hors dépôt public). Les contrats techniques ci-dessus restent applicables.
+For permanent agent instructions and development-trace organisation, start at
+[UNIVERSAL](UNIVERSAL.md), then the local `docs/agent-runs/INDEX.md` chronology
+(outside the public file selection). The technical contracts above remain applicable.

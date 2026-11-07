@@ -1,33 +1,45 @@
-# UNIVERSAL — point d'entrée des agents
+# UNIVERSAL — agent entry point
 
-**Version de la norme : 4.0 — 7 novembre 2026**
-**Applicable à tout projet, quel que soit son langage, son dépôt ou son outillage.**
+**Standard version: 4.0 — 7 November 2026**
+**Applies to any project, regardless of language, repository or tooling.**
 
-> **Instruction de lecture :** tout agent chargé du développement, d'une revue, d'une passation ou de la maintenance des traces de ce projet commence par ce fichier. Le dossier `UNIVERSAL/` contient la norme commune. Il ne décrit aucune application particulière.
+> Any agent working on development, review, handoff or trace maintenance starts
+> here. `UNIVERSAL/` contains the common standard, not an application-specific contract.
 
-## Ordre de lecture obligatoire
+## Required reading order
 
-1. [`UNIVERSAL/01-NORME.md`](UNIVERSAL/01-NORME.md) — source normative unique : phases, boucles, fichiers Markdown, décisions et preuves.
-2. [`UNIVERSAL/03-MODELES.md`](UNIVERSAL/03-MODELES.md) — modèles et champs à respecter uniquement pour les nouvelles traces.
-3. [`UNIVERSAL/04-ESSAIS-ET-NETTOYAGE.md`](UNIVERSAL/04-ESSAIS-ET-NETTOYAGE.md) — cycle de vie des copies, tests, VM, simulateurs et caches.
-4. [`UNIVERSAL/02-MISSION-ADOPTION.md`](UNIVERSAL/02-MISSION-ADOPTION.md) **seulement si l'utilisateur a demandé l'installation / la mise en conformité** du projet courant.
-5. Lire ensuite les consignes techniques **déjà présentes** du projet (`AGENTS.md`, `CLAUDE.md`, `docs/AGENT_WORKFLOW.md`, `README.md`, etc.), si elles existent et sont pertinentes.
+1. [`UNIVERSAL/01-NORME.md`](UNIVERSAL/01-NORME.md): authoritative rules for phases, loops, Markdown, decisions and evidence.
+2. [`UNIVERSAL/03-MODELES.md`](UNIVERSAL/03-MODELES.md): templates and required fields for new traces only.
+3. [`UNIVERSAL/04-ESSAIS-ET-NETTOYAGE.md`](UNIVERSAL/04-ESSAIS-ET-NETTOYAGE.md): lifecycle of copies, tests, VMs, simulators and caches.
+4. [`UNIVERSAL/02-MISSION-ADOPTION.md`](UNIVERSAL/02-MISSION-ADOPTION.md) **only when the user requests installation/adoption** in the current project.
+5. Read relevant existing technical instructions (`AGENTS.md`, `CLAUDE.md`, `docs/AGENT_WORKFLOW.md`, `README.md`, etc.).
 
-## Ce qui est universel — et ce qui ne l'est pas
+## Common rules and project-specific contracts
 
-- La **nomenclature et l'organisation des traces de développement** suivent `UNIVERSAL/01-NORME.md`.
-- Les exigences de sécurité, métier, pédagogie, Git, publication, tests et outils du projet **restent applicables**. Ne pas les écraser par une adaptation générique.
-- En cas de contradiction sur le **format documentaire**, appliquer la norme commune aux nouvelles pièces et signaler les références actives à mettre en cohérence. En cas de contradiction technique ou d'autorisation : ne pas décider à la place de l'humain.
-- Les **décisions humaines expresses et récentes** priment sur les propositions des agents. Une QA PASS n'est pas une autorisation de Git ou de déploiement.
+Development trace names and organisation follow `UNIVERSAL/01-NORME.md`.
+Project security, business, teaching, Git, publication, testing and tooling rules
+remain applicable. Do not replace them with generic guidance.
 
-## Périmètre et contrôle
+For documentary-format conflicts, apply the common standard to new pieces and
+identify active references requiring reconciliation. For technical or permission
+conflicts, do not make the human's decision. **Recent explicit human decisions
+prevail over agent proposals. A QA PASS does not authorise Git or deployment.**
 
-**Projet courant uniquement.** La racine est celle du projet ouvert explicitement désigné par l'utilisateur, pas un dossier parent. Ne jamais explorer d'autres projets, comptes, dépôts ou espaces de stockage pour « harmoniser globalement ». Les essais temporaires situés ailleurs ne peuvent être **repérés** que dans les limites d'un mandat humain explicite et d'une appartenance vérifiable ; ils ne sont jamais nettoyés implicitement.
+## Scope and verification
 
-Vérificateur documentaire, sans modification :
+**Current project only.** Use the explicitly designated open project's root,
+not a parent directory. Do not inspect other projects, accounts, repositories
+or storage to “harmonise everything”. External test resources may be identified
+only under an explicit human mandate with verifiable ownership; never clean
+them implicitly.
 
-```bash
+Read-only documentation checker:
+
+```sh
 python3 docs/UNIVERSAL/OUTILS/verifier.py --root .
 ```
 
-**Mission d'installation demandée ?** Lire `UNIVERSAL/02-MISSION-ADOPTION.md`, traiter uniquement ce projet, puis STOP avec un rapport court. **Pas de passation automatique Codex ↔ Claude Code.**
+If adoption is requested, read `UNIVERSAL/02-MISSION-ADOPTION.md`, work only on
+this project, then STOP with a short report. **No automatic Codex ↔ Claude Code
+handoff.** Existing filenames, metadata keys and status codes remain stable even
+when the explanatory documentation is written in English.

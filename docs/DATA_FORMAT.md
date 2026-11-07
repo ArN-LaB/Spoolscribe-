@@ -74,9 +74,12 @@ This prevents a 2.85 mm article from changing the diameter of every 1.75 mm bobb
 ## Data state
 
 `quality` is `Export possible` or a `;`-separated list of reasons:
-`Produit absent`, `Couleur à renseigner`, `Couleurs multiples incompatibles avec
-OpenSpool`, `Caractéristiques à compléter`, `Marque ou matière absente`, and the
-plausibility flags `Couleur à vérifier (…)` and `Caractéristiques à vérifier (…)`.
+Stored legacy identifiers remain literal data: `Produit absent` (missing product),
+`Couleur à renseigner` (colour required), `Couleurs multiples incompatibles avec OpenSpool`
+(multiple colours incompatible with OpenSpool), `Caractéristiques à compléter`
+(incomplete characteristics), `Marque ou matière absente` (missing brand/material),
+and plausibility flags `Couleur à vérifier (…)` / `Caractéristiques à vérifier (…)`
+(colour/characteristics needing review). English documentation does not rename these stored tokens.
 The last two mark source values that contradict themselves (black HEX for a
 light name, white HEX for a dark name, nozzle outside 120–500 °C, bed outside
 0–200 °C or bed maximum 0 °C, density outside 0.5–4.0, diameter outside 1.0–3.2);
@@ -85,21 +88,21 @@ records the field as yours (`Utilisateur`). Only user-owned fields are exempt;
 fields without provenance are checked like source data.
 
 The state filter accepts `all`, `ready`, `incomplete` (not ready) and
-`suspect` (any *À vérifier* reason).
+`suspect` (a reason carrying the stored `À vérifier` / “needs review” prefix).
 
 ## Settings (`config.json`)
 
 | Key | Meaning |
 |---|---|
 | `network_consent`, `network_sources_revision` | Explicit authorization and the source revision it was given for |
-| `language` | `auto`, `en`, `fr`, `es`, `zh_CN` ; interface uniquement, choix appliqué au redémarrage, inclus dans les réglages exportés |
+| `language` | `auto`, `en`, `fr`, `es`, `zh_CN`; interface only, applied after restart and included in exported preferences |
 | `selected_sources` | Keys of `core.SOURCE_GROUPS` to refresh |
 | `update_interval_days` | Launch refresh cadence: `0` every launch, `1` daily (default), `7` weekly, `-1` manual only |
 | `last_update_attempt`, `last_update_status` | Date and status (`complete` / `partial` / `failed`) of the last attempt, successful or not |
 | `last_update` | Legacy date kept for older settings |
-| `nfc_tag_type`, `nfc_profile` (`auto` / `essential` / `full`), `nfc_reserved_bytes` | Saved NFC default, written only by **Définir par défaut** or `--save-nfc-default`; invalid values fall back to NTAG216 / `auto` / 0 |
+| `nfc_tag_type`, `nfc_profile` (`auto` / `essential` / `full`), `nfc_reserved_bytes` | Saved NFC default, written only by **Set as default** or `--save-nfc-default`; invalid values fall back to NTAG216 / `auto` / 0 |
 | `nfc_format`, `opentag3d_output`, `opentag3d_settings` | Selected encoding, writer container and explicit per-reference OpenTag3D settings; source catalogue unchanged |
-| `printer_profile`, `printer_firmware` | Printer/reader and firmware chosen in **Mon matériel** (`u1_stock` from older settings maps to `u1` + `stock`) |
+| `printer_profile`, `printer_firmware` | Printer/reader and firmware chosen in **My hardware** (`u1_stock` from older settings maps to `u1` + `stock`) |
 | `orca_overrides`, `show_extra_fields` | Export options (`show_extra_fields` is kept for imported settings; provenance expands in the card) |
 | `ui` | Filters, sorting, columns, geometry, splitter, view, `group` (one row per filament, default `true`) |
 | `recent_brands` | Legacy browsing history, never interpreted as favorites |
@@ -128,8 +131,7 @@ Each printer has a stable `id`, `vendor`, `label`, a `group` (`native`,
 and optional per-field guidance (`fields`). `printer_profiles.validate_catalogue`
 rejects unknown formats, duplicate or missing identifiers, unknown groups and
 firmwares without a boolean `openspool`. The bundled file is used unless a valid
-copy in the user data folder (`data/printers.json`, installed by **Mettre à jour
-la liste des imprimantes…**) carries an `updated` date at least as recent.
+copy in the user data folder (`data/printers.json`, installed by **Update printer list…**) carries an `updated` date at least as recent.
 In v0.4.0, `configuration_schema: 1` adds connection, software, documented formats
 and actual effect to each installation; historical fields remain compatible.
 `printer_profiles.can_export(printer, firmware, export_format)` gates the selected

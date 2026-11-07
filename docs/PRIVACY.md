@@ -8,9 +8,9 @@ them into your user folder. Browsing, editing and exporting then work offline.
 
 | Access | When | Host(s) |
 |---|---|---|
-| Catalogue refresh | At launch, according to the cadence set in **Paramètres** (every launch / once a day, the default / once a week / manually only), and whenever you click **Refresh catalogue** (French: **Actualiser le catalogue**). An empty database always triggers the first download. | The selected sources below |
-| Printer list refresh | Only when you click **Mon matériel → Mettre à jour la liste des imprimantes…**, and only if the network authorization has been granted. The downloaded `printers.json` is validated and installed in your user folder only when it is newer than the bundled one. | `raw.githubusercontent.com` (ArN-LaB/Spoolscribe-, `data/printers.json`, 512 KiB limit) |
-| Application update check | Only when you click **Vérifier une mise à jour de l'application**. Refused if the network authorization has been withdrawn. | `api.github.com` (read-only `releases/latest`); the release page opens in your browser only after a second click |
+| Catalogue refresh | At launch, according to the cadence set in **Settings** (every launch / once a day, the default / once a week / manually only), and whenever you click **Refresh catalogue**. An empty database always triggers the first download. | The selected sources below |
+| Printer list refresh | Only when you click **My hardware → Update printer list…**, and only if the network authorization has been granted. The downloaded `printers.json` is validated and installed in your user folder only when it is newer than the bundled one. | `raw.githubusercontent.com` (ArN-LaB/Spoolscribe-, `data/printers.json`, 512 KiB limit) |
+| Application update check | Only when you click **Check for an application update**. Refused if the network authorization has been withdrawn. | `api.github.com` (read-only `releases/latest`); the release page opens in your browser only after a second click |
 
 Nothing else contacts the network. No printer, NAS or personal Spoolman server is
 ever contacted.
@@ -18,7 +18,7 @@ ever contacted.
 ## Sources and hosts
 
 The source list and its hosts are defined once, in `core.SOURCE_GROUPS`, and
-shown in the **Sources du catalogue** dialog before any request. Saving the
+shown in the **Catalogue sources** dialog before any request. Saving the
 dialog records your authorization; deselecting a source stops future requests to
 it without deleting the records already downloaded. A changed source revision
 asks for renewed consent. The CLI shares the same choices (`--sources`).
@@ -53,7 +53,7 @@ printer credential is transmitted.
 
 ## During a refresh
 
-The progress bar has a **Annuler** button; the running worker is stopped and the
+The progress bar has a **Cancel** button; the running worker is stopped and the
 local database stays as it was. Closing the window during a refresh asks for
 confirmation and then does the same. When sources are unreachable, the status
 bar says so and the cached database is kept; nothing is rewritten.
@@ -74,7 +74,7 @@ testing. `config.json` records the consent, the selected sources, the refresh
 cadence and the date/status of the last attempt; the database records only the
 results of a refresh that changed something.
 
-**Paramètres → Retirer l'autorisation réseau** stops every automatic request;
+**Settings → Withdraw network permission** stops every automatic request;
 the Sources dialog can grant it again. **Export preferences…** writes a
 plain-text JSON file (not encrypted) with interface, source, printer and tag
 preferences; it never contains the network consent, refresh dates or statuses,
@@ -87,19 +87,20 @@ automatic refreshes for the rest of that session.
 
 The four interface languages (English, French, Spanish, Simplified Chinese) are bundled locally. System-language detection and restarting after a language change do not contact a server or change consent.
 
-## OpenTag3D (préversion v0.6.0)
+## OpenTag3D (v0.6.0 pre-release)
 
-La génération du payload, des profils NFC Tools et du message NDEF est entièrement locale. Les paramètres explicites sont enregistrés par référence dans les réglages utilisateur ; ils ne sont pas envoyés aux sources du catalogue. Aucun schéma ou service OpenTag3D n’est téléchargé par l’application.
+Payload, NFC Tools profile and NDEF generation are entirely local. Explicit
+settings are saved per reference in user preferences, not sent to catalogue
+sources. The application downloads no OpenTag3D schema or service.
 
-## QR numérique SSQR1 (v0.6.0)
+## Digital SSQR1 QR (v0.6.0)
 
-Le QR et ses fichiers PNG/SVG sont produits localement à partir du message NDEF
-complet déjà préparé pour l’export. Aucun serveur, lien de téléchargement ou
-compte Companion n’est utilisé. Toute personne qui reçoit l’image peut décoder
-son contenu : ne partagez pas un QR contenant des données que vous souhaitez
-garder privées. Le SHA-256 détecte une altération ; ce n’est pas une signature
-d’authenticité. Le décodeur valide les longueurs et ne lance ni URL ni commande.
-Companion reste à développer ; impression et essais physiques sont différés.
+The QR and PNG/SVG files are generated locally from the complete NDEF message
+already prepared for export. No server, download link or Companion account is
+used. Anyone receiving the image can decode it: do not share a QR containing
+information you want to keep private. SHA-256 detects alteration, not authenticity.
+The decoder validates lengths and launches no URL or command. Companion was
+separate future work at this stage; printing and physical tests were deferred.
 
 ## Local colour measurements (v0.7.0)
 

@@ -1,162 +1,224 @@
-# Norme universelle — phases, boucles, rapports et preuves
+# Universal standard — phases, loops, reports and evidence
 
-**Version : 4.0 — 2026-11-07**
-**Autorité :** règles de production et de classement des traces des agents.
-**Portée :** tous les projets **individuellement**, sans spécialisation sectorielle ni obligation d'utiliser Git.
+**Version: 4.0 — 2026-11-07**
+**Authority:** organisation and production of agent development traces.
+**Scope:** individual projects, without requiring Git or a particular technology.
 
-## 1. Finalité et règles de base
+## 1. Purpose and principles
 
-Le dossier des traces doit expliquer **quand**, **pourquoi**, **par qui**, **avec quel résultat** et **sur quelle décision** le développement a progressé. La navigation principale montre une phase datée par objectif, ses cycles d'agents, les résultats et la prochaine action réellement autorisée.
+Development history must explain **when, why, by whom, with what result and under
+which decision** work progressed. Navigation shows dated objectives, actual agent
+cycles, results and the next genuinely authorised human action.
 
-- **Une phase** = un objectif fonctionnel cohérent, ouvert à une date attestée. Elle peut être active, bloquée, close, abandonnée ou parallèle à une autre phase. Pas de faux ordre horaire.
-- **Une boucle** = un cycle de travail dans une phase, depuis le cadrage et les éventuelles passations jusqu'à la QA et à la décision. Une transition Codex → Claude n'est **pas à elle seule** une nouvelle boucle. Une correction suivant une QA négative peut ouvrir `B02`, `B03`, etc., sur décision humaine.
-- **Un rapport** = une pièce distincte et datée ; pas de remplacement silencieux d'un rapport de QA par le suivant.
-- **Une preuve** = un élément rattaché à une affirmation ou à un essai effectivement réalisé ; pas d'accumulation de captures ou logs sans lien avec une conclusion.
-- Les **anciens chemins peuvent être renommés** ; les faits, résultats, décisions et verdicts historiques doivent garder leur sens. Toute migration comprend un registre ancien → nouveau et une vérification des liens.
-- Une seule organisation principale. Pas de second arbre de phases ni de milliers de pages-redirects. Aucun dossier vide créé pour anticiper une étape possible.
+A **phase** is one coherent functional objective, opened on an attested date.
+It may be active, blocked, closed, abandoned or parallel to another phase; do not
+invent a sequential timeline. A **loop** is one work cycle within that phase,
+from framing and optional handoffs through QA and decision. A Codex → Claude
+transition alone does not create a new loop. A correction after failed QA may
+open B02/B03/etc. on a human decision.
 
-## 2. Arborescence canonique
+A **report** is a distinct dated piece: never silently replace one QA report
+with the next. **Evidence** supports an actual assertion/test, rather than an
+unexplained accumulation of logs/screenshots. Historical paths may be renamed,
+but facts, human decisions, results and verdicts retain their meaning. Any
+migration requires an old → new mapping and link verification.
+
+Keep one principal organisation. No competing phase tree, thousands of redirects
+or empty directories created for hypothetical future work.
+
+## 2. Canonical structure
 
 ```text
 docs/
-├── UNIVERSAL.md                          # point d'entrée commun (ce kit)
-├── UNIVERSAL/                           # norme et outils (ce kit)
-└── agent-runs/                          # créé si des traces existent
-    ├── INDEX.md                        # vue chronologique vivante
-    ├── 2026-11-07-[ID-]SUJET-EXPLICITE/ # début réel de la phase
-    │   ├── 00-PHASE.md                 # contexte et état actuel
-    │   ├── B01-OBJECTIF-DE-LA-BOUCLE/
-    │   │   ├── 00-BOUCLE.md            # progression et STOP humains
-    │   │   ├── 01-CODEX-CADRAGE.md       # si cadrage réalisé
-    │   │   ├── 02-CODEX-MISSION-CLAUDE.md# si mission préparée
-    │   │   ├── 03-CLAUDE-IMPLEMENTATION.md # si exécutée
-    │   │   ├── 04-CLAUDE-PASSATION-CODEX.md # si préparée
-    │   │   ├── 05-CODEX-QA.md           # si réellement exécutée
-    │   │   ├── 06-HUMAIN-DECISION.md    # uniquement si décision établie
-    │   │   └── PREUVES/                # seulement si preuves externes
+├── UNIVERSAL.md
+├── UNIVERSAL/
+└── agent-runs/
+    ├── INDEX.md
+    ├── 2026-11-07-[ID-]EXPLICIT-OBJECTIVE/
+    │   ├── 00-PHASE.md
+    │   ├── B01-LOOP-OBJECTIVE/
+    │   │   ├── 00-BOUCLE.md
+    │   │   ├── 01-CODEX-CADRAGE.md
+    │   │   ├── 02-CODEX-MISSION-CLAUDE.md
+    │   │   ├── 03-CLAUDE-IMPLEMENTATION.md
+    │   │   ├── 04-CLAUDE-PASSATION-CODEX.md
+    │   │   ├── 05-CODEX-QA.md
+    │   │   ├── 06-HUMAIN-DECISION.md
+    │   │   └── PREUVES/
     │   │       ├── MANIFESTE.csv
-    │   │       └── E001-TEST-SUJET.txt
-    │   ├── B02-CORRECTION-CIBLEE/       # si une nouvelle boucle est autorisée
-    │   ├── 70-REGISTRE-ESSAIS.md        # si des essais ont existé
-    │   ├── 80-SYNTHESE.md               # à la conclusion du travail
-    │   └── 90-BILAN.md                  # état de clôture et nettoyage
-    └── 2026-11-08-AUTRE-SUJET/
-        └── ...
+    │   │       └── E001-TEST-SUBJECT.txt
+    │   ├── B02-TARGETED-CORRECTION/
+    │   ├── 70-REGISTRE-ESSAIS.md
+    │   ├── 80-SYNTHESE.md
+    │   └── 90-BILAN.md
+    └── 2026-11-08-OTHER-OBJECTIVE/
 ```
 
-Les exemples de dates et de noms sont illustratifs. **Ne créer que les dossiers/fichiers effectivement nécessaires.** L'index d'une phase ou d'une boucle peut être créé dès son ouverture ; les fichiers de QA et de décision ne doivent pas exister avant les faits.
+Dates/names are illustrative. Create only necessary files and directories. A
+phase/loop index may exist at opening; QA or decision files must not exist before
+the corresponding event. `PREUVES/` exists only for actual separate evidence;
+the test register exists once a real test resource has been created.
 
-## 3. Convention de nommage stable
+## 3. Stable naming
 
-| Élément | Nom canonique | Précision |
-|---|---|---|
-| Phase | `AAAA-MM-JJ-[ID-METIER-]SUJET/` | Date de début attestée, pas un numéro de rang arbitraire ; sujet explicite. |
-| Boucle | `B01-SUJET/`, `B02-CORRECTION-.../` | `Bxx` croissant **dans sa phase**, sous-titre descriptif. |
-| Accueil | `INDEX.md`, `00-PHASE.md`, `00-BOUCLE.md` | Courtes vues vivantes, source de navigation. |
-| Rapport | `NN-AUTEUR-TYPE[-SUJET].md` | Numéro sur deux chiffres, puis rôle et type ; contexte porté par phase/boucle. |
-| Synthèse | `80-SYNTHESE.md` | Résultats, limites et enseignements. |
-| Bilan | `90-BILAN.md` | État, décision attestée, suite, nettoyage. |
-| Essais | `70-REGISTRE-ESSAIS.md` | Créé dès le premier essai/copie/VM/simulateur. |
-| Preuve | `PREUVES/E001-TYPE-SUJET.ext` | `E001` croissant dans la boucle, avec manifeste. |
+| Element | Canonical name | Meaning |
+| --- | --- | --- |
+| Phase | `YYYY-MM-DD-[BUSINESS-ID-]EXPLICIT-SUBJECT/` | Attested start date and meaningful objective, not an abstract rank |
+| Loop | `B01-SUBJECT/`, `B02-CORRECTION-.../` | Bxx increases within its phase; descriptive subtitle |
+| Entry points | `INDEX.md`, `00-PHASE.md`, `00-BOUCLE.md` | Short current navigation views |
+| Report | `NN-AUTHOR-TYPE[-SUBJECT].md` | Two-digit number, actual author/role and purpose |
+| Synthesis | `80-SYNTHESE.md` | Results, limits and lessons |
+| Assessment | `90-BILAN.md` | Operational state, decision, next action and cleanup |
+| Test register | `70-REGISTRE-ESSAIS.md` | Created with the first test/copy/VM/simulator |
+| Evidence | `PREUVES/E001-TYPE-SUBJECT.ext` | E001 increases within the loop, with one manifest |
 
-Pour un cycle Codex / Claude Code standard, les étapes possibles sont : `01-CODEX-CADRAGE.md`, `02-CODEX-MISSION-CLAUDE.md`, `03-CLAUDE-IMPLEMENTATION.md`, `04-CLAUDE-PASSATION-CODEX.md`, `05-CODEX-QA.md`, `06-HUMAIN-DECISION.md`. **Ce sont des emplacements conditionnels**, non des fichiers à fabriquer. Un projet utilisant d'autres agents conserve les mêmes types de traces, avec les rôles réellement employés (`NN-AGENT-ROLE.md`) ; la norme n'oblige pas à utiliser Claude ou Codex.
+The standard Codex/Claude filenames above are **conditional locations**, not
+mandatory empty files. Other agents use their actual roles in `NN-AGENT-ROLE.md`;
+the standard does not require Codex or Claude.
 
-Pas de `(1)`, `(2)`, `final-final`, `02b`, `03b`, suffixes temporels imaginaires ni réutilisation d'un numéro. Si le même auteur produit une nouvelle pièce dans la même boucle sans nouvelle correction, attribuer le **prochain** `NN` disponible et un intitulé précis. Les exports hors de leur dossier peuvent être préfixés par l'ID du projet, de phase et de boucle **uniquement à l'export**, pour éviter les collisions de téléchargements.
+No `(1)`, `(2)`, `final-final`, `02b`, `03b`, invented temporal suffix or reused
+number. A new piece by the same author within the same correction uses the next
+free NN and a precise title. Project/phase/loop prefixes may be added **on export
+only** to avoid download collisions. Record an uncertain historical start date
+as not established instead of inventing one; record new opening dates immediately.
+Existing canonical filenames, schema keys, example identifiers and machine status
+codes are retained across language translations.
 
-Une phase dont le début historique n'est pas datable avec certitude est classée avec une **date non établie documentée**, sans inventer une date. Dans les nouveaux travaux, enregistrer la date d'ouverture dès le début.
+## 4. Roles, handoffs and permissions
 
-## 4. Responsabilités, transmissions et autorisations
-
-Circuit usuel, lorsque Codex et Claude Code sont utilisés :
+The usual human-controlled workflow is:
 
 ```text
-HUMAIN (mandat) → CODEX (cadrage/mission) → STOP
-HUMAIN (lit, autorise, transmet personnellement)
-→ CLAUDE CODE (travail + rapport + passation) → STOP
-HUMAIN (lit, autorise, transmet personnellement)
-→ CODEX (QA indépendante et verdict) → STOP
-HUMAIN (décide : clôture, correction, report, Git, publication)
+HUMAN mandate → CODEX framing/mission → STOP
+HUMAN reads, authorises and personally transmits
+→ CLAUDE CODE implementation/report/handoff → STOP
+HUMAN reads, authorises and personally transmits
+→ CODEX independent QA/verdict → STOP
+HUMAN decides closure, correction, deferral, Git or publication
 ```
 
-- **Aucun appel, lancement ni transfert inter-agents automatique**, même via outil, sous-agent, API, script, CI ou automatisation.
-- Un document préparé n'est pas nécessairement transmis ; `transmis: true` exige une preuve d'acte humain, non l'existence d'un fichier.
-- Une QA technique ne clôt pas la phase et ne vaut ni autorisation Git ni déploiement. Une autorisation Git doit être explicite et correspondre aux opérations réellement demandées.
-- Codex n'engage pas de correctif applicatif sur la seule base d'un PASS/FAIL ; le passage humain décide de la suite. Les tâches ciblées restent proportionnées : ne pas répéter inutilement un audit complet ou les mêmes campagnes.
-- Si des règles du projet prévoient un autre circuit expressément validé, **ne pas créer de fausses interventions Codex/Claude** : conserver le responsable réel et le contrôle humain prévu.
+**No automatic call, launch or inter-agent transfer**, including sub-agents,
+APIs, scripts, CI and automation. A prepared document is not necessarily
+transmitted: `transmis: true` requires an actual human action, not a file's presence.
 
-## 5. Contenu minimal de chaque pièce
+Technical QA neither closes a phase nor authorises Git/deployment. Git permission
+must be explicit and match the requested operation. Codex does not implement an
+application correction merely because QA passed/failed; a human decides the next
+step. Keep targeted tasks proportionate and avoid repeated broad audits/campaigns.
+If an explicitly approved project workflow differs, retain the real responsibility
+and human gate rather than inventing Codex/Claude interventions.
 
-Les nouvelles pièces documentaires contiennent un front matter ou équivalent :
+## 5. Minimum metadata and content
+
+New traces include front matter or equivalent:
 
 ```yaml
 ---
-trace_id: "PROJET:PHASE:B01:02"       # unique, persistant
-phase: "2026-11-07-ID-SUJET"
-boucle: "B01-OBJECTIF"
+trace_id: "PROJECT:PHASE:B01:02"
+phase: "YYYY-MM-DD-ID-SUBJECT"
+boucle: "B01-OBJECTIVE"
 sequence: 2
-auteur: "CODEX"                     # ou l'auteur attesté
+auteur: "CODEX"
 fonction: "MISSION-CLAUDE"
-date: "2026-11-07"
-statut: "PREPARE"                  # état de cette pièce, pas QA
-transmis: false                    # preuves de transmission requises
-source_ref: "NON_ETABLI"           # SHA/branche si Git existe
+date: "YYYY-MM-DD"
+statut: "PREPARE"
+transmis: false
+source_ref: "NON_ETABLI"
 ---
 ```
 
-- Nom et date attestés ; quand inconnus, `NON_ETABLI`, jamais une reconstruction fictive.
-- Objectif, faits vs hypothèses, périmètre/exclusions, contexte de référence Git **ou hors Git**, actions réellement faites ou demandées, commandes/tâches et résultats, preuves, limites, statut, prochaine action **autorisée**.
-- QA : verdict distinct (`PASS`, `PASS_AVEC_RESERVES`, `FAIL`, `INCOMPLET_ENV`, `BLOQUE_HUMAIN`) ; ne pas transformer `NON_TESTE` en succès. Le rapport initial garde son verdict après correction ultérieure.
-- Décision humaine : pièce seulement si une décision réelle est attestée ; source, date, portée et restrictions. Une proposition n'est pas une décision.
-- Fichiers de retour : mission autonome, chemin exact à lire, faits vérifiés et différences, critères et tests de la prochaine étape. Le chat indique le chemin et un résumé court ; aucun agent ne transmet lui-même la mission au suivant.
+Use attested names/dates; unknown means `NON_ETABLI`, never a fictional
+reconstruction. Describe the objective, observed facts versus hypotheses, scope
+and exclusions, Git **or non-Git** source context, requested/actual actions,
+commands/results, evidence, limits, status and next **authorised** action.
 
-Ne jamais consigner de secrets, clés, tokens, mots de passe, données personnelles ou données utilisateurs dans les rapports/preuves.
+QA has a separate verdict (`PASS`, `PASS_AVEC_RESERVES`, `FAIL`, `INCOMPLET_ENV`,
+`BLOQUE_HUMAIN`). Untested is never a success. A report retains its original
+verdict after a later correction. A human-decision piece exists only for an
+attested decision, with its source/date/scope/restrictions; a proposal is not permission.
 
-## 6. Preuves
+Handoffs must be self-contained and identify the exact file, verified facts,
+delta, acceptance criteria and tests. Chat gives the path and short summary;
+an agent never transmits the mission to the next agent automatically.
+Never record secrets, keys, tokens, passwords, personal information or user data
+in reports/evidence.
 
-Créer `PREUVES/` **uniquement** lorsqu'une pièce probatoire distincte du rapport est réellement produite ou référencée. Un `MANIFESTE.csv` unique comporte :
+## 6. Evidence
+
+Create `PREUVES/` only when separate evidence is actually produced/referenced.
+One `MANIFESTE.csv` uses the stable schema:
 
 ```csv
 preuve_id,chemin_relatif,type,horodatage,essai_id,environnement,commande_ou_methode,resultat,sha256_ou_NON_MESURE,retention
 ```
 
-Chaque preuve doit être rapportée à la bonne **boucle**, avec une date, son contexte de test (simulation/local/navigateur/appareil réel/VM/production), la commande utile, un résultat observable et les limites. Si une preuve volumineuse reste hors dépôt : référencer l'emplacement stable et son empreinte quand c'est pertinent, **ne pas importer** les caches et archives géants juste pour fabriquer une trace. Une preuve absente ne devient pas « PASS ». Conserver les artefacts nécessaires à la reproduction et la QA, pas chaque byte de chaque build régénérable.
+Attach evidence to the right **loop**, with a date, real environment
+(simulation/local/browser/device/VM/production), useful command/method, observable
+result and limits. For large evidence outside the repository, give a stable
+location and relevant digest rather than importing giant caches/archives to
+manufacture a trace. Absent evidence is not PASS. Retain what is needed for QA
+and reproduction, not every regenerable build byte.
 
-## 7. Index, histoire et clôture
+## 7. Navigation, history and closure
 
-- `docs/agent-runs/INDEX.md` : toutes les phases dans l'ordre de **début attesté**, avec parallélismes/dépendances, statut, dernière décision/QA réellement valide, prochaine action humaine.
-- `00-PHASE.md` : objectif, début attesté, état et liens vers les boucles. `00-BOUCLE.md` : les pièces dans leur ordre réel, décisions de transmission et QA.
-- `80-SYNTHESE.md` : résultats, échecs, solutions retenues/refusées, ce que les essais ont appris, risques résiduels ; peut être provisoire.
-- `90-BILAN.md` : état opérationnel, décisions humaines établies, prochaine action, registre des environnements en cours/nettoyés/protégés, mesure réelle d'espace libéré. Ne pas déclarer une phase `CLOTUREE` tant que la décision humaine attendue n'est pas établie.
-- En fin de boucle : synthèse courte et mise à jour de l'index ; pas de nouveau dossier pour un simple arrêt de l'agent.
+`INDEX.md` lists phases by attested start, overlaps/dependencies, status, latest
+valid QA/decision and next human action. `00-PHASE.md` gives objective, start,
+state and loop links. `00-BOUCLE.md` records actual event order, human transmission
+and QA.
 
-**Aucun dossier « vide pour plus tard »**. Les répertoires vides ou ne contenant que `.DS_Store` dans les traces doivent être signalés et, si autorisés et sans dépendance contractuelle, retirés. Ne jamais nettoyer automatiquement des `docs/` métier voisins ou des dossiers Git/build pour améliorer une métrique.
+`80-SYNTHESE.md` summarises results, failures, adopted/rejected solutions,
+lessons and remaining risks; it can be provisional. `90-BILAN.md` records
+operational state, established human decisions, next action, active/cleaned/
+protected resources and **measured** space reclaimed. Never label a phase
+`CLOTUREE` without the required human decision. End a loop with a short synthesis
+and index update, not a new directory merely because the agent stops.
 
-## 8. Migration historique : une seule fois, et seulement si nécessaire
+No “empty for later” directory. Report empty or `.DS_Store`-only trace directories;
+remove them only when authorised and free of contractual dependencies. Do not
+clean neighbouring business docs or Git/build folders to improve a metric.
 
-Quand un historique existe déjà, ne réexécuter **aucune** restructuration totale sans besoin explicite. Si l'utilisateur demande sa mise en conformité :
+## 8. Historical migration: only once and only when needed
 
-1. Lire l'index existant, les décisions et les rapports précédents du **projet courant**, sans recherche extérieure.
-2. Construire un mapping unique des chemins réellement changés et le plan par phase/objectif, sans supposer une chronologie artificielle.
-3. Sauvegarder les préimages pertinentes, y compris les fichiers non suivis, et vérifier leur intégrité ; respecter les protections Git applicables.
-4. Renommer et déplacer **les originaux si nécessaire**, corriger les liens actifs, ancres, scripts, références et règles d'agents. Conserver les données de preuve brutes datées comme traces, et les traduire par la correspondance.
-5. Supprimer uniquement les alias purement redondants après preuve d'absence de contenu unique et récupération possible ; aucun effacement de décision, QA, rapport ou preuve originale.
-6. Faire un seul contrôle consolidé (liens locaux, collision Unicode/casse, dossiers vides, statut Git, conservation des verdicts et registres).
-7. Livrer une courte synthèse et un registre de migration **dans la phase documentaire concernée**, sans créer un second système de navigation.
+Do not repeat a complete restructuring without an explicit need. If adoption
+is requested, read this project's index, decisions and previous reports only.
+Map actual path changes and objectives without inventing chronology. Back up
+relevant preimages, including untracked files, verify them and respect Git safeguards.
 
-Le déplacement, le renommage et la réparation des références sont autorisés **uniquement dans le périmètre documentaire explicitement approuvé**. L'installation de ce kit n'autorise pas à elle seule une suppression, une purge de quarantaines, un commit ni un push.
+Rename/move necessary originals, repair active references, anchors, scripts and
+agent rules, retain dated raw evidence and translate old paths through one mapping.
+Remove only wholly redundant aliases with proof of no unique content and a
+restoration route. Never delete an original decision, QA, report or proof.
+Run one consolidated check of local links, Unicode/case collisions, empty folders,
+Git state, verdict preservation and registers. Put the short result and mapping
+in the existing documentary phase; do not create competing navigation.
 
-## 9. Coexistence avec les consignes spécifiques
+Moving/renaming/reference repair is authorised only within the explicitly
+approved documentary scope. Installing this kit alone permits no deletion,
+quarantine purge, commit or push.
 
-Cette norme est la **référence commune de classement et de traçabilité**. Elle ne remplace pas les règlements de sécurité, architecture, vie privée, pédagogie, test navigateur, signature, QA matérielle ou CI/CD d'un projet.
+## 9. Project-specific instructions remain authoritative
 
-- Conserver `AGENTS.md`, `CLAUDE.md`, `AGENT_WORKFLOW.md`, `README.md` et autres entrées obligatoires **à leurs chemins reconnus** ; y ajouter, lors d'une adaptation autorisée, un renvoi court vers `docs/UNIVERSAL.md` et remplacer seulement les prescriptions contradictoires de nommage.
-- Les instructions techniques et la sécurité du projet prévalent pour leurs domaines. Les règles documentaires de ce kit prévalent pour les **nouvelles traces**, sauf arbitrage humain explicite.
-- Toute contradiction réelle est signalée et résolue localement, sans fusion massive ni réécriture de consignes historiques figées.
+This is the common organisation/traceability standard, not a replacement for
+project security, architecture, privacy, teaching, browser tests, signing,
+hardware QA or CI/CD rules. Keep recognised `AGENTS.md`, `CLAUDE.md`,
+`AGENT_WORKFLOW.md` and `README.md` entry points. When authorised, add a short
+UNIVERSAL link and replace only contradictory documentary naming clauses.
 
-## 10. Efficacité et contrôle
+Technical/security rules retain their authority in their domains. Common rules
+apply to **new documentary traces** unless the human explicitly decides otherwise.
+Identify and resolve real local contradictions without mass-merging or rewriting
+frozen historical instructions.
 
-Un agent doit éviter les centaines de contrôles et de rapports de migration répétés : **réutiliser les références stables et vérifier seulement le delta**, puis un contrôle final consolidé. `docs/UNIVERSAL/OUTILS/verifier.py` fournit une vérification **en lecture seule** du nommage, des fichiers structurants, des liens locaux détectables et des dossiers vides ; ce n'est pas une QA applicative ni une garantie absolue de toutes les URLs ou liens dynamiques.
+## 10. Efficient verification
 
-## 11. Référence complémentaire
+Reuse stable references and check the delta, then perform one final consolidated
+verification; avoid hundreds of repeated checks and migration reports.
+`docs/UNIVERSAL/OUTILS/verifier.py` is **read-only** and checks naming, structural
+files, detectable local links and empty folders. It is not application QA or an
+absolute guarantee of every URL, rendered anchor or dynamically generated link.
 
-Lire [`04-ESSAIS-ET-NETTOYAGE.md`](04-ESSAIS-ET-NETTOYAGE.md) pour le cycle de vie des environnements de test : recensement dès création, bilan après QA, protection des travaux uniques et suppression sur autorisation ciblée.
+## 11. Test environments and cleanup
+
+Read [`04-ESSAIS-ET-NETTOYAGE.md`](04-ESSAIS-ET-NETTOYAGE.md) for immediate resource
+registration, post-QA assessment, protection of unique work and cleanup only
+under targeted authorisation.

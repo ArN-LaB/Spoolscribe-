@@ -21,7 +21,7 @@ body:
     id: app
     attributes:
       label: SpoolScribe version and operating system
-      placeholder: v0.8.0, macOS / Windows / Linux
+      placeholder: v0.8.1, macOS / Windows / Linux
     validations:
       required: true
   - type: input

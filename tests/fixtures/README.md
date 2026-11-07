@@ -1,24 +1,21 @@
-# Jeux de référence — SpoolScribe v0.6.0
+# Reference fixtures — SpoolScribe v0.6.0
 
-[Ressources de l’application](../../data/README.md) · [Développement](../../docs/DEVELOPMENT.md)
+[Application resources](../../data/README.md) · [Development](../../docs/DEVELOPMENT.md)
 
-| Dossier | Rôle |
+| Directory | Purpose |
 | --- | --- |
-| `catalogues/` | Catalogue historique Polymaker/Prusament/ROSA3D et instantanés OFD/SpoolmanDB |
-| `catalogues/audits/` | Rapports de provenance et de couverture associés aux instantanés |
-| `orca/` | 48 profils officiels utilisés pour les tests de non-régression |
-| `legacy/` | Instantané TheFilamentDB, réservé au développement et à l’enrichissement historique optionnel |
-| `qr/ssqr1_vectors.json` | Vecteurs normatifs SSQR1, message NDEF exact pour les deux formats, sans données personnelles |
-| `manifest.json` | Ancien emplacement et SHA-256 des 54 fichiers déplacés sans modification de contenu |
+| `catalogues/` | Historical Polymaker/Prusament/ROSA3D catalogue and OFD/SpoolmanDB snapshots |
+| `catalogues/audits/` | Provenance and coverage reports for those snapshots |
+| `orca/` | 48 official profiles used for regression testing |
+| `legacy/` | TheFilamentDB snapshot for development and optional historical enrichment |
+| `qr/ssqr1_vectors.json` | Normative SSQR1 vectors with exact NDEF for both formats and no personal data |
+| `manifest.json` | Original locations and SHA-256 of 54 files moved without changing content |
 
-Les fixtures JSON synthétiques, exceptions et le contrat des 1 008 exports restent
-ici, à côté de ce guide. Les tests travaillent sur des copies temporaires et
-interdisent les connexions réseau. Aucun de ces fichiers n’est embarqué dans les
-exécutables, ni copié dans une nouvelle installation utilisateur.
+Synthetic JSON fixtures, exceptions and the 1,008-export contract remain here.
+Tests use temporary copies and deny network connections. No fixture is bundled
+in an executable or copied into a new user's installation.
 
-Le manifeste historique reste celui des 54 fichiers déplacés en v0.3.5 ;
-les nouveaux vecteurs QR ne modifient ni ce manifeste ni les 48 profils Orca.
-
-Les anciens chemins de logos présents dans ces instantanés restent volontairement
-inchangés : les alias de ressources assurent leur lecture. Cela conserve les
-empreintes des catalogues et prouve la compatibilité des installations existantes.
+The historical manifest still covers the 54 files moved in v0.3.5. New QR vectors
+change neither it nor the 48 Orca profiles. Old logo paths in snapshots are
+intentionally retained: resource aliases keep them readable, preserving catalogue
+hashes and demonstrating compatibility with existing installations.

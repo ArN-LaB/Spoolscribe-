@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Audit documentaire local, en lecture seule, sans dépendance externe.
+"""Local read-only documentation check, without external dependencies.
 
-Exemple : python3 docs/UNIVERSAL/OUTILS/verifier.py --root .
-Options : --all-docs (dossiers vides dans tout docs), --strict (code != 0 sur erreur).
-Ne modifie, ne crée et ne supprime aucun fichier. Ne suit pas les liens symboliques.
+Example: python3 docs/UNIVERSAL/OUTILS/verifier.py --root .
+Options : --all-docs (empty folders throughout docs), --strict (nonzero exit on error).
+Never modifies, creates or deletes files; never follows symlinks.
 """
 
 from __future__ import annotations
@@ -34,10 +34,10 @@ def inside(path: Path, root: Path) -> bool:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Vérification en lecture seule des traces universelles")
-    ap.add_argument("--root", default=".", help="Racine du projet ouvert")
-    ap.add_argument("--strict", action="store_true", help="Code 1 si erreurs documentaires")
-    ap.add_argument("--all-docs", action="store_true", help="Dossiers vides sous tout docs/ (sinon UNIVERSAL + agent-runs)")
+    ap = argparse.ArgumentParser(description="Read-only universal trace verification")
+    ap.add_argument("--root", default=".", help="Open project root")
+    ap.add_argument("--strict", action="store_true", help="Exit 1 on documentation errors")
+    ap.add_argument("--all-docs", action="store_true", help="Empty folders throughout docs/ (otherwise UNIVERSAL + agent-runs)")
     args = ap.parse_args()
 
     root = Path(args.root).expanduser().absolute()
@@ -51,16 +51,16 @@ def main() -> int:
         issues.append((level, message))
 
     if not docs.is_dir() or docs.is_symlink():
-        print("ERREUR : docs/ est absent ou est un lien symbolique.")
+        print("ERROR : docs/ is missing or is a symlink.")
         return 1 if args.strict else 0
 
     entry = docs / "UNIVERSAL.md"
     if not entry.is_file() or entry.is_symlink():
-        note("ERREUR", "docs/UNIVERSAL.md absent ou invalide")
+        note("ERROR", "docs/UNIVERSAL.md missing or invalid")
     for filename in ("01-NORME.md", "02-MISSION-ADOPTION.md", "03-MODELES.md", "04-ESSAIS-ET-NETTOYAGE.md"):
         p = common / filename
         if not p.is_file() or p.is_symlink():
-            note("ERREUR", f"Fichier universel manquant : {relative(p, root)}")
+            note("ERROR", f"Missing universal file : {relative(p, root)}")
 
     files_to_check: list[Path] = []
     visited_dirs: set[Path] = set()
@@ -77,13 +77,13 @@ def main() -> int:
             try:
                 entries = sorted(folder.iterdir(), key=lambda p: p.name)
             except OSError as e:
-                note("AVERTISSEMENT", f"Répertoire inaccessible : {relative(folder, root)} ({e})")
+                note("WARNING", f"Inaccessible directory : {relative(folder, root)} ({e})")
                 continue
             if not entries or all(e.name == ".DS_Store" for e in entries):
-                note("ERREUR", f"Dossier documentaire vide ou .DS_Store seul : {relative(folder, root)}")
+                note("ERROR", f"Empty documentation folder or .DS_Store only : {relative(folder, root)}")
             for p in entries:
                 if p.is_symlink():
-                    note("AVERTISSEMENT", f"Lien symbolique non suivi : {relative(p, root)}")
+                    note("WARNING", f"Symlink not followed : {relative(p, root)}")
                 elif p.is_dir():
                     stack.append(p)
                 elif p.is_file() and p.suffix.lower() == ".md":
@@ -97,11 +97,11 @@ def main() -> int:
         if entry.is_file() and not entry.is_symlink():
             files_to_check.append(entry)
 
-    # Vérification légère de l'organisation courante : aucun fichier factice requis.
+    # Lightweight structure check: no placeholder file required.
     if not trace.is_dir():
-        note("INFO", "Pas de docs/agent-runs/ : aucune phase créée à ce stade")
+        note("INFO", "No docs/agent-runs/: no phase exists yet")
     elif trace.is_symlink():
-        note("ERREUR", "docs/agent-runs ne doit pas être un lien symbolique")
+        note("ERROR", "docs/agent-runs must not be a symlink")
     else:
         phase_dirs: list[Path] = []
         try:
@@ -113,38 +113,38 @@ def main() -> int:
                 continue
             m = PHASE_RE.fullmatch(item.name)
             if not m:
-                note("AVERTISSEMENT", f"Dossier de premier niveau non conforme / historique : {relative(item, root)}")
+                note("WARNING", f"Noncanonical/historical top-level folder : {relative(item, root)}")
                 continue
             if m.group(1) != "DATE-INCONNUE":
                 try:
                     date.fromisoformat(m.group(1))
                 except ValueError:
-                    note("ERREUR", f"Date de phase invalide : {relative(item, root)}")
+                    note("ERROR", f"Invalid phase date : {relative(item, root)}")
             phase_dirs.append(item)
             totals["phases"] += 1
             if not (item / "00-PHASE.md").is_file():
-                note("ERREUR", f"00-PHASE.md absent : {relative(item, root)}")
+                note("ERROR", f"Missing 00-PHASE.md : {relative(item, root)}")
             for boucle in sorted(item.iterdir(), key=lambda p: p.name):
                 if boucle.is_symlink() or not boucle.is_dir() or not BOUCLE_RE.fullmatch(boucle.name):
                     continue
                 totals["boucles"] += 1
                 if not (boucle / "00-BOUCLE.md").is_file():
-                    note("ERREUR", f"00-BOUCLE.md absent : {relative(boucle, root)}")
+                    note("ERROR", f"Missing 00-BOUCLE.md : {relative(boucle, root)}")
                 preuves = boucle / "PREUVES"
                 if preuves.is_dir() and not (preuves / "MANIFESTE.csv").is_file():
-                    note("ERREUR", f"PREUVES sans MANIFESTE.csv : {relative(preuves, root)}")
+                    note("ERROR", f"PREUVES without MANIFESTE.csv : {relative(preuves, root)}")
         if phase_dirs and not (trace / "INDEX.md").is_file():
-            note("ERREUR", "docs/agent-runs/INDEX.md absent alors que des phases existent")
+            note("ERROR", "docs/agent-runs/INDEX.md missing despite existing phases")
         if not phase_dirs:
-            note("INFO", "Aucune phase canonique identifiée ; vérifier si une adoption est nécessaire")
+            note("INFO", "No canonical phase found; determine whether adoption is needed")
 
-    # Liens directs locaux dans les Markdown analysés (sans lire fichiers externes ni symlinks).
+    # Direct local Markdown links; never read external targets or follow symlinks.
     totals["markdown"] = len(set(files_to_check))
     for path in sorted(set(files_to_check)):
         try:
             content = path.read_text(encoding="utf-8")
         except (OSError, UnicodeError) as e:
-            note("AVERTISSEMENT", f"Markdown non lisible : {relative(path, root)} ({e})")
+            note("WARNING", f"Unreadable Markdown : {relative(path, root)} ({e})")
             continue
         is_fenced = False
         clean_lines = []
@@ -159,41 +159,41 @@ def main() -> int:
             if not target or target.startswith(("#", "http:", "https:", "mailto:", "data:", "file:")):
                 continue
             if " " in target and "?" not in target and "%20" not in target:
-                target = target.split(" ", 1)[0]  # titre optionnel du lien Markdown
+                target = target.split(" ", 1)[0]  # optional Markdown link title
             link_path = unquote(target.split("#", 1)[0].split("?", 1)[0])
             if not link_path:
                 continue
             totals["liens_locaux"] += 1
-            # Les références absolues externes sont consignées, jamais ouvertes.
+            # Record external absolute references without opening them.
             if link_path.startswith("/"):
-                note("INFO", f"Chemin absolu non vérifié : {relative(path, root)} → {link_path}")
+                note("INFO", f"Unverified absolute path : {relative(path, root)} → {link_path}")
                 continue
             destination = path.parent / link_path
             try:
                 resolved = destination.resolve(strict=False)
             except (OSError, RuntimeError):
-                note("AVERTISSEMENT", f"Lien non résoluble : {relative(path, root)} → {target}")
+                note("WARNING", f"Unresolvable link : {relative(path, root)} → {target}")
                 continue
             if not inside(resolved, root):
-                note("AVERTISSEMENT", f"Lien hors projet non parcouru : {relative(path, root)} → {target}")
+                note("WARNING", f"Out-of-project link not followed : {relative(path, root)} → {target}")
                 continue
             if not resolved.exists():
-                note("ERREUR", f"Lien local absent : {relative(path, root)} → {target}")
-            # Aucun accès à la cible ; les ancres / liens dynamiques ne sont pas validés ici.
+                note("ERROR", f"Missing local link : {relative(path, root)} → {target}")
+            # No target content access; rendered anchors and dynamic links are not checked.
 
-    print("VÉRIFICATION UNIVERSAL — LECTURE SEULE")
-    print(f"Projet analysé : {root}")
-    print(f"Phases : {totals['phases']} | Boucles : {totals['boucles']} | Markdown lus : {totals['markdown']} | Liens locaux : {totals['liens_locaux']}")
-    for level in ("ERREUR", "AVERTISSEMENT", "INFO"):
+    print("UNIVERSAL CHECK — READ ONLY")
+    print(f"Project checked : {root}")
+    print(f"Phases : {totals['phases']} | Loops: {totals['boucles']} | Markdown read: {totals['markdown']} | Local links: {totals['liens_locaux']}")
+    for level in ("ERROR", "WARNING", "INFO"):
         selected = [msg for lvl, msg in issues if lvl == level]
         print(f"{level} : {len(selected)}")
         for msg in selected[:80]:
             print(f"  - {msg}")
         if len(selected) > 80:
-            print(f"  ... et {len(selected) - 80} autres éléments du même niveau")
-    print("Limites : pas de tests applicatifs, d'URLs réseau, d'ancres rendues ni de liens construits par script.")
-    print("Aucune suppression, modification ou création de fichier effectuée.")
-    return 1 if args.strict and any(level == "ERREUR" for level, _ in issues) else 0
+            print(f"  ... and {len(selected) - 80} more items at this level")
+    print("Limits: no application tests, network URLs, rendered anchors or script-generated links.")
+    print("No file deleted, modified or created.")
+    return 1 if args.strict and any(level == "ERROR" for level, _ in issues) else 0
 
 
 if __name__ == "__main__":

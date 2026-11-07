@@ -1,84 +1,99 @@
-# Audit du dépôt et promotion Desktop v0.8.0
+# Repository audit and Desktop v0.8.0 stable promotion
 
-Date : 5 novembre 2026. Base contrôlée : `89c08a657bcd752c9f6b95e15192c8390d54d156`.
-[Tag logiciel](https://github.com/ArN-LaB/Spoolscribe-/tree/v0.8.0) · [Validation des binaires](v0.8.0.md) · [Politique de versions](../RELEASE_POLICY.md).
+Historical record, 5 November 2026. Checked base:
+`89c08a657bcd752c9f6b95e15192c8390d54d156`.
+[Software tag](https://github.com/ArN-LaB/Spoolscribe-/tree/v0.8.0) ·
+[Binary validation](v0.8.0.md) · [Release policy](../RELEASE_POLICY.md).
 
-## Périmètre et résultat
+## Scope and result
 
-La passe porte sur la documentation, les captures réelles, la cohérence du canal
-GitHub, les métadonnées du projet et la propreté du dépôt. Elle ne change aucun
-module applicatif, protocole, ressource runtime, catalogue, profil Orca ou dépendance
-par rapport au tag v0.8.0. La promotion stable conserve le tag et les six fichiers
-publiés. Elle ne certifie pas toutes les configurations matérielles.
+This pass covered documentation, actual screenshots, GitHub channel coherence,
+project metadata and repository organisation. It changed no application module,
+protocol, runtime resource, catalogue, Orca profile or dependency relative to
+v0.8.0. Stable promotion retained the tag and six published files, without
+certifying every hardware setup.
 
-## Structure et ménage justifié
+## Structure and justified maintenance
 
-- 437 fichiers suivis à la base ; 6 fichiers visibles à la racine : `CHANGELOG.md`, `LICENSE`, `NOTICE`, `README.md`, `install-local.command`, `pyproject.toml`.
-- 41 scripts audités : 26 sous `scripts/`, 15 outils CI/maintenance.
-- Les modules applicatifs restent sous `src/spoolscribe/`, les builds sous `packaging/`, les ressources déclarées sous `data/` et les données historiques sous `tests/fixtures/`.
-- Les anciens scrapers sont encore des entrées CLI/compatibilité ou des fixtures de régression, pas des doublons à supprimer sur simple absence dans le parcours graphique. Les outils de captures, logos, wiki, archives et sondes compilées ont un rôle de maintenance explicite.
-- Aucun script de production n’est supprimé sur la seule base d’un nom ancien. Le contrôle de ressources conserve 198 fichiers déclarés, les 54 fixtures protégées dont 48 profils Orca et le contrat des 1 008 exports.
-- `docs/REPOSITORY.md` est recentré sur la structure actuelle ; l’ancien bilan daté reste accessible dans Git. Les erreurs de version courante, anciens compteurs et conseils de logiciels d’écriture sont corrigés dans l’aide active.
-- Les captures sont centralisées et référencées par un manifeste de version, dimensions, SHA-256 et scénario. Les captures de démonstration ne sont pas embarquées dans l’application.
-- 1999 fichiers locaux des dossiers `docs/agent-runs/` et `docs/agents-prompts/` sont conservés, empreintes vérifiées. Deux exclusions Git explicites évitent de publier brouillons, chemins locaux et preuves intermédiaires. Les preuves publiques de release restent sous `docs/validation/`.
-- Les sorties `dist/`, caches, réglages utilisateur et métadonnées `.DS_Store` restent ignorés. Le contrôle final compare l’ensemble des chemins et octets non ignorés avec Git ; il ne prétend pas synchroniser les dossiers locaux exclus.
+The baseline had **437 tracked files** and six visible root files:
+`CHANGELOG.md`, `LICENSE`, `NOTICE`, `README.md`, `install-local.command`,
+`pyproject.toml`. The review covered **41 scripts** (26 under `scripts/`,
+15 CI/maintenance tools). Application modules stayed under `src/spoolscribe/`,
+packaging under `packaging/`, declared resources under `data/` and historical
+fixtures under `tests/fixtures/`.
 
-## Outils conservés et raison
+Old scrapers still served CLI/compatibility or regression fixtures; absence from
+the GUI alone did not justify deletion. Capture/logo/Wiki/archive/frozen-probe
+tools had explicit maintenance roles. No production script was deleted merely
+for an old name. Checks retained 198 declared resources, 54 protected fixtures
+including 48 Orca profiles, and the 1,008-export contract.
 
-| Famille | Utilisation |
+`docs/REPOSITORY.md` was focused on current structure while the dated predecessor
+remained available in Git. Active help corrected current-version errors, old
+counts and writer guidance. Centralised screenshots recorded version, dimensions,
+SHA-256 and scenario; demonstration images were not application resources.
+
+**1,999 local files** under `docs/agent-runs/` and `docs/agents-prompts/` were
+preserved with verified hashes. Two explicit Git exclusions prevented publication
+of drafts, local paths and intermediate evidence. Public release evidence stayed
+under `docs/validation/`. `dist/`, caches, preferences and `.DS_Store` remained
+ignored. Final comparison covered all non-ignored paths/bytes, without claiming
+to synchronise excluded local folders.
+
+## Retained tools
+
+| Family | Purpose |
 | --- | --- |
-| Workers d’acquisition / seeds | Sources choisies, compléments historiques, CLI et tests sans réseau |
-| `db_io`, fusion et adaptateurs | Écriture protégée, rapprochement et validation des données |
-| Icônes et ressources | Régénération de ressources/provenances, alias compatibles |
-| Sondes `probe_frozen_*` / `check_frozen_*` | Vérification des vrais exécutables sur chaque runner |
-| `verify_archive`, `check_repository` | Structure native, liens, version, fixtures et ressources |
-| `render_readme_*`, `sync_wiki` | Reproduction des visuels réels et publication de l’aide |
-| `build_catalogue_snapshot`, `import_brand_logos` | Préparations explicites de maintenance, hors installation utilisateur |
+| Acquisition workers/seeds | Chosen sources, historical enrichment, CLI and offline tests |
+| `db_io`, merge/adapters | Protected writes, matching and validation |
+| Icons/resources | Regeneration/provenance and compatible aliases |
+| `probe_frozen_*` / `check_frozen_*` | Actual executable checks on native runners |
+| `verify_archive`, `check_repository` | Native layout, links, version, fixtures/resources |
+| `render_readme_*`, `sync_wiki` | Reproducible actual visuals and help publication |
+| `build_catalogue_snapshot`, `import_brand_logos` | Explicit maintenance preparation, outside user installation |
 
-## QR et disponibilité mobile
+## QR and mobile availability
 
-SSQR1 est conservé octet pour octet. Un QR visible peut être lu par une autre
-application ; M/Q corrige des dommages et SHA-256 détecte des altérations, sans
-exclusivité applicative ni chiffrement. Le parcours mobile recommandé est le
-scanner Companion ; l’ouverture par caméra via liens vérifiés est un autre chantier,
-avec domaine contrôlé et configuration mobile. Aucun lien de store n’est inventé.
-[Explication et sources](../wiki/Companion-and-QR.md).
+SSQR1 remained byte-identical. Another application can read a visible QR;
+M/Q error correction and SHA-256 alteration detection provide neither exclusive
+app access nor encryption. The intended mobile workflow was Companion scanning;
+camera opening through verified links was separate work requiring a controlled
+domain/mobile configuration. No store link was invented.
+[Explanation and sources](../wiki/Companion-and-QR.md).
 
-## Vérifications et limites
+## Verification and limits
 
-- Python 3.10 : 618/618 tests réussis, 104,677 s ; Python 3.12 : 618/618, 94,221 s, sur macOS avec Qt offscreen et fixtures isolées, sans accès réseau réel dans les tests.
-- Contrôle de structure : 52 Markdown actifs, 304 liens locaux, zéro erreur ; ancres de l’aide vérifiées séparément ; `git diff --check` réussi.
-- 30 captures : dimensions et SHA-256 conformes au manifeste ; revue visuelle de la planche complète et des écrans détaillés.
-- Quatre QR présents dans les captures décodés indépendamment avec ZXing : NDEF identiques aux empreintes attendues du manifeste.
-- 1 999 fichiers de travail locaux conservés sans changement d’empreinte ; aucune donnée personnelle ou clé privée ajoutée au diff.
-- La condition réelle de publication distingue v0.8.0 stable, les préversions historiques et les tags suffixés, sans désactiver de contrôle.
-- Un formulaire de résultat matériel recueille la configuration exacte, les versions et le read-back, sans assimiler un retour individuel à une certification de gamme.
+| Check | Recorded result |
+| --- | --- |
+| Local Python 3.10 / macOS offscreen Qt | 618/618 passed, 104.677 s, isolated fixtures/offline |
+| Local Python 3.12 / macOS offscreen Qt | 618/618 passed, 94.221 s, isolated fixtures/offline |
+| Structure | 52 active Markdown, 304 local links, zero errors; help anchors checked separately; diff-check passed |
+| 30 screenshots | Manifest dimensions/SHA-256 verified; contact sheet and detailed screens visually reviewed |
+| Four screenshot QRs | Independent ZXing decode recovered expected manifest NDEF |
+| 1,999 local work files | Hashes unchanged; no personal data/private key added |
+| Publication condition | Stable v0.8.0, historical pre-releases and suffixed tags distinguished without disabling checks |
+| Hardware-result form | Exact setup, versions and read-back requested without generalising one result to a family |
 
+Repository, captions, capture digests, orphan files, versions and publication
+conditions were checked before the PR. All four required GitHub checks stayed
+enforced. [PR #21](https://github.com/ArN-LaB/Spoolscribe-/pull/21) merged as
+`afeef1d71532106bbb01928804332e52d64d3440` after
+[successful CI](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41959317795),
+618 tests/configuration. Builds in that documentation-only pass skipped and
+were not counted as successes; actual native builds remained those from
+[initial publication](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41954082388).
 
-Le contrôle du dépôt, des légendes, des empreintes des captures, des fichiers
-orphelins, des versions et de la condition de publication est exécuté avant la PR.
-Les quatre checks GitHub requis restent appliqués sans contournement.
-La [PR #21](https://github.com/ArN-LaB/Spoolscribe-/pull/21) est fusionnée au commit
-`afeef1d71532106bbb01928804332e52d64d3440` après [CI réussie](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41959317795) :
-618 tests dans chacune des quatre configurations. Les builds de cette passe
-strictement documentaire sont ignorés, et ne sont pas comptés comme réussis :
-les trois builds natifs réels restent ceux de la [publication initiale](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41954082388).
+At promotion, v0.8.0 became `prerelease=false`, `draft=false`, and `releases/latest`
+pointed to it. Six public URLs returned HTTP 200, with unchanged asset IDs,
+sizes/digests. Annotated tag `552576556b2d0f1cc9cd4c7328173e314e6996c8` still pointed
+to `89c08a657bcd752c9f6b95e15192c8390d54d156`. Wiki publication used the same sources
+with adapted Wiki routes.
 
-La release v0.8.0 est promue stable avec `prerelease=false`, `draft=false` et
-l’API `releases/latest` pointe sur v0.8.0. Les six URL publiques répondent HTTP 200 ;
-identifiants, tailles et empreintes des six artefacts restent identiques au relevé
-initial. Le tag annoté demeure `552576556b2d0f1cc9cd4c7328173e314e6996c8`,
-sur le commit logiciel `89c08a657bcd752c9f6b95e15192c8390d54d156`.
-Le wiki est publié depuis les mêmes sources, avec les routes adaptées au wiki.
-
-Le rendu HTML GitHub a été contrôlé pour le README et deux pages représentatives :
-centrage, titres et légendes sont conservés. Aucun navigateur automatisable n’étant
-disponible pour cette passe, la page complète n’a pas fait l’objet d’une recette
-visuelle dans un navigateur ; les captures Qt, elles, ont été revues.
-
-Les captures Qt sont réelles, avec données publiques ou exemples synthétiques
-signalés (mesures, réglages d’appareil et rapport d’actualisation). Elles ne sont
-ni une mesure d’instrument ni un téléchargement réel pour la démonstration.
-L’audit ne certifie pas App Store, Companion, les téléphones, l’impression ni toutes
-les imprimantes/lecteurs. La documentation mobile de confidentialité doit décrire
-l’application mobile effectivement soumise.
+GitHub-rendered HTML for README and two representative pages retained centring,
+headings and captions. No automatable browser was available: a full visual
+browser walkthrough was not performed. Qt captures were visually reviewed,
+using public data or labelled synthetic demonstrations (measurements, device
+settings, update report), not real instrument readings/downloads.
+This audit certified neither App Store/Companion/phones nor printing or all
+printers/readers. Mobile privacy documentation must describe the actual submitted
+mobile application. Later English wording changes do not change these dated results.

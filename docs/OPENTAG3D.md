@@ -1,157 +1,144 @@
-# OpenTag3D — SpoolScribe v0.8.0 stable
+# OpenTag3D export
 
-[Documentation](README.md) · [Installations de lecture](PRINTER-CONFIGURATIONS.md) · [Formats NFC](FORMATS-NFC.md) · [Validation](validation/v0.8.0.md)
+[Documentation](README.md) · [Reader setups](PRINTER-CONFIGURATIONS.md) · [NFC formats](FORMATS-NFC.md) · [Historical validation](validation/v0.8.0.md)
 
-**Disponible dans la [version stable v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).**
-Cette version stable prépare OpenTag3D **2.004** ;
-elle ne remplace pas OpenSpool et n’ajoute pas OpenPrintTag.
+The [current stable Desktop release](https://github.com/ArN-LaB/Spoolscribe-/releases/latest)
+prepares **OpenTag3D 2.004**. This is a separate format alongside OpenSpool;
+it does not add OpenPrintTag or physically write a chip.
 
-## Choisir le matériel avant le format
+## Choose the hardware before the format
 
-Dans **Mon matériel**, choisissez le lecteur et le logiciel effectivement installé.
-La liste des formats se limite à ceux déclarés pour cette configuration.
+In **My hardware**, select the reader and software actually installed. Available
+formats are limited to those declared for that setup.
 
-| Configuration choisie | Formats proposés |
+| Selected setup | Available formats |
 | --- | --- |
-| U1, paxx12 avec détection par défaut | OpenSpool 1.0 |
-| U1, paxx12 avec détection OpenRFID | OpenSpool 1.0 ou OpenTag3D 2.004 |
-| Lecteur OpenTag3D explicitement compatible | OpenTag3D 2.004 |
-| Bambu AMS, Prusa OpenPrintTag et autres formats natifs non pris en charge | Consultation de la fiche ; aucun nouvel export activé |
+| U1, paxx12 default detection | OpenSpool 1.0 |
+| U1, paxx12 OpenRFID detection | OpenSpool 1.0 or OpenTag3D 2.004 |
+| Explicitly compatible OpenTag3D reader | OpenTag3D 2.004 |
+| Bambu AMS, Prusa OpenPrintTag and other unsupported native formats | Browse filament information; no additional export enabled |
 
-OpenRFID est un système de lecture ; OpenSpool et OpenTag3D sont des formats. Les modes OpenRFID et OpenRFID Generic de paxx12 lisent les deux.
+OpenRFID is a reading system; OpenSpool and OpenTag3D are data formats. The
+paxx12 OpenRFID and OpenRFID Generic modes read both formats. U1 OpenTag3D support
+is documented for **OpenRFID**, not the default detection system. Check the
+installed version and reader documentation. SpoolScribe changes no printer
+firmware or settings.
 
-Le support OpenTag3D de la U1 est décrit pour **OpenRFID**, pas pour le système de
-détection par défaut. Vérifiez la version installée et la documentation de ce
-lecteur. Aucun firmware ou réglage d’imprimante n’est modifié par SpoolScribe.
+## Prepare a label
 
-## Préparer une étiquette
+Select the filament, colour and actual spool packaging. Choose OpenTag3D 2.004
+and your NTAG215/216 in **My hardware**, then open **Prepare label…**. Review
+filament mass and target temperatures, and explicitly shorten labels if needed.
+Check the preview and export to the chosen folder; the confirmation identifies
+the saved file. Import it into a suitable writer, write and read back the tag,
+then check what the reader recognises. Those physical steps require your own test.
 
-1. Sélectionnez le filament, sa teinte et son conditionnement réel.
-2. Dans **Mon matériel**, choisissez **OpenTag3D 2.004**, votre NTAG215/216 et
-   le type de fichier accepté par le logiciel d’écriture.
-3. Cliquez **Préparer l’étiquette…**. Confirmez la masse et les températures
-   cibles ; adaptez explicitement les libellés trop longs.
-4. Vérifiez l’aperçu, puis exportez vers le dossier choisi. Une confirmation
-   indique le fichier enregistré.
-5. Importez le fichier dans le logiciel d’écriture correspondant, écrivez le tag,
-   relisez-le, puis contrôlez les valeurs détectées par le lecteur.
+Confirmed settings are stored **per spool reference** in user preferences.
+Source catalogue data stays intact and refreshes do not replace those settings.
+Preference export/import preserves the reader software, format and file type.
+The current GUI defaults to raw NDEF; legacy NFC Tools containers remain available
+through the CLI/API and imported preferences, rather than a mobile/desktop writer
+selector in the hardware workflow.
 
-Les paramètres confirmés sont mémorisés **par référence de bobine**, dans les
-réglages utilisateur. Le catalogue source reste intact ; une actualisation ne
-remplace pas ces paramètres. Exporter/importer les réglages conserve également
-le logiciel du lecteur, le format et le type de fichier.
+## Values to review
 
-## Informations à confirmer
-
-| Information | Règle |
+| Value | Rule |
 | --- | --- |
-| Température cible de buse et de plateau | Pas de milieu de plage choisi automatiquement. Valeurs explicites, dans les bornes renseignées. |
-| Température d’enceinte | Aucune valeur inventée ; `0` signifie absence de chauffage, à confirmer. |
-| Masse | Masse de filament, hors bobine vide ; pas une masse restante mesurée. |
-| Températures encodées | Multiples de 5 °C. Une valeur non représentable est refusée, jamais arrondie silencieusement. |
-| Noms | Longueurs UTF-8 contrôlées ; aucune troncature automatique. Fabricant : 16 octets ; matière et variante : 5 chacun. |
-| Couleurs | Quatre RGBA au total. Une couleur inconnue doit être confirmée ; aucune couleur supplémentaire n’est supprimée pour faire tenir le tag. |
-| Référence fabricant | Utilisée seulement si fournie ; un identifiant OFD/Spoolman n’est pas transformé en référence fabricant. |
+| Nozzle and bed targets | Explicit values within known bounds; any labelled proposal must be reviewed and confirmed, never silently selected |
+| Chamber temperature | Never invented; `0` means no heating and needs confirmation |
+| Mass | Filament mass excluding the empty spool, not a measured remaining mass |
+| Encoded temperatures | Multiples of 5 °C; an unrepresentable value is refused, never silently rounded |
+| Names | UTF-8 lengths checked without truncation: manufacturer 16 bytes, material and variant 5 bytes each |
+| Colours | Four RGBA values in total; unknown colour requires confirmation, and no extra colour is silently dropped to fit |
+| Manufacturer article | Used only when supplied; an OFD/Spoolman identifier is not turned into a manufacturer article |
 
-Les bornes de températures sont facultatives dans OpenTag3D : une borne inconnue
-reste absente. Diamètre et densité doivent être connus. Les champs optionnels non
-pris en charge dans cette première intégration restent non renseignés.
+Temperature bounds are optional in OpenTag3D: unknown bounds remain absent.
+Diameter and density must be known. Optional fields unsupported by this initial
+integration remain unset.
 
-## Fichier à utiliser
+## Which file to use
 
-| Choix | Contenu | Destination |
+| Output | Contents | Intended destination |
 | --- | --- | --- |
-| **NFC Tools mobile (.json)** | Profil d’import contenant le message binaire dans son enveloppe base64 | Import de profils de l’application mobile ; recette réelle à effectuer |
-| **NFC Tools Desktop (.json)** | Profil d’import avec le type MIME et les octets du payload | Ouverture du fichier par NFC Tools Desktop ; recette réelle à effectuer |
-| **Message NDEF brut (.ndef)** | Un message NDEF binaire complet | Logiciel capable d’importer ce type de fichier, à vérifier |
+| Raw NDEF message (`.ndef`, current GUI default) | Complete binary NDEF message | A writer that can import it; compatibility must be checked |
+| NFC Tools mobile (`.json`, legacy CLI/API option) | Import profile with the binary message in a base64 envelope | Mobile profile import; physical acceptance untested |
+| NFC Tools Desktop (`.json`, legacy CLI/API option) | Import profile with MIME type and payload bytes | NFC Tools Desktop import; physical acceptance untested |
 
-Un profil `.json` NFC Tools n’est **pas** un JSON OpenSpool. Il doit être importé
-comme profil, pas écrit comme un simple enregistrement texte. La compatibilité
-avec les conteneurs de fichiers propres à un autre logiciel d’écriture n’est pas établie par cette intégration.
+An NFC Tools profile is **not OpenSpool JSON**. Import it as a profile rather
+than writing it as a text record. Other writers' proprietary file containers
+are not qualified by this integration. **View export** shows the exact generated
+profile JSON; `.ndef` previews show decoded fields and hexadecimal bytes. Raw
+NDEF contains no UID, manufacturer memory or Capability Container.
 
-**Voir l’export** affiche exactement le JSON du profil généré. Pour le fichier
-binaire `.ndef`, l’aperçu montre les champs décodés et les octets hexadécimaux.
-Le fichier brut ne contient ni UID, ni mémoire constructeur, ni Capability Container.
-SpoolScribe n’écrit pas directement le tag.
+The payload is 224 bytes, the NDEF message 248 bytes, and Type 2 TLV/terminator
+occupancy 251 bytes before writer-specific additions:
 
-Le payload fait 224 octets, le message NDEF 248 et l’occupation avec TLV/terminateur
-251 octets, avant les ajouts éventuels du logiciel d’écriture :
-
-| Tag | Zone NDEF standard | Marge avant réserve utilisateur |
+| Tag | Standard NDEF capacity | Headroom before the user's reservation |
 | --- | --- | --- |
-| NTAG215 | 496 octets | 245 octets |
-| NTAG216 | 872 octets | 621 octets |
+| NTAG215 | 496 bytes | 245 bytes |
+| NTAG216 | 872 bytes | 621 bytes |
 
-Le contrôle refuse une réserve qui fait dépasser cette capacité. La taille du
-fichier JSON/base64 sur disque n’est pas l’occupation mémoire du tag.
+A reservation exceeding capacity is refused. JSON/base64 file size on disk is
+not the tag's memory occupancy.
 
 <details>
-<summary><strong>Terminal et paramètres explicites</strong></summary>
+<summary><strong>CLI and explicit settings</strong></summary>
 
-Créez un fichier local, par exemple `etiquette.json` :
+Create a local `label.json` file:
 
 ```json
 {"print_temp": 210, "bed_temp": 60, "chamber_temp": 0, "weight": 1000}
 ```
 
-Ces nombres sont un exemple de saisie, pas des recommandations universelles.
-Depuis une installation source :
+These are example inputs, not universal temperature recommendations. From a
+source installation:
 
 ```sh
 python -m spoolscribe.convert_profile --nfc-format opentag3d \
   --printer opentag3d --firmware any --tag-type NTAG215 \
-  --opentag-output nfctools-mobile --opentag-settings etiquette.json
+  --opentag-output nfctools-mobile --opentag-settings label.json
 ```
 
-Saisissez la référence du catalogue, puis confirmez l’export. Les températures
-cibles et la masse manquantes sont demandées lorsqu’elles n’ont pas été fournies.
-Pour la U1/OpenRFID : `--printer u1 --firmware paxx12_openrfid`.
-`--opentag-output nfctools-desktop` et `ndef` sélectionnent les deux autres sorties.
-L’archive historique reste OpenSpool ; la combinaison OpenTag3D/archive est refusée.
+Enter the catalogue reference and confirm export. Missing targets and mass are
+requested if not supplied. U1/OpenRFID uses
+`--printer u1 --firmware paxx12_openrfid`. Select `nfctools-desktop` or `ndef`
+for the other outputs. The historical archive mode remains OpenSpool;
+OpenTag3D/archive is refused.
 
 </details>
 
-## Spécification et portée de la validation
+## Specification and evidence
 
-- [Spécification OpenTag3D](https://opentag3d.info/spec.html) et
-  [schéma machine](https://opentag3d.info/spec.json), version 2.004, révision
-  `5e5069cf5696e03bdd328e7bc3d15ee2fde97909`. Les mises à jour nécessitent une revue ;
-  aucun téléchargement de schéma ne se produit à l’exécution.
-- [Outil officiel de création et fichiers d’écriture](https://opentag3d.info/make).
-- [Détection RFID U1](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/develop/docs/design/rfid.md) ;
-  la branche de développement documente les capacités, sans prouver le firmware installé.
-- [Décodeur OpenRFID épinglé](https://github.com/suchmememanyskill/OpenRFID/tree/a13bc9e181374e182f61db4e69abf9fa1786cc29/src/tag/opentag3d).
+The implementation follows the [OpenTag3D specification](https://opentag3d.info/spec.html)
+and [machine schema](https://opentag3d.info/spec.json), version 2.004, revision
+`5e5069cf5696e03bdd328e7bc3d15ee2fde97909`. Updates require review; schemas are
+never downloaded at runtime. Other primary references are the
+[official creation tool and writer files](https://opentag3d.info/make),
+[U1 RFID detection](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/blob/develop/docs/design/rfid.md)
+and the [pinned OpenRFID decoder](https://github.com/suchmememanyskill/OpenRFID/tree/a13bc9e181374e182f61db4e69abf9fa1786cc29/src/tag/opentag3d).
+A development-branch capability description does not prove installed firmware.
 
-L’encodeur SpoolScribe est une implémentation indépendante fondée sur les champs
-et unités du standard. Aucun code du site OpenTag3D ou d’OpenRFID n’est embarqué.
-Les essais logiciels et leurs limites sont détaillés dans le
-[rapport de validation](validation/v0.8.0.md). La validation physique des imports,
-des tags et des imprimantes reste à réaliser avant de revendiquer leur recette.
+SpoolScribe's encoder independently implements the standard's fields and units;
+no OpenTag3D website or OpenRFID code is bundled. The
+[historical software validation](validation/v0.8.0.md) records its tests and
+limits. Physical imports, tags and printers require separate acceptance evidence.
 
-## Températures proposées et confirmation
+## Temperature proposals and confirmation
 
-Disponible dans les téléchargements v0.8.0.
-L’ouverture du formulaire propose, pour les cibles manquantes, une valeur unique
-explicite du profil Orca U1 correspondant, uniquement si une U1 est sélectionnée.
-À défaut, une plage connue permet une estimation de son milieu, arrondie à un
-multiple de 5 °C dans les bornes. Son origine est indiquée : ce n’est pas une
-nouvelle recommandation fabricant. Un plateau avec plusieurs valeurs de profil
-différentes ne donne pas de cible documentée unique.
+Since v0.8.0, missing targets can be proposed from a single explicit matching
+Orca U1 value, only when U1 is selected. Otherwise a known range may provide a
+labelled midpoint estimate, rounded to the existing 5 °C grid within bounds.
+The origin is shown; it is not a new manufacturer recommendation. Several
+conflicting bed-profile values do not provide one documented target.
 
-Sans plage exploitable, le champ reste vide. L’enceinte n’est pas estimée à partir
-de la matière : choisissez explicitement « Sans chauffage » si cela correspond à
-votre installation, ou indiquez la valeur. Les valeurs déjà confirmées ne sont
-pas remplacées. Toute édition retire la confirmation ; « Enregistrer » reste bloqué tant que
-le bouton « Valider les températures », placé juste à côté, n’a pas été activé. Annuler n’enregistre
-aucune suggestion. Le catalogue et les encodeurs restent inchangés.
+Without a usable range the field stays empty. Chamber heating is not inferred
+from material: choose **No heating** explicitly when appropriate or enter a value.
+Already confirmed values are not replaced. Editing withdraws confirmation;
+**Save** remains blocked until the adjacent **Validate temperatures** control is
+used. Cancelling saves no proposal and changes neither catalogue nor encoder.
 
-Le parcours matériel ne demande plus de choisir NFC Tools téléphone/ordinateur.
-Le fichier OpenTag3D produit par défaut par l’interface est un message NDEF brut ;
-les conteneurs historiques restent disponibles dans les commandes CLI/API et
-les réglages importés. Le QR transmet toujours exactement le même message NDEF.
-
-Une fois les valeurs enregistrées et l’étiquette valide, l’export NFC et l’aperçu
-réutilisent ces réglages sans rouvrir le formulaire. La validité du message complet
-est contrôlée à chaque action. Des valeurs manquantes ou devenues incompatibles
-ramènent à la préparation ; « Modifier les valeurs de l’étiquette… » ouvre toujours
-le formulaire et demande une nouvelle confirmation avant tout enregistrement.
+Once saved values produce a valid complete label, NFC export and preview reuse
+them without reopening the form. The complete message is validated at each action.
+Missing or incompatible values return you to preparation. **Edit label values…**
+always opens the form and requires renewed confirmation before saving. SSQR1
+always carries the exact same complete NDEF message.
