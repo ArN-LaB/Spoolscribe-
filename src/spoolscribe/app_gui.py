@@ -561,8 +561,9 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         act_settings.triggered.connect(self._open_settings)
         menu.addAction(act_settings)
         menu.addSeparator()
-        self.act_archive = QAction(tr('Exporter une archive JSON…'), self)
+        self.act_archive = QAction(tr('Exporter le JSON OpenSpool du filament…'), self)
         self.act_archive.triggered.connect(lambda: self._generate(mode="archive"))
+        self.act_archive.setToolTip(tr('Fichier OpenSpool lisible du filament sélectionné. Ce n’est pas une sauvegarde de vos données.'))
         menu.addAction(self.act_archive)
         menu.addSeparator()
         act_about = QAction(tr('À propos de SpoolScribe'), self)
@@ -1971,35 +1972,51 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
     # ── Mise à jour automatique ──────────────────────────────────────────
     # ── Paramètres ───────────────────────────────────────────────────────
     def _open_settings(self, *, colour_tab=False):
+        """Six tabs. Fields are written only on Enregistrer; Annuler discards them.
+
+        Sources/actualisation and « Retirer l’autorisation réseau » act immediately
+        (their own buttons) and are labelled as such: cancelling this window does
+        not undo them. Data actions close this window first (see ``after``).
+        """
         cfg=core.load_config();dlg=QDialog(self);dlg.setWindowTitle(tr('Paramètres'));dlg.resize(540,460)
         lay=QVBoxLayout(dlg);lay.setContentsMargins(18,18,18,14);lay.setSpacing(12);tabs=ReadingTabs();tabs.setDocumentMode(False);tabs.tabBar().setDrawBase(False);lay.addWidget(tabs,1)
-        interface=QWidget();interface_layout=QVBoxLayout(interface);interface_layout.setContentsMargins(0,12,0,0)
-        interface_layout.addWidget(QLabel(tr('Langue de l’interface')))
-        language=QComboBox();language.setObjectName('interface_language');language.setFixedHeight(CONTROL_HEIGHT)
-        from .i18n import system_ui_languages, resolve_language
-        system_languages = system_ui_languages()
-        detected = resolve_language('auto', system_languages)
-        language.addItem(tr('Automatique — {v0}', v0=LANGUAGES[detected]),'auto')
-        language.setItemData(0,tr('Langues du système : {v0}. Si elles ne sont pas prises en charge : anglais.',v0=', '.join(system_languages) or tr('Inconnu')),Qt.ToolTipRole)
-        for code,name in LANGUAGES.items():language.addItem(name,code)
-        language.setCurrentIndex(max(0,language.findData(cfg.get('language','auto'))));interface_layout.addWidget(language)
-        interface_layout.addWidget(WrapLabel(tr('Après enregistrement, vous pourrez redémarrer maintenant ou plus tard.')))
-        interface_layout.addStretch(1)
-        catalogue=QWidget();catalogue_layout=QVBoxLayout(catalogue);catalogue_layout.setContentsMargins(0,12,0,0)
+        after={'action':None}
+
+        def page():
+            widget=QWidget();layout=QVBoxLayout(widget);layout.setContentsMargins(0,12,0,0);layout.setSpacing(10)
+            return widget,layout
+
+        # ── Catalogue ──
+        catalogue,catalogue_layout=page()
         catalogue_layout.addWidget(WrapLabel(tr('Actualisez le catalogue à votre rythme. La dernière base locale reste disponible en cas d’échec.')))
         catalogue_layout.addWidget(QLabel(tr('Actualisation au lancement')))
-        cadence=QComboBox()
+        cadence=QComboBox();cadence.setObjectName('update_interval_days');cadence.setFixedHeight(CONTROL_HEIGHT)
         for days,label in core.UPDATE_INTERVAL_CHOICES:cadence.addItem(tr(label),days)
-        cadence.setCurrentIndex(max(0,cadence.findData(cfg.get('update_interval_days',1))));catalogue_layout.addWidget(cadence)
+        effective,stored,valid=core.update_interval_state(cfg)
+        unsupported=object()
+        if valid:
+            cadence.setCurrentIndex(cadence.findData(stored))
+        else:
+            # Never display an unrepresentable value as « À chaque lancement »; keep it until the user chooses.
+            cadence.addItem(tr('Valeur actuelle non prise en charge — conservée'),unsupported);cadence.setCurrentIndex(cadence.count()-1)
+        catalogue_layout.addWidget(cadence)
+        if not valid:
+            warning=WrapLabel(tr('La configuration locale contient une cadence que cette fenêtre ne peut pas représenter. Elle reste enregistrée telle quelle tant que vous n’en choisissez pas une autre.'))
+            warning.setObjectName('cadenceWarning');catalogue_layout.addWidget(warning)
+        catalogue_layout.addWidget(WrapLabel(tr('L’autorisation réseau reste requise. L’ancien réglage « actualisation automatique » est conservé pour compatibilité ; la cadence choisie ici fait foi.')))
+        immediate=QLabel(tr('Actions immédiates'));immediate.setObjectName('sectionTitle');catalogue_layout.addWidget(immediate)
+        catalogue_layout.addWidget(WrapLabel(tr('Ces boutons s’appliquent tout de suite. Annuler cette fenêtre ne les annule pas.')))
         sources=QPushButton(tr('Sources du catalogue…'));sources.clicked.connect(self._choose_sources);catalogue_layout.addWidget(sources)
-        revoke=QPushButton(tr('Retirer l’autorisation réseau'));revoke.setEnabled(core.has_network_consent())
+        revoke=QPushButton(tr('Retirer l’autorisation réseau'));revoke.setObjectName('revokeNetworkConsent');revoke.setEnabled(core.has_network_consent())
         def revoke_consent():
             try:core.set_network_consent(False,auto_update=False);dlg.reject()
             except OSError as exc:QMessageBox.critical(self,tr('Paramètres'),str(exc))
-        revoke.clicked.connect(revoke_consent);catalogue_layout.addWidget(revoke);catalogue_layout.addStretch(1);tabs.addTab(catalogue,'Catalogue')
-        export=QWidget();export_layout=QVBoxLayout(export);export_layout.setContentsMargins(0,12,0,0)
-        export_layout.addWidget(QLabel(tr('Ma bobine habituelle')))
-        export_layout.addWidget(WrapLabel(tr('Présélection utilisée si elle existe. Vous pouvez la modifier dans la fiche.')))
+        revoke.clicked.connect(revoke_consent);catalogue_layout.addWidget(revoke);catalogue_layout.addStretch(1);tabs.addTab(catalogue,tr('Catalogue'))
+
+        # ── Filaments ──
+        filaments,filament_layout=page()
+        filament_layout.addWidget(QLabel(tr('Ma bobine habituelle')))
+        filament_layout.addWidget(WrapLabel(tr('Présélection utilisée si elle existe. Vous pouvez la modifier dans la fiche.')))
         weight=QComboBox();weight.setObjectName('preferred_weight_g')
         selected_weight=cfg.get('preferred_weight_g',1000)
         if type(selected_weight) is not int or not 0<=selected_weight<=20000:selected_weight=1000
@@ -2011,22 +2028,33 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         form.setCurrentIndex(max(0,form.findData(cfg.get('preferred_packaging','any'))));form.setFixedHeight(32)
         form_grid=QGridLayout();form_grid.setContentsMargins(0,0,0,0);form_grid.setHorizontalSpacing(16);form_grid.setVerticalSpacing(10)
         mass_label=QLabel(tr('Masse'));mass_label.setBuddy(weight);format_label=QLabel(tr('Format'));format_label.setBuddy(form)
-        form_grid.addWidget(mass_label,0,0);form_grid.addWidget(weight,0,1);form_grid.addWidget(format_label,1,0);form_grid.addWidget(form,1,1);form_grid.setColumnStretch(1,1);export_layout.addLayout(form_grid)
-        chk_orca=QCheckBox(tr('Préférer les valeurs Orca à l’export'));chk_orca.setChecked(cfg.get('orca_overrides') is True)
-        chk_orca.setToolTip(tr('Désactivé : vos corrections locales restent prioritaires. Le fichier JSON permet de vérifier les valeurs exportées.'))
-        export_layout.addStretch(1);tabs.addTab(export,tr('Bobines'))
-        advanced_export=QWidget();advanced_layout=QVBoxLayout(advanced_export);advanced_layout.setContentsMargins(0,12,0,0)
-        advanced_layout.addWidget(QLabel(tr('Dossier d’export')))
+        form_grid.addWidget(mass_label,0,0);form_grid.addWidget(weight,0,1);form_grid.addWidget(format_label,1,0);form_grid.addWidget(form,1,1);form_grid.setColumnStretch(1,1);filament_layout.addLayout(form_grid)
+        filament_layout.addStretch(1);tabs.addTab(filaments,tr('Filaments'))
+
+        # ── Étiquettes et export ──
+        labels_page,labels_layout=page()
+        labels_layout.addWidget(QLabel(tr('Dossier d’export')))
         export_path=QLineEdit(core.export_directory(cfg));export_path.setObjectName('export_directory');export_path.setReadOnly(True);export_path.setFixedHeight(CONTROL_HEIGHT)
         browse=QPushButton(tr('Choisir…'));browse.setFixedHeight(CONTROL_HEIGHT)
         def choose_export_folder():
             chosen=QFileDialog.getExistingDirectory(dlg,tr('Choisir le dossier d’export'),export_path.text())
             if chosen:export_path.setText(chosen)
-        browse.clicked.connect(choose_export_folder);folder_row=QHBoxLayout();folder_row.addWidget(export_path,1);folder_row.addWidget(browse);advanced_layout.addLayout(folder_row)
-        advanced_layout.addWidget(QLabel(tr('Valeurs du fichier NFC')));advanced_layout.addWidget(chk_orca)
-        advanced_layout.addWidget(WrapLabel(tr('Par défaut, vos corrections locales restent prioritaires. Activez cette option pour utiliser les paramètres Orca disponibles.')))
-        advanced_layout.addStretch(1);tabs.addTab(advanced_export,tr('Export'));tabs.addTab(interface,tr('Interface'))
-        colour_page=QWidget();colour_layout=QVBoxLayout(colour_page);colour_layout.setContentsMargins(0,12,0,0);colour_layout.setSpacing(10)
+        browse.clicked.connect(choose_export_folder);folder_row=QHBoxLayout();folder_row.addWidget(export_path,1);folder_row.addWidget(browse);labels_layout.addLayout(folder_row)
+        labels_layout.addWidget(QLabel(tr('Valeurs du fichier NFC')))
+        chk_orca=QCheckBox(tr('Préférer les valeurs Orca à l’export'));chk_orca.setObjectName('orca_overrides');chk_orca.setChecked(cfg.get('orca_overrides') is True)
+        chk_orca.setToolTip(tr('Désactivé : vos corrections locales restent prioritaires. Le fichier JSON permet de vérifier les valeurs exportées.'))
+        labels_layout.addWidget(chk_orca)
+        labels_layout.addWidget(WrapLabel(tr('Télécharger la source Orca rend des profils disponibles ; cette option décide seulement s’ils remplacent les valeurs du catalogue. Désactivée, un profil Orca applicable complète uniquement les valeurs manquantes.')))
+        hardware=QPushButton(tr('Mon matériel…'));hardware.setObjectName('openHardware')
+        hardware.setToolTip(tr('Imprimante, lecteur, logiciel et étiquette NFC'))
+        def open_hardware():
+            after['action']=self._open_hardware;dlg.reject()
+        hardware.clicked.connect(open_hardware);labels_layout.addWidget(hardware,0,Qt.AlignLeft)
+        labels_layout.addWidget(WrapLabel(tr('Le format papier des QR se règle dans la fenêtre QR.')))
+        labels_layout.addStretch(1);tabs.addTab(labels_page,tr('Étiquettes et export'))
+
+        # ── Couleurs ──
+        colour_page,colour_layout=page()
         colour_layout.addWidget(QLabel(tr('Jusqu’à quelle distance chercher ?')))
         colour_layout.addWidget(WrapLabel(tr('ΔE est un écart de couleur, pas un pourcentage. Maximum 3 garde les scores de 0 à 3 inclus ; 3,04 est écarté. Aucune marge n’est ajoutée.')))
         delta_presets=QComboBox();delta_presets.setObjectName('colour_delta_preset');delta_presets.setFixedHeight(CONTROL_HEIGHT)
@@ -2041,14 +2069,65 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
             value=delta_number.value();index=delta_presets.findData(value) if value in (3,10,20) else delta_presets.findData('custom')
             delta_presets.blockSignals(True);delta_presets.setCurrentIndex(index);delta_presets.blockSignals(False)
         delta_presets.currentIndexChanged.connect(preset_changed);delta_number.valueChanged.connect(number_changed)
-        colour_layout.addWidget(delta_presets);colour_layout.addWidget(delta_number);colour_layout.addWidget(WrapLabel(tr('Valeur initiale : 10. Choisissez « Toutes les couleurs » pour explorer sans limite.')));colour_layout.addStretch(1)
-        colour_index=tabs.addTab(colour_page,tr('Teintes'))
+        colour_layout.addWidget(delta_presets);colour_layout.addWidget(delta_number);colour_layout.addWidget(WrapLabel(tr('Valeur initiale : 10. Choisissez « Toutes les couleurs » pour explorer sans limite.')))
+        colour_layout.addWidget(WrapLabel(tr('Les références couleur saisies et les réglages d’appareil se gèrent dans « Références couleur ».')))
+        colour_layout.addStretch(1)
+        colour_index=tabs.addTab(colour_page,tr('Couleurs'))
+
+        # ── Interface ──
+        interface,interface_layout=page()
+        interface_layout.addWidget(QLabel(tr('Langue de l’interface')))
+        language=QComboBox();language.setObjectName('interface_language');language.setFixedHeight(CONTROL_HEIGHT)
+        from .i18n import system_ui_languages, resolve_language
+        system_languages = system_ui_languages()
+        detected = resolve_language('auto', system_languages)
+        language.addItem(tr('Automatique — {v0}', v0=LANGUAGES[detected]),'auto')
+        language.setItemData(0,tr('Langues du système : {v0}. Si elles ne sont pas prises en charge : anglais.',v0=', '.join(system_languages) or tr('Inconnu')),Qt.ToolTipRole)
+        for code,name in LANGUAGES.items():language.addItem(name,code)
+        language.setCurrentIndex(max(0,language.findData(cfg.get('language','auto'))));interface_layout.addWidget(language)
+        interface_layout.addWidget(WrapLabel(tr('Après enregistrement, vous pourrez redémarrer maintenant ou plus tard.')))
+        interface_layout.addStretch(1);tabs.addTab(interface,tr('Interface'))
+
+        # ── Données et sauvegardes ──
+        data_page,data_layout=page()
+        data_layout.addWidget(WrapLabel(tr('Deux opérations distinctes. Elles ferment cette fenêtre sans enregistrer ses modifications : enregistrez-les d’abord si besoin.')))
+        prefs_title=QLabel(tr('Préférences'));prefs_title.setObjectName('sectionTitle');data_layout.addWidget(prefs_title)
+        data_layout.addWidget(WrapLabel(tr('Fichier JSON en clair contenant vos préférences et réglages d’étiquette. Le catalogue, les copies personnelles et le registre couleur ne sont pas inclus.')))
+        prefs_row=QHBoxLayout()
+        for text,name,action in ((tr('Exporter les préférences…'),'exportPreferences',self._export_settings),
+                                 (tr('Importer les préférences…'),'importPreferences',self._import_settings)):
+            button=QPushButton(text);button.setObjectName(name);button.setFixedHeight(CONTROL_HEIGHT)
+            button.clicked.connect(lambda _=False,action=action:(after.__setitem__('action',action),dlg.reject()))
+            prefs_row.addWidget(button)
+        prefs_row.addStretch(1);data_layout.addLayout(prefs_row)
+        backup_title=QLabel(tr('Mes données'));backup_title.setObjectName('sectionTitle');data_layout.addWidget(backup_title)
+        data_layout.addWidget(WrapLabel(tr('Archive ZIP non chiffrée : catalogue complet avec vos copies personnelles et corrections, références couleur, réglages d’appareil et profils Orca locaux ; vos préférences si vous le choisissez. Un aperçu précède toute restauration.')))
+        backup_row=QHBoxLayout()
+        for text,name,action in ((tr('Sauvegarder mes données…'),'createBackup',self._create_backup),
+                                 (tr('Restaurer mes données…'),'restoreBackup',self._restore_backup)):
+            button=QPushButton(text);button.setObjectName(name);button.setFixedHeight(CONTROL_HEIGHT)
+            button.clicked.connect(lambda _=False,action=action:(after.__setitem__('action',action),dlg.reject()))
+            backup_row.addWidget(button)
+        backup_row.addStretch(1);data_layout.addLayout(backup_row)
+        from . import ui_backup
+        revert=QPushButton(tr('Annuler la dernière restauration…'));revert.setObjectName('revertRestore');revert.setFixedHeight(CONTROL_HEIGHT)
+        revert.setEnabled(ui_backup.last_restore() is not None)
+        revert.setToolTip(tr('Rétablit vos fichiers dans leur état d’avant la dernière restauration, à partir de la copie exacte conservée sur cet ordinateur.'))
+        revert.clicked.connect(lambda _=False:(after.__setitem__('action',self._revert_restore),dlg.reject()))
+        revert_row=QHBoxLayout();revert_row.addWidget(revert);revert_row.addStretch(1);data_layout.addLayout(revert_row)
+        encryption=WrapLabel(tr('Sauvegarde chiffrée : non disponible dans cette version. Conservez l’archive dans un emplacement protégé.'))
+        encryption.setObjectName('backupEncryptionUnavailable');data_layout.addWidget(encryption)
+        data_layout.addStretch(1);tabs.addTab(data_page,tr('Données et sauvegardes'))
+
         if colour_tab:tabs.setCurrentIndex(colour_index)
         bb=QDialogButtonBox(QDialogButtonBox.Save|QDialogButtonBox.Cancel);bb.button(QDialogButtonBox.Save).setText(tr('Enregistrer'));bb.button(QDialogButtonBox.Cancel).setText(tr('Annuler'));bb.button(QDialogButtonBox.Save).setFixedHeight(32);bb.button(QDialogButtonBox.Cancel).setFixedHeight(32)
         bb.accepted.connect(dlg.accept);bb.rejected.connect(dlg.reject);lay.addWidget(bb)
         fit_dialog(dlg,preferred_width=640)
         if dlg.exec()==QDialog.Accepted:
-            cfg=core.load_config();previous_language=cfg.get('language','auto');cfg.update(language=language.currentData(),orca_overrides=chk_orca.isChecked(),update_interval_days=cadence.currentData(),preferred_weight_g=weight.currentData(),preferred_packaging=form.currentData(),export_directory=export_path.text(),colour_delta_max=None if delta_presets.currentData() is None else delta_number.value())
+            cfg=core.load_config();previous_language=cfg.get('language','auto')
+            cfg.update(language=language.currentData(),orca_overrides=chk_orca.isChecked(),preferred_weight_g=weight.currentData(),preferred_packaging=form.currentData(),export_directory=export_path.text(),colour_delta_max=None if delta_presets.currentData() is None else delta_number.value())
+            if cadence.currentData() is not unsupported:
+                cfg['update_interval_days']=cadence.currentData()
             try:
                 core.save_config(cfg)
                 self._refresh_colour_limit_label()
@@ -2060,6 +2139,8 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
                 QMessageBox.critical(self,tr('Paramètres non enregistrés'),str(exc));return
             if previous_language != cfg['language']:
                 self._offer_language_restart()
+        elif after['action'] is not None:
+            after['action']()
 
     def _restart_busy(self):
         return any(worker and worker.isRunning() for worker in (self.worker, self._release_worker))
@@ -2094,6 +2175,8 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
 
     # ── À propos ─────────────────────────────────────────────────────────
     def _open_about(self):
+        """Short, exact description (four languages), credits on demand, Desktop links; donation optional."""
+        from . import presentation
         dlg = QDialog(self)
         dlg.setWindowTitle(tr('À propos de SpoolScribe'))
         dlg.setMinimumWidth(420)
@@ -2122,26 +2205,59 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         nf.setBold(True)
         name.setFont(nf)
         titles.addWidget(name)
-        ver = QLabel(f"Version {core.APP_VERSION}")
+        ver = QLabel(tr('Version {v0}', v0=core.APP_VERSION))
+        ver.setObjectName('aboutVersion')
         ver.setStyleSheet(f"color:{self._tok['muted']};")
         titles.addWidget(ver)
         head.addLayout(titles, 1)
         lay.addLayout(head)
 
-        desc = QLabel(
-            tr("Prépare des données OpenSpool / NFC pour le Snapmaker U1 à firmware ouvert et d'autres lecteurs OpenSpool. Catalogue multi-fabricants téléchargé depuis des sources publiques, couleur, températures et densité. Le fichier exporté peut ensuite être écrit sur une étiquette NFC avec une application dédiée.\n\nProjet hobby, non affilié aux fabricants de filaments ni à Snapmaker. Code sous licence MIT.\n\nDonnées : Open Filament Database (MIT) · SpoolmanDB (MIT) · TheFilamentDB (CC-BY 4.0) · pages publiques des fabricants.\nLes logos restent la propriété de leurs marques respectives ; ils sont affichés à titre d'identification seulement (voir docs/TRADEMARKS.md).")
-        )
-        desc.setWordWrap(True)
-        desc.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        lay.addWidget(desc)
+        for text, object_name in ((tr(presentation.ABOUT_SUMMARY, **presentation.format_arguments()), 'aboutSummary'),
+                                  (tr(presentation.ABOUT_INDEPENDENCE), 'aboutLicence')):
+            label = WrapLabel(text)
+            label.setObjectName(object_name)
+            label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+            lay.addWidget(label)
 
-        links=QVBoxLayout();links.setSpacing(8)
-        github=QPushButton(tr('Code et documentation · GitHub'));github.setObjectName('projectGithub');github.setFixedHeight(CONTROL_HEIGHT)
-        github.clicked.connect(lambda:QDesktopServices.openUrl(QUrl('https://github.com/ArN-LaB/Spoolscribe-')));links.addWidget(github)
-        support=QPushButton(tr('☕ Soutenir le projet · Buy Me a Coffee'));support.setObjectName('supportProject');support.setFixedHeight(CONTROL_HEIGHT)
+        credits_toggle = QToolButton()
+        credits_toggle.setObjectName('aboutCreditsToggle')
+        credits_toggle.setText(tr('Crédits et licences'))
+        credits_toggle.setCheckable(True)
+        credits_toggle.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        credits_toggle.setArrowType(Qt.RightArrow)
+        credits = WrapLabel('\n'.join(tr(line) for line in presentation.CREDITS)
+                            + '\n' + tr('Détails : NOTICE, docs/DATA_SOURCES.md et docs/TRADEMARKS.md du dépôt.'))
+        credits.setObjectName('aboutCredits')
+        credits.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        credits.hide()
+
+        def toggle_credits(visible):
+            credits.setVisible(visible)
+            credits_toggle.setArrowType(Qt.DownArrow if visible else Qt.RightArrow)
+            fit_dialog(dlg, preferred_width=dlg.width())
+        credits_toggle.toggled.connect(toggle_credits)
+        lay.addWidget(credits_toggle, 0, Qt.AlignLeft)
+        lay.addWidget(credits)
+
+        links = QGridLayout()
+        links.setHorizontalSpacing(8)
+        links.setVerticalSpacing(8)
+        for index, (object_name, label, url) in enumerate(presentation.LINKS):
+            button = QPushButton(tr(label))
+            button.setObjectName(object_name)
+            button.setFixedHeight(CONTROL_HEIGHT)
+            button.setToolTip(url)
+            button.clicked.connect(lambda _=False, url=url: QDesktopServices.openUrl(QUrl(url)))
+            links.addWidget(button, index // 2, index % 2)
+        lay.addLayout(links)
+
+        donation_name, donation_label, donation_url = presentation.DONATION
+        support = QPushButton(tr(donation_label))
+        support.setObjectName(donation_name)
+        support.setFlat(True)
+        support.setFixedHeight(CONTROL_HEIGHT)
         support.setToolTip(tr('Ouvrir buymeacoffee.com/arn_lab dans votre navigateur'))
-        support.clicked.connect(lambda:QDesktopServices.openUrl(QUrl('https://buymeacoffee.com/arn_lab')))
-        links.addWidget(support);lay.addLayout(links)
+        support.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(donation_url)))
 
         bb = QDialogButtonBox(QDialogButtonBox.Close)
         bb.button(QDialogButtonBox.Close).setText(tr('Fermer'))
@@ -2149,22 +2265,29 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         bb.rejected.connect(dlg.reject)
         bb.accepted.connect(dlg.accept)
         bb.button(QDialogButtonBox.Close).clicked.connect(dlg.accept)
-        lay.addWidget(bb)
-        fit_dialog(dlg,preferred_width=640)
+        footer = QHBoxLayout()
+        footer.addWidget(support)
+        footer.addStretch(1)
+        footer.addWidget(bb)
+        lay.addLayout(footer)
+        fit_dialog(dlg, preferred_width=640)
         dlg.exec()
 
 
 def run_application(app, window, instance_lock):
     """Restart only after the event loop stops and its data-folder lock is freed."""
+    from . import diagnostics  # opt-in ; sans session, record() ne fait rien
     try:
         while True:
             code = app.exec()
             if code != RESTART_EXIT_CODE or not window._restart_requested:
                 return code
             instance_lock.unlock()
+            diagnostics.record('restart_requested')
             try:
                 launch_replacement(__file__)
             except OSError as exc:
+                diagnostics.record('restart_spawn', ok=False, error=type(exc).__name__)
                 # Failure to spawn must not strand the user with a closed app.
                 if not instance_lock.tryLock(200):
                     QMessageBox.critical(None, tr('Redémarrage impossible'),
@@ -2175,6 +2298,7 @@ def run_application(app, window, instance_lock):
                 QMessageBox.warning(window, tr('Redémarrage impossible'),
                     tr('La relance a échoué. Vos réglages sont enregistrés ; vous pouvez fermer puis rouvrir SpoolScribe.\n{v0}', v0=exc))
             else:
+                diagnostics.record('restart_spawn', ok=True)
                 return 0
     finally:
         instance_lock.unlock()
@@ -2184,7 +2308,9 @@ def main():
     # Mode worker (exécutable gelé relançant un scraper) : agir puis sortir.
     if core.maybe_run_as_script_worker(sys.argv):
         return
-    app = QApplication(sys.argv)
+    from . import diagnostics
+    # Opt-in --diagnostics : faulthandler ouvert avant QApplication, drapeau retiré d'argv.
+    app, _ = diagnostics.create_application(sys.argv, QApplication, core.DATA_HOME)
     configure_application(app)
     configure_language(app, core.load_config().get("language", "auto"))
     # Une seule instance par dossier de données : deux synchronisations
@@ -2212,7 +2338,11 @@ def main():
             QMessageBox.critical(None, tr('Restauration impossible'), str(recovery_error))
             return 1
     win.show()
-    return run_application(app, win, instance_lock)
+    from . import ui_backup
+    ui_backup.show_startup_recovery(win)  # what recovery.bootstrap() resolved before the model was loaded
+    code = run_application(app, win, instance_lock)
+    diagnostics.shutdown()  # sans session : aucun effet
+    return code
 
 
 

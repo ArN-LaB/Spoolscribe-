@@ -130,3 +130,7 @@ Regenerate the six real interface captures with
 isolated settings and the offline audit hook; review every image and its manifest.
 Never show personal paths or catalogue edits. Screenshots and scan oracles are not
 application resources. [Provenance](../docs/images/README.md).
+
+## Agent development traces
+
+Agents start with [docs/UNIVERSAL.md](../docs/UNIVERSAL.md) for phases, loops, human handoffs, Markdown reports, evidence and test-environment lifecycle. The technical, privacy, network, test and publication requirements above remain applicable. This documentary check does not authorize product tests, another agent or Git operations.

@@ -109,11 +109,16 @@ class ExportPersonalUiTests(unittest.TestCase):
         right=lambda x:x.mapTo(w,QPoint()).x()+x.width()
         self.assertEqual(right(w.reset_filters),right(w.favorites_only))
 
-    def test_about_links_are_a_pair_of_equal_buttons(self):
+    def test_about_links_are_a_grid_of_equal_buttons(self):
+        # 002: five Desktop links in an even grid; the optional donation is a secondary, same-height button.
         from PySide6.QtWidgets import QDialog,QPushButton
+        from spoolscribe import presentation
         def inspect(dialog):
             dialog.show();self.window.app.processEvents()
-            a=dialog.findChild(QPushButton,'projectGithub');b=dialog.findChild(QPushButton,'supportProject')
-            self.assertIsNotNone(a);self.assertEqual(a.width(),b.width());self.assertEqual(a.height(),b.height())
+            links=[dialog.findChild(QPushButton,name) for name,_,_ in presentation.LINKS]
+            self.assertTrue(all(links))
+            self.assertEqual(len({b.width() for b in links}),1);self.assertEqual(len({b.height() for b in links}),1)
+            support=dialog.findChild(QPushButton,'supportProject')
+            self.assertIsNotNone(support);self.assertEqual(support.height(),links[0].height())
             return QDialog.Rejected
         with patch.object(QDialog,'exec',inspect):self.window._open_about()

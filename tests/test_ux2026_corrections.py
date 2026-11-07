@@ -190,7 +190,8 @@ class CorrectionGuiTests(unittest.TestCase):
         target = Path(self.tmp.name) / "settings.json"; core.export_settings(target)
         document = json.loads(target.read_text()); document["settings"].update(nfc_format="opentag3d", orca_overrides=False)
         target.write_text(json.dumps(document))
-        with patch("spoolscribe.ui_catalogue.QFileDialog.getOpenFileName", return_value=(str(target), "")):
+        with patch("spoolscribe.ui_catalogue.QFileDialog.getOpenFileName", return_value=(str(target), "")), \
+                patch.object(w, "_confirm_settings_import", return_value=True):
             w._import_settings()
         self.assertEqual(w.nfc_format.currentData(), "opentag3d"); self.assertIn("OpenTag3D", w.comparison_heads[4].text())
         self.assertEqual(self.shown_min(), opentag3d.decode(w._prepare_opentag().payload)["min_print_temp"])

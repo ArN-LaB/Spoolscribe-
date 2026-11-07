@@ -36,7 +36,7 @@ DatabaseError = db_io.DatabaseError
 # APP_VERSION est la référence de version. spoolscribe.spec la lit ici ;
 # la CI vérifie que la version déclarée dans pyproject.toml reste alignée.
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.8.0"
+APP_VERSION = "0.8.1"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
@@ -197,6 +197,66 @@ DEFAULT_CONFIG = {
     "qr_label": {},            # QR paper profile only (spoolscribe.qr_layout.validate_settings).
 }
 NETWORK_SOURCES_REVISION = 2
+UPDATE_INTERVAL_VALUES = tuple(days for days, _ in UPDATE_INTERVAL_CHOICES)
+
+
+def valid_update_interval(value) -> bool:
+    """Cadence representable by the settings UI: an exact int among -1, 0, 1, 7 (never a bool/float/str)."""
+    return type(value) is int and value in UPDATE_INTERVAL_VALUES
+
+
+def update_interval_state(cfg: Optional[dict] = None) -> tuple:
+    """``(effective_days, stored_value, valid)`` for display.
+
+    An invalid stored cadence is reported and kept on disk; in memory the
+    launch refresh uses the documented default (see :func:`update_due`), never
+    « à chaque lancement ». The settings UI must not silently rewrite it.
+    """
+    cfg = cfg if cfg is not None else load_config()
+    stored = cfg.get("update_interval_days", DEFAULT_CONFIG["update_interval_days"])
+    if valid_update_interval(stored):
+        return stored, stored, True
+    effective = stored if type(stored) is int else DEFAULT_CONFIG["update_interval_days"]
+    return effective, stored, False
+
+
+# ─── Préférences portables (export/import) ────────────────────────────────
+# Machine-local state: never exported, never imported (authorisation, revision,
+# refresh dates/statuses). Old files carrying them stay readable.
+MACHINE_STATE_KEYS = ("network_consent", "network_sources_revision", "last_update",
+                      "last_update_attempt", "last_update_status")
+# Explicit allow-list: a future key (secret, token…) is never serialised blindly.
+PORTABLE_SETTINGS_KEYS = (
+    "language", "update_interval_days", "auto_update", "selected_sources",
+    "preferred_weight_g", "preferred_packaging", "favorite_brands", "favorite_filaments", "recent_brands",
+    "printer_profile", "printer_firmware", "nfc_tag_type", "nfc_profile", "nfc_format", "opentag3d_output",
+    "nfc_reserved_bytes", "show_extra_fields", "opentag3d_settings", "orca_overrides", "qr_label",
+    "colour_delta_max",
+)
+LAYOUT_SETTINGS_KEYS = ("ui",)                 # presentation state, optional
+EXPORT_PATH_SETTINGS_KEYS = ("export_directory",)   # absolute local path, optional
+SETTINGS_CATEGORIES = (
+    ("catalogue", ("update_interval_days", "auto_update", "selected_sources")),
+    ("filaments", ("preferred_weight_g", "preferred_packaging", "favorite_brands", "favorite_filaments",
+                   "recent_brands")),
+    ("labels", ("printer_profile", "printer_firmware", "nfc_tag_type", "nfc_profile", "nfc_format",
+                "opentag3d_output", "nfc_reserved_bytes", "show_extra_fields", "opentag3d_settings",
+                "orca_overrides", "qr_label")),
+    ("colours", ("colour_delta_max",)),
+    ("interface", ("language",)),
+    ("layout", LAYOUT_SETTINGS_KEYS),
+    ("export_path", EXPORT_PATH_SETTINGS_KEYS),
+)
+SETTINGS_FILE_LIMIT = 128 * 1024
+
+
+def exportable_settings(cfg: Optional[dict] = None, *, include_layout: bool = False,
+                        include_export_path: bool = False) -> dict:
+    """Filtered copy of the preferences that may leave this computer (no consent, no machine state)."""
+    cfg = cfg if cfg is not None else load_config()
+    keys = PORTABLE_SETTINGS_KEYS + (LAYOUT_SETTINGS_KEYS if include_layout else ()) \
+        + (EXPORT_PATH_SETTINGS_KEYS if include_export_path else ())
+    return {key: copy.deepcopy(cfg[key]) for key in keys if key in cfg}
 
 
 def load_config() -> dict:
@@ -1020,8 +1080,11 @@ def value_comparison(db: dict, sku: str, *, use_orca_overrides: bool = False, nf
     if orca_path:
         try:
             orca_values, applied = _apply_orca(effective, orca_path, use_orca_overrides)
+            # Same policy as the encoders; only *why* a key was applied is added for display.
+            completed = sorted(k for k in applied if product.get(k) is None)
             result["orca"] = {"status": "applied" if applied else "unused", "path": orca_path,
-                              "values": orca_values, "applied": sorted(applied)}
+                              "values": orca_values, "applied": sorted(applied), "completed": completed,
+                              "replaced": sorted(set(applied) - set(completed)), "overrides": use_orca_overrides}
         except (ValueError, TypeError, OSError) as exc:
             result["orca"] = {"status": "error", "path": orca_path, "values": {}, "applied": [], "message": str(exc)}
     elif personal and origin_entry:
@@ -1054,12 +1117,14 @@ def value_comparison(db: dict, sku: str, *, use_orca_overrides: bool = False, nf
             if key in _OPENTAG_BOUNDS and _OPENTAG_BOUNDS[key] in settings:
                 effective_value = settings[_OPENTAG_BOUNDS[key]]
                 origin = "opentag_settings"
+        orca_mode = ("complement" if key in result["orca"].get("completed", ()) else "override") if origin == "orca" else None
         row = {"key": key,
                "reference": {"value": ref_value, **ref_info, "suspect": suspect},
                "orca": ({"value": (result["orca"]["values"] or {}).get(key),
                          "applied": key in result["orca"]["applied"]} if key != "hex" and result["orca"]["values"] else None),
                "personal": ({"value": own, **field_provenance(product if key != "hex" else entry, key)} if personal else None),
-               "effective": {"value": effective_value, "origin": origin}}
+               "effective": {"value": effective_value, "origin": origin,
+                             **({"orca_mode": orca_mode} if orca_mode else {})}}
         row["differs"] = ref_value is not None and effective_value is not None and ref_value != effective_value
         result["rows"].append(row)
     if nfc_format == "opentag3d":
@@ -1547,29 +1612,65 @@ def save_nfc_defaults(tag_type: str, profile: str, reserved_bytes: int) -> dict:
     return nfc_defaults(cfg)
 
 
-def export_settings(path):
-    # Consent is machine-local authorization, not transferable via a settings file.
-    cfg = load_config()
-    for key in ('network_consent', 'network_sources_revision', 'last_update'):
-        cfg.pop(key, None)
-    db_io.atomic_write(path, json.dumps({'format': 'spoolscribe-settings', 'version': 1, 'settings': cfg},
+def export_settings(path, *, include_layout: bool = True, include_export_path: bool = True):
+    """Plain JSON (not encrypted) of the portable preferences; machine state and consent are never written.
+
+    The historical API keeps layout and export folder by default; the GUI asks
+    explicitly (both unchecked) through the named options.
+    """
+    settings = exportable_settings(include_layout=include_layout, include_export_path=include_export_path)
+    db_io.atomic_write(path, json.dumps({'format': 'spoolscribe-settings', 'version': 1, 'settings': settings},
                                      ensure_ascii=False, indent=2, allow_nan=False).encode())
 
 
-def import_settings(path):
+def read_settings_file(path) -> dict:
+    """Parse and check the envelope of a settings file; returns its ``settings`` object. Writes nothing."""
     raw = Path(path).read_bytes()
-    if len(raw) > 128 * 1024:
+    if len(raw) > SETTINGS_FILE_LIMIT:
         raise ValueError('Fichier de réglages trop volumineux')
     doc = db_io.parse_json(raw)
-    if not isinstance(doc, dict) or doc.get('format') != 'spoolscribe-settings' or doc.get('version') != 1:
+    version = doc.get('version') if isinstance(doc, dict) else None
+    if not isinstance(doc, dict) or doc.get('format') != 'spoolscribe-settings' or type(version) is not int or version != 1:
         raise ValueError('Format de réglages inconnu')
     incoming = doc.get('settings')
     if not isinstance(incoming, dict): raise ValueError('Réglages invalides')
-    cfg = load_config()
-    allowed = set(DEFAULT_CONFIG) | {'recent_brands'}
-    for key, value in incoming.items():
-        if key in allowed and key not in ('network_consent', 'network_sources_revision', 'last_update'):
-            cfg[key] = value
+    if 'update_interval_days' in incoming and not valid_update_interval(incoming['update_interval_days']):
+        raise ValueError('Cadence d’actualisation invalide')
+    return incoming
+
+
+def settings_import_preview(incoming: dict, current: Optional[dict] = None) -> dict:
+    """What an import would change, by category, before any write.
+
+    Lists and objects of a category present in the file replace the local ones
+    as a whole (v1 rule); absent keys keep the local value; machine state and
+    unknown keys are ignored. Changing sources requires a new network consent.
+    """
+    current = current if current is not None else load_config()
+    importable = set(PORTABLE_SETTINGS_KEYS) | set(LAYOUT_SETTINGS_KEYS) | set(EXPORT_PATH_SETTINGS_KEYS)
+    categories = []
+    for name, keys in SETTINGS_CATEGORIES:
+        present = [k for k in keys if k in incoming]
+        if present:
+            categories.append(dict(name=name, keys=present, changed=[k for k in present if incoming[k] != current.get(k)]))
+    kept = [name for name, keys in SETTINGS_CATEGORIES if not any(k in incoming for k in keys)]
+    ignored = sorted(k for k in incoming if k not in importable)
+    sources_change = 'selected_sources' in incoming and incoming['selected_sources'] != current.get('selected_sources')
+    return dict(categories=categories, kept=kept, ignored=ignored, machine_state=[k for k in ignored if k in MACHINE_STATE_KEYS],
+                export_directory=incoming.get('export_directory') if 'export_directory' in incoming else None,
+                layout='ui' in incoming, sources_change=sources_change)
+
+
+def validate_settings(cfg: dict, *, profiles: Optional[dict] = None) -> dict:
+    """Single rule set of a complete configuration, shared by preference import and data restore.
+
+    Raises ``ValueError`` on the first invalid value; normalises in place only what
+    the application already normalises (historical printer ids, duplicate favourites)
+    and returns ``cfg``. ``profiles`` defaults to the active printer profiles; a
+    backup passes the printer list it carries. The refresh cadence is checked by
+    the callers, on incoming values only (an invalid local value is kept).
+    """
+    profiles = printer_profiles.PROFILES if profiles is None else profiles
     if cfg.get('nfc_format') not in ('openspool','opentag3d') or cfg.get('opentag3d_output') not in ('nfctools-mobile','nfctools-desktop','ndef'):
         raise ValueError('Format NFC invalide')
     settings=cfg.get('opentag3d_settings')
@@ -1577,12 +1678,16 @@ def import_settings(path):
     for sku,values in settings.items():
         if not isinstance(sku,str) or len(sku)>256:raise ValueError('Référence OpenTag3D invalide')
         validate_opentag_settings(values)
-    if cfg['printer_profile'] in printer_profiles.PROFILES and printer_profiles.PROFILES[cfg['printer_profile']].get('hidden'):
-        cfg['printer_profile'],cfg['printer_firmware']=printer_profiles.resolve(cfg['printer_profile'],cfg.get('printer_firmware'))
-    if cfg['printer_profile'] not in printer_profiles.PROFILES or cfg['nfc_tag_type'] not in NFC_CAPACITIES or cfg['nfc_profile'] not in NFC_PROFILES:
+    printer=cfg.get('printer_profile')
+    if not isinstance(printer,str):
+        raise ValueError('Choix imprimante/NFC invalide')
+    if printer in profiles and profiles[printer].get('hidden') or printer not in profiles and printer in printer_profiles._LEGACY_IDS:
+        try:cfg['printer_profile'],cfg['printer_firmware']=printer_profiles.resolve(printer,cfg.get('printer_firmware'))
+        except (KeyError,ValueError,TypeError) as exc:raise ValueError('Choix imprimante/NFC invalide') from exc
+    if cfg['printer_profile'] not in profiles or cfg.get('nfc_tag_type') not in NFC_CAPACITIES or cfg.get('nfc_profile') not in NFC_PROFILES:
         raise ValueError('Choix imprimante/NFC invalide')
     software=cfg.get('printer_firmware')
-    if software not in (None,'unknown') and software not in [f['id'] for f in printer_profiles.PROFILES[cfg['printer_profile']]['firmwares']]:
+    if software not in (None,'unknown') and software not in [f['id'] for f in profiles[cfg['printer_profile']]['firmwares']]:
         raise ValueError('Logiciel du lecteur invalide')
     if type(cfg['nfc_reserved_bytes']) is not int or not 0 <= cfg['nfc_reserved_bytes'] <= NFC_CAPACITIES[cfg['nfc_tag_type']]:
         raise ValueError('Réserve NFC invalide')
@@ -1611,6 +1716,22 @@ def import_settings(path):
         cfg[key] = list(dict.fromkeys(value))
     if 'recent_brands' in cfg and (not isinstance(cfg['recent_brands'],list) or len(cfg['recent_brands'])>20 or any(not isinstance(v,str) for v in cfg['recent_brands'])):
         raise ValueError('Fabricants récents invalides')
+    return cfg
+
+
+def import_settings(path, *, incoming: Optional[dict] = None):
+    """Validate everything, then publish once; a refused file leaves the configuration byte-identical."""
+    incoming = read_settings_file(path) if incoming is None else incoming
+    if not isinstance(incoming, dict):
+        raise ValueError('Réglages invalides')
+    if 'update_interval_days' in incoming and not valid_update_interval(incoming['update_interval_days']):
+        raise ValueError('Cadence d’actualisation invalide')  # an invalid local value is kept, never "fixed" here
+    cfg = load_config()
+    allowed = set(PORTABLE_SETTINGS_KEYS) | set(LAYOUT_SETTINGS_KEYS) | set(EXPORT_PATH_SETTINGS_KEYS)
+    for key, value in incoming.items():
+        if key in allowed:
+            cfg[key] = copy.deepcopy(value)
+    validate_settings(cfg)
     # Import never grants or widens network authorization silently.
     if cfg['selected_sources'] != load_config()['selected_sources']:
         cfg['network_sources_revision']=0

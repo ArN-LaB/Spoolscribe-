@@ -1,4 +1,4 @@
-# Develop and build SpoolScribe v0.8.0 (stable)
+# Develop and build SpoolScribe v0.8.1
 
 [Documentation](README.md) · [Contributing](../.github/CONTRIBUTING.md) · [Repository layout](REPOSITORY.md)
 
@@ -51,7 +51,8 @@ python .github/scripts/check_frozen_measurements.py
 
 Output stays `dist/SpoolScribe.exe` (Windows), `dist/SpoolScribe` (Linux) and
 `dist/SpoolScribe.app` (macOS). Each ZIP contains one native executable or one
-`.app`, with a companion SHA-256 file. macOS builds are ad hoc signed, not notarised.
+`.app`, with a companion SHA-256 file. CI macOS builds are ad hoc intermediates. The v0.8.1 release uses the separately
+Developer ID signed, notarised and stapled local build; see [macOS procedure](MACOS_NOTARIZATION.md).
 
 The [workflow](../.github/workflows/build.yml) runs four test configurations before
 three builds, then checks TLS, the frozen UI in four languages, resource integrity
@@ -126,4 +127,18 @@ than copying arbitrary shared libraries into the app. CI uses Qt offscreen:
 passing those digital checks does not measure a native X11/Wayland desktop session.
 [Exact release build log](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41650816610/job/125971039581).
 
-Release promotion and immutable downloads: [release policy](RELEASE_POLICY.md). v0.8.0 is stable after its authorised metadata promotion; its initial tag workflow remains recorded as pre-release history. Do not rerun an old tag to replace public files.
+Release promotion and immutable downloads: [release policy](RELEASE_POLICY.md). v0.8.1 is a new source build, with locally notarised macOS packaging; its tag bypasses the ordinary CI auto-publication job. v0.8.0 and its original promotion remain historical and immutable. Do not rerun an old tag to replace public files.
+
+## Local development history
+
+Agents start with [UNIVERSAL](UNIVERSAL.md), the permanent reference for development phases, Codex / Claude Code loops, human handoffs, reports, evidence, conclusions and test-environment cleanup. The technical, safety, consent, data, release and hardware-evidence rules above and in [Contributing](../.github/CONTRIBUTING.md) remain applicable.
+
+Use the local chronological index at `docs/agent-runs/INDEX.md` (not published). Existing reports and trial registers remain evidence; their historical names and verdicts do not trigger an agent, a product test or publication. Each phase’s `70-REGISTRE-ESSAIS.md` points to its existing technical register, with current lifecycle states and historical observations kept distinct.
+
+### Documentary conformance check
+
+```sh
+python3 -B docs/UNIVERSAL/OUTILS/verifier.py --root . --strict
+```
+
+The universal checker is read-only and uses Python standard library only. It checks documentary structure, local links and empty folders; it does not run application tests, inspect another project, certify hardware or mutate documentation. The earlier `docs/agent-governance/verifier-conformite.py` remains a preserved historical helper for the former schema, not the normative command for future work.

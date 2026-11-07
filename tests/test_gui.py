@@ -165,8 +165,9 @@ class GuiTests(unittest.TestCase):
         core.export_settings(str(exported))
         w._choose_brand("Polymaker")
         w.tag_choice.setCurrentIndex(w.tag_choice.findData("NTAG216"))
-        with patch("spoolscribe.ui_catalogue.QFileDialog.getOpenFileName", return_value=(str(exported), "JSON (*.json)")):
-            w._import_settings()
+        with patch("spoolscribe.ui_catalogue.QFileDialog.getOpenFileName", return_value=(str(exported), "JSON (*.json)")), \
+                patch.object(w, "_confirm_settings_import", return_value=True) as preview:
+            w._import_settings(); preview.assert_called_once()
         self.assertEqual(w.brand_filter.currentData(), "Prusament")
         self.assertEqual(w.tag_choice.currentData(), "NTAG215")
         self.assertEqual(w.nfc_default_btn.text(), "Par défaut ✓")
@@ -235,7 +236,13 @@ class GuiTests(unittest.TestCase):
     def test_real_startup_restore_stays_exact_with_auto_update_enabled(self):
         from PySide6.QtCore import QEventLoop, QTimer
         from scripts import db_io
+        from spoolscribe import recovery
 
+        # main() reports a non-clean recovery.STARTUP_STATUS through a modal dialog: such a status left by
+        # another test would block this real startup instead of failing it. Tests that run a recovery must
+        # restore the status; a "clean" status (e.g. the CLI module's import-time bootstrap) opens nothing.
+        state = (recovery.STARTUP_STATUS or {}).get("state", "clean")
+        self.assertEqual(state, "clean", "recovery.STARTUP_STATUS non propre laissé par un test précédent")
         self.window.close()
         for frozen in (False, True):
             with self.subTest(frozen=frozen), tempfile.TemporaryDirectory() as directory:

@@ -132,8 +132,10 @@ class CatalogueUx:
         self.update_btn.setToolTip(tr('Ctrl+U : choisir les sources et mettre à jour'))
         menu = self.menu_btn.menu()
         menu.addSeparator()
-        menu.addAction(tr('Enregistrer les réglages…'), self._export_settings)
-        menu.addAction(tr('Charger des réglages…'), self._import_settings)
+        menu.addAction(tr('Exporter les préférences…'), self._export_settings)
+        menu.addAction(tr('Importer les préférences…'), self._import_settings)
+        menu.addAction(tr('Sauvegarder mes données…'), self._create_backup)
+        menu.addAction(tr('Restaurer mes données…'), self._restore_backup)
         menu.addAction(tr('Mise à jour de l’application…'), self._check_app_update)
         menu.addSeparator();menu.addAction(self._about_action)
 
@@ -512,6 +514,7 @@ class CatalogueUx:
 
     def _save_ui_preferences(self, *_):
         if getattr(self, '_restoring_ui', True) or not hasattr(self, '_all_rows'): return
+        if getattr(self, '_skip_ui_save', False): return  # a restored layout must win at the next start
         if hasattr(self, '_prefs_timer'): self._prefs_timer.stop()
         cfg = core.load_config()
         cfg['ui'] = dict(brand=self.brand_filter.currentData() or '', material=self.material_filter.currentData() or '',
@@ -523,6 +526,7 @@ class CatalogueUx:
         self._store_config(cfg)
 
     def _restore_ui_preferences(self):
+        from . import diagnostics; diagnostics.record_window('geometry_restore_begin', self)
         self._restoring_ui = True
         controls=(self.brand_filter,self.material_filter,self.quality_filter,self.sort1,self.sort2,self.sort1_direction,self.sort2_direction,self.search,self.brand_search,self.favorites_only,self.brand_favorites_only)
         for control in controls:control.blockSignals(True)
@@ -551,6 +555,7 @@ class CatalogueUx:
         for control in controls:control.blockSignals(False)
         self._apply_filter()
         self._restoring_ui = False
+        diagnostics.record_window('geometry_restore_end', self, had_geometry=bool(state.get('geometry')))
 
     def closeEvent(self, event):
         if not self._confirm_draft_transition():
@@ -566,22 +571,79 @@ class CatalogueUx:
         if self._release_worker and self._release_worker.isRunning():
             self._release_worker.wait(3000)
         self._save_ui_preferences()
+        from . import diagnostics; diagnostics.record_window('main_close_accepted', self)
         super().closeEvent(event)
 
     def _export_settings(self):
+        """Plain JSON of the portable preferences; layout and export folder only when ticked."""
         self._save_ui_preferences()
-        path, _ = QFileDialog.getSaveFileName(self, tr('Enregistrer les réglages'), 'SpoolScribe-reglages.json', 'JSON (*.json)')
+        options = self._ask_settings_export_options()
+        if options is None:
+            return
+        path, _ = QFileDialog.getSaveFileName(self, tr('Exporter les préférences'), 'SpoolScribe-preferences.json', 'JSON (*.json)')
         if path:
-            try: core.export_settings(path)
-            except (OSError,ValueError) as exc: QMessageBox.warning(self,tr('Réglages'),str(exc))
+            try: core.export_settings(path, **options)
+            except (OSError,ValueError) as exc: QMessageBox.warning(self,tr('Préférences'),tr(str(exc)))
+            else: self.status.showMessage(tr('Préférences exportées en JSON clair (non chiffré).'),6000)
+
+    def _ask_settings_export_options(self):
+        """Ask what the file contains; both optional parts are unchecked. Returns options or None."""
+        dlg=QDialog(self);dlg.setWindowTitle(tr('Exporter les préférences'));lay=QVBoxLayout(dlg);lay.setSpacing(10)
+        lay.addWidget(WrapLabel(tr('Fichier JSON en clair contenant vos préférences et réglages d’étiquette. Le catalogue, les copies personnelles et le registre couleur ne sont pas inclus.')))
+        lay.addWidget(WrapLabel(tr('Inclus : langue, actualisation et sources, bobine préférée, favoris, imprimante et étiquette NFC, réglages OpenTag3D par référence, format papier QR, limite de couleur. Jamais : autorisation réseau, dates et état des actualisations.')))
+        layout=QCheckBox(tr('Inclure la disposition et les filtres'));layout.setObjectName('includeLayout')
+        folder=QCheckBox(tr('Inclure le chemin du dossier d’export'));folder.setObjectName('includeExportPath')
+        folder.setToolTip(tr('Chemin absolu de cet ordinateur ; il peut révéler un nom de dossier personnel.'))
+        lay.addWidget(layout);lay.addWidget(folder)
+        bb=QDialogButtonBox(QDialogButtonBox.Ok|QDialogButtonBox.Cancel);bb.button(QDialogButtonBox.Ok).setText(tr('Exporter…'));bb.button(QDialogButtonBox.Cancel).setText(tr('Annuler'))
+        bb.accepted.connect(dlg.accept);bb.rejected.connect(dlg.reject);lay.addWidget(bb);fit_dialog(dlg,preferred_width=560)
+        if dlg.exec()!=QDialog.Accepted:
+            return None
+        return dict(include_layout=layout.isChecked(),include_export_path=folder.isChecked())
+
+    SETTINGS_CATEGORY_LABELS = {'catalogue':'Catalogue','filaments':'Filaments','labels':'Étiquettes et export',
+                                'colours':'Couleurs','interface':'Interface','layout':'Disposition et filtres',
+                                'export_path':'Dossier d’export'}
+
+    def _confirm_settings_import(self, preview):
+        """Preview: replaced categories (lists replaced as a whole), kept local values, ignored machine state."""
+        names=lambda items:', '.join(tr(self.SETTINGS_CATEGORY_LABELS[i]) for i in items) or tr('aucune')
+        dlg=QDialog(self);dlg.setWindowTitle(tr('Importer les préférences'));lay=QVBoxLayout(dlg);lay.setSpacing(10)
+        lay.addWidget(WrapLabel(tr('Remplacées par le fichier : {v0}. Les listes et réglages d’une catégorie présente remplacent ceux de cet ordinateur.', v0=names([c['name'] for c in preview['categories']]))))
+        lay.addWidget(WrapLabel(tr('Conservées sur cet ordinateur : {v0}.', v0=names(preview['kept']))))
+        if preview.get('export_directory'):
+            lay.addWidget(WrapLabel(tr('Dossier d’export du fichier : {v0}', v0=preview['export_directory'])))
+        if preview.get('machine_state') or preview.get('ignored'):
+            lay.addWidget(WrapLabel(tr('Ignorés : autorisation réseau, dates et état des actualisations, clés inconnues ({v0}).', v0=len(preview.get('ignored',[])))))
+        if preview.get('sources_change'):
+            lay.addWidget(WrapLabel(tr('Les sources du catalogue changent : l’autorisation réseau vous sera redemandée avant toute actualisation.')))
+        lay.addWidget(WrapLabel(tr('Le catalogue, les copies personnelles et le registre couleur ne sont pas modifiés.')))
+        bb=QDialogButtonBox(QDialogButtonBox.Ok|QDialogButtonBox.Cancel);bb.button(QDialogButtonBox.Ok).setText(tr('Importer'));bb.button(QDialogButtonBox.Cancel).setText(tr('Annuler'))
+        bb.accepted.connect(dlg.accept);bb.rejected.connect(dlg.reject);lay.addWidget(bb);fit_dialog(dlg,preferred_width=600)
+        return dlg.exec()==QDialog.Accepted
+
+    def _create_backup(self):
+        from . import ui_backup
+        ui_backup.create_backup(self)
+
+    def _restore_backup(self):
+        from . import ui_backup
+        ui_backup.restore_backup(self)
+
+    def _revert_restore(self):
+        from . import ui_backup
+        ui_backup.revert_last_restore(self)
 
     def _import_settings(self):
         if not self._confirm_draft_transition():return
-        path, _ = QFileDialog.getOpenFileName(self,tr('Charger des réglages'),'','JSON (*.json)')
+        path, _ = QFileDialog.getOpenFileName(self,tr('Importer les préférences'),'','JSON (*.json)')
         if path:
             try:
                 previous_language=core.load_config().get('language','auto')
-                core.import_settings(path)
+                incoming=core.read_settings_file(path)
+                if not self._confirm_settings_import(core.settings_import_preview(incoming)):
+                    return
+                core.import_settings(path, incoming=incoming)
                 cfg=core.load_config()
                 self._restore_ui_preferences()
                 self._store_config(cfg)
@@ -600,7 +662,7 @@ class CatalogueUx:
                 self._refresh_nfc_capacity()
                 if previous_language!=cfg.get('language','auto'):
                     self._offer_language_restart()
-            except (OSError,ValueError) as exc: QMessageBox.warning(self,tr('Réglages'),str(exc))
+            except (OSError,ValueError) as exc: QMessageBox.warning(self,tr('Préférences'),tr(str(exc)))
 
     def _refresh_database_summary(self):
         if not hasattr(self,'database_btn'):return
@@ -912,11 +974,14 @@ class CatalogueUx:
 
     def _fill_firmware_combo(self,printer_id,firmware_id=None):
         self.firmware.blockSignals(True);self.firmware.clear()
-        if len(PROFILES[printer_id]['firmwares'])>1:
+        ids=[fw['id'] for fw in PROFILES[printer_id]['firmwares']]
+        # A requested setup that is not (or no longer) listed stays to be
+        # specified, even with a single candidate: never replaced implicitly.
+        if len(ids)>1 or firmware_id is not None and firmware_id not in ids:
             self.firmware.addItem(tr('Choisir mon installation actuelle…'),'unknown')
         for fw in PROFILES[printer_id]['firmwares']:
             self.firmware.addItem(tr(fw['label']),fw['id'])
-        self.firmware.setCurrentIndex(max(0,self.firmware.findData(firmware_id)))
+        self.firmware.setCurrentIndex(max(0,self.firmware.findData(firmware_id if firmware_id in ids else 'unknown')))
         self.firmware.hide();self.firmware_label.hide()
         self.firmware.blockSignals(False)
 
@@ -966,6 +1031,7 @@ class CatalogueUx:
         if core.load_config().get('network_consent') is not True:
             QMessageBox.information(self,tr('Liste des imprimantes'),tr('Accordez d’abord l’autorisation réseau (Actualiser le catalogue → sources) pour contacter GitHub.'));return
         from scripts import official_sources
+        chosen,chosen_setup=self.printer.currentData(),self.firmware.currentData()
         try:
             catalogue=printer_profiles.refresh_catalogue(official_sources.fetch)
         except Exception as exc:
@@ -975,7 +1041,25 @@ class CatalogueUx:
             self.printers_origin.setText(tr('Aucune nouvelle liste publiée pour cette version. La liste embarquée reste disponible.'))
             self.printers_origin.setToolTip(tr('Le fichier de référence n’est pas encore publié sur la branche main (HTTP 404).'))
             return
-        self._fill_printer_combo();self._firmware_printer=None;self._printer_changed();self._refresh_printers_origin()
+        if catalogue.get('_update')=='unchanged':
+            self._refresh_printers_origin()
+            self.status.showMessage(tr('La liste des imprimantes est déjà à jour.'),8000);return
+        self._fill_printer_combo()
+        kept=chosen in PROFILES and not PROFILES[chosen].get('hidden')
+        if chosen is not None and not kept:
+            # A removed machine stays to be specified: no other one is chosen
+            # for the user and the saved choice is not overwritten.
+            self.printer.blockSignals(True);self.printer.setCurrentIndex(-1);self.printer.blockSignals(False)
+        if kept:
+            # The confirmed (printer, setup) pair is kept exactly; a setup that is
+            # gone, renamed or never confirmed stays to be specified, without substitute.
+            self._fill_firmware_combo(chosen,chosen_setup);self._firmware_printer=chosen
+        else:self._firmware_printer=None
+        self._printer_changed();self._refresh_printers_origin()
+        if self.printer.currentData() is None and chosen is not None:
+            self.printers_origin.setText(self.printers_origin.text()+'\n'+tr('Votre imprimante n’est plus dans la liste : choisissez-la à nouveau.'))
+        elif kept and self.firmware.currentData()=='unknown':
+            self.printers_origin.setText(self.printers_origin.text()+'\n'+tr('Configuration à préciser'))
         self.status.showMessage(tr('Liste des imprimantes du {v0} installée ({v1} entrées).', v0=catalogue.get('updated', '?'), v1=len(catalogue['printers'])),8000)
 
     def _references_text(self,sku):

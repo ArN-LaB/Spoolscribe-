@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-08
+
+### Desktop settings, safety and signed macOS distribution
+
+- Portable preference JSON import/export with preview and explicit categories; clearer six-tab settings and refresh cadence.
+- Local unencrypted ZIP data backups, restoration preview and undo. Transaction ownership and persistent recovery residues protect foreign files in the tested scenarios; ambiguous objects are kept and reported.
+- Origin/reliability of effective values, translated About content and optional local diagnostics (off by default).
+- Shared printer configurations preserve unknown status, explicit confirmation and uncertainty blocks for NFC exports. No NFC, SSQR1 or OpenTag3D wire-format change.
+- New Windows x64 and Linux x64 CI builds, and a new macOS arm64 Developer ID signed, Apple-notarised and stapled archive. No reuse of v0.8.0 binaries.
+- README, help screenshots, installation instructions, backup documentation and GitHub Wiki aligned with v0.8.1.
+- Preference JSON and backup ZIP files are not encrypted; AES-256-GCM remains future work.
+- The historical macOS SIGSEGV is not claimed fixed. It was not reproduced in bounded diagnostics; investigate on a new incident. Native hardware printing/NFC and universal printer compatibility remain unverified.
+
 ### Documentation and release-channel maintenance
 
 - Illustrated task-based v0.8.0 help, concise centred captions, native language names and current project metadata.

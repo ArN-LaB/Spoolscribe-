@@ -240,7 +240,8 @@ class OpenTagSettingsUiTests(unittest.TestCase):
             nfc_format='opentag3d',opentag3d_output='nfctools-desktop')
         core.save_config(cfg);path=Path(self.tmp.name)/'settings.json';core.export_settings(path)
         w.printer.setCurrentIndex(w.printer.findData('bambu'))
-        with patch('spoolscribe.ui_catalogue.QFileDialog.getOpenFileName',return_value=(str(path),'JSON')):w._import_settings()
+        # Import now shows a preview first (002); accept it here.
+        with patch('spoolscribe.ui_catalogue.QFileDialog.getOpenFileName',return_value=(str(path),'JSON')),patch.object(w,'_confirm_settings_import',return_value=True) as preview:w._import_settings();preview.assert_called_once()
         self.assertEqual(w.printer.currentData(),'u1');self.assertEqual(w.firmware.currentData(),'paxx12_openrfid')
         self.assertEqual(w.nfc_format.currentData(),'opentag3d');self.assertEqual(w.opentag_output.currentData(),'nfctools-desktop')
 

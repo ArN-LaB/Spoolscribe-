@@ -125,7 +125,7 @@ class DetailUx:
                 ("Couleur",(("hex","Couleur déclarée"),)))
         self.parameter_cards=[ParameterCard(title,fields,self.comparison_cells) for title,fields in groups]
         self.parameter_grid=CardGrid(self.parameter_cards,320);box.addWidget(self.parameter_grid)
-        self.comparison_sources_toggle=QToolButton();self.comparison_sources_toggle.setText(tr('Origine des valeurs'))
+        self.comparison_sources_toggle=QToolButton();self.comparison_sources_toggle.setText(tr('Origine et fiabilité'))
         self.comparison_sources_toggle.setCheckable(True);self.comparison_sources_toggle.setFixedHeight(CONTROL_HEIGHT)
         self.comparison_sources_toggle.toggled.connect(self._toggle_comparison_sources);box.addWidget(self.comparison_sources_toggle)
         self.comparison_legend=QWidget();legend=QHBoxLayout(self.comparison_legend);legend.setContentsMargins(0,0,0,0)
@@ -162,6 +162,40 @@ class DetailUx:
                 "source": tr("source : {v0}", v0=tr(source or "")), "user": tr("personnel confirmé"),
                 "copy": tr("copié, non confirmé"), "absent": tr("référence absente")}.get(kind, tr("provenance inconnue"))
         return text + (" · " + tr("à vérifier") if info.get("suspect") else "")
+
+    def _effective_origin_text(self, row):
+        """Origin of the value the export really uses, per field; unknown stays unknown."""
+        effective = row["effective"]
+        if effective["value"] is None:
+            return tr("non renseigné")
+        origin = effective["origin"]
+        if origin == "opentag_settings":
+            return tr("réglage OpenTag3D explicite")
+        if origin == "orca":
+            return (tr("profil Orca · complète une valeur absente") if effective.get("orca_mode") == "complement"
+                    else tr("profil Orca · remplace la valeur (option activée)"))
+        if origin == "personal" and row["personal"] is not None:
+            return self._provenance_text(row["personal"])
+        return self._provenance_text(row["reference"])
+
+    def _field_names(self, keys):
+        names = dict(FIELD_LABELS)
+        return ", ".join(tr(names.get(key, key)) for key in keys)
+
+    def _colour_references(self, sku):
+        """Registry references linked to this filament: shown apart, never applied to the HEX."""
+        try:
+            from .measurement_store import MeasurementRegistry
+            registry = MeasurementRegistry()
+            if not registry.exists():
+                return []
+            document = registry.load()
+        except Exception:
+            return []
+        store = document.get("measurements") if isinstance(document, dict) else None
+        if not isinstance(store, dict):
+            return []
+        return [m for m in store.values() if isinstance(m, dict) and (m.get("association") or {}).get("sku") == sku]
 
     def _refresh_comparison(self):
         if not hasattr(self, "comparison_card"):
@@ -211,31 +245,46 @@ class DetailUx:
         self.comparison_summary.setText(tr('{v0} paramètres ajustés par rapport à la référence',v0=changes) if changes
                                         else tr('Les valeurs reprennent la référence.'))
         origins=list(dict.fromkeys(self._provenance_text(row['reference']) for row in data['rows']))
-        common_source=data['rows'][0]['reference']
-        origin_display=tr('Données d’origine : {v0}',v0=tr(common_source.get('source') or '')) if common_source['kind'] in ('source','manufacturer') else tr('Origine : {v0}',v0=origins[0])
-        self.comparison_origin.setText(origin_display if len(origins)==1 else tr('Plusieurs origines : consultez le détail des valeurs.'))
+        # Summary from every field's effective origin, not from the first row only.
+        effective_origins={}
+        for row in data['rows']:
+            effective_origins.setdefault(self._effective_origin_text(row),[]).append(row['key'])
+        if len(effective_origins)==1:
+            self.comparison_origin.setText(tr('Origine effective : {v0}',v0=next(iter(effective_origins))))
+        else:
+            self.comparison_origin.setText(tr('Origine effective : {v0}',v0=' · '.join(f'{text} ({len(keys)})' for text,keys in effective_origins.items())))
+        mixed=len(effective_origins)>1
         for card in self.parameter_cards:
+            texts={key:self._effective_origin_text(rows[key]) for key in card.origin_notes}
+            uniform=len(set(texts.values()))==1
+            for index,(key,note) in enumerate(card.origin_notes.items()):
+                # One origin everywhere: the summary already says it; otherwise show it per card/field.
+                caption=dict(FIELD_LABELS).get(key,key)
+                note.setText(tr('Export : {v0}',v0=texts[key]) if uniform else tr('Export · {v0} : {v1}',v0=tr(caption),v1=texts[key]))
+                note.setVisible(mixed and (not uniform or index==0))
             for key,note in card.source_notes.items():
                 note.setText(self._provenance_text(rows[key]['reference']))
                 note.setVisible(len(origins)>1)
                 if len(origins)>1:
                     card.source_rows[key][1].show()
                     self.comparison_cells[key][1].setVisible(rows[key]['differs'])
-        self.comparison_alert.setText(tr('Profil Orca inutilisable : {v0}',v0=orca.get('message','')) if orca['status']=='error'
+        self.comparison_alert.setText(tr('Profil Orca inutilisable : contenu invalide.') if orca['status']=='error'
             else tr('Les valeurs à vérifier doivent être confirmées avant export.') if any(row['reference'].get('suspect') for row in data['rows'])
             else tr('Les températures de l’étiquette restent à renseigner avant export.') if data['format']=='opentag3d' and any(v is None for v in data['targets'].values()) else '')
         self.comparison_alert.setVisible(bool(self.comparison_alert.text()))
         notes = []
+        # Orca is mentioned only when a profile exists for this filament (or its origin).
         if orca["status"] == "applied":
-            notes.append(tr("Profil Orca appliqué à l’export : {v0}.", v0=", ".join(orca["applied"])))
+            if orca.get("completed"):
+                notes.append(tr("Profil Orca : complète {v0}, absents de la fiche.", v0=self._field_names(orca["completed"])))
+            if orca.get("replaced"):
+                notes.append(tr("Profil Orca : remplace {v0} (option « Préférer les valeurs Orca » activée).", v0=self._field_names(orca["replaced"])))
         elif orca["status"] == "unused":
             notes.append(tr("Profil Orca trouvé ; ses valeurs ne remplacent pas celles de la fiche (option désactivée)."))
         elif orca["status"] == "origin_only":
             notes.append(tr("Un profil Orca existe pour la référence d’origine ; l’export de cette copie ne l’utilise pas."))
         elif orca["status"] == "error":
-            notes.append(tr("Profil Orca inutilisable : {v0}", v0=orca.get("message", "")))
-        else:
-            notes.append(tr("Aucun profil Orca applicable à cette fiche."))
+            notes.append(tr("Profil Orca inutilisable : contenu invalide."))
         if data["origin_missing"]:
             notes.append(tr("Référence d’origine absente du catalogue : aucune valeur de comparaison disponible."))
         if data["format"] == "opentag3d":
@@ -243,6 +292,11 @@ class DetailUx:
             shown = ", ".join(f"{k} {targets[k]}" for k in ("print_temp", "bed_temp", "chamber_temp") if targets.get(k) is not None)
             notes.append(tr("Cibles OpenTag3D : {v0}.", v0=shown) if shown else tr("Cibles OpenTag3D non renseignées ; aucune n’est calculée."))
         notes.append(tr("Le HEX est la couleur déclarée par la source, pas une mesure de la couleur imprimée."))
+        linked = self._colour_references(self.current_sku)
+        if linked:
+            documented = any(m.get("conditions") for m in linked)
+            notes.append(tr("{v0} référence(s) couleur enregistrée(s) associée(s) à ce filament, distincte(s) du HEX exporté ; conditions : {v1}.",
+                            v0=len(linked), v1=tr("documentées") if documented else tr("non renseignées")))
         self.comparison_note.setText("\n".join(notes))
 
     # ── Personal draft ──────────────────────────────────────────────────

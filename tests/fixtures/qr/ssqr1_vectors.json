@@ -1,5 +1,5 @@
 {
-  "description": "SSQR1 normative NDEF vectors, copied from docs/agent-runs/SPOOLSCRIBE-QR-2026-001/01-CODEX-CADRAGE.md (annex A). The NDEF bytes are normative; the reference text is one valid zlib stream (zlib 1.2.12), not a recompression requirement.",
+  "description": "SSQR1 normative NDEF vectors, copied from docs/agent-runs/2026-11-03-SSQR1-QR-AUTONOME/B01-AUDIT-ET-IMPLEMENTATION/01-CADRAGE-SSQR1.md (annex A). The NDEF bytes are normative; the reference text is one valid zlib stream (zlib 1.2.12), not a recompression requirement.",
   "vectors": {
     "catalogue-essential": {
       "protocol": 1,

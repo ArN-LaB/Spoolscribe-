@@ -155,9 +155,12 @@ class ParameterCard(QFrame):
         else:self.swatch=None
         box.addLayout(values)
         self.sources=QWidget();source_layout=QVBoxLayout(self.sources);source_layout.setContentsMargins(0,0,0,0);source_layout.setSpacing(4)
-        self.source_rows={};self.source_notes={}
+        self.source_rows={};self.source_notes={};self.origin_notes={}
         for key,caption in fields:
             self.source_rows[key]={}
+            # Effective value's origin (what the export uses), always shown in the details.
+            origin=reading_label('','guidanceNote');origin.setObjectName('effectiveOrigin');origin.setWordWrap(True)
+            source_layout.addWidget(origin);self.origin_notes[key]=origin
             for column,name in ((1,'Référence'),(2,'Orca'),(3,'Personnel')):
                 row=QWidget();line=QHBoxLayout(row);line.setContentsMargins(0,0,0,0);line.setSpacing(6)
                 label=reading_label(tr(name)+(f' · {tr(caption)}' if len(fields)>1 else ''),'guidanceNote')

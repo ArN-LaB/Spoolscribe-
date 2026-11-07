@@ -1,4 +1,4 @@
-### SpoolScribe · v0.8.0
+### SpoolScribe · v0.8.1
 
 **Start here**
 
@@ -18,7 +18,8 @@
 **Keep it working**
 
 - [Updates and backups](Updating-the-Database.md)
+- [Backing up your data](Backup-and-Restore.md)
 - [FAQ](FAQ.md)
 - [All screen examples](Visual-Tour.md)
-- [Download stable v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0)
+- [Download stable v0.8.1](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1)
 - [Report a problem](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose)

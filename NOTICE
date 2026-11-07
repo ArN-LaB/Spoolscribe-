@@ -20,3 +20,7 @@ QR Codes are generated with Segno 1.6.6 (https://github.com/heuer/segno/),
 Copyright (c) 2016 - 2025, Lars Heuer, BSD 3-Clause License; the full notice is
 shipped as data/licenses/Segno-LICENSE.txt. Base45 (RFC 9285) is implemented
 locally from the specification.
+
+The desktop interface uses Qt and PySide6 (The Qt Company and contributors),
+available under their own licences (LGPLv3 for the open-source editions); they
+are not part of the MIT-licensed SpoolScribe code.

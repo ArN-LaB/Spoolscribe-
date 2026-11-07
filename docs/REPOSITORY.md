@@ -1,4 +1,4 @@
-# Structure du dépôt SpoolScribe v0.8.0
+# Structure du dépôt SpoolScribe v0.8.1
 
 [Documentation](README.md) · [Audit actuel](validation/repository-v0.8.0.md) · [Ressources](../data/README.md) · [Fixtures](../tests/fixtures/README.md)
 
@@ -15,10 +15,7 @@
 | `docs/validation/` | Preuves publiques datées des releases et audits |
 | `.github/` | Workflows, politiques et outils de maintenance/QA |
 
-Les dossiers locaux `docs/agent-runs/` et `docs/agents-prompts/` sont des dossiers de
-travail ignorés, préservés sur le Mac. Publier une preuve utile nécessite une
-sélection explicite et une copie relue dans `docs/validation/`. Les builds, caches,
-réglages utilisateur et métadonnées OS sont également ignorés.
+L’historique local de développement est regroupé dans `docs/agent-runs/`, par date de début attestée et objectif. Son point d’entrée local est `docs/agent-runs/INDEX.md` (hors dépôt public). Ces traces restent ignorées par Git. Les validations publiques de versions restent dans `docs/validation/` ; publier une preuve nécessite une sélection explicite. Builds, caches, réglages utilisateur et métadonnées OS restent hors de l’historique de développement.
 
 Aucune base personnelle n’est embarquée. Les téléchargements initiaux construisent
 le catalogue après consentement. `data/printers.json` conserve son chemin public

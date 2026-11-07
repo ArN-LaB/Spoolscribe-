@@ -140,7 +140,7 @@ def main():
                 modal_capture(window._choose_sources, lambda d: capture(d, 'sources.png', 'Choose catalogue sources before any download', network_action='none'))
                 def settings_pages(dialog):
                     tabs = dialog.findChild(ReadingTabs)
-                    for index, name in enumerate(('catalogue', 'spools', 'export', 'interface', 'colours')):
+                    for index, name in enumerate(('catalogue', 'spools', 'export', 'colours', 'interface', 'backups')):
                         tabs.setCurrentIndex(index); app.processEvents()
                         fit_dialog(dialog, preferred_width=860, available=QRect(0, 0, 1600, 1120))
                         if name == 'export':

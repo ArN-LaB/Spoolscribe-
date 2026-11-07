@@ -1,1 +1,1 @@
-**SpoolScribe v0.8.0 · Desktop stable** · [Help](Home.md) · [Download](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0) · [Feedback](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) · [Support development](https://buymeacoffee.com/arn_lab)
+**SpoolScribe v0.8.1 · Desktop stable** · [Help](Home.md) · [Download](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1) · [Feedback](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) · [Support development](https://buymeacoffee.com/arn_lab)

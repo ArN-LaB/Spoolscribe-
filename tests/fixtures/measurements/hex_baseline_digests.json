@@ -1,5 +1,5 @@
 {
- "source": "docs/agent-runs/SPOOLSCRIBE-COLOR-2026-001/preuves/audit-2026-11-04-091545/hex-baseline-benchmark.json",
+ "source": "docs/agent-runs/2026-11-04-COULEUR-MESURES-UNIVERSELLES/B01-CADRAGE-ET-IMPLEMENTATION/preuves/audit-2026-11-04-091545/hex-baseline-benchmark.json",
  "note": "Digests of the unmodified HEX ranking (audit of 4 November 2026). Items digest = sha256 of {items:[[sku,delta,effect]...],excluded:{...}} sorted keys, compact separators. Rows derived from the three public fixtures with filename:sku identifiers; padding and synthetic rows regenerated identically by the test.",
  "runtime": "3.12.13",
  "fixture_total": 24521,

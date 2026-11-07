@@ -12,6 +12,12 @@ import re
 import sys
 
 from pathlib import Path
+
+# Resolve an interrupted restoration before core is imported (core reads the
+# data paths and the printer list at import time). Stdlib-only module.
+from . import recovery as _recovery
+_STARTUP_RECOVERY = _recovery.bootstrap()
+
 from . import core
 from .core import (
     DB_PATH, OUTPUT_DIR,
@@ -218,6 +224,8 @@ def _hex_swatch(hex_code, use_ansi=True):
 def main():
     if core.maybe_run_as_script_worker(sys.argv):
         return
+    if _STARTUP_RECOVERY.get("state") not in ("clean", "cleaned"):
+        print(_STARTUP_RECOVERY.get("message", ""), file=sys.stderr)
     # Console Windows : forcer l'UTF-8 pour les cadres Unicode et les accents,
     # sinon `cp1252` lève UnicodeEncodeError au premier affichage.
     for _stream in (sys.stdout, sys.stderr):

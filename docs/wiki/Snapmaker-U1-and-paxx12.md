@@ -4,7 +4,7 @@
 
 **Prepare OpenSpool or OpenTag3D labels with the matching paxx12 detection mode.**
 
-Available in [v0.8.0 · stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).
+Available in [v0.8.1 · stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1).
 
 <table>
 <tr>

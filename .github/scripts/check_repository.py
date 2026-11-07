@@ -9,6 +9,50 @@ import sys
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
+_FENCE = re.compile(r'^ {0,3}(`{3,}|~{3,})')
+
+
+def strip_fenced_code(text):
+    """Blank the lines inside fenced code blocks (``` or ~~~): examples there are not links.
+
+    A block closes on a fence of the same character at least as long as the
+    opening one (CommonMark); an unclosed block runs to the end. Line count and
+    everything outside the blocks are preserved.
+    """
+    out, fence = [], None
+    for line in text.splitlines(keepends=True):
+        match = _FENCE.match(line)
+        if fence is None:
+            if match:
+                fence = match.group(1)
+                out.append('\n' if line.endswith('\n') else '')
+                continue
+            out.append(line)
+        else:
+            if match and match.group(1)[0] == fence[0] and len(match.group(1)) >= len(fence) \
+                    and not line[match.end():].strip():
+                fence = None
+            out.append('\n' if line.endswith('\n') else '')
+    return ''.join(out)
+
+
+def markdown_links(path, root=ROOT):
+    """Local link targets of one Markdown file, outside fenced code blocks: ``(errors, link_count)``."""
+    text = strip_fenced_code(path.read_text(encoding='utf-8'))
+    targets = re.findall(r'\[[^\]]*\]\(([^\s)]+)(?:\s+"[^"]*")?\)', text)
+    targets += re.findall(r'(?:src|href)="([^"]+)"', text)
+    errors, links = [], 0
+    if '[[' in text and path.parent == root / 'docs/wiki':
+        errors.append(f'{path.relative_to(root)}: non-portable Wiki link')
+    for target in targets:
+        parsed = urlsplit(target)
+        if parsed.scheme or parsed.netloc or not parsed.path:
+            continue
+        dest = path.parent / unquote(parsed.path)
+        links += 1
+        if not dest.exists():
+            errors.append(f'{path.relative_to(root)}: missing {target}')
+    return errors, links
 
 
 def check(root=ROOT):
@@ -21,19 +65,9 @@ def check(root=ROOT):
     for path in files:
         if path.suffix != '.md':
             continue
-        text = path.read_text(encoding='utf-8')
-        targets = re.findall(r'\[[^\]]*\]\(([^\s)]+)(?:\s+"[^"]*")?\)', text)
-        targets += re.findall(r'(?:src|href)="([^"]+)"', text)
-        if '[[' in text and path.parent == root / 'docs/wiki':
-            errors.append(f'{path.relative_to(root)}: non-portable Wiki link')
-        for target in targets:
-            parsed = urlsplit(target)
-            if parsed.scheme or parsed.netloc or not parsed.path:
-                continue
-            dest = path.parent / unquote(parsed.path)
-            links += 1
-            if not dest.exists():
-                errors.append(f'{path.relative_to(root)}: missing {target}')
+        found, count = markdown_links(path, root)
+        errors += found
+        links += count
     tree = ast.parse((root / 'src/spoolscribe/core.py').read_text(encoding='utf-8'))
     version = next(ast.literal_eval(n.value) for n in tree.body
                    if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'APP_VERSION' for t in n.targets))
