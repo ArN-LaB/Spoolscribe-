@@ -16,7 +16,7 @@
 | Refresh cadence, spool, export, language and Delta E threshold | [Six settings tabs](wiki/Settings.md) |
 | Recognise a screen | [Visual tour](wiki/Visual-Tour.md) |
 
-The interface supports **English, French, Spanish and Simplified Chinese**.
+The interface supports **English, Français, Español and 简体中文**.
 The [user guide](USER_GUIDE.md) complements the illustrated workflows.
 
 ## Understand data and limits

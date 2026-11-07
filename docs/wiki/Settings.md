@@ -51,7 +51,7 @@ writing a tag.
 
 ## Interface: use your language
 
-**English · French · Spanish · Simplified Chinese**. Automatic follows the system language,
+**English · Français · Español · 简体中文**. Automatic follows the system language,
 with English as fallback. Save, then choose **Restart now** or **Later**. This
 restarts the interface without deleting your data or favourites.
 

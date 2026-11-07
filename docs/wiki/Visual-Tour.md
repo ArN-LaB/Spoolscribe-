@@ -4,7 +4,7 @@
 
 Every illustration is a genuine v0.8.1 widget capture. Click an image for the full
 file; its title and short caption explain what to look at. Interface examples
-use English. Available languages: **English · French · Spanish · Simplified Chinese**.
+use English. Available languages: **English · Français · Español · 简体中文**.
 
 | Screen or option | Illustrated instructions |
 | --- | --- |

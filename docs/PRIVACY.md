@@ -85,7 +85,7 @@ automatic refreshes for the rest of that session.
 
 ## Interface language
 
-The four interface languages (English, French, Spanish, Simplified Chinese) are bundled locally. System-language detection and restarting after a language change do not contact a server or change consent.
+The four interface languages (English, Français, Español, 简体中文) are bundled locally. System-language detection and restarting after a language change do not contact a server or change consent.
 
 ## OpenTag3D (v0.6.0 pre-release)
 

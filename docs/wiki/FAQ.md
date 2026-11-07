@@ -77,7 +77,7 @@ requires explicit label settings; see [the writing guide](Writing-RFID-Tags.md).
 <details>
 <summary><strong>How do I change the interface language?</strong></summary>
 
-Open **Settings → Interface**. Choose the system language or English, French, Spanish or Simplified Chinese. Save, then restart now or later. Your data and favourites remain intact.
+Open **Settings → Interface**. Choose the system language or English, Français, Español or 简体中文. Save, then restart now or later. Your data and favourites remain intact.
 
 </details>
 

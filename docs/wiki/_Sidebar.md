@@ -1,4 +1,4 @@
-### SpoolScribe · v0.8.1
+### Quick navigation
 
 **Start here**
 
