@@ -7648,5 +7648,1120 @@
     "en": "Paper and manufacturer template guide…",
     "es": "Guía de soportes y plantillas del fabricante…",
     "zh_CN": "纸张与厂商模板指南…"
+  },
+  "La liste des imprimantes est déjà à jour.": {
+    "en": "The printer list is already up to date.",
+    "es": "La lista de impresoras ya está actualizada.",
+    "zh_CN": "打印机列表已是最新。"
+  },
+  "Votre imprimante n’est plus dans la liste : choisissez-la à nouveau.": {
+    "en": "Your printer is no longer in the list: choose it again.",
+    "es": "Su impresora ya no está en la lista: vuelva a elegirla.",
+    "zh_CN": "您的打印机已不在列表中：请重新选择。"
+  },
+  "Exporter le JSON OpenSpool du filament…": {
+    "en": "Export the filament’s OpenSpool JSON…",
+    "es": "Exportar el JSON OpenSpool del filamento…",
+    "zh_CN": "导出该耗材的 OpenSpool JSON…"
+  },
+  "Fichier OpenSpool lisible du filament sélectionné. Ce n’est pas une sauvegarde de vos données.": {
+    "en": "Readable OpenSpool file of the selected filament. This is not a backup of your data.",
+    "es": "Archivo OpenSpool legible del filamento seleccionado. No es una copia de seguridad de sus datos.",
+    "zh_CN": "所选耗材的可读 OpenSpool 文件。这不是数据备份。"
+  },
+  "Actions immédiates": {
+    "en": "Immediate actions",
+    "es": "Acciones inmediatas",
+    "zh_CN": "立即生效的操作"
+  },
+  "Imprimante, lecteur, logiciel et étiquette NFC": {
+    "en": "Printer, reader, software and NFC tag",
+    "es": "Impresora, lector, software y etiqueta NFC",
+    "zh_CN": "打印机、读取器、软件和 NFC 标签"
+  },
+  "Étiquettes et export": {
+    "en": "Tags and export",
+    "es": "Etiquetas y exportación",
+    "zh_CN": "标签与导出"
+  },
+  "Couleurs": {
+    "en": "Colours",
+    "es": "Colores",
+    "zh_CN": "颜色"
+  },
+  "Préférences": {
+    "en": "Preferences",
+    "es": "Preferencias",
+    "zh_CN": "偏好设置"
+  },
+  "Mes données": {
+    "en": "My data",
+    "es": "Mis datos",
+    "zh_CN": "我的数据"
+  },
+  "Sauvegarde chiffrée : non disponible dans cette version. Conservez l’archive dans un emplacement protégé.": {
+    "en": "Encrypted backup: not available in this version. Keep the archive in a protected location.",
+    "es": "Copia cifrada: no disponible en esta versión. Guarde el archivo en un lugar protegido.",
+    "zh_CN": "加密备份：此版本不可用。请将归档保存在受保护的位置。"
+  },
+  "Données et sauvegardes": {
+    "en": "Data and backups",
+    "es": "Datos y copias",
+    "zh_CN": "数据与备份"
+  },
+  "Version {v0}": {
+    "en": "Version {v0}",
+    "es": "Versión {v0}",
+    "zh_CN": "版本 {v0}"
+  },
+  "Crédits et licences": {
+    "en": "Credits and licences",
+    "es": "Créditos y licencias",
+    "zh_CN": "致谢与许可"
+  },
+  "Valeur actuelle non prise en charge — conservée": {
+    "en": "Current value not supported — kept",
+    "es": "Valor actual no admitido — conservado",
+    "zh_CN": "当前值不受支持 — 已保留"
+  },
+  "La configuration locale contient une cadence que cette fenêtre ne peut pas représenter. Elle reste enregistrée telle quelle tant que vous n’en choisissez pas une autre.": {
+    "en": "The local configuration contains a schedule this window cannot represent. It stays saved as it is until you choose another one.",
+    "es": "La configuración local contiene una frecuencia que esta ventana no puede representar. Se conserva tal cual hasta que elija otra.",
+    "zh_CN": "本地配置包含此窗口无法表示的频率。在您选择其他频率之前，它会按原样保留。"
+  },
+  "L’autorisation réseau reste requise. L’ancien réglage « actualisation automatique » est conservé pour compatibilité ; la cadence choisie ici fait foi.": {
+    "en": "Network permission is still required. The former “automatic update” setting is kept for compatibility; the schedule chosen here is what counts.",
+    "es": "Sigue siendo necesaria la autorización de red. El antiguo ajuste «actualización automática» se conserva por compatibilidad; la frecuencia elegida aquí es la que cuenta.",
+    "zh_CN": "仍需网络授权。旧的“自动更新”设置为兼容而保留；以此处选择的频率为准。"
+  },
+  "Ces boutons s’appliquent tout de suite. Annuler cette fenêtre ne les annule pas.": {
+    "en": "These buttons take effect immediately. Cancelling this window does not undo them.",
+    "es": "Estos botones se aplican de inmediato. Cancelar esta ventana no los deshace.",
+    "zh_CN": "这些按钮会立即生效。取消此窗口不会撤销它们。"
+  },
+  "Télécharger la source Orca rend des profils disponibles ; cette option décide seulement s’ils remplacent les valeurs du catalogue. Désactivée, un profil Orca applicable complète uniquement les valeurs manquantes.": {
+    "en": "Downloading the Orca source makes profiles available; this option only decides whether they replace catalogue values. When off, an applicable Orca profile only fills in missing values.",
+    "es": "Descargar la fuente Orca pone perfiles a disposición; esta opción solo decide si sustituyen los valores del catálogo. Desactivada, un perfil Orca aplicable solo completa los valores que faltan.",
+    "zh_CN": "下载 Orca 来源只是让配置文件可用；此选项仅决定它们是否替换目录中的值。关闭时，适用的 Orca 配置文件只补全缺失的值。"
+  },
+  "Le format papier des QR se règle dans la fenêtre QR.": {
+    "en": "The QR paper format is set in the QR window.",
+    "es": "El formato de papel de los QR se ajusta en la ventana QR.",
+    "zh_CN": "二维码的纸张格式在二维码窗口中设置。"
+  },
+  "Les références couleur saisies et les réglages d’appareil se gèrent dans « Références couleur ».": {
+    "en": "Entered colour references and device settings are managed in “Colour references”.",
+    "es": "Las referencias de color introducidas y los ajustes de dispositivo se gestionan en «Referencias de color».",
+    "zh_CN": "已输入的颜色参考和设备设置在“颜色参考”中管理。"
+  },
+  "Deux opérations distinctes. Elles ferment cette fenêtre sans enregistrer ses modifications : enregistrez-les d’abord si besoin.": {
+    "en": "Two separate operations. They close this window without saving its changes: save them first if needed.",
+    "es": "Dos operaciones distintas. Cierran esta ventana sin guardar sus cambios: guárdelos antes si es necesario.",
+    "zh_CN": "两个独立的操作。它们会关闭此窗口且不保存其中的修改：如有需要请先保存。"
+  },
+  "Fichier JSON en clair contenant vos préférences et réglages d’étiquette. Le catalogue, les copies personnelles et le registre couleur ne sont pas inclus.": {
+    "en": "Plain-text JSON file containing your preferences and tag settings. The catalogue, personal copies and colour registry are not included.",
+    "es": "Archivo JSON en texto claro con sus preferencias y ajustes de etiqueta. No incluye el catálogo, las copias personales ni el registro de color.",
+    "zh_CN": "包含您的偏好设置和标签设置的明文 JSON 文件。不包括目录、个人副本和颜色登记。"
+  },
+  "Exporter les préférences…": {
+    "en": "Export preferences…",
+    "es": "Exportar preferencias…",
+    "zh_CN": "导出偏好设置…"
+  },
+  "Importer les préférences…": {
+    "en": "Import preferences…",
+    "es": "Importar preferencias…",
+    "zh_CN": "导入偏好设置…"
+  },
+  "Archive ZIP non chiffrée : catalogue complet avec vos copies personnelles et corrections, références couleur, réglages d’appareil et profils Orca locaux ; vos préférences si vous le choisissez. Un aperçu précède toute restauration.": {
+    "en": "Unencrypted ZIP archive: full catalogue with your personal copies and corrections, colour references, device settings and local Orca profiles; your preferences if you choose. A preview comes before any restore.",
+    "es": "Archivo ZIP sin cifrar: catálogo completo con sus copias personales y correcciones, referencias de color, ajustes de dispositivo y perfiles Orca locales; sus preferencias si lo elige. Se muestra una vista previa antes de cualquier restauración.",
+    "zh_CN": "未加密的 ZIP 归档：完整目录（含您的个人副本和更正）、颜色参考、设备设置和本地 Orca 配置文件；如您选择，还包括偏好设置。任何恢复前都会先显示预览。"
+  },
+  "Sauvegarder mes données…": {
+    "en": "Back up my data…",
+    "es": "Guardar una copia de mis datos…",
+    "zh_CN": "备份我的数据…"
+  },
+  "Restaurer mes données…": {
+    "en": "Restore my data…",
+    "es": "Restaurar mis datos…",
+    "zh_CN": "恢复我的数据…"
+  },
+  "Détails : NOTICE, docs/DATA_SOURCES.md et docs/TRADEMARKS.md du dépôt.": {
+    "en": "Details: NOTICE, docs/DATA_SOURCES.md and docs/TRADEMARKS.md in the repository.",
+    "es": "Detalles: NOTICE, docs/DATA_SOURCES.md y docs/TRADEMARKS.md del repositorio.",
+    "zh_CN": "详情：仓库中的 NOTICE、docs/DATA_SOURCES.md 和 docs/TRADEMARKS.md。"
+  },
+  "Exporter les préférences": {
+    "en": "Export preferences",
+    "es": "Exportar preferencias",
+    "zh_CN": "导出偏好设置"
+  },
+  "Inclure la disposition et les filtres": {
+    "en": "Include layout and filters",
+    "es": "Incluir la disposición y los filtros",
+    "zh_CN": "包含布局和筛选"
+  },
+  "Inclure le chemin du dossier d’export": {
+    "en": "Include the export folder path",
+    "es": "Incluir la ruta de la carpeta de exportación",
+    "zh_CN": "包含导出文件夹路径"
+  },
+  "Chemin absolu de cet ordinateur ; il peut révéler un nom de dossier personnel.": {
+    "en": "Absolute path on this computer; it may reveal a personal folder name.",
+    "es": "Ruta absoluta de este ordenador; puede revelar el nombre de una carpeta personal.",
+    "zh_CN": "此电脑上的绝对路径；可能会暴露个人文件夹名称。"
+  },
+  "Exporter…": {
+    "en": "Export…",
+    "es": "Exportar…",
+    "zh_CN": "导出…"
+  },
+  "Importer les préférences": {
+    "en": "Import preferences",
+    "es": "Importar preferencias",
+    "zh_CN": "导入偏好设置"
+  },
+  "Inclus : langue, actualisation et sources, bobine préférée, favoris, imprimante et étiquette NFC, réglages OpenTag3D par référence, format papier QR, limite de couleur. Jamais : autorisation réseau, dates et état des actualisations.": {
+    "en": "Included: language, update schedule and sources, preferred spool, favourites, printer and NFC tag, OpenTag3D settings per reference, QR paper format, colour limit. Never: network permission, update dates and status.",
+    "es": "Incluido: idioma, actualización y fuentes, bobina preferida, favoritos, impresora y etiqueta NFC, ajustes OpenTag3D por referencia, formato de papel QR, límite de color. Nunca: autorización de red, fechas y estado de las actualizaciones.",
+    "zh_CN": "包括：语言、更新频率与来源、首选线盘、收藏、打印机和 NFC 标签、按参考的 OpenTag3D 设置、二维码纸张格式、颜色范围。绝不包括：网络授权、更新日期和状态。"
+  },
+  "aucune": {
+    "en": "none",
+    "es": "ninguna",
+    "zh_CN": "无"
+  },
+  "Remplacées par le fichier : {v0}. Les listes et réglages d’une catégorie présente remplacent ceux de cet ordinateur.": {
+    "en": "Replaced by the file: {v0}. The lists and settings of a category in the file replace those on this computer.",
+    "es": "Sustituidas por el archivo: {v0}. Las listas y ajustes de una categoría presente sustituyen a los de este ordenador.",
+    "zh_CN": "由文件替换：{v0}。文件中所含类别的列表和设置将替换此电脑上的对应内容。"
+  },
+  "Conservées sur cet ordinateur : {v0}.": {
+    "en": "Kept on this computer: {v0}.",
+    "es": "Conservadas en este ordenador: {v0}.",
+    "zh_CN": "在此电脑上保留：{v0}。"
+  },
+  "Le catalogue, les copies personnelles et le registre couleur ne sont pas modifiés.": {
+    "en": "The catalogue, personal copies and colour registry are not changed.",
+    "es": "El catálogo, las copias personales y el registro de color no se modifican.",
+    "zh_CN": "目录、个人副本和颜色登记不会被修改。"
+  },
+  "Préférences exportées en JSON clair (non chiffré).": {
+    "en": "Preferences exported as plain JSON (not encrypted).",
+    "es": "Preferencias exportadas en JSON claro (sin cifrar).",
+    "zh_CN": "偏好设置已导出为明文 JSON（未加密）。"
+  },
+  "Dossier d’export du fichier : {v0}": {
+    "en": "Export folder in the file: {v0}",
+    "es": "Carpeta de exportación del archivo: {v0}",
+    "zh_CN": "文件中的导出文件夹：{v0}"
+  },
+  "Ignorés : autorisation réseau, dates et état des actualisations, clés inconnues ({v0}).": {
+    "en": "Ignored: network permission, update dates and status, unknown keys ({v0}).",
+    "es": "Ignorados: autorización de red, fechas y estado de las actualizaciones, claves desconocidas ({v0}).",
+    "zh_CN": "已忽略：网络授权、更新日期和状态、未知键（{v0}）。"
+  },
+  "Les sources du catalogue changent : l’autorisation réseau vous sera redemandée avant toute actualisation.": {
+    "en": "The catalogue sources change: network permission will be asked again before any update.",
+    "es": "Las fuentes del catálogo cambian: se le volverá a pedir la autorización de red antes de cualquier actualización.",
+    "zh_CN": "目录来源有变：任何更新前都会再次请求网络授权。"
+  },
+  "Origine et fiabilité": {
+    "en": "Origin and reliability",
+    "es": "Origen y fiabilidad",
+    "zh_CN": "来源与可靠性"
+  },
+  "non renseigné": {
+    "en": "not provided",
+    "es": "sin indicar",
+    "zh_CN": "未提供"
+  },
+  "réglage OpenTag3D explicite": {
+    "en": "explicit OpenTag3D setting",
+    "es": "ajuste OpenTag3D explícito",
+    "zh_CN": "明确的 OpenTag3D 设置"
+  },
+  "profil Orca · complète une valeur absente": {
+    "en": "Orca profile · fills in a missing value",
+    "es": "perfil Orca · completa un valor ausente",
+    "zh_CN": "Orca 配置文件 · 补全缺失的值"
+  },
+  "profil Orca · remplace la valeur (option activée)": {
+    "en": "Orca profile · replaces the value (option enabled)",
+    "es": "perfil Orca · sustituye el valor (opción activada)",
+    "zh_CN": "Orca 配置文件 · 替换该值（选项已启用）"
+  },
+  "Origine effective : {v0}": {
+    "en": "Effective origin: {v0}",
+    "es": "Origen efectivo: {v0}",
+    "zh_CN": "实际来源：{v0}"
+  },
+  "Profil Orca inutilisable : contenu invalide.": {
+    "en": "Orca profile unusable: invalid content.",
+    "es": "Perfil Orca inutilizable: contenido no válido.",
+    "zh_CN": "Orca 配置文件不可用：内容无效。"
+  },
+  "{v0} référence(s) couleur enregistrée(s) associée(s) à ce filament, distincte(s) du HEX exporté ; conditions : {v1}.": {
+    "en": "{v0} saved colour reference(s) linked to this filament, separate from the exported HEX; conditions: {v1}.",
+    "es": "{v0} referencia(s) de color guardada(s) asociada(s) a este filamento, distinta(s) del HEX exportado; condiciones: {v1}.",
+    "zh_CN": "{v0} 条已保存的颜色参考与此耗材关联，独立于导出的 HEX；条件：{v1}。"
+  },
+  "Profil Orca : complète {v0}, absents de la fiche.": {
+    "en": "Orca profile: fills in {v0}, missing from the record.",
+    "es": "Perfil Orca: completa {v0}, ausentes de la ficha.",
+    "zh_CN": "Orca 配置文件：补全 {v0}（条目中缺失）。"
+  },
+  "Profil Orca : remplace {v0} (option « Préférer les valeurs Orca » activée).": {
+    "en": "Orca profile: replaces {v0} (option “Prefer Orca values” enabled).",
+    "es": "Perfil Orca: sustituye {v0} (opción «Preferir los valores Orca» activada).",
+    "zh_CN": "Orca 配置文件：替换 {v0}（已启用“优先使用 Orca 值”）。"
+  },
+  "Export : {v0}": {
+    "en": "Export: {v0}",
+    "es": "Exportación: {v0}",
+    "zh_CN": "导出：{v0}"
+  },
+  "Export · {v0} : {v1}": {
+    "en": "Export · {v0}: {v1}",
+    "es": "Exportación · {v0}: {v1}",
+    "zh_CN": "导出 · {v0}：{v1}"
+  },
+  "documentées": {
+    "en": "documented",
+    "es": "documentadas",
+    "zh_CN": "已记录"
+  },
+  "non renseignées": {
+    "en": "not provided",
+    "es": "sin indicar",
+    "zh_CN": "未提供"
+  },
+  "Catalogue local de filaments, comparaison de couleurs déclarées, copies personnelles et références couleur saisies ou importées. Prépare des fichiers {v0} et {v1} et un QR {v2} pour transférer le message NFC, notamment vers Companion. L’écriture physique nécessite une application et un matériel compatibles.": {
+    "en": "Local filament catalogue with declared-colour comparison, personal copies and manually entered or imported colour references. Prepare {v0} and {v1} files and an {v2} QR code to transfer the NFC message, including to Companion. Writing a physical tag requires a compatible app and hardware.",
+    "es": "Catálogo local de filamentos, comparación de colores declarados, copias personales y referencias de color introducidas o importadas. Prepara archivos {v0} y {v1} y un código QR {v2} para transferir el mensaje NFC, también a Companion. La escritura de una etiqueta física requiere una aplicación y un equipo compatibles.",
+    "zh_CN": "本地耗材目录，支持标称颜色比较、个人副本，以及手动输入或导入的颜色参考。可生成 {v0}、{v1} 文件和 {v2} 二维码，用于传输 NFC 消息，包括传至 Companion。写入实体标签需要兼容的应用和硬件。"
+  },
+  "Projet indépendant des fabricants. Code SpoolScribe sous licence MIT ; données et composants tiers selon leurs propres licences.": {
+    "en": "Project independent of manufacturers. SpoolScribe code under the MIT licence; third-party data and components under their own licences.",
+    "es": "Proyecto independiente de los fabricantes. Código de SpoolScribe bajo licencia MIT; datos y componentes de terceros según sus propias licencias.",
+    "zh_CN": "独立于各厂商的项目。SpoolScribe 代码采用 MIT 许可；第三方数据和组件遵循其各自的许可。"
+  },
+  "Open Filament Database et SpoolmanDB : MIT.": {
+    "en": "Open Filament Database and SpoolmanDB: MIT.",
+    "es": "Open Filament Database y SpoolmanDB: MIT.",
+    "zh_CN": "Open Filament Database 和 SpoolmanDB：MIT。"
+  },
+  "TheFilamentDB : CC-BY 4.0, pour les couleurs qui en proviennent.": {
+    "en": "TheFilamentDB: CC-BY 4.0, for the colours that come from it.",
+    "es": "TheFilamentDB: CC-BY 4.0, para los colores que proceden de ella.",
+    "zh_CN": "TheFilamentDB：CC-BY 4.0，适用于来自该来源的颜色。"
+  },
+  "Données publiques des fabricants ; marques et logos affichés à titre d’identification seulement.": {
+    "en": "Public manufacturer data; trademarks and logos shown for identification only.",
+    "es": "Datos públicos de los fabricantes; marcas y logotipos mostrados solo con fines de identificación.",
+    "zh_CN": "厂商公开数据；商标和标志仅用于识别。"
+  },
+  "QR générés avec Segno (BSD 3-Clause).": {
+    "en": "QR codes generated with Segno (BSD 3-Clause).",
+    "es": "Códigos QR generados con Segno (BSD 3-Clause).",
+    "zh_CN": "二维码由 Segno 生成（BSD 3-Clause）。"
+  },
+  "Interface Qt et PySide6 de The Qt Company, sous leurs propres licences (LGPLv3), distinctes du code MIT du projet.": {
+    "en": "Qt and PySide6 interface by The Qt Company, under their own licences (LGPLv3), separate from the project’s MIT code.",
+    "es": "Interfaz Qt y PySide6 de The Qt Company, bajo sus propias licencias (LGPLv3), distintas del código MIT del proyecto.",
+    "zh_CN": "界面使用 The Qt Company 的 Qt 和 PySide6，遵循其各自的许可（LGPLv3），与本项目的 MIT 代码相互独立。"
+  },
+  "GitHub": {
+    "en": "GitHub",
+    "es": "GitHub",
+    "zh_CN": "GitHub"
+  },
+  "Documentation": {
+    "en": "Documentation",
+    "es": "Documentación",
+    "zh_CN": "文档"
+  },
+  "Confidentialité (Desktop)": {
+    "en": "Privacy (Desktop)",
+    "es": "Privacidad (Desktop)",
+    "zh_CN": "隐私（桌面版）"
+  },
+  "Assistance · signaler un problème": {
+    "en": "Support · report a problem",
+    "es": "Asistencia · informar de un problema",
+    "zh_CN": "支持 · 报告问题"
+  },
+  "Companion : disponibilité": {
+    "en": "Companion: availability",
+    "es": "Companion: disponibilidad",
+    "zh_CN": "Companion：可用性"
+  },
+  "Soutenir le projet (facultatif)": {
+    "en": "Support the project (optional)",
+    "es": "Apoyar el proyecto (opcional)",
+    "zh_CN": "支持本项目（可选）"
+  },
+  "Disposition et filtres": {
+    "en": "Layout and filters",
+    "es": "Disposición y filtros",
+    "zh_CN": "布局和筛选"
+  },
+  "Cadence d’actualisation invalide": {
+    "en": "Invalid update schedule",
+    "es": "Frecuencia de actualización no válida",
+    "zh_CN": "更新频率无效"
+  },
+  "Format de réglages inconnu": {
+    "en": "Unknown settings format",
+    "es": "Formato de ajustes desconocido",
+    "zh_CN": "未知的设置格式"
+  },
+  "Réglages invalides": {
+    "en": "Invalid settings",
+    "es": "Ajustes no válidos",
+    "zh_CN": "设置无效"
+  },
+  "Fichier de réglages trop volumineux": {
+    "en": "Settings file too large",
+    "es": "Archivo de ajustes demasiado grande",
+    "zh_CN": "设置文件过大"
+  },
+  " — {v0}": {
+    "en": " — {v0}",
+    "es": " — {v0}",
+    "zh_CN": " — {v0}"
+  },
+  "Absents de la sauvegarde, vos fichiers actuels sont conservés : {v0}": {
+    "en": "Not in the backup, your current files are kept: {v0}",
+    "es": "Ausentes de la copia, se conservan sus archivos actuales: {v0}",
+    "zh_CN": "备份中不含以下内容，保留您当前的文件：{v0}"
+  },
+  "Annuler la dernière restauration": {
+    "en": "Undo the last restore",
+    "es": "Deshacer la última restauración",
+    "zh_CN": "撤销上次恢复"
+  },
+  "Annuler la dernière restauration…": {
+    "en": "Undo the last restore…",
+    "es": "Deshacer la última restauración…",
+    "zh_CN": "撤销上次恢复…"
+  },
+  "Archive ZIP non chiffrée de vos données locales. Seuls les éléments ci-dessous sont inclus ; ce n’est pas une copie de tout le disque.": {
+    "en": "Unencrypted ZIP archive of your local data. Only the items below are included; this is not a copy of the whole disk.",
+    "es": "Archivo ZIP sin cifrar de sus datos locales. Solo se incluyen los elementos siguientes; no es una copia de todo el disco.",
+    "zh_CN": "本地数据的未加密 ZIP 归档。仅包含下列项目，并非整个磁盘的副本。"
+  },
+  "Archive illisible : {v0}": {
+    "en": "Unreadable archive: {v0}",
+    "es": "Archivo ilegible: {v0}",
+    "zh_CN": "归档无法读取：{v0}"
+  },
+  "Archive refusée : {v0} membres (limite {v1}).": {
+    "en": "Archive refused: {v0} members (limit {v1}).",
+    "es": "Archivo rechazado: {v0} miembros (límite {v1}).",
+    "zh_CN": "归档被拒绝：{v0} 个成员（上限 {v1}）。"
+  },
+  "Archive trop volumineuse : {v0} octets (limite {v1}).": {
+    "en": "Archive too large: {v0} bytes (limit {v1}).",
+    "es": "Archivo demasiado grande: {v0} bytes (límite {v1}).",
+    "zh_CN": "归档过大：{v0} 字节（上限 {v1}）。"
+  },
+  "Aucune restauration inachevée.": {
+    "en": "No unfinished restore.",
+    "es": "Ninguna restauración inacabada.",
+    "zh_CN": "没有未完成的恢复。"
+  },
+  "Aucune restauration à annuler.": {
+    "en": "No restore to undo.",
+    "es": "Ninguna restauración que deshacer.",
+    "zh_CN": "没有可撤销的恢复。"
+  },
+  "Autorisation réseau, dates et état des actualisations de cet ordinateur : conservés.": {
+    "en": "Network permission, refresh dates and status of this computer: kept.",
+    "es": "Autorización de red, fechas y estado de las actualizaciones de este equipo: conservados.",
+    "zh_CN": "本机的网络授权、更新日期和状态：保留。"
+  },
+  "Avant tout remplacement, une copie exacte de vos fichiers actuels est conservée sur cet ordinateur ; vous pourrez annuler cette restauration.": {
+    "en": "Before anything is replaced, an exact copy of your current files is kept on this computer; you can undo this restore.",
+    "es": "Antes de cualquier sustitución, se conserva en este equipo una copia exacta de sus archivos actuales; podrá deshacer esta restauración.",
+    "zh_CN": "在替换任何内容之前，会在本机保留您当前文件的精确副本；您可以撤销此次恢复。"
+  },
+  "Caches et sources brutes retéléchargeables": {
+    "en": "Caches and raw sources that can be downloaded again",
+    "es": "Cachés y fuentes brutas que se pueden volver a descargar",
+    "zh_CN": "可重新下载的缓存和原始来源"
+  },
+  "Catalogue (copies personnelles, corrections et provenances comprises)": {
+    "en": "Catalogue (personal copies, corrections and provenance included)",
+    "es": "Catálogo (copias personales, correcciones y procedencias incluidas)",
+    "zh_CN": "目录（含个人副本、更正和来源）"
+  },
+  "Catalogue absent : aucune sauvegarde possible.": {
+    "en": "Catalogue missing: no backup possible.",
+    "es": "Catálogo ausente: no es posible ninguna copia.",
+    "zh_CN": "目录缺失：无法备份。"
+  },
+  "Ce fichier n'est pas une sauvegarde SpoolScribe.": {
+    "en": "This file is not a SpoolScribe backup.",
+    "es": "Este archivo no es una copia de seguridad de SpoolScribe.",
+    "zh_CN": "此文件不是 SpoolScribe 备份。"
+  },
+  "Cette reprise ne peut pas être classée (état : {v0}).": {
+    "en": "This recovery cannot be closed (state: {v0}).",
+    "es": "Esta recuperación no se puede archivar (estado: {v0}).",
+    "zh_CN": "此恢复无法归档（状态：{v0}）。"
+  },
+  "Cette restauration ne peut pas être annulée (état : {v0}).": {
+    "en": "This restore cannot be undone (state: {v0}).",
+    "es": "Esta restauración no se puede deshacer (estado: {v0}).",
+    "zh_CN": "此次恢复无法撤销（状态：{v0}）。"
+  },
+  "Chemin refusé dans l'archive : {v0}": {
+    "en": "Path refused in the archive: {v0}",
+    "es": "Ruta rechazada en el archivo: {v0}",
+    "zh_CN": "归档中的路径被拒绝：{v0}"
+  },
+  "Conserver l’état actuel": {
+    "en": "Keep the current state",
+    "es": "Conservar el estado actual",
+    "zh_CN": "保留当前状态"
+  },
+  "Conservé localement pour annuler une restauration.": {
+    "en": "Kept locally to undo a restore.",
+    "es": "Se conserva localmente para deshacer una restauración.",
+    "zh_CN": "保留在本地，用于撤销恢复。"
+  },
+  "Conservés tels quels sur cet ordinateur : {v0}": {
+    "en": "Kept as they are on this computer: {v0}",
+    "es": "Conservados tal cual en este equipo: {v0}",
+    "zh_CN": "在本机保持原样：{v0}"
+  },
+  "Contenu décompressé trop volumineux : {v0} octets (limite {v1}).": {
+    "en": "Uncompressed content too large: {v0} bytes (limit {v1}).",
+    "es": "Contenido descomprimido demasiado grande: {v0} bytes (límite {v1}).",
+    "zh_CN": "解压后内容过大：{v0} 字节（上限 {v1}）。"
+  },
+  "Contenu incohérent avec les options annoncées : {v0}": {
+    "en": "Content inconsistent with the declared options: {v0}",
+    "es": "Contenido incoherente con las opciones declaradas: {v0}",
+    "zh_CN": "内容与声明的选项不一致：{v0}"
+  },
+  "Créés": {
+    "en": "Created",
+    "es": "Creados",
+    "zh_CN": "新建"
+  },
+  "Destination refusée (lien, dossier ou hors du dossier de données) : {v0}": {
+    "en": "Destination refused (link, folder or outside the data folder): {v0}",
+    "es": "Destino rechazado (enlace, carpeta o fuera de la carpeta de datos): {v0}",
+    "zh_CN": "目标被拒绝（链接、文件夹或位于数据文件夹之外）：{v0}"
+  },
+  "Dossier d'export choisi hors du dossier de données": {
+    "en": "Export folder chosen outside the data folder",
+    "es": "Carpeta de exportación elegida fuera de la carpeta de datos",
+    "zh_CN": "数据文件夹之外选定的导出文件夹"
+  },
+  "Dossier d’export de la sauvegarde : {v0}": {
+    "en": "Export folder from the backup: {v0}",
+    "es": "Carpeta de exportación de la copia: {v0}",
+    "zh_CN": "备份中的导出文件夹：{v0}"
+  },
+  "Emplacement de sauvegarde refusé : {v0}": {
+    "en": "Backup location refused: {v0}",
+    "es": "Ubicación de la copia rechazada: {v0}",
+    "zh_CN": "备份位置被拒绝：{v0}"
+  },
+  "Enregistrer…": {
+    "en": "Save…",
+    "es": "Guardar…",
+    "zh_CN": "保存…"
+  },
+  "Exports générés (dossier output)": {
+    "en": "Generated exports (output folder)",
+    "es": "Exportaciones generadas (carpeta output)",
+    "zh_CN": "生成的导出文件（output 文件夹）"
+  },
+  "Fichier au-delà de la limite par fichier.": {
+    "en": "File beyond the per-file limit.",
+    "es": "Archivo por encima del límite por archivo.",
+    "zh_CN": "文件超出单个文件上限。"
+  },
+  "Fichier invalide, ignoré par l'application.": {
+    "en": "Invalid file, ignored by the application.",
+    "es": "Archivo no válido, ignorado por la aplicación.",
+    "zh_CN": "文件无效，应用会忽略它。"
+  },
+  "Fichier non reconnu : ni inclus ni supprimé.": {
+    "en": "Unrecognised file: neither included nor deleted.",
+    "es": "Archivo no reconocido: ni incluido ni eliminado.",
+    "zh_CN": "无法识别的文件：既不包含也不删除。"
+  },
+  "Fichier technique sans donnée utilisateur.": {
+    "en": "Technical file without user data.",
+    "es": "Archivo técnico sin datos de usuario.",
+    "zh_CN": "不含用户数据的技术文件。"
+  },
+  "Fichiers non reconnus": {
+    "en": "Unrecognised files",
+    "es": "Archivos no reconocidos",
+    "zh_CN": "无法识别的文件"
+  },
+  "Fichiers non reconnus, ni inclus ni supprimés ({v0}) : {v1}": {
+    "en": "Unrecognised files, neither included nor deleted ({v0}): {v1}",
+    "es": "Archivos no reconocidos, ni incluidos ni eliminados ({v0}): {v1}",
+    "zh_CN": "无法识别的文件，既不包含也不删除（{v0}）：{v1}"
+  },
+  "Fichiers techniques (verrous, temporaires, système)": {
+    "en": "Technical files (locks, temporary, system)",
+    "es": "Archivos técnicos (bloqueos, temporales, sistema)",
+    "zh_CN": "技术文件（锁、临时文件、系统文件）"
+  },
+  "Fichiers temporaires d'une restauration non publiée retirés ; données inchangées.": {
+    "en": "Temporary files of an unpublished restore removed; data unchanged.",
+    "es": "Archivos temporales de una restauración no publicada eliminados; datos sin cambios.",
+    "zh_CN": "已删除未发布恢复的临时文件；数据未改变。"
+  },
+  "Inchangés": {
+    "en": "Unchanged",
+    "es": "Sin cambios",
+    "zh_CN": "未改变"
+  },
+  "Inclure les exports générés (dossier output du dossier de données)": {
+    "en": "Include generated exports (output folder of the data folder)",
+    "es": "Incluir las exportaciones generadas (carpeta output de la carpeta de datos)",
+    "zh_CN": "包含生成的导出文件（数据文件夹中的 output 文件夹）"
+  },
+  "Inclure les préférences (dont les réglages OpenTag3D par référence)": {
+    "en": "Include preferences (including OpenTag3D settings per reference)",
+    "es": "Incluir las preferencias (con los ajustes OpenTag3D por referencia)",
+    "zh_CN": "包含偏好设置（含每个参考的 OpenTag3D 设置）"
+  },
+  "Instantanés locaux d'avant restauration": {
+    "en": "Local pre-restore snapshots",
+    "es": "Instantáneas locales previas a la restauración",
+    "zh_CN": "恢复前的本地快照"
+  },
+  "Jamais suivi automatiquement.": {
+    "en": "Never followed automatically.",
+    "es": "Nunca se sigue automáticamente.",
+    "zh_CN": "从不自动跟随。"
+  },
+  "Journal de restauration illisible ({v0}) ; dossier conservé pour une reprise manuelle : {v1}": {
+    "en": "Unreadable restore journal ({v0}); folder kept for manual recovery: {v1}",
+    "es": "Registro de restauración ilegible ({v0}); carpeta conservada para una recuperación manual: {v1}",
+    "zh_CN": "恢复日志无法读取（{v0}）；保留文件夹以便手动恢复：{v1}"
+  },
+  "Kio": {
+    "en": "KiB",
+    "es": "KiB",
+    "zh_CN": "KiB"
+  },
+  "L'archive a changé depuis l'aperçu ; analysez-la de nouveau.": {
+    "en": "The archive has changed since the preview; analyse it again.",
+    "es": "El archivo ha cambiado desde la vista previa; analícelo de nuevo.",
+    "zh_CN": "自预览以来归档已更改；请重新分析。"
+  },
+  "Le fichier {v0} existe déjà ; confirmez explicitement son remplacement.": {
+    "en": "The file {v0} already exists; explicitly confirm replacing it.",
+    "es": "El archivo {v0} ya existe; confirme explícitamente su sustitución.",
+    "zh_CN": "文件 {v0} 已存在；请明确确认替换。"
+  },
+  "Lecture impossible de {v0} : {v1}": {
+    "en": "Cannot read {v0}: {v1}",
+    "es": "No se puede leer {v0}: {v1}",
+    "zh_CN": "无法读取 {v0}：{v1}"
+  },
+  "Les dossiers de données ont changé depuis l'aperçu ; analysez de nouveau.": {
+    "en": "The data folders have changed since the preview; analyse again.",
+    "es": "Las carpetas de datos han cambiado desde la vista previa; analice de nuevo.",
+    "zh_CN": "自预览以来数据文件夹已更改；请重新分析。"
+  },
+  "Les sources du catalogue ont changé : l’autorisation réseau vous sera redemandée avant toute actualisation.": {
+    "en": "The catalogue sources have changed: network permission will be asked again before any refresh.",
+    "es": "Las fuentes del catálogo han cambiado: se le volverá a pedir la autorización de red antes de cualquier actualización.",
+    "zh_CN": "目录来源已更改：任何更新之前都会再次征求网络授权。"
+  },
+  "Lien refusé dans l'archive : {v0}": {
+    "en": "Link refused in the archive: {v0}",
+    "es": "Enlace rechazado en el archivo: {v0}",
+    "zh_CN": "归档中的链接被拒绝：{v0}"
+  },
+  "Lien symbolique non suivi.": {
+    "en": "Symbolic link not followed.",
+    "es": "Enlace simbólico no seguido.",
+    "zh_CN": "未跟随符号链接。"
+  },
+  "Liste d'imprimantes mise à jour": {
+    "en": "Updated printer list",
+    "es": "Lista de impresoras actualizada",
+    "zh_CN": "已更新的打印机列表"
+  },
+  "Logos et ressources embarquées": {
+    "en": "Logos and bundled resources",
+    "es": "Logotipos y recursos integrados",
+    "zh_CN": "徽标和内置资源"
+  },
+  "Manifeste absent : archive refusée.": {
+    "en": "Manifest missing: archive refused.",
+    "es": "Manifiesto ausente: archivo rechazado.",
+    "zh_CN": "缺少清单：归档被拒绝。"
+  },
+  "Manifeste en double : archive refusée.": {
+    "en": "Duplicate manifest: archive refused.",
+    "es": "Manifiesto duplicado: archivo rechazado.",
+    "zh_CN": "清单重复：归档被拒绝。"
+  },
+  "Manifeste invalide : {v0}": {
+    "en": "Invalid manifest: {v0}",
+    "es": "Manifiesto no válido: {v0}",
+    "zh_CN": "清单无效：{v0}"
+  },
+  "Membre annoncé mais absent de l'archive : {v0}": {
+    "en": "Member declared but missing from the archive: {v0}",
+    "es": "Miembro declarado pero ausente del archivo: {v0}",
+    "zh_CN": "已声明但归档中缺失的成员：{v0}"
+  },
+  "Membre chiffré ou compression non prise en charge : {v0}": {
+    "en": "Encrypted member or unsupported compression: {v0}",
+    "es": "Miembro cifrado o compresión no admitida: {v0}",
+    "zh_CN": "成员已加密或压缩方式不受支持：{v0}"
+  },
+  "Membre en double ou en collision (casse/normalisation) : {v0}": {
+    "en": "Duplicate or colliding member (case/normalisation): {v0}",
+    "es": "Miembro duplicado o en colisión (mayúsculas/normalización): {v0}",
+    "zh_CN": "成员重复或冲突（大小写/规范化）：{v0}"
+  },
+  "Membre inattendu dans l'archive : {v0}": {
+    "en": "Unexpected member in the archive: {v0}",
+    "es": "Miembro inesperado en el archivo: {v0}",
+    "zh_CN": "归档中出现意外成员：{v0}"
+  },
+  "Membre non régulier refusé : {v0}": {
+    "en": "Non-regular member refused: {v0}",
+    "es": "Miembro no regular rechazado: {v0}",
+    "zh_CN": "非常规成员被拒绝：{v0}"
+  },
+  "Mio": {
+    "en": "MiB",
+    "es": "MiB",
+    "zh_CN": "MiB"
+  },
+  "Nom de fichier non portable entre systèmes.": {
+    "en": "File name not portable between systems.",
+    "es": "Nombre de archivo no portable entre sistemas.",
+    "zh_CN": "文件名无法在不同系统间通用。"
+  },
+  "Non contenus dans la sauvegarde : {v0}": {
+    "en": "Not contained in the backup: {v0}",
+    "es": "No contenidos en la copia: {v0}",
+    "zh_CN": "备份中未包含：{v0}"
+  },
+  "Non inclus selon les options choisies.": {
+    "en": "Not included, per the chosen options.",
+    "es": "No incluido según las opciones elegidas.",
+    "zh_CN": "根据所选选项未包含。"
+  },
+  "Opération annulée ; aucune donnée n'a été écrite.": {
+    "en": "Operation cancelled; no data was written.",
+    "es": "Operación cancelada; no se ha escrito ningún dato.",
+    "zh_CN": "操作已取消；未写入任何数据。"
+  },
+  "Profils Orca locaux": {
+    "en": "Local Orca profiles",
+    "es": "Perfiles Orca locales",
+    "zh_CN": "本地 Orca 配置文件"
+  },
+  "Préférences (dont réglages OpenTag3D)": {
+    "en": "Preferences (including OpenTag3D settings)",
+    "es": "Preferencias (con ajustes OpenTag3D)",
+    "zh_CN": "偏好设置（含 OpenTag3D 设置）"
+  },
+  "Préférences remplacées : {v0}. Conservées : {v1}.": {
+    "en": "Preferences replaced: {v0}. Kept: {v1}.",
+    "es": "Preferencias sustituidas: {v0}. Conservadas: {v1}.",
+    "zh_CN": "替换的偏好设置：{v0}。保留：{v1}。"
+  },
+  "Préparation de la restauration impossible : {v0}. Aucune donnée active modifiée.": {
+    "en": "Cannot prepare the restore: {v0}. No active data changed.",
+    "es": "No se puede preparar la restauración: {v0}. No se ha modificado ningún dato activo.",
+    "zh_CN": "无法准备恢复：{v0}。未修改任何活动数据。"
+  },
+  "Rapports d'audit des sources": {
+    "en": "Source audit reports",
+    "es": "Informes de auditoría de las fuentes",
+    "zh_CN": "来源审计报告"
+  },
+  "Recréé ou retéléchargé par l'application.": {
+    "en": "Recreated or downloaded again by the application.",
+    "es": "La aplicación lo vuelve a crear o descargar.",
+    "zh_CN": "由应用重新创建或重新下载。"
+  },
+  "Redémarrez SpoolScribe pour recharger toutes les vues et préférences.": {
+    "en": "Restart SpoolScribe to reload every view and preference.",
+    "es": "Reinicie SpoolScribe para recargar todas las vistas y preferencias.",
+    "zh_CN": "重新启动 SpoolScribe 以重新加载所有视图和偏好设置。"
+  },
+  "Registre des mesures de couleur": {
+    "en": "Colour measurement registry",
+    "es": "Registro de mediciones de color",
+    "zh_CN": "颜色测量登记"
+  },
+  "Remplacés": {
+    "en": "Replaced",
+    "es": "Sustituidos",
+    "zh_CN": "已替换"
+  },
+  "Reprise classée : l'état actuel est conservé ; l'instantané d'avant restauration reste disponible dans {v0}.": {
+    "en": "Recovery closed: the current state is kept; the pre-restore snapshot remains available in {v0}.",
+    "es": "Recuperación archivada: se conserva el estado actual; la instantánea previa a la restauración sigue disponible en {v0}.",
+    "zh_CN": "恢复已归档：保留当前状态；恢复前的快照仍保存在 {v0}。"
+  },
+  "Ressource fournie avec l'application.": {
+    "en": "Resource supplied with the application.",
+    "es": "Recurso proporcionado con la aplicación.",
+    "zh_CN": "随应用提供的资源。"
+  },
+  "Restauration annulée : {v0} élément(s) rétabli(s) dans leur état d'avant restauration.": {
+    "en": "Restore undone: {v0} item(s) returned to their pre-restore state.",
+    "es": "Restauración deshecha: {v0} elemento(s) devuelto(s) a su estado previo a la restauración.",
+    "zh_CN": "恢复已撤销：{v0} 个项目已回到恢复前的状态。"
+  },
+  "Restauration inachevée": {
+    "en": "Unfinished restore",
+    "es": "Restauración inacabada",
+    "zh_CN": "恢复未完成"
+  },
+  "Restauration interrompue": {
+    "en": "Interrupted restore",
+    "es": "Restauración interrumpida",
+    "zh_CN": "恢复被中断"
+  },
+  "Restauration interrompue : {v0}. Le retour arrière n'a pas pu se terminer ; journal et instantanés conservés pour une reprise.": {
+    "en": "Restore interrupted: {v0}. The rollback could not finish; journal and snapshots kept for recovery.",
+    "es": "Restauración interrumpida: {v0}. La reversión no pudo terminar; registro e instantáneas conservados para una recuperación.",
+    "zh_CN": "恢复被中断：{v0}。回滚未能完成；已保留日志和快照以便恢复。"
+  },
+  "Restauration interrompue : {v0}. Les fichiers déjà remplacés ont été rétablis.": {
+    "en": "Restore interrupted: {v0}. Files already replaced have been put back.",
+    "es": "Restauración interrumpida: {v0}. Se han restablecido los archivos ya sustituidos.",
+    "zh_CN": "恢复被中断：{v0}。已替换的文件已还原。"
+  },
+  "Restauration interrompue annulée : {v0} élément(s) rétabli(s) dans leur état précédent.": {
+    "en": "Interrupted restore undone: {v0} item(s) returned to their previous state.",
+    "es": "Restauración interrumpida deshecha: {v0} elemento(s) devuelto(s) a su estado anterior.",
+    "zh_CN": "已撤销被中断的恢复：{v0} 个项目已回到之前的状态。"
+  },
+  "Restauration terminée : {v0} fichier(s) remplacé(s) ou créé(s), {v1} inchangé(s). Vous pouvez l’annuler depuis Paramètres › Données et sauvegardes.": {
+    "en": "Restore complete: {v0} file(s) replaced or created, {v1} unchanged. You can undo it from Settings › Data and backups.",
+    "es": "Restauración terminada: {v0} archivo(s) sustituido(s) o creado(s), {v1} sin cambios. Puede deshacerla desde Ajustes › Datos y copias de seguridad.",
+    "zh_CN": "恢复完成：替换或新建 {v0} 个文件，{v1} 个未改变。您可以在“设置 › 数据和备份”中撤销。"
+  },
+  "Restaurer": {
+    "en": "Restore",
+    "es": "Restaurar",
+    "zh_CN": "恢复"
+  },
+  "Restaurer mes données": {
+    "en": "Restore my data",
+    "es": "Restaurar mis datos",
+    "zh_CN": "恢复我的数据"
+  },
+  "Retour arrière incomplet : {v0} élément(s) n'ont pas pu être rétablis. Journal et instantanés conservés dans {v1}.": {
+    "en": "Incomplete rollback: {v0} item(s) could not be put back. Journal and snapshots kept in {v1}.",
+    "es": "Reversión incompleta: {v0} elemento(s) no se han podido restablecer. Registro e instantáneas conservados en {v1}.",
+    "zh_CN": "回滚不完整：{v0} 个项目未能还原。日志和快照保存在 {v1}。"
+  },
+  "Réessayer le retour arrière": {
+    "en": "Retry the rollback",
+    "es": "Reintentar la reversión",
+    "zh_CN": "重试回滚"
+  },
+  "Réglages OpenTag3D par référence : {v0}.": {
+    "en": "OpenTag3D settings per reference: {v0}.",
+    "es": "Ajustes OpenTag3D por referencia: {v0}.",
+    "zh_CN": "每个参考的 OpenTag3D 设置：{v0}。"
+  },
+  "Réglages d'appareil de mesure": {
+    "en": "Measuring device settings",
+    "es": "Ajustes del aparato de medición",
+    "zh_CN": "测量设备设置"
+  },
+  "Rétablir vos fichiers dans leur état d’avant la restauration du {v0} ? Un fichier modifié depuis n’est pas touché.": {
+    "en": "Return your files to their state before the restore of {v0}? A file changed since then is not touched.",
+    "es": "¿Devolver sus archivos a su estado anterior a la restauración del {v0}? Un archivo modificado desde entonces no se toca.",
+    "zh_CN": "将文件还原到 {v0} 恢复之前的状态？此后修改过的文件不会被改动。"
+  },
+  "Rétablit vos fichiers dans leur état d’avant la dernière restauration, à partir de la copie exacte conservée sur cet ordinateur.": {
+    "en": "Returns your files to their state before the last restore, from the exact copy kept on this computer.",
+    "es": "Devuelve sus archivos a su estado anterior a la última restauración, a partir de la copia exacta conservada en este equipo.",
+    "zh_CN": "根据本机保留的精确副本，将文件还原到上次恢复之前的状态。"
+  },
+  "Sauvegarde SpoolScribe (*.zip)": {
+    "en": "SpoolScribe backup (*.zip)",
+    "es": "Copia de seguridad de SpoolScribe (*.zip)",
+    "zh_CN": "SpoolScribe 备份 (*.zip)"
+  },
+  "Sauvegarde créée : {v0} fichiers. Archive non chiffrée.": {
+    "en": "Backup created: {v0} files. Unencrypted archive.",
+    "es": "Copia creada: {v0} archivos. Archivo sin cifrar.",
+    "zh_CN": "备份已创建：{v0} 个文件。未加密归档。"
+  },
+  "Sauvegarde du {v0}, SpoolScribe {v1}.": {
+    "en": "Backup of {v0}, SpoolScribe {v1}.",
+    "es": "Copia del {v0}, SpoolScribe {v1}.",
+    "zh_CN": "{v0} 的备份，SpoolScribe {v1}。"
+  },
+  "Sauvegarde interne, recréée par l'application.": {
+    "en": "Internal backup, recreated by the application.",
+    "es": "Copia interna, la aplicación la vuelve a crear.",
+    "zh_CN": "内部备份，由应用重新创建。"
+  },
+  "Sauvegarde trop volumineuse : {v0} (limite {v1}).": {
+    "en": "Backup too large: {v0} (limit {v1}).",
+    "es": "Copia demasiado grande: {v0} (límite {v1}).",
+    "zh_CN": "备份过大：{v0}（上限 {v1}）。"
+  },
+  "Sauvegarder mes données": {
+    "en": "Back up my data",
+    "es": "Hacer copia de mis datos",
+    "zh_CN": "备份我的数据"
+  },
+  "Sauvegardes internes de l'application (.bak, avant restauration…)": {
+    "en": "Internal application backups (.bak, pre-restore…)",
+    "es": "Copias internas de la aplicación (.bak, antes de restaurar…)",
+    "zh_CN": "应用内部备份（.bak、恢复前…）"
+  },
+  "Total : {v0} fichiers, {v1}.": {
+    "en": "Total: {v0} files, {v1}.",
+    "es": "Total: {v0} archivos, {v1}.",
+    "zh_CN": "合计：{v0} 个文件，{v1}。"
+  },
+  "Transaction de restauration introuvable : {v0}": {
+    "en": "Restore transaction not found: {v0}",
+    "es": "Transacción de restauración no encontrada: {v0}",
+    "zh_CN": "找不到恢复事务：{v0}"
+  },
+  "Une actualisation est en cours. Réessayez après sa fin.": {
+    "en": "A refresh is in progress. Try again when it has finished.",
+    "es": "Hay una actualización en curso. Vuelva a intentarlo cuando termine.",
+    "zh_CN": "正在更新。请在完成后重试。"
+  },
+  "Une restauration est déjà en cours pour ce dossier de données ; réessayez quand elle sera terminée.": {
+    "en": "A restore is already in progress for this data folder; try again when it has finished.",
+    "es": "Ya hay una restauración en curso para esta carpeta de datos; vuelva a intentarlo cuando termine.",
+    "zh_CN": "此数据文件夹已有恢复在进行；请在完成后重试。"
+  },
+  "Une restauration est en cours dans un autre processus ; aucune reprise tentée.": {
+    "en": "A restore is in progress in another process; no recovery attempted.",
+    "es": "Hay una restauración en curso en otro proceso; no se ha intentado ninguna recuperación.",
+    "zh_CN": "另一个进程正在恢复；未尝试恢复处理。"
+  },
+  "Une restauration précédente est inachevée ; sa reprise doit être terminée avant toute nouvelle opération.": {
+    "en": "A previous restore is unfinished; its recovery must be completed before any new operation.",
+    "es": "Una restauración anterior está inacabada; su recuperación debe terminarse antes de cualquier nueva operación.",
+    "zh_CN": "之前的恢复尚未完成；必须先完成其恢复处理，才能进行新的操作。"
+  },
+  "Verrou de restauration indisponible sur ce dossier ({v0}) ; opération refusée.": {
+    "en": "Restore lock unavailable on this folder ({v0}); operation refused.",
+    "es": "Bloqueo de restauración no disponible en esta carpeta ({v0}); operación rechazada.",
+    "zh_CN": "此文件夹的恢复锁不可用（{v0}）；操作被拒绝。"
+  },
+  "Version de sauvegarde {v0} non prise en charge.": {
+    "en": "Backup version {v0} not supported.",
+    "es": "Versión de copia {v0} no admitida.",
+    "zh_CN": "不支持备份版本 {v0}。"
+  },
+  "Vos données sont déjà identiques à cette sauvegarde ; rien à restaurer.": {
+    "en": "Your data is already identical to this backup; nothing to restore.",
+    "es": "Sus datos ya son idénticos a esta copia; nada que restaurar.",
+    "zh_CN": "您的数据已与此备份完全相同；无需恢复。"
+  },
+  "Vérification de restauration impossible au démarrage : {v0}": {
+    "en": "Restore check impossible at startup: {v0}",
+    "es": "Comprobación de restauración imposible al iniciar: {v0}",
+    "zh_CN": "启动时无法检查恢复：{v0}"
+  },
+  "absent": {
+    "en": "missing",
+    "es": "ausente",
+    "zh_CN": "缺失"
+  },
+  "inclus": {
+    "en": "included",
+    "es": "incluido",
+    "zh_CN": "已包含"
+  },
+  "invalide": {
+    "en": "invalid",
+    "es": "no válido",
+    "zh_CN": "无效"
+  },
+  "non inclus": {
+    "en": "not included",
+    "es": "no incluido",
+    "zh_CN": "未包含"
+  },
+  "{v0} : contenu illisible ({v1}).": {
+    "en": "{v0}: unreadable content ({v1}).",
+    "es": "{v0}: contenido ilegible ({v1}).",
+    "zh_CN": "{v0}：内容无法读取（{v1}）。"
+  },
+  "{v0} : empreinte SHA-256 différente de celle annoncée.": {
+    "en": "{v0}: SHA-256 digest differs from the declared one.",
+    "es": "{v0}: huella SHA-256 distinta de la declarada.",
+    "zh_CN": "{v0}：SHA-256 摘要与声明的不同。"
+  },
+  "{v0} : taille différente de celle annoncée.": {
+    "en": "{v0}: size differs from the declared one.",
+    "es": "{v0}: tamaño distinto del declarado.",
+    "zh_CN": "{v0}：大小与声明的不同。"
+  },
+  "{v0} : {v1} octets, au-delà de la limite ({v2} octets).": {
+    "en": "{v0}: {v1} bytes, beyond the limit ({v2} bytes).",
+    "es": "{v0}: {v1} bytes, por encima del límite ({v2} bytes).",
+    "zh_CN": "{v0}：{v1} 字节，超出上限（{v2} 字节）。"
+  },
+  "{v0} : {v1} octets, au-delà de la limite ({v2} octets). Sauvegarde non créée.": {
+    "en": "{v0}: {v1} bytes, beyond the limit ({v2} bytes). Backup not created.",
+    "es": "{v0}: {v1} bytes, por encima del límite ({v2} bytes). Copia no creada.",
+    "zh_CN": "{v0}：{v1} 字节，超出上限（{v2} 字节）。未创建备份。"
+  },
+  "{v0} a changé depuis l'aperçu ; analysez de nouveau avant de restaurer.": {
+    "en": "{v0} has changed since the preview; analyse again before restoring.",
+    "es": "{v0} ha cambiado desde la vista previa; analice de nuevo antes de restaurar.",
+    "zh_CN": "自预览以来 {v0} 已更改；请在恢复前重新分析。"
+  },
+  "{v0} a changé pendant la sauvegarde ; recommencez.": {
+    "en": "{v0} changed during the backup; start again.",
+    "es": "{v0} ha cambiado durante la copia; vuelva a empezar.",
+    "zh_CN": "备份期间 {v0} 已更改；请重新开始。"
+  },
+  "{v0} a été modifié par un autre programme pendant la restauration.": {
+    "en": "{v0} was changed by another program during the restore.",
+    "es": "{v0} fue modificado por otro programa durante la restauración.",
+    "zh_CN": "恢复期间 {v0} 被其他程序修改。"
+  },
+  "{v0} fichier(s) ont été modifiés depuis par un autre programme ; ils ne sont pas touchés. Journal et instantanés conservés dans {v1}.": {
+    "en": "{v0} file(s) have since been changed by another program; they are not touched. Journal and snapshots kept in {v1}.",
+    "es": "{v0} archivo(s) han sido modificados desde entonces por otro programa; no se tocan. Registro e instantáneas conservados en {v1}.",
+    "zh_CN": "此后有 {v0} 个文件被其他程序修改；它们不会被改动。日志和快照保存在 {v1}。"
+  },
+  "{v0} invalide : {v1}. Sauvegarde non créée.": {
+    "en": "{v0} invalid: {v1}. Backup not created.",
+    "es": "{v0} no válido: {v1}. Copia no creada.",
+    "zh_CN": "{v0} 无效：{v1}。未创建备份。"
+  },
+  "{v0} références, dont {v1} copies personnelles ; {v2} mesures de couleur ({v3} liées) ; {v4} réglages d’appareil ; {v5} profils Orca.": {
+    "en": "{v0} references, including {v1} personal copies; {v2} colour measurements ({v3} linked); {v4} device settings; {v5} Orca profiles.",
+    "es": "{v0} referencias, de ellas {v1} copias personales; {v2} mediciones de color ({v3} vinculadas); {v4} ajustes de aparato; {v5} perfiles Orca.",
+    "zh_CN": "{v0} 个参考，其中 {v1} 个个人副本；{v2} 个颜色测量（{v3} 个已关联）；{v4} 个设备设置；{v5} 个 Orca 配置文件。"
+  },
+  "Écriture de la sauvegarde impossible : {v0}": {
+    "en": "Cannot write the backup: {v0}",
+    "es": "No se puede escribir la copia: {v0}",
+    "zh_CN": "无法写入备份：{v0}"
+  },
+  "Écriture déjà en cours sur {v0} ; réessayez quand elle sera terminée.": {
+    "en": "A write is already in progress on {v0}; try again when it has finished.",
+    "es": "Ya hay una escritura en curso en {v0}; vuelva a intentarlo cuando termine.",
+    "zh_CN": "{v0} 正在写入；请在完成后重试。"
+  },
+  "Format NFC invalide": {
+    "en": "Invalid NFC format",
+    "es": "Formato NFC no válido",
+    "zh_CN": "NFC 格式无效"
+  },
+  "Réglages OpenTag3D invalides": {
+    "en": "Invalid OpenTag3D settings",
+    "es": "Ajustes OpenTag3D no válidos",
+    "zh_CN": "OpenTag3D 设置无效"
+  },
+  "Référence OpenTag3D invalide": {
+    "en": "Invalid OpenTag3D reference",
+    "es": "Referencia OpenTag3D no válida",
+    "zh_CN": "OpenTag3D 参考无效"
+  },
+  "Choix imprimante/NFC invalide": {
+    "en": "Invalid printer/NFC choice",
+    "es": "Elección de impresora/NFC no válida",
+    "zh_CN": "打印机/NFC 选择无效"
+  },
+  "Logiciel du lecteur invalide": {
+    "en": "Invalid reader software",
+    "es": "Software del lector no válido",
+    "zh_CN": "读取器软件无效"
+  },
+  "Réserve NFC invalide": {
+    "en": "Invalid NFC reserve",
+    "es": "Reserva NFC no válida",
+    "zh_CN": "NFC 预留无效"
+  },
+  "Langue inconnue": {
+    "en": "Unknown language",
+    "es": "Idioma desconocido",
+    "zh_CN": "未知语言"
+  },
+  "Présentation invalide": {
+    "en": "Invalid layout",
+    "es": "Presentación no válida",
+    "zh_CN": "布局无效"
+  },
+  "Option invalide": {
+    "en": "Invalid option",
+    "es": "Opción no válida",
+    "zh_CN": "选项无效"
+  },
+  "Conditionnement préféré invalide": {
+    "en": "Invalid preferred packaging",
+    "es": "Formato preferido no válido",
+    "zh_CN": "首选包装无效"
+  },
+  "Écart de couleur invalide": {
+    "en": "Invalid colour difference",
+    "es": "Diferencia de color no válida",
+    "zh_CN": "颜色差异无效"
+  },
+  "Dossier d’export invalide": {
+    "en": "Invalid export folder",
+    "es": "Carpeta de exportación no válida",
+    "zh_CN": "导出文件夹无效"
+  },
+  "Favoris invalides": {
+    "en": "Invalid favourites",
+    "es": "Favoritos no válidos",
+    "zh_CN": "收藏无效"
+  },
+  "Fabricants récents invalides": {
+    "en": "Invalid recent manufacturers",
+    "es": "Fabricantes recientes no válidos",
+    "zh_CN": "最近的制造商无效"
+  },
+  "Version de réglages non prise en charge": {
+    "en": "Unsupported settings version",
+    "es": "Versión de ajustes no admitida",
+    "zh_CN": "不支持的设置版本"
+  },
+  "objet JSON attendu": {
+    "en": "JSON object expected",
+    "es": "se esperaba un objeto JSON",
+    "zh_CN": "应为 JSON 对象"
+  },
+  "fichier non régulier": {
+    "en": "non-regular file",
+    "es": "archivo no regular",
+    "zh_CN": "非常规文件"
+  },
+  "dossier": {
+    "en": "folder",
+    "es": "carpeta",
+    "zh_CN": "文件夹"
+  },
+  "Profil Orca : objet JSON requis.": {
+    "en": "Orca profile: JSON object required.",
+    "es": "Perfil Orca: se requiere un objeto JSON.",
+    "zh_CN": "Orca 配置文件：需要 JSON 对象。"
   }
 }

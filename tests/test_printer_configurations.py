@@ -109,7 +109,7 @@ class PrinterConfigurationGuiTests(unittest.TestCase):
         cfg=core.load_config();cfg.update(printer_profile='bambu_openspool',printer_firmware='stock')
         core.save_config(cfg);core.export_settings(path)
         with patch('spoolscribe.ui_catalogue.QDesktopServices.openUrl',return_value=True) as opened:
-            with patch('spoolscribe.ui_catalogue.QFileDialog.getOpenFileName',return_value=(str(path),'JSON')):w._import_settings()
+            with patch('spoolscribe.ui_catalogue.QFileDialog.getOpenFileName',return_value=(str(path),'JSON')),patch.object(w,'_confirm_settings_import',return_value=True) as preview:w._import_settings();preview.assert_called_once()
             self.assertEqual(w.printer.currentData(),'bambu')
             self.assertEqual(w.firmware.currentData(),'openspool_network')
             self.assertEqual(printers.formats('bambu',w.firmware.currentData()),('openspool',))

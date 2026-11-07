@@ -46,3 +46,4 @@ Refreshes protect personal copies and local corrections. Storage writes keep a
 backup and check concurrent changes. Restoration is explicit; a restored database
 is not immediately refreshed again in the same session. For a damaged file,
 preserve it and report the problem instead of repeatedly reinstalling the app.
+To keep a copy of all your data, see [Backing up your data](Backup-and-Restore.md).

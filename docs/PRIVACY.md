@@ -75,9 +75,11 @@ cadence and the date/status of the last attempt; the database records only the
 results of a refresh that changed something.
 
 **Paramètres → Retirer l'autorisation réseau** stops every automatic request;
-the Sources dialog can grant it again. Settings exported from the **main** menu
-contain interface, source, printer and tag preferences but never the network
-consent; importing a file never grants it, and widening the source choice
+the Sources dialog can grant it again. **Export preferences…** writes a
+plain-text JSON file (not encrypted) with interface, source, printer and tag
+preferences; it never contains the network consent, refresh dates or statuses,
+and includes the layout or the absolute export-folder path only when you tick
+them. Importing a file never grants consent, and widening the source choice
 invalidates the previous authorization. Restoring a database backup suspends
 automatic refreshes for the rest of that session.
 
@@ -117,3 +119,24 @@ not bundled and not included in settings exports. Coordinates, calibration,
 sample information and measurement dates are never reused by a device preset.
 The new Companion and paper-guide buttons open public information pages in your
 browser only when clicked; no new background request or store detection is added.
+
+## Local data backups (v0.8.1)
+
+**Back up my data…** writes a ZIP archive only where you choose. It is **not
+encrypted**: it contains your catalogue with personal copies and corrections,
+colour references (which may hold notes you entered), device presets, local Orca
+profiles and, if you choose, your preferences (the layout and the absolute
+export-folder path only when ticked separately). Its manifest lists file names,
+sizes and SHA-256 digests; it holds no user name, absolute source path, machine
+identifier or network consent. Nothing is uploaded. Keep the archive in a
+protected location. A restore shows a preview first and keeps a private copy of
+the replaced files in your data folder. See [Backing up your data](wiki/Backup-and-Restore.md).
+
+## Opt-in diagnostics (v0.8.1)
+
+Starting SpoolScribe with `--diagnostics` (or `SPOOLSCRIBE_DIAGNOSTICS=1`) records
+window, dialog and screen events, Python exceptions and Qt warnings in a private
+folder `diagnostics/` of the data folder (owner-only permissions), plus a crash
+stack file. It is off by default. Paths are shortened, screen names and serial
+numbers are not written, and preferences, filament names and searches are not
+logged. Nothing is sent: share a file only if you decide to, after reading it.

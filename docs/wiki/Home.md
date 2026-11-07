@@ -1,4 +1,4 @@
-# SpoolScribe help · v0.8.0
+# SpoolScribe help · v0.8.1
 
 <p align="center"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/spoolscribe-animated.gif" alt="SpoolScribe animated logo" width="80" height="80"></p>
 <p align="center"><strong>Choose what you want to do.</strong><br><sub>English · Français · Español · 简体中文</sub></p>
@@ -13,6 +13,7 @@
 | Display a QR for the future Companion | [Companion and QR](Companion-and-QR.md) |
 | Refresh sources or understand a partial result | [Catalogue updates](Updating-the-Database.md) |
 | Change language, spool preference or output folder | [Application settings](Settings.md) |
+| Back up or restore your catalogue and settings | [Backing up your data](Backup-and-Restore.md) |
 | Solve a problem | [FAQ](FAQ.md) · [Report an issue](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) |
 
 <p align="center">
@@ -20,8 +21,8 @@
 </p>
 <p align="center"><strong>Start with the catalogue</strong><br><sub>Select a reference to reveal its properties and export actions.</sub></p>
 
-**Current Desktop stable: [v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0).**
-Every screenshot in this help centre comes from the actual v0.8.0 interface with
+**Current Desktop stable: [v0.8.1](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1).**
+Every screenshot in this help centre comes from the actual v0.8.1 interface with
 public demonstration data. Counts do not represent live source coverage.
 [Capture provenance](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/images/README.md).
 

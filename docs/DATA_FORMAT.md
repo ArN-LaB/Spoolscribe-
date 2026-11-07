@@ -107,8 +107,16 @@ The state filter accepts `all`, `ready`, `incomplete` (not ready) and
 | `auto_update` | Legacy flag, accepted but unused; the cadence applies |
 | `qr_label` | QR paper settings only: `preset` (`d101-25x50`, `label-50x50`, `label-62x100`, `a4`, `custom`), optional `custom` profile (`width_mm`, `height_mm`, `margins_mm`, `dpi`, `orientation`), `small_format`, `error` (`M`/`Q`); validated by `qr_layout.validate_settings`, see [QR format](QR_FORMAT.md) |
 
-Settings exported from the application contain everything except the consent
-keys; importing never grants consent.
+`update_interval_days` must be the exact integer `0`, `1`, `7` or `-1` (`true`,
+`7.0` or `"7"` are refused). Exported settings (`{"format": "spoolscribe-settings",
+"version": 1, "settings": {…}}`, version an exact integer, file ≤ 128 KiB) hold
+only the allow-list `core.PORTABLE_SETTINGS_KEYS`; `ui` and `export_directory` only
+on explicit option. Never exported or imported: `network_consent`,
+`network_sources_revision`, `last_update`, `last_update_attempt`,
+`last_update_status`. Import validates the whole result with
+`core.validate_settings` (also used by backup restore) before one write; omitted
+keys keep their local value, lists and objects replace their category as a whole,
+and a change of `selected_sources` resets the consent revision.
 
 ## Printers and readers (`data/printers.json`)
 
@@ -126,6 +134,9 @@ In v0.4.0, `configuration_schema: 1` adds connection, software, documented forma
 and actual effect to each installation; historical fields remain compatible.
 `printer_profiles.can_export(printer, firmware, export_format)` gates the selected
 format. Unknown setups remain unconfirmed. See [reader configurations](PRINTER-CONFIGURATIONS.md).
+The shared reading, update and Companion snapshot rules (strict validation, dates
+compared by time value, the last reliable list kept on refusal) are in the
+[printer catalogue contract](PRINTER-CATALOGUE-CONTRACT.md).
 
 ## Logo manifest (`data/brands/manifest.json`)
 
@@ -247,7 +258,7 @@ A personal copy adds its own `USER-<uuid>` SKU and private product key, leaving 
 
 Source reconciliation excludes personal SKUs from identity/article/family matching. Copied fields carry high-priority `Copie personnelle` provenance; explicit physical edits use `Utilisateur`. An explicit HEX edit of a copy is stored on the copy's own SKU with `Utilisateur` provenance; only edited fields become `Utilisateur`, never the whole copied record. Copying a colour does not silently confirm an implausible source HEX. Existing explicit corrections and null values remain protected. Standard reference exports are unchanged. The display name is used in personal export filenames and full payloads; the suffix is an application label, not a new printer material type or NFC standard.
 
-## OpenTag3D 2.004 (version stable actuelle : v0.8.0)
+## OpenTag3D 2.004 (version stable actuelle : v0.8.1)
 
 This independent binary format does not change the historical OpenSpool JSON
 contract. It uses MIME `application/opentag3d`, not `application/json`, with NFC
@@ -264,3 +275,90 @@ The optional default points to an existing profile. Applying it is explicit.
 Only declared illuminant/observer, geometry, specular mode, aperture and profile
 note are reusable; no colour coordinates, calibration, date or sample data.
 Revision-checked writes preserve a backup and refuse corrupt or concurrent data.
+
+## Data backup archive (`spoolscribe-backup` v1)
+
+Written by **Back up my data…** (`backup.create_backup`). It is a ZIP archive,
+**not encrypted**, using deflate. Members:
+
+| Member | Type | Content |
+| --- | --- | --- |
+| `data/polymaker_db.json` | `catalogue` | Exact bytes of the catalogue, required |
+| `data/colour_measurements.json` | `registry` | Measurement registry, if present |
+| `data/colour_device_profiles.json` | `presets` | Device entry presets, if present |
+| `data/printers.json` | `printers` | Validated user printer list, if present |
+| `config/preferences.json` | `config` | Same envelope as exported settings, filtered as above (option) |
+| `orca_profiles/<name>.json` | `orca` | Local Orca profiles |
+| `output/<relative path>` | `export` | Generated exports of the data folder (option, off by default) |
+
+### Manifest
+
+`manifest.json` has exactly these keys:
+
+- `format: "spoolscribe-backup"` and `version: 1`, an exact integer;
+- `app: {name, version}`;
+- `created_utc` (`YYYY-MM-DDTHH:MM:SSZ`);
+- `options`: four exact booleans, `include_config`, `include_layout`,
+  `include_export_path` and `include_exports`;
+- `entries`: a list of `{path, type, bytes, sha256}`;
+- `absent`: types absent at creation;
+- `excluded`: categories announced as not included.
+
+The manifest contains no user name, absolute source path, machine identifier or
+consent.
+
+### Analysis before restore
+
+Nothing is written during analysis. The archive is refused in any of these cases:
+
+- an unknown version;
+- a manifest that is missing, duplicated or has extra keys;
+- a member that is missing, unexpected or a duplicate;
+- a case or Unicode normalisation collision;
+- an absolute path, `..`, a drive letter or a backslash;
+- a link, a non-regular member or an encrypted member;
+- a size or digest mismatch;
+- content that fails its own validator;
+- options inconsistent with the content.
+
+Limits are 4096 members and 512 MiB uncompressed in total. Per member: catalogue
+128 MiB, registry and presets at their existing limits, printers 512 KiB,
+preferences 128 KiB, Orca profile 8 MiB, export file 64 MiB. Sizes are checked in
+the central directory and again while reading.
+
+### Restore transaction
+
+The restore lives in `<DATA_HOME>/.spoolscribe-restore/` (0700):
+
+- `restore.lock`, a kernel lock;
+- one `tx-<id>/` per restore, holding `journal.json`
+  (`spoolscribe-restore-journal` **v2**: phase, targets, `before`/`after`
+  digests and the identity `before_identity` — device, inode, size, mtime — of
+  each object to be replaced), `new/`, `snapshot/` (exact previous bytes, or a
+  recorded absence) and `done/<n>` **proofs**.
+
+A configuration outside `DATA_HOME` gets a `<config>.restore-pending` pointer.
+Revisions seen in the preview are re-checked under lock. The journal is made
+durable before the first publication. For each item, a proof file
+(`spoolscribe-restore-proof`: index, `after` digest and the identity of the exact
+private object about to be published) is written durably **before** the
+publication. An absent target is created with a hard link of that object
+(`os.link`), which the OS refuses if anything exists there; a present target is
+replaced with `os.replace` only if its identity and digest are still the ones
+recorded. A folder that does not support hard links refuses the restore before
+anything is written.
+
+On error, or at the next start (`recovery.bootstrap()`, which runs before `core`
+is imported in the GUI, `python -m spoolscribe` and the CLI), items are
+**rolled back** only when the object present is provably ours: identity equal to
+the proof and digest equal to `after`. An interrupted restore is never completed.
+Byte equality alone never proves ownership: an object with the published bytes
+but another identity is **ambiguous**, kept and reported as a conflict; a file
+whose content matches neither the snapshot nor the published bytes belongs to
+someone else and is left untouched. In both cases the journal is kept in a
+recoverable state, which **Keep the current state** can dismiss. A v1 journal
+(without proofs) is kept and reported, never replayed. Up to three committed
+snapshots are kept for **Undo the last restore**.
+
+This is a logical transaction for cooperating SpoolScribe processes, not an
+atomic file-system transaction.

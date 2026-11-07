@@ -141,7 +141,7 @@ class RestartInterfaceTests(unittest.TestCase):
         core.export_settings(path)
         document=json.loads(path.read_text(encoding='utf-8'));document['settings']['language']='zh_CN'
         path.write_text(json.dumps(document),encoding='utf-8')
-        with patch.object(QFileDialog,'getOpenFileName',return_value=(str(path),'JSON')),patch.object(w,'_offer_language_restart') as prompt:
+        with patch.object(QFileDialog,'getOpenFileName',return_value=(str(path),'JSON')),patch.object(w,'_offer_language_restart') as prompt,patch.object(w,'_confirm_settings_import',return_value=True):
             w._import_settings();prompt.assert_called_once()
         self.assertEqual(core.load_config()['language'],'zh_CN')
         self.assertEqual(i18n.language(),'fr')

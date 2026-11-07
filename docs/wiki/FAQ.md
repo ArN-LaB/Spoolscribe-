@@ -1,6 +1,6 @@
 # Frequently asked questions
 
-[Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ](FAQ.md)
+[Home](Home.md) · [Get started](Getting-Started.md) · [Compatibility](Printers-and-Readers.md) · [FAQ]()
 
 **Jump to:** [Your catalogue](#your-catalogue) · [Hardware & tags](#hardware--tags) · [Privacy & files](#privacy--files)
 
@@ -181,7 +181,8 @@ Trademark holders can also request removal by opening an issue.
 Database, settings and exports are in your user folder, never next to the
 application: `%APPDATA%\SpoolScribe` (Windows), `~/Library/Application
 Support/SpoolScribe` (macOS), `~/.config/SpoolScribe` (Linux). Backups
-(`polymaker_db.json.bak`, `.pre-update.bak`) sit next to the database.
+(`polymaker_db.json.bak`, `.pre-update.bak`) sit next to the database. To move
+your data to another computer, see [Backing up your data](Backup-and-Restore.md).
 
 </details>
 

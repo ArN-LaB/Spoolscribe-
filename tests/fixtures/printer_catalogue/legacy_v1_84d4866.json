@@ -1,0 +1,154 @@
+{
+  "format": "spoolscribe-printers",
+  "version": 1,
+  "updated": "2026-11-01",
+  "source": "https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/data/printers.json",
+  "groups": {
+    "native": "Lecteur intégré lisant OpenSpool",
+    "external": "Via un lecteur externe",
+    "incompatible": "Lecteur intégré, protocole propriétaire : aucun tag SpoolScribe reconnu",
+    "none": "Pas de lecteur de bobine"
+  },
+  "printers": [
+    {
+      "id": "u1", "vendor": "Snapmaker", "label": "Snapmaker U1", "group": "native",
+      "reader": "NFC ISO 14443-A intégré (NTAG21x)",
+      "firmwares": [
+        {"id": "paxx12", "label": "Firmware ouvert paxx12 (OpenSpool)", "openspool": true,
+         "url": "https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware",
+         "notes": "Lit les tags OpenSpool depuis la version 0.9.4 ; matière et couleur identifient le filament, la marque est facultative."},
+        {"id": "stock", "label": "Firmware constructeur", "openspool": false,
+         "notes": "Ne lit que les tags Snapmaker (MIFARE Classic 1K). Un tag OpenSpool n'est pas reconnu."}
+      ],
+      "help": "OpenSpool : matière et couleur identifient le filament. Le profil du trancheur reste nécessaire pour imprimer. Vérifiez la version du firmware.",
+      "fields": {"Type": "Identification : requis", "Couleur": "Identification : requis", "Marque": "Identification : facultatif",
+                 "Nozzle": "Information stockée ; ne règle pas automatiquement la buse", "Bed": "Information stockée ; ne règle pas automatiquement le plateau",
+                 "Diamètre": "Trancheur ; non utilisé par le mapping U1 consulté", "Densité": "Calculs du trancheur ; non utilisé par le mapping U1 consulté"}
+    },
+    {
+      "id": "flashforge_ad5x", "vendor": "Flashforge", "label": "Flashforge AD5X / Creator 5", "group": "external",
+      "reader": "Lecteur NFC communautaire (FF_NFC)",
+      "firmwares": [
+        {"id": "zmod", "label": "Zmod / Kiln OS + FF_NFC", "openspool": true,
+         "url": "https://github.com/ghzserg/zmod", "notes": "Firmware communautaire ; le lecteur FF_NFC lit les tags OpenSpool."},
+        {"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "Pas de lecteur de bobine."}
+      ],
+      "help": "Export OpenSpool pour le lecteur FF_NFC sous firmware communautaire. Vérifiez la documentation du lecteur."
+    },
+    {
+      "id": "klipper_diy", "vendor": "Klipper", "label": "Klipper + Spoolman (Voron, Sovol SV08, RatRig…)", "group": "external",
+      "reader": "Lecteur NFC externe (SpoolSense, nfc2klipper, Happy Hare…)",
+      "firmwares": [
+        {"id": "klipper", "label": "Klipper + Spoolman", "openspool": true,
+         "notes": "Le lecteur transmet le tag à Spoolman ; le format compris dépend du module choisi. Vérifiez sa documentation."}
+      ],
+      "help": "Export OpenSpool conservateur : tous les paramètres d'impression sont requis par SpoolScribe. Leur utilisation dépend du lecteur."
+    },
+    {
+      "id": "bambu_openspool", "vendor": "Bambu Lab", "label": "Bambu Lab + lecteur OpenSpool externe (ESP32, MQTT)", "group": "external",
+      "reader": "OpenSpool (ESP32 + PN532) → imprimante via MQTT en mode développeur",
+      "firmwares": [
+        {"id": "stock", "label": "Firmware constructeur + mode développeur", "openspool": true,
+         "url": "https://github.com/spuder/OpenSpool",
+         "notes": "L'AMS ne lit pas le tag ; le lecteur externe envoie le filament à l'imprimante par MQTT."}
+      ],
+      "help": "Le tag OpenSpool est lu par le lecteur externe, pas par l'AMS. Bambu Studio garde son profil filament."
+    },
+    {
+      "id": "openspool", "vendor": "Autre", "label": "Autre lecteur OpenSpool", "group": "external",
+      "reader": "Lecteur OpenSpool quelconque",
+      "firmwares": [{"id": "any", "label": "Selon le lecteur", "openspool": true, "notes": "Vérifiez la documentation du lecteur."}],
+      "help": "Export OpenSpool conservateur : tous les paramètres d'impression sont requis par SpoolScribe. Leur utilisation dépend du lecteur."
+    },
+    {
+      "id": "bambu", "vendor": "Bambu Lab", "label": "Bambu Lab X1 / P1 / A1 / H2 (AMS)", "group": "incompatible",
+      "reader": "RFID MIFARE Classic chiffré et signé (bobines Bambu)",
+      "firmwares": [
+        {"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "L'AMS ignore OpenSpool, OpenTag3D et OpenPrintTag."},
+        {"id": "x1plus", "label": "X1Plus (X1 seulement)", "openspool": false, "notes": "Ne change pas la lecture des tags."}
+      ],
+      "help": "Fiche de référence pour Bambu Studio : matière, couleur et profil filament. SpoolScribe ne génère pas de tag RFID Bambu reconnu par l'AMS. Pour un tag OpenSpool, voir « Bambu Lab + lecteur OpenSpool externe ».",
+      "fields": {"Type": "À renseigner dans le profil/AMS", "Couleur": "À renseigner dans l'AMS", "Nozzle": "Réglage du profil Bambu Studio",
+                 "Bed": "Dépend du plateau sélectionné dans Bambu Studio", "Diamètre": "Compatibilité du filament avec l'imprimante",
+                 "Densité": "Calcul de masse du trancheur"}
+    },
+    {
+      "id": "prusa", "vendor": "Prusa Research", "label": "Prusa CORE One / MK4S / XL (OpenPrintTag)", "group": "incompatible",
+      "reader": "Lecteur NFC-V ISO 15693 optionnel (CORE One) ; firmware 8.0 lit OpenPrintTag",
+      "firmwares": [{"id": "stock", "label": "Firmware constructeur 8.0+", "openspool": false,
+                     "notes": "OpenPrintTag utilise des tags ISO 15693 et un format CBOR : un NTAG215/216 OpenSpool n'est pas lu."}],
+      "help": "Fiche de référence pour PrusaSlicer. Un NTAG215/216 OpenSpool ne remplace pas un tag OpenPrintTag ; encodeur OpenPrintTag non implémenté.",
+      "fields": {"Type": "Choix du profil filament", "Couleur": "Aperçu / identification", "Nozzle": "Réglage du profil PrusaSlicer",
+                 "Bed": "Réglage selon le plateau", "Diamètre": "Paramètre du trancheur", "Densité": "Calcul de masse du trancheur"}
+    },
+    {
+      "id": "creality_k2", "vendor": "Creality", "label": "Creality K2 / K2 Plus / Hi (CFS)", "group": "incompatible",
+      "reader": "RFID MIFARE Classic propriétaire (bobines Creality)",
+      "firmwares": [{"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "Les tags NTAG ne sont pas lus par le CFS."}],
+      "help": "Fiche de référence pour Creality Print. Aucun tag SpoolScribe n'est reconnu par le CFS."
+    },
+    {
+      "id": "anycubic_ace", "vendor": "Anycubic", "label": "Anycubic Kobra S1 / Kobra 3 (ACE Pro)", "group": "incompatible",
+      "reader": "NFC NTAG213 au format Anycubic",
+      "firmwares": [{"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "Format Anycubic non chiffré mais différent d'OpenSpool."}],
+      "help": "Fiche de référence. Un tag OpenSpool n'est pas interprété par l'ACE Pro."
+    },
+    {
+      "id": "elegoo_cc2", "vendor": "Elegoo", "label": "Elegoo Centauri Carbon 2 (CANVAS)", "group": "incompatible",
+      "reader": "NFC NTAG213, spécification Elegoo publiée",
+      "firmwares": [{"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "Format binaire Elegoo, différent d'OpenSpool."}],
+      "help": "Fiche de référence. Aucun tag SpoolScribe n'est reconnu."
+    },
+    {
+      "id": "qidi_box", "vendor": "QIDI", "label": "QIDI Plus4 / Q2 / Max4 (QIDI Box)", "group": "incompatible",
+      "reader": "RFID MIFARE Classic (bobines QIDI)",
+      "firmwares": [{"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "Spécification officielle QIDI, différente d'OpenSpool."}],
+      "help": "Fiche de référence. Aucun tag SpoolScribe n'est reconnu."
+    },
+    {
+      "id": "ultimaker_s", "vendor": "UltiMaker", "label": "UltiMaker 3 / S-series (Material Station)", "group": "incompatible",
+      "reader": "NFC NTAG216 au format UltiMaker (GUID Cura)",
+      "firmwares": [{"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "Format UltiMaker, différent d'OpenSpool."}],
+      "help": "Fiche de référence. Aucun tag SpoolScribe n'est reconnu."
+    },
+    {
+      "id": "raise3d_pro3", "vendor": "Raise3D", "label": "Raise3D Pro3 HS", "group": "incompatible",
+      "reader": "RFID propriétaire",
+      "firmwares": [{"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "Protocole propriétaire."}],
+      "help": "Fiche de référence seulement."
+    },
+    {
+      "id": "makerbot_method", "vendor": "MakerBot", "label": "MakerBot METHOD", "group": "incompatible",
+      "reader": "RFID ISO 15693 propriétaire",
+      "firmwares": [{"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "Protocole propriétaire."}],
+      "help": "Fiche de référence seulement."
+    },
+    {
+      "id": "xyz_davinci", "vendor": "XYZprinting", "label": "XYZprinting da Vinci", "group": "incompatible",
+      "reader": "NFC propriétaire (DRM)",
+      "firmwares": [{"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "Protocole propriétaire."}],
+      "help": "Fiche de référence seulement."
+    },
+    {
+      "id": "no_reader", "vendor": "Autre", "label": "Imprimante sans lecteur (Snapmaker Artisan/J1, Flashforge AD5M, Phrozen Arco, Zortrax, Kingroon…)", "group": "none",
+      "reader": "Aucun",
+      "firmwares": [{"id": "stock", "label": "Firmware constructeur", "openspool": false, "notes": "Un lecteur externe reste possible (voir Klipper + Spoolman)."}],
+      "help": "Fiche de référence pour le trancheur. Aucun tag n'est lu par cette imprimante."
+    }
+  ],
+  "external_readers": [
+    {"id": "openspool_esp32", "label": "OpenSpool (ESP32 + PN532)", "url": "https://github.com/spuder/OpenSpool", "works_with": "Bambu Lab via MQTT", "tags": "OpenSpool"},
+    {"id": "spoolease", "label": "SpoolEase", "works_with": "Bambu Lab", "tags": "Format SpoolEase (NDEF URL)"},
+    {"id": "ff_nfc", "label": "FF_NFC", "works_with": "Flashforge sous Zmod / Kiln OS", "tags": "OpenSpool"},
+    {"id": "nfc2klipper", "label": "nfc2klipper", "works_with": "Klipper + Spoolman", "tags": "Selon configuration"},
+    {"id": "happy_hare", "label": "Happy Hare (NFC)", "works_with": "Klipper MMU", "tags": "Selon configuration"},
+    {"id": "spoolsense", "label": "SpoolSense", "works_with": "Klipper + Spoolman", "tags": "Selon configuration"},
+    {"id": "spoollink", "label": "SpoolLink", "works_with": "Snapmaker U1 + Spoolman (association par UID de tag)", "tags": "UID seulement"},
+    {"id": "prusa_openprinttag", "label": "Lecteur OpenPrintTag Prusa", "works_with": "Prusa CORE One", "tags": "OpenPrintTag (ISO 15693)"}
+  ],
+  "unverified": [
+    "Comportement des Bambu Lab X2D / P2S / H2C et de l'ACE 2 Pro.",
+    "Disponibilité réelle du lecteur OpenPrintTag Prusa hors famille CORE One.",
+    "Formats décodés par Happy Hare, nfc2klipper et SpoolSense selon leurs versions."
+  ]
+}

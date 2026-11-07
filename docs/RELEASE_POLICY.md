@@ -1,14 +1,17 @@
 # Releases: software stability and hardware evidence
 
-[Download v0.8.0](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.0) · [Validation](validation/v0.8.0.md) · [Compatibility help](wiki/Printers-and-Readers.md)
+[Download v0.8.1](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1) · [Validation](validation/v0.8.1.md) · [Compatibility help](wiki/Printers-and-Readers.md)
 
 ## Current decision
 
-**v0.8.0 is the current Desktop stable release**, following the authorised
-promotion audit on 5 November 2026. Its first publication was a pre-release.
-Promotion changes the GitHub release channel and latest pointer only: the annotated
-tag, commit, three archives and three SHA-256 files are not replaced or rebuilt.
-The old v0.3.5 stable release remains available as history, not the default download.
+**v0.8.1 is the Desktop stable release**, built from the integrated Desktop 002
+sources. Its macOS arm64 archive is Developer ID signed, Apple-notarised and
+stapled. Windows and Linux archives are new CI builds from the same source commit.
+The original v0.8.0 tag, release and six assets remain unchanged.
+
+The historical macOS SIGSEGV was not reproduced in the bounded diagnostics; its
+cause is not established. The owner explicitly authorised release without claiming
+a crash fix. Reopen the diagnosis if a new incident occurs.
 
 Stable means the supported **software workflow** passed its release gates:
 four Python/OS configurations, three native builds, frozen application probes,
