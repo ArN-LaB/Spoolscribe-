@@ -1315,6 +1315,27 @@ class TransactionTests(Fixture):
         self.assertEqual([r["temporary"] for r in fresh["residues"]], [str(state["name"])])
         self.assertForeignIntact(state["name"], state["foreign"], foreign)
 
+    def test_staged_object_is_linked_renamed_and_removed_while_its_descriptor_is_held(self):
+        """The platform contract publish_new/publish_replace rely on (B06: WinError 32 on Windows CI):
+        our own staged object can be hard-linked, renamed over a target and unlinked while the descriptor that
+        pins its identity is still open, and its identity is the same after the descriptor is closed."""
+        folder = self.root / "handles"
+        folder.mkdir()
+        temporary, identity, fd = recovery._stage_temporary(folder / "cible.json", b'{"a": 1}')
+        try:
+            linked, replaced = folder / "liee.json", folder / "remplacee.json"
+            replaced.write_bytes(b"ancien")
+            os.link(temporary, linked)                                  # publish_new
+            self.assertTrue(recovery._owned_name(linked, identity))
+            self.assertTrue(recovery._unlink_owned(temporary, identity))  # its source name, still open
+            os.replace(linked, replaced)                                # publish_replace
+            self.assertTrue(recovery._owned_name(replaced, identity))
+        finally:
+            os.close(fd)
+        self.assertEqual(recovery.file_identity(replaced), identity)     # unchanged after closing
+        self.assertEqual(replaced.read_bytes(), b'{"a": 1}')
+        self.assertEqual(sorted(p.name for p in folder.iterdir()), ["remplacee.json"])
+
     def test_failed_rollback_keeps_journal_then_recovery_finishes(self):
         analysis = self.analysis()
 

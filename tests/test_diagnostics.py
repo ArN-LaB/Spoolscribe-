@@ -45,8 +45,16 @@ class DiagnosticsTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.home = Path(self.tmp.name) / "data-home"
         self.home.mkdir()
+        # Runs after the release below and before the folder removal: every faulthandler.log opened by this
+        # test must be closed (Windows refuses to delete an open file; POSIX would silently leak the descriptor).
+        known = {id(stream) for stream in diagnostics._FAULT_FILES}
+        self.addCleanup(self._assert_fault_files_released, known)
         self.addCleanup(diagnostics.shutdown, release_faulthandler=True)
         self.stderr = io.StringIO()
+
+    def _assert_fault_files_released(self, known):
+        leaked = [s for s in diagnostics._FAULT_FILES if id(s) not in known and not s.closed]
+        self.assertEqual(leaked, [], "faulthandler.log encore ouvert après le nettoyage explicite du test")
 
     def _start(self, **options):
         environ = {}
@@ -281,6 +289,21 @@ class DiagnosticsTests(unittest.TestCase):
         names = [event["event"] for event in _events(session)]
         self.assertIn("window_destroyed", names)
         self.assertIn("screen_removed", names)
+
+    def test_normal_shutdown_keeps_faulthandler_until_an_explicit_release(self):
+        import faulthandler
+        session = self._start()
+        stream = session._fault_file
+        diagnostics.shutdown()                                   # normal stop (main): instrumentation kept
+        self.assertIsNone(diagnostics.active_session())
+        self.assertFalse(stream.closed)
+        self.assertTrue(faulthandler.is_enabled())
+        self.assertIn(session, diagnostics._RETAINED)
+        diagnostics.shutdown(release_faulthandler=True)          # explicit release, after the normal stop
+        self.assertTrue(stream.closed)
+        self.assertIsNone(session._fault_file)
+        self.assertNotIn(session, diagnostics._RETAINED)
+        diagnostics.shutdown(release_faulthandler=True)          # idempotent
 
     def test_shutdown_disconnects_filter_and_signals(self):
         session = self._start()

@@ -337,6 +337,60 @@ def _unlink_owned(name, identity: dict) -> bool:
     return True
 
 
+def _create_exclusive(directory, prefix: str, suffix: str) -> tuple:
+    """Exclusive creation of a private temporary in ``directory``; returns ``(fd, path)``.
+
+    POSIX: :func:`tempfile.mkstemp`. Windows: ``CreateFileW(CREATE_NEW)`` with
+    ``FILE_SHARE_DELETE``. Without it, Windows refuses to link, rename or remove our
+    own object while its descriptor is open (WinError 32), and that open
+    descriptor is what pins the object's identity during a publication. Its
+    last-write time is also frozen (``SetFileTime`` -1), so that the identity
+    recorded before closing (``mtime_ns`` included) is still the identity seen
+    afterwards. If the file system refuses the freeze, the creation goes on: a
+    later identity mismatch is then kept and reported as ambiguous, never
+    removed.
+    """
+    directory = os.fspath(directory)
+    if os.name != "nt":
+        return tempfile.mkstemp(prefix=prefix, suffix=suffix, dir=directory)
+    import ctypes
+    import msvcrt
+    from ctypes import wintypes
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    create_file = kernel32.CreateFileW
+    create_file.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD, wintypes.LPVOID,
+                            wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE]
+    create_file.restype = wintypes.HANDLE
+    set_file_time = kernel32.SetFileTime
+    set_file_time.argtypes = [wintypes.HANDLE, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p]
+    set_file_time.restype = wintypes.BOOL
+    close_handle = kernel32.CloseHandle
+    close_handle.argtypes = [wintypes.HANDLE]
+    generic_read_write = 0x80000000 | 0x40000000
+    share_read_write_delete = 0x1 | 0x2 | 0x4
+    create_new, attribute_normal = 1, 0x80
+    exists_errors = (80, 183)                               # ERROR_FILE_EXISTS, ERROR_ALREADY_EXISTS
+    invalid = wintypes.HANDLE(-1).value
+    for _ in range(tempfile.TMP_MAX):
+        name = os.path.join(directory, f"{prefix}{secrets.token_hex(4)}{suffix}")
+        handle = create_file(name, generic_read_write, share_read_write_delete, None, create_new,
+                             attribute_normal, None)
+        if handle is None or handle == invalid:
+            error = ctypes.get_last_error()
+            if error in exists_errors:
+                continue
+            raise ctypes.WinError(error)
+        frozen = wintypes.FILETIME(0xFFFFFFFF, 0xFFFFFFFF)
+        set_file_time(handle, None, None, ctypes.byref(frozen))
+        try:
+            fd = msvcrt.open_osfhandle(handle, os.O_NOINHERIT)
+        except BaseException:
+            close_handle(handle)
+            raise
+        return fd, name
+    raise FileExistsError(errno.EEXIST, "aucun nom temporaire libre", directory)
+
+
 def _stage_temporary(path: Path, data: bytes) -> tuple:
     """Private temporary object in the target folder, flushed; returns ``(temporary, identity, fd)``.
 
@@ -344,7 +398,7 @@ def _stage_temporary(path: Path, data: bytes) -> tuple:
     object cannot be freed, so its identity cannot be reused by another file.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
-    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    fd, temporary = _create_exclusive(path.parent, f".{path.name}.", ".tmp")
     try:
         view = memoryview(data)
         while view:
@@ -379,25 +433,14 @@ def _release_failed_stage(temporary: str, fd: int, data: bytes) -> str | None:
         except OSError:
             return "unreadable"
         if stat.S_ISREG(occupant.st_mode) and (occupant.st_dev, occupant.st_ino) == ours:
-            if os.name != "nt":                         # POSIX: removed while our descriptor pins the inode
-                try:
-                    os.unlink(temporary)
-                except FileNotFoundError:
-                    return "missing"
-                except OSError:
-                    return "unreadable"
-                return None
-            os.close(fd)                                # Windows: an open file cannot be removed
-            fd = -1
+            # Removed while our descriptor pins the object (POSIX; Windows through FILE_SHARE_DELETE).
             try:
-                again = os.lstat(temporary)
-                if (again.st_dev, again.st_ino) == ours:
-                    os.unlink(temporary)
-                    return None
+                os.unlink(temporary)
             except FileNotFoundError:
                 return "missing"
             except OSError:
                 return "unreadable"
+            return None
         try:
             same = file_digest(temporary) == hashlib.sha256(data).hexdigest()
         except OSError:
@@ -486,7 +529,7 @@ def link_supported(directory: str | os.PathLike) -> bool:
     directory = Path(directory)
     try:
         directory.mkdir(parents=True, exist_ok=True)
-        fd, temporary = tempfile.mkstemp(prefix=".spoolscribe-probe.", suffix=".tmp", dir=directory)
+        fd, temporary = _create_exclusive(directory, ".spoolscribe-probe.", ".tmp")
     except OSError:
         return True      # not writable at all: the publication itself will be refused by the OS, nothing replaced
     identity = _identity_of_stat(os.fstat(fd))

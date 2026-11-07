@@ -61,6 +61,7 @@ EVENT_NAMES = frozenset({
 _SESSION: "Session | None" = None
 _ATEXIT_REGISTERED = False
 _FAULT_FILES: list = []     # garde les fichiers faulthandler ouverts jusqu'à la fin
+_RETAINED: list = []        # sessions fermées dont le faulthandler reste volontairement ouvert
 
 
 # ─── Activation ──────────────────────────────────────────────────────────
@@ -145,6 +146,11 @@ def shutdown(*, release_faulthandler: bool = False) -> None:
     session = _SESSION
     if session is not None:
         session.close(release_faulthandler=release_faulthandler)
+    if release_faulthandler:
+        # Une session déjà fermée normalement (fichier conservé) n'est plus la session globale :
+        # la libération explicite la retrouve ici, de la plus récente à la plus ancienne.
+        for retained in reversed(list(_RETAINED)):
+            retained.close(release_faulthandler=True)
 
 
 # ─── Expurgation ─────────────────────────────────────────────────────────
@@ -782,11 +788,15 @@ class Session:
             self._internal_error()
         if release_faulthandler:
             self._release_faulthandler()
+        elif self._fault_file is not None and self not in _RETAINED:
+            _RETAINED.append(self)
         if _SESSION is self:
             _SESSION = None
 
     def _release_faulthandler(self):
         stream, self._fault_file = self._fault_file, None
+        if self in _RETAINED:
+            _RETAINED.remove(self)
         if stream is None:
             return
         try:

@@ -131,7 +131,7 @@ explains the distinction and the future app-link path.
 
 Report the model, reader, firmware/plugin, tag type and format when sharing a
 hardware result. Software CI is not a certification of every listed printer.
-**822 offline tests** run in each of four CI configurations; three native builds
+**824 offline tests** run in each of four CI configurations; three native builds
 also exercise catalogue/NFC, colour entry and independent digital QR decoding.
 
 SpoolScribe is independent of printer and filament manufacturers. Code: MIT.
