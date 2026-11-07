@@ -7,7 +7,8 @@
 **v0.8.1 is the Desktop stable release**, built from the integrated Desktop 002
 sources. Its macOS arm64 archive is Developer ID signed, Apple-notarised and
 stapled. Windows and Linux archives are new CI builds from the same source commit.
-The original v0.8.0 tag, release and six assets remain unchanged.
+The original v0.8.0 tag and six assets remain unchanged. Its release wording
+is maintained in English under the common documentation policy below.
 
 The historical macOS SIGSEGV was not reproduced in the bounded diagnostics; its
 cause is not established. The owner explicitly authorised release without claiming
