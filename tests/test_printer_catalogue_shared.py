@@ -354,7 +354,9 @@ class SetupKeptAfterRefreshTests(unittest.TestCase):
 
     def setUp(self):
         fixture.GuiTests.setUp(self)
-        self.enterContext(patch.dict(printers.PROFILES, copy.deepcopy(printers.PROFILES)))
+        profiles = patch.dict(printers.PROFILES, copy.deepcopy(printers.PROFILES))
+        profiles.start()
+        self.addCleanup(profiles.stop)
 
     def choose(self, printer, setup):
         w = self.window
