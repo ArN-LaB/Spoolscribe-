@@ -7,7 +7,7 @@ alone is insufficient. The list documents specific setups, not every available
 model. These choices are available in the
 [current stable release](https://github.com/ArN-LaB/Spoolscribe-/releases/latest).
 Software stability does not certify every hardware combination; see the
-[release policy](RELEASE_POLICY.md).
+[compatibility guide](COMPATIBILITY.md).
 
 ## Evidence and feedback
 

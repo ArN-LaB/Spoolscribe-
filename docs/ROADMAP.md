@@ -1,7 +1,7 @@
 # SpoolScribe roadmap
 
 Current Desktop stable: **[v0.8.1](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1)**,
-published 8 November 2026. [Release policy](RELEASE_POLICY.md). This free-time
+published 8 November 2026. [Compatibility](COMPATIBILITY.md). This free-time
 project has no delivery deadlines.
 
 The sections below record the capabilities and limits at each historical stage.

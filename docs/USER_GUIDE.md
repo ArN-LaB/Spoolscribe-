@@ -1,6 +1,6 @@
 # Use SpoolScribe v0.8.1
 
-[Overview](../README.md) · [Documentation](README.md) · [Stable release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1) · [Release policy](RELEASE_POLICY.md)
+[Overview](../README.md) · [Documentation](README.md) · [Stable release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1) · [Compatibility](COMPATIBILITY.md)
 
 The [visual tour](wiki/Visual-Tour.md) shows actual English-interface screenshots.
 The same workflows are available in all four application languages.

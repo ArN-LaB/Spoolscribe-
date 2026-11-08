@@ -52,16 +52,9 @@ python .github/scripts/check_frozen_measurements.py
 Output stays `dist/SpoolScribe.exe` (Windows), `dist/SpoolScribe` (Linux) and
 `dist/SpoolScribe.app` (macOS). Each ZIP contains one native executable or one
 `.app`, with a companion SHA-256 file. CI macOS builds are ad hoc intermediates. The v0.8.1 release uses the separately
-Developer ID signed, notarised and stapled local build; see [macOS procedure](MACOS_NOTARIZATION.md).
+Developer ID signed, notarised and stapled build. `python packaging/macos_notarize.py --help` describes the signing tool; supplying valid signing credentials remains a maintainer responsibility.
 
-The [workflow](../.github/workflows/build.yml) runs four test configurations before
-three builds, then checks TLS, the frozen UI in four languages, resource integrity
-and NTAG215/216 exports offline, including all three OpenTag3D containers. Only a version tag can publish a release, after
-all six assets are verified. The release workflow marks `v0.4.0`, `v0.5.0`, `v0.6.0`, `v0.7.0` and suffixed
-version tags as pre-releases; their publication uses `--latest=false`. The stable
-`v0.3.5` downloads and tag remain intact. A pre-release is downloaded explicitly;
-the application's stable-release check continues to follow the latest stable.
-Maintenance on `main` does not silently replace old binaries or move tags.
+The [workflow](../.github/workflows/build.yml) tests four Python/OS configurations and checks frozen application behaviour and resource integrity. Historical archives retain their own tagged sources and checksums; a new source build uses a new version rather than replacing an old download.
 
 ## Data and resources
 
@@ -73,33 +66,20 @@ excluded from installers. Workers write to the user folder.
 Before importing the package, isolate QA with `SPOOLSCRIBE_DATA_HOME` and
 `SPOOLSCRIBE_CONFIG_PATH`. Do not run live updates against repository fixtures.
 See [the data contract](DATA_FORMAT.md) for backups and restoration.
-For personal macOS installation, use [the shared installer](LOCAL_MACOS_INSTALL.md);
-Gatekeeper stays enabled.
 
 ## Documentation and Wiki
 
-`docs/wiki/` is the reviewed source of the public GitHub Wiki. Preview and copy
-to a separate, clean wiki checkout:
+`docs/wiki/` contains the reviewed source of the public help centre. Keep changes portable between the source files and GitHub Wiki routes. The helper `.github/scripts/sync_wiki.py` previews/copies reviewed pages into a separate clean checkout; it does not commit, push or delete pages.
 
-```sh
-python .github/scripts/sync_wiki.py --checkout /path/to/Spoolscribe-.wiki
-python .github/scripts/sync_wiki.py --checkout /path/to/Spoolscribe-.wiki --apply
-```
+Public release evidence lives in `docs/validation/` and `docs/archive/releases/`. Their dates and measured outcomes describe the corresponding historical versions.
 
-The default is a dry run. Applying adjusts internal links for the Wiki and
-preserves extra pages. Neither command commits, pushes or deletes files.
-Review the diff and commit/push the separate Wiki repository explicitly.
-
-Historical evidence lives in `docs/archive/`; current release evidence lives in
-`docs/validation/`. Historical campaigns retain their original measured results.
-
-## Reproduce the v0.6.0 documentation captures
+## Reproduce documentation captures
 
 ```sh
 python .github/scripts/render_readme_screenshots.py
 ```
 
-Six real Qt captures and `docs/images/captures.json` use public regression fixtures,
+Real Qt captures and `docs/images/captures.json` use public regression fixtures,
 a temporary database/configuration and a network-denying audit hook. This is a
 documentation tool, not a runtime dependency or hardware test. The QR illustration
 is the top of the real window through PNG/SVG actions; its printing band is omitted.
@@ -126,19 +106,3 @@ Install the corresponding Qt/X11 runtime packages for your distribution rather
 than copying arbitrary shared libraries into the app. CI uses Qt offscreen:
 passing those digital checks does not measure a native X11/Wayland desktop session.
 [Exact release build log](https://github.com/ArN-LaB/Spoolscribe-/actions/runs/41650816610/job/125971039581).
-
-Release promotion and immutable downloads: [release policy](RELEASE_POLICY.md). v0.8.1 is a new source build, with locally notarised macOS packaging; its tag bypasses the ordinary CI auto-publication job. v0.8.0 and its original promotion remain historical and immutable. Do not rerun an old tag to replace public files.
-
-## Local development history
-
-Agents start with [UNIVERSAL](UNIVERSAL.md), the permanent reference for development phases, Codex / Claude Code loops, human handoffs, reports, evidence, conclusions and test-environment cleanup. The technical, safety, consent, data, release and hardware-evidence rules above and in [Contributing](../.github/CONTRIBUTING.md) remain applicable.
-
-Use the local chronological index at `docs/agent-runs/INDEX.md` (not published). Existing reports and trial registers remain evidence; their historical names and verdicts do not trigger an agent, a product test or publication. Each phase’s `70-REGISTRE-ESSAIS.md` points to its existing technical register, with current lifecycle states and historical observations kept distinct.
-
-### Documentary conformance check
-
-```sh
-python3 -B docs/UNIVERSAL/OUTILS/verifier.py --root . --strict
-```
-
-The universal checker is read-only and uses Python standard library only. It checks documentary structure, local links and empty folders; it does not run application tests, inspect another project, certify hardware or mutate documentation. The earlier `docs/agent-governance/verifier-conformite.py` remains a preserved historical helper for the former schema, not the normative command for future work.

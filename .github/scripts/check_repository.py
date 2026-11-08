@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import subprocess
 import hashlib
+import os
 import sys
 from urllib.parse import unquote, urlsplit
 
@@ -36,7 +37,7 @@ def strip_fenced_code(text):
     return ''.join(out)
 
 
-def markdown_links(path, root=ROOT):
+def markdown_links(path, root=ROOT, *, published_paths=None):
     """Local link targets of one Markdown file, outside fenced code blocks: ``(errors, link_count)``."""
     text = strip_fenced_code(path.read_text(encoding='utf-8'))
     targets = re.findall(r'\[[^\]]*\]\(([^\s)]+)(?:\s+"[^"]*")?\)', text)
@@ -52,7 +53,25 @@ def markdown_links(path, root=ROOT):
         links += 1
         if not dest.exists():
             errors.append(f'{path.relative_to(root)}: missing {target}')
+        elif published_paths is not None:
+            normalized = Path(os.path.abspath(dest))
+            published = normalized in published_paths or (
+                dest.is_dir() and any(p.is_relative_to(normalized) for p in published_paths))
+            if not published:
+                errors.append(f'{path.relative_to(root)}: unpublished target {target}')
     return errors, links
+
+
+def publication_errors(root, names):
+    """Reject force-added files excluded by the repository's public selection."""
+    if not names:
+        return []
+    result = subprocess.run(
+        ['git', 'check-ignore', '--no-index', '--stdin'], cwd=root,
+        input='\n'.join(names) + '\n', text=True, capture_output=True)
+    if result.returncode not in (0, 1):
+        return ['Cannot check public selection: ' + result.stderr.strip()]
+    return ['Excluded file in public selection: ' + name for name in result.stdout.splitlines()]
 
 
 def check(root=ROOT):
@@ -60,12 +79,13 @@ def check(root=ROOT):
         ['git', 'ls-files', '--cached', '--others', '--exclude-standard'],
         cwd=root, text=True).splitlines()
     files = sorted({root / name for name in names if (root / name).is_file()})
-    errors = []
+    errors = publication_errors(root, [p.relative_to(root).as_posix() for p in files])
+    published_paths = {Path(os.path.abspath(p)) for p in files}
     links = 0
     for path in files:
         if path.suffix != '.md':
             continue
-        found, count = markdown_links(path, root)
+        found, count = markdown_links(path, root, published_paths=published_paths)
         errors += found
         links += count
     tree = ast.parse((root / 'src/spoolscribe/core.py').read_text(encoding='utf-8'))

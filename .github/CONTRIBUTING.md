@@ -131,9 +131,6 @@ isolated settings and the offline audit hook; review every image and its manifes
 Never show personal paths or catalogue edits. Screenshots and scan oracles are not
 application resources. [Provenance](../docs/images/README.md).
 
-## Agent development traces
-
-Agents start with [docs/UNIVERSAL.md](../docs/UNIVERSAL.md) for phases, loops, human handoffs, Markdown reports, evidence and test-environment lifecycle. The technical, privacy, network, test and publication requirements above remain applicable. This documentary check does not authorize product tests, another agent or Git operations.
 
 ## Public documentation language
 
@@ -141,5 +138,4 @@ Publish repository descriptions, README/help pages, Wiki, issue/PR templates and
 release descriptions in English. The application remains multilingual. Preserve
 canonical file paths, protocol identifiers, literal input/error tokens and
 historical results; explain non-English literal values in English rather than
-changing stored data. Use the common release layout in
-[Release policy](../docs/RELEASE_POLICY.md).
+changing stored data. Keep public documentation focused on product help, data/contracts and contribution. New Markdown files need an explicit entry in the reviewed `.gitignore` selection.

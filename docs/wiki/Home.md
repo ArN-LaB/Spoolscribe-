@@ -40,4 +40,4 @@ For the mobile application: [availability](https://github.com/ArN-LaB/Spoolscrib
 
 <sub>Actual v0.8.1 interface, public demonstration data. Counts are not live source coverage. [Capture provenance](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/images/README.md).</sub>
 
-**Before writing a tag:** check the exact reader and firmware setup. A stable application does not qualify every hardware combination, and a generic QR scanner cannot program a tag just by displaying its text. [Release policy](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/RELEASE_POLICY.md).
+**Before writing a tag:** check the exact reader and firmware setup. A stable application does not qualify every hardware combination, and a generic QR scanner cannot program a tag just by displaying its text. [Compatibility](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COMPATIBILITY.md).

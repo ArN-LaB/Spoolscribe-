@@ -1,34 +1,21 @@
-# SpoolScribe v0.8.1 repository structure
+# Repository layout
 
-[Documentation](README.md) · [Historical audit](validation/repository-v0.8.0.md) · [Resources](../data/README.md) · [Fixtures](../tests/fixtures/README.md)
+[Documentation](README.md) · [Develop and build](DEVELOPMENT.md) · [Contributing](../.github/CONTRIBUTING.md)
 
 | Directory | Purpose |
 | --- | --- |
-| `src/spoolscribe/` | Logic, Qt interface, CLI and NFC/QR contracts |
-| `scripts/` | Storage, sources, standalone workers and CLI compatibility |
-| `packaging/` | Multiplatform PyInstaller entry/spec |
-| `requirements/` | Dependencies and pinned build snapshot |
-| `data/` | Declared runtime resources: application/UI icons, brands, printers, translations, licences |
-| `tests/fixtures/` | Public catalogues, 48 Orca profiles and historical vectors; never bundled |
-| `docs/wiki/` | Reviewed GitHub Wiki source |
-| `docs/images/` | Actual screenshots and manifest, outside the application |
-| `docs/validation/` | Dated public release/audit evidence |
-| `.github/` | Workflows, policies and maintenance/QA tools |
+| `src/spoolscribe/` | Application logic, Qt interface, CLI and NFC/QR contracts |
+| `scripts/` | Source adapters, acquisition workers and CLI compatibility |
+| `packaging/` | Native PyInstaller build and macOS signing tools |
+| `requirements/` | Runtime dependencies and pinned build snapshot |
+| `data/` | Application resources, printer catalogue, translations and licences |
+| `tests/fixtures/` | Public regression data and historical reference vectors; excluded from installers |
+| `docs/wiki/` | Reviewed source of the illustrated help centre |
+| `docs/images/` | Real demonstration captures and their provenance |
+| `docs/validation/` | Dated software release validation |
+| `docs/archive/releases/` | Original release notes and validation references |
+| `.github/` | CI, security/contribution policies and repository maintenance tools |
 
-Local development history lives in `docs/agent-runs/`, organised by attested
-start date and objective. Its entry point is `docs/agent-runs/INDEX.md`, outside
-the public repository selection; those traces remain Git-ignored. Public version
-validation stays in `docs/validation/`. Publishing evidence needs an explicit
-selection. Builds, caches, user preferences and OS metadata stay outside the
-development-history tree.
+No personal catalogue is bundled. Initial downloads populate a per-user catalogue after consent. Build output, caches and user settings are excluded from version control. Resource inclusion is explicitly declared in `src/spoolscribe/packaging_rules.py` rather than collecting arbitrary directories.
 
-No personal catalogue is bundled. Initial downloads build a catalogue after
-consent. `data/printers.json` retains its stable public path for existing
-installations. `packaging_rules.py` explicitly declares resources rather than
-blindly collecting directories.
-
-Historical scripts are not orphans when CLI, compatibility or regressions still
-use them. The [audit](validation/repository-v0.8.0.md) explains retained families
-and exclusions. The [earlier structure assessment](https://github.com/ArN-LaB/Spoolscribe-/blob/v0.8.0/docs/REPOSITORY.md)
-and [historical archive](archive/README.md) remain accessible without changing
-dated results. [Development](DEVELOPMENT.md) · [Release policy](RELEASE_POLICY.md).
+The printer catalogue stays at `data/printers.json` for compatibility with existing installations. Historical fixtures remain reproducible inputs; updating current data is not a reason to overwrite their bytes.
