@@ -5,6 +5,24 @@
 Run commands from the repository root. Python 3.10 and 3.12 are tested; use
 Python 3.12 for PyInstaller builds.
 
+## Get the sources
+
+For the complete test and repository checks, use a Git checkout:
+
+```sh
+git clone https://github.com/ArN-LaB/Spoolscribe-.git
+cd Spoolscribe-
+```
+
+The checkout follows `main`. To reproduce a published version, check out its tag
+and follow that version's instructions and dependency files.
+
+GitHub also provides **Source code (zip)** and **Source code (tar.gz)** under each
+release's **Assets**. These contain the tagged sources, not a ready-to-run app.
+For the current source layout, extract one, install the build dependencies below
+and run `pyinstaller packaging/spoolscribe.spec --noconfirm` from its root.
+The repository checker and Git-dependent tests require the Git checkout instead.
+
 ## Run from an editable checkout
 
 ```sh
@@ -55,6 +73,10 @@ Output stays `dist/SpoolScribe.exe` (Windows), `dist/SpoolScribe` (Linux) and
 Developer ID signed, notarised and stapled build. `python packaging/macos_notarize.py --help` describes the signing tool; supplying valid signing credentials remains a maintainer responsibility.
 
 The [workflow](../.github/workflows/build.yml) tests four Python/OS configurations and checks frozen application behaviour and resource integrity. Historical archives retain their own tagged sources and checksums; a new source build uses a new version rather than replacing an old download.
+
+A local source build does not inherit the published archive's signature,
+notarisation or validation record. You can build for your own use without signing
+credentials; macOS distribution signing is a separate step.
 
 ## Data and resources
 

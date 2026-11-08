@@ -31,6 +31,8 @@ Thumbs.db
 .idea/
 
 # Local working material is kept on the Mac and excluded from publication.
+/install-local.command
+/.macos-local-install.json
 /docs/agent-*/
 /docs/agents-*/
 /docs/UNIVERSAL/
