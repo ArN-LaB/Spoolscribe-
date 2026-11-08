@@ -95,9 +95,6 @@ def check(root=ROOT):
     metadata = (root / 'pyproject.toml').read_text(encoding='utf-8')
     if re.search(r'^version\s*=\s*"([^"]+)"', metadata, re.M).group(1) != version:
         errors.append('pyproject/core version mismatch')
-    manifest = json.loads((root / '.macos-local-install.json').read_text(encoding='utf-8'))
-    if 'packaging/spoolscribe.spec' not in manifest['build']:
-        errors.append('local installer points to obsolete spec')
     if list(root.glob('*.py')) or list(root.glob('*.spec')):
         errors.append('application/build modules must be grouped below src/ or packaging/')
     sys.path.insert(0, str(root/'src'))

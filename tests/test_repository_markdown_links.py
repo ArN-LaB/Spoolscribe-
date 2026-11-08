@@ -110,6 +110,13 @@ class PublishedDocumentationTests(unittest.TestCase):
         self.assertEqual(check_repository.publication_errors(self.root, ["docs/new-internal-notes.md"]),
                          ["Excluded file in public selection: docs/new-internal-notes.md"])
         self.assertEqual(check_repository.publication_errors(self.root, ["README.md"]), [])
+        for name in ("install-local.command", ".macos-local-install.json"):
+            (self.root / name).write_text("Local installation helper\n", encoding="utf-8")
+            ignored = subprocess.run(["git", "check-ignore", name], cwd=self.root, capture_output=True)
+            self.assertEqual(ignored.returncode, 0, name)
+            subprocess.run(["git", "add", "--force", name], cwd=self.root, check=True)
+            self.assertEqual(check_repository.publication_errors(self.root, [name]),
+                             ["Excluded file in public selection: " + name])
 
     def test_wiki_selection_preserves_local_only_notes(self):
         subprocess.run(["git", "init", "-q", str(self.root)], check=True, capture_output=True)
