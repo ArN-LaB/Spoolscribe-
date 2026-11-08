@@ -204,7 +204,7 @@ code {
 }
 
 /* Main content */
-main {
+main.wrap {
   padding: 2.5rem 0 3.5rem;
 }
 
