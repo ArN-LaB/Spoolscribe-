@@ -113,4 +113,4 @@ reader support differ. [Image provenance](https://github.com/ArN-LaB/Spoolscribe
 
 **Documented** means a source describes the setup. **Software-validated** means the exporter and its data passed automated checks. **Physically tested** needs an actual printer, reader, firmware/plugin, tag and read-back result. An untested combination is not automatically incompatible. These are evidence descriptions, not new runtime badges.
 
-[Software release policy](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/RELEASE_POLICY.md) · [Share a hardware result](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose).
+[Software and hardware compatibility](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COMPATIBILITY.md) · [Share a hardware result](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose).

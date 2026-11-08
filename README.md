@@ -18,7 +18,7 @@ No account. Your catalogue stays local after its first download.
 
 **v0.8.1 is the current stable Desktop release.** Software stability and hardware
 compatibility are separate: printer/reader setups are documented individually and
-are not all physically tested. [Validation](docs/validation/v0.8.1.md) · [Release policy](docs/RELEASE_POLICY.md).
+are not all physically tested. [Validation](docs/validation/v0.8.1.md) · [Compatibility](docs/COMPATIBILITY.md).
 
 <div align="center">
 <table>
@@ -130,14 +130,7 @@ explains the distinction and the future app-link path.
 
 Report the model, reader, firmware/plugin, tag type and format when sharing a
 hardware result. Software CI is not a certification of every listed printer.
-**824 offline tests** run in each of four CI configurations; three native builds
-also exercise catalogue/NFC, colour entry and independent digital QR decoding.
+**The v0.8.1 release passed 824 offline tests per CI configuration**; its three native builds also exercised catalogue/NFC, colour entry and independent digital QR decoding.
 
 SpoolScribe is independent of printer and filament manufacturers. Code: MIT.
 Data licences and artwork credits: [NOTICE](NOTICE) · [Trademarks](docs/TRADEMARKS.md).
-
-## Development agents
-
-For development, review, handoffs and documentation maintenance, start with
-[UNIVERSAL](docs/UNIVERSAL.md), then retain the project-specific technical and safety rules in
-[Contributing](.github/CONTRIBUTING.md) and [Development](docs/DEVELOPMENT.md).

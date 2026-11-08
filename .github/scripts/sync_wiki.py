@@ -1,5 +1,6 @@
 """Preview/copy reviewed Wiki pages; never commit, push or delete remote pages."""
 import argparse
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -13,6 +14,20 @@ def rendered(text):
                   lambda m: m[1] + m[2] + (m[3] or '') + m[4], text)
 
 
+def reviewed_sources():
+    """Use the public Git selection, never arbitrary local Markdown files."""
+    names = [os.fsdecode(name) for name in subprocess.check_output(
+        ['git', 'ls-files', '-z', '--', 'docs/wiki/*.md'], cwd=ROOT).split(b'\0') if name]
+    if not names:
+        return []
+    selection = subprocess.run(
+        ['git', 'check-ignore', '--no-index', '-z', '--stdin'], cwd=ROOT,
+        input=b'\0'.join(os.fsencode(name) for name in names) + b'\0', capture_output=True)
+    if selection.returncode != 1:
+        raise ValueError('Wiki sources contain excluded files or selection cannot be verified; no files copied')
+    return [ROOT / name for name in sorted(names)]
+
+
 def synchronize(checkout, *, apply=False):
     checkout = checkout.resolve()
     if checkout == ROOT or not (checkout / '.git').exists():
@@ -24,7 +39,7 @@ def synchronize(checkout, *, apply=False):
     if status.strip():
         raise ValueError('Wiki checkout must be clean; preserve existing edits first')
     changes = []
-    for source in sorted((ROOT / 'docs/wiki').glob('*.md')):
+    for source in reviewed_sources():
         target = checkout / source.name
         if target.is_symlink():
             raise ValueError(f'Refuse symlink: {target}')
