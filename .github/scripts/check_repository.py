@@ -67,11 +67,12 @@ def publication_errors(root, names):
     if not names:
         return []
     result = subprocess.run(
-        ['git', 'check-ignore', '--no-index', '--stdin'], cwd=root,
-        input='\n'.join(names) + '\n', text=True, capture_output=True)
+        ['git', 'check-ignore', '--no-index', '-z', '--stdin'], cwd=root,
+        input=b'\0'.join(os.fsencode(name) for name in names) + b'\0', capture_output=True)
     if result.returncode not in (0, 1):
-        return ['Cannot check public selection: ' + result.stderr.strip()]
-    return ['Excluded file in public selection: ' + name for name in result.stdout.splitlines()]
+        return ['Cannot check public selection: ' + result.stderr.decode('utf-8', errors='replace').strip()]
+    return ['Excluded file in public selection: ' + os.fsdecode(name)
+            for name in result.stdout.split(b'\0') if name]
 
 
 def check(root=ROOT):

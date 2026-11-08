@@ -1,5 +1,6 @@
 """Preview/copy reviewed Wiki pages; never commit, push or delete remote pages."""
 import argparse
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -15,15 +16,13 @@ def rendered(text):
 
 def reviewed_sources():
     """Use the public Git selection, never arbitrary local Markdown files."""
-    names = subprocess.check_output(
-        ['git', 'ls-files', '-z', '--', 'docs/wiki/*.md'], cwd=ROOT,
-        text=True).strip('\0').split('\0')
-    names = [name for name in names if name]
+    names = [os.fsdecode(name) for name in subprocess.check_output(
+        ['git', 'ls-files', '-z', '--', 'docs/wiki/*.md'], cwd=ROOT).split(b'\0') if name]
     if not names:
         return []
     selection = subprocess.run(
-        ['git', 'check-ignore', '--no-index', '--stdin'], cwd=ROOT,
-        input='\n'.join(names) + '\n', text=True, capture_output=True)
+        ['git', 'check-ignore', '--no-index', '-z', '--stdin'], cwd=ROOT,
+        input=b'\0'.join(os.fsencode(name) for name in names) + b'\0', capture_output=True)
     if selection.returncode != 1:
         raise ValueError('Wiki sources contain excluded files or selection cannot be verified; no files copied')
     return [ROOT / name for name in sorted(names)]
