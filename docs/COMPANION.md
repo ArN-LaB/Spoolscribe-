@@ -1,6 +1,6 @@
 # SpoolScribe Companion
 
-[Desktop v0.8.0 stable](../README.md) · [QR help](wiki/Companion-and-QR.md) · [SSQR1 contract](QR_FORMAT.md)
+[Desktop v0.8.1 stable](../README.md) · [QR help](wiki/Companion-and-QR.md) · [SSQR1 contract](QR_FORMAT.md)
 
 **The mobile application is in development. Official downloads are not available yet.**
 This is the common availability page for iOS and Android. Desktop opens this page
@@ -28,6 +28,5 @@ a controlled domain and the released mobile apps. It is not deployed here.
 
 ## Help and project information
 
-[Desktop help centre](wiki/Home.md) · [Support / Issues](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) · [Desktop privacy policy](PRIVACY.md).
-The mobile privacy/support information must be checked against the actual mobile
-implementation before its store submission; no mobile compliance is claimed here.
+[Companion support](https://arn-lab.github.io/Spoolscribe-/support/) · [Companion privacy policy](https://arn-lab.github.io/Spoolscribe-/privacy/) · [Desktop help](wiki/Home.md) · [Desktop privacy](PRIVACY.md).
+The mobile support and privacy pages explicitly identify the dated development prototype they describe. Review them against the actual submitted build before public distribution; Desktop validation and macOS notarisation do not constitute Companion App Store approval.

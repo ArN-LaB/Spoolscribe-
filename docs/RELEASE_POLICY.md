@@ -68,46 +68,24 @@ protocol identifiers merely to change documentation language. A historical
 release can have its explanatory wording translated without changing its dated
 outcomes, channel or binaries.
 
-Use the same reading order for every release:
+Use a short native release title such as **v0.8.1 · Backups & recovery**. The body opens with a short purpose statement, without repeating the title or product name.
 
-| Section | Reader's question | Content |
-| --- | --- | --- |
-| Opening summary | What is this version for? | A short version-specific explanation and original publication/channel |
-| What's new | Why would I use it? | Three concise, version-specific workflow explanations |
-| Download | Which file do I need? | Three platform cards with ZIP size, checksum and attested system requirements |
-| Validation & limits | What is proven? | Visible outcomes and limits; long evidence in one collapsed record |
-| Help & next steps | Where do I learn more? | Installation, help and support links with a short explanation |
+## Editorial layout
 
-Keep the main explanation in paragraphs rather than dumping commit lists. Use
-tables for genuine comparisons. Long original technical records may be retained
-in a clearly labelled collapsed details section; explain that old “latest stable”
-statements describe the original publication stage. Do not hide failures or
-promote unmeasured coverage to PASS. Keep the same section titles across versions,
-and never give an old binary today's notarisation claim.
+Use the same modest heading level and reading order for every version: **Highlights**, **Download**, then **Notes**. Describe one to three real changes in short paragraphs with an inline lead phrase. A focused fix does not need three invented selling points. Use whitespace and clear language instead of a grid of framed feature/help cards.
 
-## Release presentation rules
+A single semantic download table aligns the operating system, attested build, ZIP size/link and checksum. Use the same table for the current README and release. Do not pad cells with repeated instructions to force width. A centred compact table is preferable to large, uneven boxes; paragraphs use the available content width naturally. Explain extraction and platform requirements once beneath the table.
 
-Use a short native release title such as **v0.8.1 · Backups & recovery**. Do not
-repeat it as an H1 in the body. The repository header already identifies the
-product; avoid repeating “SpoolScribe Desktop” in every title, section or link.
-Keep original asset names and historical quotations intact.
+Keep meaningful user-facing limits visible. Long test matrices, hashes, source commits and original technical notes belong in the linked, versioned [publication records](archive/README.md) and [validation documentation](validation/v0.8.1.md), with historical outcomes intact. An optional **Build & validation details** disclosure contains a brief factual summary and links, not a second copy of the release page.
 
-Write each prose paragraph on one source line in release bodies. GitHub's release
-renderer turns embedded line endings into visible breaks; wrapping source at
-80 characters produces narrow blocks even in a wide viewport. Let the browser
-wrap paragraphs naturally. Intentional line breaks belong only in small labels,
-code and data that actually require them.
+Write each prose paragraph in release bodies on one source line, letting the browser wrap naturally. Never run a whitespace-flattening replacement across Markdown headings, blank lines, tables, lists or code fences. In a disclosure, use explicit HTML paragraphs and links, with blank lines around the block. Check both the closed and expanded output: raw heading markers, pipe-table separators and triple-backtick fences must not leak into ordinary rendered text. Reference: [GitHub collapsed sections](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-collapsed-sections).
 
-Use GitHub-supported HTML tables with `width="100%"`, equal-percentage cells and
-`valign="top"` for short feature, platform and help cards. Keep the cards concise,
-use semantic headings and links, and check the sanitised GitHub rendering rather
-than assuming arbitrary CSS or fixed-width spacers will work. Do not use scripts,
-inline styles, decorative blank images or manually padded spaces to force width.
+Review the actual published rendering, not just accepted HTML attributes. Preserve content and verify light/dark readability where accessible; do not claim mobile or visual coverage that was not observed. GitHub owns the outer page width and sidebar. Do not add scripts, inline styles, decorative spacers or screenshots from a newer version to dress up an old release.
 
-Keep known failures, unsupported coverage and important safety limits visible.
-Place the original detailed test tables, full hashes and historical notes in one
-clearly labelled collapsed section. Do not delete evidence to shorten the page.
-Verify the wide desktop rendering and a narrow view; GitHub controls the outer
-page width, padding and sidebar, which release Markdown cannot override.
+Display language-choice labels in their native form: **English · Français · Español · 简体中文**. Explanatory prose remains English. Use the same restrained typography and task names in the README, Wiki and public support entry points.
 
-Display language-choice labels in their own language: **English · Français · Español · 简体中文**. Surrounding explanations remain English; native language labels are intentional, not untranslated explanatory prose.
+## Companion review information
+
+Make mobile [support](https://arn-lab.github.io/Spoolscribe-/support/), [privacy](https://arn-lab.github.io/Spoolscribe-/privacy/) and [availability](COMPANION.md) easy to find and clearly separate from Desktop downloads and policy. Keep the actual dated prototype scope visible until a reviewed shipping-build policy replaces it. Never turn Desktop tests or macOS notarisation into a Companion App Store approval claim.
+
+Apple calls for accurate metadata and functional support/privacy links; a polished website alone does not establish acceptance. [App Review](https://developer.apple.com/app-store/review/) and [Guidelines 2.3 / 5.1.1](https://developer.apple.com/app-store/review/guidelines/), checked 8 November 2026. No mobile project or submitted build was audited by this documentary change.
