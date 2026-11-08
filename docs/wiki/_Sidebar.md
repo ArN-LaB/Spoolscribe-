@@ -21,5 +21,5 @@
 - [Backing up your data](Backup-and-Restore.md)
 - [FAQ](FAQ.md)
 - [All screen examples](Visual-Tour.md)
-- [Download stable v0.8.1](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1)
+- [Download stable v0.8.2](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.2)
 - [Report a problem](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose)

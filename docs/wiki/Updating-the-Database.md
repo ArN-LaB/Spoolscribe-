@@ -4,7 +4,7 @@
 
 ## Choose what to contact
 
-Open **Catalogue sources…** and select the sources you want. **Save only** changes
+Open **Settings › Catalogue › Catalogue sources…** and select the sources you want. When network permission is off, **Refresh catalogue** also opens that choice. **Save only** changes
 the selection; **Refresh now** starts the network update after permission.
 Unchecking a source does not delete its downloaded records.
 
@@ -33,7 +33,7 @@ application version, OS and source name. The bundled app includes its trust root
 
 ## Check what is stored locally
 
-Click the catalogue status at the bottom of the application. The summary shows
+Click the catalogue status beside **Refresh catalogue** in the catalogue area. The summary shows
 record counts and the last result; storage details are optional. Counts can vary
 because product variants are grouped separately from individual source references.
 
@@ -47,3 +47,5 @@ backup and check concurrent changes. Restoration is explicit; a restored databas
 is not immediately refreshed again in the same session. For a damaged file,
 preserve it and report the problem instead of repeatedly reinstalling the app.
 To keep a copy of all your data, see [Backing up your data](Backup-and-Restore.md).
+
+When quitting during a refresh, **Continue refreshing** is the default and Escape keeps the application open. If you choose **Exit**, the refresh stops; completed steps may already have changed local data. This is not a rollback to the catalogue before the entire refresh.

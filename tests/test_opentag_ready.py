@@ -11,7 +11,8 @@ class OpenTagReadyTests(unittest.TestCase):
     def setUpClass(cls):fixture.GuiTests.setUpClass()
     def setUp(self):
         fixture.GuiTests.setUp(self);i18n.set_language('fr');w=self.window
-        w.printer.setCurrentIndex(w.printer.findData('opentag3d'));w.current_sku='PB05001';w._show_detail(w.current_sku)
+        w.printer.setCurrentIndex(w.printer.findData('opentag3d'));w.format_buttons.buttons['opentag3d'].click()  # explicit choice (B14 A)
+        w.current_sku='PB05001';w._show_detail(w.current_sku)
         self.settings=dict(print_temp=240,bed_temp=75,chamber_temp=0,weight=1000)
 
     def test_prepare_then_nfc_qr_and_preview_do_not_reopen_the_editor(self):

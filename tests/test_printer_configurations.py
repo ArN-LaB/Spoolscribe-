@@ -212,3 +212,72 @@ class PrinterConfigurationGuiTests(unittest.TestCase):
         w.hardware_scroll.verticalScrollBar().setValue(w.hardware_scroll.verticalScrollBar().maximum())
         self.assertTrue(w.setup_result.isVisibleTo(w.hardware_dialog))
         self.assertGreater(w.setup_result_panel.geometry().top(),w.hardware_scroll.geometry().bottom())
+
+
+@unittest.skipUnless(fixture.HAS_QT,'Qt unavailable')
+class LabelSectionLiveTests(unittest.TestCase):
+    """B14 A: « Votre étiquette » follows the setup in the same open window, from startup."""
+    @classmethod
+    def setUpClass(cls):fixture.GuiTests.setUpClass()
+    def setUp(self):
+        fixture.GuiTests.setUp(self)
+        from spoolscribe import app_gui
+        cfg=core.load_config();cfg.update(printer_profile='u1',printer_firmware='paxx12_openrfid');core.save_config(cfg)
+        self.window.close();self.window=app_gui.MainWindow();self.addCleanup(self.window.close)
+        self.window._open_hardware();self.window.app.processEvents()
+        self.addCleanup(self.window.hardware_dialog.close)
+
+    def state(self):
+        w=self.window;w.app.processEvents()
+        return dict(formats=list(w.format_buttons.buttons) if w.format_buttons.isVisible() else [],
+                    selected=w.nfc_format.currentData(),notice=w.format_notice.isVisible(),
+                    writer=w.writer_label.isVisible() or w.writer_buttons.isVisible() or w.writer_expert.isVisible(),
+                    tag=w.tag_choice.isVisible())
+
+    def test_first_display_already_shows_the_formats_of_the_saved_setup(self):
+        # Before the fix the writer-software buttons were shown and no format (capture 01).
+        self.assertEqual(self.state(),dict(formats=['openspool','opentag3d'],selected='openspool',notice=False,writer=False,tag=True))
+
+    def test_setup_changes_update_the_open_page_without_reopening(self):
+        w=self.window
+        steps=[('paxx12',dict(formats=['openspool'],selected='openspool',notice=False,writer=False,tag=True)),
+               ('paxx12_openrfid',dict(formats=['openspool','opentag3d'],selected='openspool',notice=False,writer=False,tag=True)),
+               ('stock',dict(formats=[],selected=None,notice=False,writer=False,tag=False)),
+               ('unknown',dict(formats=[],selected=None,notice=False,writer=False,tag=False))]
+        for firmware,expected in steps:
+            with self.subTest(firmware=firmware):
+                w.firmware.setCurrentIndex(w.firmware.findData(firmware))
+                self.assertEqual(self.state(),expected)
+                self.assertTrue(w.hardware_dialog.isVisible())
+        self.assertIn('Composez',w.setup_result.text())
+        w.firmware.setCurrentIndex(w.firmware.findData('stock'))
+        self.assertIn('Aucun format',w.setup_result.text())
+        # Choosing a reader route never confirms an installed setup by inference.
+        w.reader_buttons.buttons['integrated'].click();self.assertEqual(w.firmware.currentData(),'unknown')
+
+    def test_unavailable_format_is_signalled_kept_and_never_substituted(self):
+        w=self.window;w.current_sku='PB05001';w._show_detail('PB05001')
+        w.format_buttons.buttons['opentag3d'].click()
+        self.assertEqual(core.load_config()['nfc_format'],'opentag3d')
+        before={k:v for k,v in core.load_config().items() if k not in ('printer_profile','printer_firmware')}
+        w.firmware.setCurrentIndex(w.firmware.findData('paxx12'))
+        self.assertEqual(self.state(),dict(formats=['openspool'],selected=None,notice=True,writer=False,tag=True))
+        self.assertIn('OpenTag3D 2.004',w.format_notice.text())
+        self.assertFalse(w.btn_generate.isEnabled());self.assertFalse(w.btn_qr.isEnabled())
+        self.assertIn('format',w.nfc_capacity.text())
+        after={k:v for k,v in core.load_config().items() if k not in ('printer_profile','printer_firmware')}
+        self.assertEqual(after,before)   # neither the format nor any unrelated preference changed
+        w.firmware.setCurrentIndex(w.firmware.findData('paxx12_openrfid'))
+        self.assertEqual(w.nfc_format.currentData(),'opentag3d');self.assertFalse(w.format_notice.isVisible())
+        w.firmware.setCurrentIndex(w.firmware.findData('paxx12'));w.format_buttons.buttons['openspool'].click()
+        self.assertEqual((w.nfc_format.currentData(),core.load_config()['nfc_format']),('openspool','openspool'))
+        self.assertTrue(w.btn_generate.isEnabled())
+
+    def test_same_explicit_choice_exports_the_same_bytes_after_switches(self):
+        w=self.window;w.current_sku='PB05001';w._show_detail('PB05001')
+        first=w._export_bytes();self.assertTrue(first)
+        for firmware in ('paxx12','stock','unknown','paxx12_openrfid'):
+            w.firmware.setCurrentIndex(w.firmware.findData(firmware))
+        w.printer.setCurrentIndex(w.printer.findData('prusa_core'));w.printer.setCurrentIndex(w.printer.findData('u1'))
+        w.firmware.setCurrentIndex(w.firmware.findData('paxx12_openrfid'))
+        self.assertEqual(w.nfc_format.currentData(),'openspool');self.assertEqual(w._export_bytes(),first)

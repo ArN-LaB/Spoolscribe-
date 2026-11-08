@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-11-09
+
+### A calmer and more responsive workspace
+
+- “Your tag” in My hardware is correct from the first display and follows printer, reader and software changes in the same window. A tag format that the new setup cannot read is reported and must be chosen again before export; it is no longer replaced or saved silently. Encoders and export bytes are unchanged.
+- One navigation menu (My hardware, Settings, About), opened inside the window and closed with Escape. Preference export/import and backups stay in Settings › Data and backups. The app update check moved to About, and the single-filament OpenSpool JSON to that filament's export details.
+- Catalogue refresh moved next to the catalogue, apart from the instant local search. The catalogue state, progress, cancellation and failure are shown in one place, and the stored state wraps instead of being cut in narrow windows. Only a complete refresh is shown with its date.
+- Settings › Data and backups shows a visible “Not encrypted” badge next to Export preferences and Back up my data, the exact scope of each file, and that unsaved changes in the window are not included. The export-path risk is shown in the dialogs, not only in a tooltip, and cancelling a preference export writes nothing.
+- About is reorganised: identity, description, collapsible credits, a balanced resources grid that reflows in narrow windows, then an optional, clearly separated support block.
+- Shared card and tile radii; the draft editor uses a solid accent border; the green rule on a ready export card was removed (ready means software preparation only), and the amber rule still marks something to do.
+- Fixed a crash (SIGSEGV) reproduced when Settings and the preference-export dialogs were opened, cancelled and reopened. Content-fitting helpers of closed dialogs could be released while still receiving Qt events.
+
+- Narrow-window panels use their real content minimums and reversible reflow. Layout fitting stops when idle, avoiding a sustained CPU loop.
+- Confirmation dialogs separate the question from its explanation, keep the safe choice on Escape, and describe partial refresh results accurately. The status line has a real inset and exposes long messages through a full-text tooltip.
+
 ## [0.8.1] - 2026-11-08
 
 ### Desktop settings, safety and signed macOS distribution

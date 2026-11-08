@@ -18,7 +18,7 @@ import functools
 import threading
 import traceback
 
-from PySide6.QtCore import Qt, QThread, Signal, QSize, QTimer, QRectF, QLockFile, QUrl
+from PySide6.QtCore import Qt, QThread, Signal, QSize, QTimer, QRectF, QLockFile, QUrl, QPoint, QEvent
 from PySide6.QtGui import (
     QColor, QFont, QPixmap, QPainter, QIcon, QPalette, QPainterPath, QAction, QPen, QDesktopServices,
 )
@@ -29,6 +29,7 @@ from PySide6.QtWidgets import (
     QSizePolicy, QStackedWidget, QToolButton, QMenu, QListWidget, QListWidgetItem,
     QDialog, QDialogButtonBox, QCheckBox, QSpinBox, QButtonGroup, QComboBox,
     QScrollArea, QFileDialog, QDoubleSpinBox, QGraphicsDropShadowEffect,
+    QStatusBar, QStyle, QStyleOption,
 )
 
 try:
@@ -42,7 +43,7 @@ from .i18n import tr, configure_language, LANGUAGES, display_quality
 from .app_lifecycle import RESTART_EXIT_CODE, launch_replacement
 from .ui_catalogue import CatalogueUx, ClearableTable, ClearableList
 from .ui_detail import DetailUx
-from .ui_widgets import SearchField, SpoolPreview, MetricGrid, WrapLabel, FilamentDelegate, spool_icon, product_label, display_delta, DetailScrollArea, CONTROL_HEIGHT
+from .ui_widgets import SearchField, SpoolPreview, MetricGrid, WrapLabel, FilamentDelegate, spool_icon, product_label, display_delta, DetailScrollArea, CONTROL_HEIGHT, CARD_RADIUS, TILE_RADIUS, CONTROL_RADIUS, ReflowRow, ActionLabel
 
 # The inspector lives inside the scroll area; toggling never changes the window.
 _INSPECTOR_H = 210
@@ -128,6 +129,41 @@ class SpinningLogo(QWidget):
             self._renderer.render(p, "disc", target)
             p.restore()
         p.end()
+
+
+class StatusLine(QStatusBar):
+    """Status bar whose temporary message is drawn inside its contents margins.
+
+    QStatusBar paints its message 6 px from the window edge whatever its margins, against
+    the rounded corner. Here the text follows the margins, is elided when too long and keeps
+    its full wording in the tooltip. It is only painted: a message never changes any
+    geometry, so it never asks the window for a layout pass.
+    """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setSizeGripEnabled(False)
+        self.messageChanged.connect(self._follow_message)
+
+    def displayed_text(self):
+        return self.fontMetrics().elidedText(self.currentMessage(), Qt.ElideRight, max(0, self.contentsRect().width()))
+
+    def _follow_message(self, *_):
+        text = self.currentMessage()
+        self.setToolTip(text if self.displayed_text() != text else '')
+        self.update()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._follow_message()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        option = QStyleOption()
+        option.initFrom(self)
+        self.style().drawPrimitive(QStyle.PE_PanelStatusBar, option, painter, self)
+        if self.currentMessage():
+            painter.setPen(self.palette().windowText().color())
+            painter.drawText(self.contentsRect(), Qt.AlignLeading | Qt.AlignVCenter | Qt.TextSingleLine, self.displayed_text())
 
 
 # ─── Thread de mise à jour DB ─────────────────────────────────────────────
@@ -429,6 +465,10 @@ def contrast_text(hex_code: str | None) -> str:
 
 
 # ─── Fenêtre principale ───────────────────────────────────────────────────
+MIN_WINDOW_WIDTH = 860   # announced minimum; raised only if the real layout needs more (fonts, languages)
+MIN_WINDOW_HEIGHT = 560
+
+
 class MainWindow(DetailUx, CatalogueUx, QMainWindow):
     def __init__(self):
         super().__init__()
@@ -436,7 +476,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         configure_language(self.app, core.load_config().get("language", "auto"))
         self.setWindowTitle(f"SpoolScribe {core.APP_VERSION} — OpenSpool / NFC")
         self.resize(1280, 800)
-        self.setMinimumSize(860, 560)
+        self.setMinimumSize(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
 
         icon_path = core.app_icon_abs_path()
         if icon_path:
@@ -536,24 +576,24 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         seg.addWidget(self.btn_view_grid)
         # View controls sit with the catalogue, below the global search.
 
+        # Catalogue synchronisation lives with the catalogue it updates (below),
+        # apart from the instant local search of this bar.
         self.update_btn = QPushButton(tr('Actualiser le catalogue'))
-        self.update_btn.setObjectName("primary")
+        self.update_btn.setObjectName("secondary")
         self.update_btn.setFixedHeight(32)
         self.update_btn.setCursor(Qt.PointingHandCursor)
         self.update_btn.setToolTip(tr('Choisir les sources et actualiser la base'))
         self.update_btn.clicked.connect(self._sync_catalogue)
-        top.addWidget(self.update_btn)
 
-        # Menu ⚙ : matériel, sources, réglages, à propos
+        # One navigation menu: hardware, settings (data and backups included), about.
         self.menu_btn = QToolButton()
         self.menu_btn.setObjectName("ghost")
         self.menu_btn.setFixedSize(38,32)
         self.menu_btn.setText("⚙")
-        self.menu_btn.setToolTip(tr('Réglages'))
-        self.menu_btn.setAccessibleName(tr('Réglages'))
+        self.menu_btn.setToolTip(tr('Menu : matériel, paramètres, à propos'))
+        self.menu_btn.setAccessibleName(tr('Menu'))
         self.menu_btn.setCursor(Qt.PointingHandCursor)
-        self.menu_btn.setPopupMode(QToolButton.InstantPopup)
-        menu = QMenu(self.menu_btn)
+        menu = self.main_menu = QMenu(self.menu_btn)
         act_hardware = QAction(tr('Mon matériel…'), self)
         act_hardware.triggered.connect(self._open_hardware)
         menu.addAction(act_hardware)
@@ -561,15 +601,16 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         act_settings.triggered.connect(self._open_settings)
         menu.addAction(act_settings)
         menu.addSeparator()
+        # The single-filament OpenSpool file belongs to that filament's export
+        # details (« Détails »), not to this menu nor to data management.
         self.act_archive = QAction(tr('Exporter le JSON OpenSpool du filament…'), self)
         self.act_archive.triggered.connect(lambda: self._generate(mode="archive"))
         self.act_archive.setToolTip(tr('Fichier OpenSpool lisible du filament sélectionné. Ce n’est pas une sauvegarde de vos données.'))
-        menu.addAction(self.act_archive)
-        menu.addSeparator()
         act_about = QAction(tr('À propos de SpoolScribe'), self)
         act_about.triggered.connect(self._open_about)
         self._about_action=act_about
-        self.menu_btn.setMenu(menu)
+        menu.addAction(act_about)
+        self.menu_btn.clicked.connect(self._show_main_menu)
         top.addWidget(self.menu_btn)
         root.addLayout(top)
 
@@ -648,7 +689,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.cancel_update_btn.setToolTip(tr("Interrompt la synchronisation ; la base locale reste celle d'avant."))
         self.cancel_update_btn.clicked.connect(self._cancel_update)
         progress_row.addWidget(self.cancel_update_btn)
-        progress_layout.addLayout(progress_row); root.addWidget(self.update_progress_card); self.update_progress_card.hide()
+        progress_layout.addLayout(progress_row); self.update_progress_card.hide()
 
         # ── Splitter : facettes · liste/grille · fiche ───────────────────
         splitter = self.splitter = QSplitter(Qt.Horizontal)
@@ -726,7 +767,8 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.list_stack.addWidget(self.grid)
 
         table_panel = QWidget()
-        table_panel.setMinimumWidth(340)
+        # Minimum from its real content (toolbar, state, pager); columns scroll horizontally.
+        table_panel.setMinimumWidth(0)
         table_layout = QVBoxLayout(table_panel)
         table_layout.setContentsMargins(0, 0, 0, 0)
         tools = QHBoxLayout()
@@ -740,6 +782,19 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         tools.addWidget(self.segwrap)
         tools.addWidget(self.columns_btn)
         table_layout.addLayout(tools)
+        # Catalogue state and its refresh action, then the progress of a running
+        # refresh: one stable place, never a floating message.
+        # A wrapping, keyboard-reachable state (never elided in a narrow window) opens the report.
+        self.database_btn = ActionLabel()
+        self.database_btn.setObjectName("statusControl"); self.database_btn.setMinimumHeight(24)
+        self.database_btn.setAccessibleName(tr('État du catalogue'))
+        self.database_btn.clicked.connect(self._database_details)
+        self.catalogue_state = ReflowRow()
+        self.catalogue_state.setObjectName('catalogueState')
+        self.catalogue_state.addWidget(self.database_btn, 1)
+        self.catalogue_state.addWidget(self.update_btn)
+        table_layout.addWidget(self.catalogue_state)
+        table_layout.addWidget(self.update_progress_card)
         table_layout.addWidget(self.list_stack, 1)
         table_layout.addLayout(pager)
         splitter.addWidget(table_panel)
@@ -757,6 +812,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         detail_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         detail_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         detail_scroll.setWidget(detail_inner)
+        detail_inner.installEventFilter(self)
         detail_panel = QWidget()
         detail_layout = QVBoxLayout(detail_panel)
         detail_layout.setContentsMargins(12, 0, 8, 0)
@@ -766,16 +822,19 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.nfc_note.hide()
         self._build_export_explanation(self.footer_layout)
         self.last_export_label=WrapLabel();self.last_export_label.setObjectName('exportState');self.footer_layout.addWidget(self.last_export_label)
-        self.export_action_grid=QGridLayout();self.export_action_grid.setContentsMargins(0,0,0,0);self.export_action_grid.setSpacing(8)
-        self.export_action_grid.addWidget(self.btn_generate,0,0);self.export_action_grid.addWidget(self.btn_qr,0,1)
-        self.export_action_grid.setColumnStretch(0,1);self.export_action_grid.setColumnStretch(1,1)
-        self._export_actions_inline=True
-        self.footer_layout.addLayout(self.export_action_grid)
-        actions=QHBoxLayout();actions.setContentsMargins(0,0,0,0);actions.setSpacing(8)
+        # Export and QR side by side at equal width when both labels fit, otherwise
+        # stacked; the row's minimum is one action, so the detail panel can stay narrow.
+        def export_actions_width():
+            return 2*max(max(b.fontMetrics().horizontalAdvance(line) for line in b.text().splitlines())+32 for b in (self.btn_generate,self.btn_qr))+8
+        self.export_action_row=ReflowRow(needed=export_actions_width)
+        self.export_action_row.addWidget(self.btn_generate,1);self.export_action_row.addWidget(self.btn_qr,1)
+        self.footer_layout.addWidget(self.export_action_row)
         self.btn_inspect.setFixedHeight(32);self.btn_open_out.setFixedHeight(32);self.btn_qr.setFixedHeight(self.btn_generate.height())
-        actions.addWidget(self.btn_inspect,1);actions.addWidget(self.btn_open_out,1)
         # Own row: three labels do not fit side by side in every language and width.
-        self.footer_layout.addLayout(actions);detail_layout.addWidget(self.detail_footer)
+        # Side by side while both labels fit with the button padding (QSS 12 px + border each side).
+        self.secondary_export_row=ReflowRow(needed=lambda:sum(b.fontMetrics().horizontalAdvance(b.text())+26 for b in (self.btn_inspect,self.btn_open_out))+8)
+        self.secondary_export_row.addWidget(self.btn_inspect,1);self.secondary_export_row.addWidget(self.btn_open_out,1)
+        self.footer_layout.addWidget(self.secondary_export_row);detail_layout.addWidget(self.detail_footer)
         detail_scroll.viewportChanged.connect(self._align_detail_footer)
         self.stack.addWidget(detail_panel)
 
@@ -784,16 +843,14 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         splitter.setStretchFactor(0, 0)
         splitter.setStretchFactor(1, 3)
         splitter.setStretchFactor(2, 2)
-        self.stack.setMinimumWidth(300)
+        # Minimum from the detail's content, whose action rows reflow when narrow.
+        self.stack.setMinimumWidth(0)
         splitter.setSizes([220, 620, 400])
 
+        self.setStatusBar(StatusLine(self))
         self.status = self.statusBar()
-        self.status.setSizeGripEnabled(False)
-        self.status.setContentsMargins(14,4,20,4)
-        self.database_btn = QToolButton()
-        self.database_btn.setObjectName("statusControl");self.database_btn.setFixedHeight(24)
-        self.status.addPermanentWidget(self.database_btn)
-        self.database_btn.clicked.connect(self._database_details)
+        # Text aligned with the window content (14 px), clear of the rounded corners.
+        self.status.setContentsMargins(14,3,20,5)
         self.status.showMessage(tr('Choisissez un filament.'))
 
     # ── Page « aucun filament sélectionné » ──────────────────────────────
@@ -826,7 +883,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         lay.addSpacing(20)
 
         # ── Titre ────────────────────────────────────────────────────────
-        title = QLabel(tr('Aucun filament sélectionné'))
+        title = WrapLabel(tr('Aucun filament sélectionné'))
         tf = QFont()
         tf.setPointSize(17)
         tf.setWeight(QFont.DemiBold)
@@ -843,7 +900,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
             tr('Basculez entre vue liste et grille en haut à droite.'),
         ]
         for i, txt in enumerate(lines):
-            lbl = QLabel(txt)
+            lbl = WrapLabel(txt)   # wraps in a narrow panel instead of imposing its width
             lbl.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             lf = QFont()
             lf.setPointSize(10 if i == 2 else 11)
@@ -867,19 +924,27 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         # The hero carries identity once: brand, product, spool, colour and material.
         self.hero = QFrame();self.hero.setObjectName('filamentHero')
         hero_layout = QVBoxLayout(self.hero);hero_layout.setContentsMargins(14,12,14,12);hero_layout.setSpacing(8)
-        head = QHBoxLayout()
+        # Logo and actions share a row, or stack when the detail panel is narrow.
+        head = self.hero_head = ReflowRow()
+        hero_actions = QWidget(); hero_actions_layout = QHBoxLayout(hero_actions)
+        hero_actions_layout.setContentsMargins(0,0,0,0); hero_actions_layout.setSpacing(6); hero_actions_layout.addStretch(1)
         self.logo = QLabel();self.logo.setFixedSize(100,30);self.logo.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
         halo=QGraphicsDropShadowEffect(self.logo);halo.setOffset(0,0);halo.setBlurRadius(7);halo.setColor(QColor(255,255,255,175));halo.setEnabled(False);self.logo.setGraphicsEffect(halo)
-        head.addWidget(self.logo);head.addStretch(1)
+        head.addWidget(self.logo)
         self.favorite_btn=QToolButton();self.favorite_btn.setText(tr('☆ Favori'));self.favorite_btn.setCheckable(True)
         self.btn_similar=QToolButton();self.btn_similar.setText(tr('Teintes'));self.btn_similar.setFixedHeight(CONTROL_HEIGHT)
         self.btn_similar.setObjectName('colourAction')
         self.btn_similar.setToolTip(tr('Comparer cette couleur avec le catalogue'))
-        self.btn_similar.clicked.connect(self._open_colour_search);head.addWidget(self.btn_similar)
-        self.favorite_btn.setFixedHeight(CONTROL_HEIGHT);self.favorite_btn.clicked.connect(self._toggle_filament_favorite);head.addWidget(self.favorite_btn)
-        hero_layout.addLayout(head)
-        body=QHBoxLayout();body.setSpacing(10)
-        self.spool_preview=SpoolPreview();body.addWidget(self.spool_preview,0,Qt.AlignTop)
+        self.btn_similar.clicked.connect(self._open_colour_search);hero_actions_layout.addWidget(self.btn_similar)
+        self.favorite_btn.setFixedHeight(CONTROL_HEIGHT);self.favorite_btn.clicked.connect(self._toggle_filament_favorite);hero_actions_layout.addWidget(self.favorite_btn)
+        head.addWidget(hero_actions,1)
+        hero_layout.addWidget(head)
+        # Spool beside the titles, or above them when the detail panel is narrow.
+        def hero_body_width():
+            words=self.title.text().split() or ['']
+            return self.spool_preview.width()+10+max(self.title.fontMetrics().horizontalAdvance(word) for word in words)+40
+        body=self.hero_body=ReflowRow(spacing=10,needed=hero_body_width)
+        self.spool_preview=SpoolPreview();body.addWidget(self.spool_preview);body.box.setAlignment(self.spool_preview,Qt.AlignTop|Qt.AlignLeft)
         titles=QVBoxLayout();titles.setSpacing(5)
         self.title=WrapLabel('—');self.title.setObjectName('filamentTitle');font=self.title.font();font.setPointSize(17);font.setBold(True);self.title.setFont(font)
         titles.addWidget(self.title)
@@ -887,7 +952,8 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.subtitle_color=WrapLabel();self.subtitle_color.setObjectName('subtitle_color');titles.addWidget(self.subtitle_color)
         self.filament_meta=WrapLabel();self.filament_meta.setObjectName('fieldvalue');titles.addWidget(self.filament_meta)
         self.swatch=QLabel('—');self.swatch.setObjectName('swatch');self.swatch.setMaximumHeight(28);self.swatch.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        titles.addWidget(self.swatch);titles.addStretch(1);body.addLayout(titles,1);hero_layout.addLayout(body)
+        titles.addWidget(self.swatch);titles.addStretch(1)
+        titles_widget=QWidget();titles_widget.setLayout(titles);body.addWidget(titles_widget,1);hero_layout.addWidget(body)
         self.color_caption=QLabel(tr('Couleur'));self.color_caption.hide()
         self.variant_label=QLabel(tr('Bobine'))
         self.variant_choice=QComboBox();self.variant_choice.setMinimumWidth(0)
@@ -906,11 +972,12 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.characteristics=MetricGrid();card_layout.addWidget(self.characteristics);self._field_widgets=dict(self.characteristics.values)
         dl.addWidget(self.card)
         self.provenance_toggle=QToolButton();self.provenance_toggle.setText(tr('Détails et sources'));self.provenance_toggle.setCheckable(True);self.provenance_toggle.toggled.connect(self._toggle_provenance)
-        self.characteristic_actions=QHBoxLayout();self.characteristic_actions.setSpacing(8)
+        # Equal side by side, stacked when the detail panel cannot show both whole.
+        self.characteristic_row=ReflowRow();self.characteristic_actions=self.characteristic_row.box;self.characteristic_actions.setSpacing(8)
         for button in (self.btn_edit_physical,self.provenance_toggle):
             button.setFixedHeight(CONTROL_HEIGHT);button.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Fixed)
-            self.characteristic_actions.addWidget(button,1)
-        dl.addLayout(self.characteristic_actions)
+            self.characteristic_row.addWidget(button,1)
+        dl.addWidget(self.characteristic_row)
         self._build_draft_editor(dl)
         self._build_comparison_card(dl)
         self.provenance_box=QFrame();self.provenance_box.setObjectName('provenanceCard')
@@ -1032,8 +1099,17 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         muted, faint, accent = t["muted"], t["faint"], t["accent"]
         colour_ink = accent
         hardware_ink = '#96bce8' if t['dark'] else '#365f91'
-        ready_ink = '#8bcba7' if t['dark'] else '#26734d'
         attention_ink = '#ebc381' if t['dark'] else '#895c12'
+        # Accent meanings (same meaning, same style everywhere):
+        # - accent (teal): the active choice, focus or selection, and the main action;
+        # - accent border on an editor: a draft being edited (unsaved values);
+        # - accent left rule on a parameter: value differs from the reference;
+        # - attention ink (amber) left rule / badge: something to do or to know before
+        #   an action (blocked export, unencrypted file). « Ready » only means the
+        #   software preparation is complete: it gets no rule and never states that
+        #   any hardware read the tag;
+        # - hardware / colour rules: the subject of a guidance tile in its own dialog.
+        card_radius,tile_radius,control_radius=CARD_RADIUS,TILE_RADIUS,CONTROL_RADIUS
         base_colour,accent_colour=QColor(t['card']),QColor(accent)
         facet_fill=QColor(*[round(base_colour.getRgb()[i]*.88+accent_colour.getRgb()[i]*.12) for i in range(3)]).name()
 
@@ -1195,11 +1271,14 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         )
         self.setStyleSheet(base_qss + primary_qss + secondary_qss + search_qss
                            + card_qss + seg_qss + ghost_qss + grid_qss
-                           + f"QFrame#filamentHero, QFrame#metricTile, QFrame#provenanceCard {{ background:{t['card']}; border:1px solid {t['border']}; border-radius:12px; }}"
+                           + f"QFrame#filamentHero, QFrame#metricTile, QFrame#provenanceCard, QFrame#supportCard {{ background:{t['card']}; border:1px solid {t['border']}; border-radius:{card_radius}px; }}"
                            + f"QLabel#metricLabel {{ color:{t['muted']}; font-size:10px; }}"
                            + f"QToolButton#favoriteFilter {{ padding:6px 4px; }}"
-                           + f"QFrame#sourceCard {{ border:1px solid {t['border']}; border-radius:10px; background:{t['field_bg']}; }}"
+                           + f"QFrame#sourceCard {{ border:1px solid {t['border']}; border-radius:{tile_radius}px; background:{t['field_bg']}; }}"
                            + f"QToolButton#statusControl {{ border:none; color:{t['muted']}; font-size:11px; padding:2px 4px; }}"
+                           + f"QLabel#statusControl {{ color:{t['muted']}; font-size:11px; padding:2px 4px; border:1px solid transparent; border-radius:{control_radius}px; }}"
+                           + f"QLabel#statusControl:hover {{ color:{t['text']}; }}"
+                           + f"QLabel#statusControl:focus {{ border-color:{accent}; }}"
                            + f"QTabWidget::pane {{ border:none; background:transparent; }}"
                            + f"QTabBar::tab {{ background:{t['sec_bg']}; color:{t['muted']}; border:1px solid {t['border']}; border-radius:7px; padding:7px 16px; margin-right:6px; min-width:72px; }}"
                            + f"QTabBar::tab:selected {{ background:{accent}; color:{t['accent_text']}; border-color:{accent}; }}"
@@ -1223,16 +1302,16 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
                            + f"QListWidget#facets::item:hover {{ background:{t['sec_bg']}; }}"
                            + f"QListWidget#facets::item:selected {{ background:{facet_fill}; color:{t['text']}; }}"
                            + f"QToolButton#favoriteFilter:checked {{ background:{facet_fill}; color:{t['text']}; border-color:{accent}; }}"
-                           + f"QFrame#draftEditor, QFrame#comparisonCard {{ background:{t['card']}; border:1px solid {t['border']}; border-radius:12px; }}"
-                           + f"QFrame#parameterCard {{ background:{t['field_bg']}; border:1px solid {t['border']}; border-radius:8px; }}"
+                           + f"QFrame#draftEditor, QFrame#comparisonCard {{ background:{t['card']}; border:1px solid {t['border']}; border-radius:{card_radius}px; }}"
+                           + f"QFrame#parameterCard {{ background:{t['field_bg']}; border:1px solid {t['border']}; border-radius:{tile_radius}px; }}"
                            + f"QFrame#parameterCard[tone=changed] {{ border-left:3px solid {accent}; }}"
                            + f"QFrame#parameterCard[tone=attention] {{ border-left:3px solid {attention_ink}; }}"
                            + f"QLabel#parameterState {{ color:{t['muted']}; font-size:10px; }}"
                            + f"QLabel#readingTitle {{ color:{t['text']}; font-size:15px; font-weight:600; }}"
                            + "QFrame#colourFilter { border:none; background:transparent; }"
                            + "QToolButton[colourControl=true] { padding:6px; }"
-                           + f"QFrame#exportJourney, QFrame#guidanceTile {{ background:{t['card']}; border:1px solid {t['border']}; border-radius:9px; }}"
-                           + f"QFrame#exportJourney[tone=ready], QFrame#guidanceTile[tone=ready] {{ border-left:3px solid {ready_ink}; }}"
+                           + f"QFrame#exportJourney {{ background:{t['card']}; border:1px solid {t['border']}; border-radius:{card_radius}px; }}"
+                           + f"QFrame#guidanceTile {{ background:{t['card']}; border:1px solid {t['border']}; border-radius:{tile_radius}px; }}"
                            + f"QFrame#exportJourney[tone=attention], QFrame#guidanceTile[tone=attention] {{ border-left:3px solid {attention_ink}; }}"
                            + f"QFrame#guidanceTile[tone=colour] {{ border-left:3px solid {colour_ink}; }}"
                            + f"QFrame#guidanceTile[tone=hardware] {{ border-left:3px solid {hardware_ink}; }}"
@@ -1242,7 +1321,11 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
                            + f"QLabel#guidanceHeading {{ font-size:18px; font-weight:600; color:{t['text']}; }}"
                            + f"QLabel#guidanceNote, QLabel#hardwareSummary {{ color:{t['muted']}; font-size:11px; }}"
                            + f"QLabel#guidanceCaution {{ color:{attention_ink}; }}"
-                           + f"QFrame#draftEditor {{ border:1px dashed {accent}; }}"
+                           + f"QFrame#draftEditor {{ border:1px solid {accent}; }}"
+                           + f"QLabel#sectionTitle {{ color:{t['text']}; font-weight:600; }}"
+                           + f"QLabel#unencryptedBadge {{ color:{attention_ink}; border:1px solid {attention_ink}; border-radius:{tile_radius}px; padding:2px 8px; font-size:11px; font-weight:600; }}"
+                           + f"QLabel#unencryptedWarning, QLabel#exportPathWarning, QLabel#formatNotice {{ color:{attention_ink}; }}"
+                           + f"QLabel#supportNote {{ color:{t['muted']}; }}"
                            + f"QLabel#draftBadge {{ color:{accent}; font-weight:600; }}"
                            + f"QLabel#comparisonHead {{ color:{t['muted']}; font-size:10px; }}"
                            + f"QLabel#comparisonNote, QLabel#exportState {{ color:{t['muted']}; font-size:11px; }}"
@@ -1281,6 +1364,9 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
             for listing in (self.brand_list,self.family_list,self.state_list):listing.setPalette(facet_palette)
         self._align_detail_footer()
         self._fit_hardware_actions()
+        # The two-line QR label keeps its whole height when the window is low.
+        self.btn_qr.ensurePolished();self.btn_qr.setMinimumHeight(min(self.btn_qr.maximumHeight(),self.btn_qr.sizeHint().height()))
+        self._fit_window_minimum()
         self._refresh_logo()
         for button in (self.favorite_btn,self.btn_similar):button.ensurePolished()
         action_width=max(max(b.sizeHint().width(), b.fontMetrics().horizontalAdvance(b.text())+24) for b in (self.favorite_btn,self.btn_similar))
@@ -1314,6 +1400,57 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
 
     def _show_empty(self):
         self.stack.setCurrentIndex(0)
+        self._fit_window_minimum()
+
+    def event(self, event):
+        # Rows that reflow (stack/unstack) change the layout minimum: follow it, coalesced.
+        if event.type() == QEvent.LayoutRequest:
+            self._schedule_minimum_fit()
+        return super().event(event)
+
+    def eventFilter(self, watched, event):
+        # The detail's content sits in a scroll area, which does not forward its size
+        # changes (draft editor, details, reflowed rows) to the window.
+        if event.type() == QEvent.LayoutRequest:
+            self._schedule_minimum_fit()
+        return super().eventFilter(watched, event)
+
+    def _schedule_minimum_fit(self):
+        if not getattr(self, '_minimum_fit_pending', False):
+            self._minimum_fit_pending = True
+            QTimer.singleShot(0, self, self._fit_window_minimum)
+
+    def _fit_window_minimum(self):
+        """Keep the announced minimum width only while the three panels really fit in it.
+
+        The splitter's minimum is the sum of its panels' content minimums and handles; an
+        explicit window minimum below it would let Qt overlap the panels. When fonts or a
+        language need more, the minimum follows the layout instead of overlapping.
+        """
+        self._minimum_fit_pending = False
+        if not hasattr(self, 'splitter'):return
+        # Idempotent: geometry is refreshed and layouts invalidated only when a constraint
+        # really changed. Doing it on every pass posted a new LayoutRequest each time,
+        # which re-armed this fit forever on an idle window.
+        # The detail scrolls vertically only: its viewport must hold the content's own
+        # minimum (hero, actions, cards) plus the vertical scroll bar, or it would be cut.
+        inner=self.detail_scroll.widget()
+        if inner is not None:
+            inner.layout().activate()
+            bar=self.detail_scroll.verticalScrollBar().sizeHint().width()
+            needed_detail=inner.layout().minimumSize().width()+bar+2*self.detail_scroll.frameWidth()
+            if self.detail_scroll.minimumWidth()!=needed_detail:
+                self.detail_scroll.setMinimumWidth(needed_detail)
+                # Read the window minimum once the splitter has taken the new constraint;
+                # the LayoutRequest this posts brings the next (settling) pass.
+                self.splitter.updateGeometry()
+                for layout in (self.centralWidget().layout(), self.layout()):
+                    if layout:layout.invalidate()
+        hint=self.minimumSizeHint()
+        needed=max(MIN_WINDOW_WIDTH,hint.width())
+        if self.minimumWidth()!=needed:self.setMinimumWidth(needed)
+        needed_height=max(MIN_WINDOW_HEIGHT,hint.height())
+        if self.minimumHeight()!=needed_height:self.setMinimumHeight(needed_height)
 
     def _align_detail_footer(self):
         if hasattr(self,'footer_layout'):
@@ -1325,15 +1462,13 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
             self._arrange_export_actions()
 
     def _arrange_export_actions(self):
-        if not hasattr(self,'export_action_grid'):return
-        buttons=(self.btn_generate,self.btn_qr)
-        need=2*max(max(b.fontMetrics().horizontalAdvance(line) for line in b.text().splitlines())+32 for b in buttons)+8
-        inline=self.detail_scroll.viewport().width()>=need
-        if inline==self._export_actions_inline:return
-        self._export_actions_inline=inline
-        for b in buttons:self.export_action_grid.removeWidget(b)
-        for i,b in enumerate(buttons):self.export_action_grid.addWidget(b,0 if inline else i,i if inline else 0)
-        self.export_action_grid.setColumnStretch(1,1 if inline else 0)
+        if not hasattr(self,'export_action_row'):return
+        self.export_action_row.reflow()
+
+    @property
+    def _export_actions_inline(self):
+        """Export and QR side by side (True) or stacked, as currently laid out."""
+        return self.export_action_row.box.direction()==QHBoxLayout.LeftToRight
 
     def _show_card(self):
         self.stack.setCurrentIndex(1)
@@ -1656,6 +1791,8 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
             return
 
         self.title.setText(product_label(view.display_product,view.product_data.get('brand','')))
+        # The title wraps between words, never inside one.
+        self.title.setMinimumWidth(max((self.title.fontMetrics().horizontalAdvance(word) for word in self.title.text().split()),default=0)+2)
         self.filament_meta.setText(view.type_str)
         group = self._group_for_sku(sku)
         self.subtitle_sku.setText(view.product_data.get('brand') or '')
@@ -1696,6 +1833,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self._printer_field_help()
         if self.inspector.isVisible():
             self._refresh_inspector()
+        self._fit_window_minimum()
 
     def _build_payload(self):
         view = core.get_sku_view(self.db, self.current_sku)
@@ -1831,6 +1969,10 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
             QTimer.singleShot(0,lambda:self.detail_scroll.ensureWidgetVisible(self.inspector) if self.inspector.isVisible() else None)
 
     def _refresh_inspector(self):
+        if self.nfc_format.count() and self.nfc_format.currentIndex() < 0:
+            # No format chosen for this setup: nothing to preview (never a substitute).
+            self.inspector.setPlainText(tr('Choisissez le format de l’étiquette dans « Configurer ».'))
+            return
         try:
             if self._opentag_selected():
                 prepared=self._prepare_opentag()
@@ -1895,7 +2037,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.cancel_update_btn.setEnabled(True)
         self.progress.setRange(0, len(core.selected_pipeline(core.load_config()["selected_sources"])))
         self.progress.setValue(0)
-        self.status.showMessage(tr('Mise à jour en cours…'))
+        self._update_outcome = None
 
         self._sync_before = self._snapshot_stats()
         self._sync_manual = bool(manual)
@@ -1904,6 +2046,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.worker.finished_ok.connect(self._on_update_done)
         self.worker.failed.connect(self._on_update_failed)
         self.worker.start()
+        self._refresh_database_summary()
 
     def _on_update_progress(self, label, i, total):
         self.progress.setRange(0,total)
@@ -1916,7 +2059,21 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         if self.worker and self.worker.isRunning():
             self.worker.cancel.set()
             self.cancel_update_btn.setEnabled(False)
-            self.status.showMessage(tr("Annulation demandée : l'étape en cours s'interrompt…"), 8000)
+            self.progress_label.setText(tr("Annulation demandée : l'étape en cours s'interrompt…"))
+
+    def _show_main_menu(self):
+        """Open the menu under the button, right-aligned, inside the window and the screen."""
+        menu, button = self.main_menu, self.menu_btn
+        menu.ensurePolished(); size = menu.sizeHint()
+        below = button.mapToGlobal(QPoint(button.width(), button.height() + 4))
+        window = self.frameGeometry()
+        screen = (button.screen() or self.app.primaryScreen()).availableGeometry()
+        left_limit = max(window.left(), screen.left()); right_limit = min(window.right(), screen.right())
+        x = max(left_limit, min(below.x() - size.width(), right_limit - size.width()))
+        y = below.y()
+        if y + size.height() > screen.bottom():
+            y = max(screen.top(), button.mapToGlobal(QPoint(0, 0)).y() - size.height() - 4)
+        menu.popup(QPoint(x, y))
 
     def _finish_update_ui(self):
         self.update_progress_card.hide()
@@ -1925,12 +2082,17 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.cancel_update_btn.setVisible(False)
         self.update_btn.setEnabled(True)
         self.menu_btn.setEnabled(True)
+        self._refresh_database_summary()
 
     def _on_update_done(self, results):
         self._finish_update_ui()
         if self.worker:
             self.worker.wait(2000)
         cancelled = any(r.status == "cancelled" for r in results)
+        n_ko = [r for r in results if not r.ok and r.status != "cancelled"]
+        offline = bool(n_ko) and all(r.status == "unavailable" for r in n_ko)
+        # Outcome of this run, shown with the catalogue state (never a floating line).
+        self._update_outcome = "cancelled" if cancelled else "offline" if offline else None
         try:
             self.db = core.load_db()
         except (core.DatabaseError, OSError) as exc:
@@ -1945,25 +2107,18 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self._update_stats()
         if self.current_sku:
             self._show_detail(self.current_sku)
-        n_ok = sum(1 for r in results if r.ok)
-        n_ko = [r for r in results if not r.ok and r.status != "cancelled"]
-        msg = tr('Mise à jour {v0} — {v1}/{v2} étapes OK.', v0=core.UPDATE_STATUS_LABELS[core.update_status(results)], v1=n_ok, v2=len(results))
-        if cancelled:
-            msg = tr('Mise à jour annulée — {v0}/{v1} étapes terminées ; base locale conservée.', v0=n_ok, v1=len(results))
-        self.status.showMessage(msg, 10000)
-        offline = n_ko and all(r.status == "unavailable" for r in n_ko)
+        self._refresh_database_summary()
         before = self._sync_before or self._snapshot_stats()
         after = self._snapshot_stats()
         self._last_report = (results, before, after)
         if cancelled or (offline and not getattr(self, "_sync_manual", False)):
-            # Being offline at launch is a normal situation: a status-bar line, not a window.
-            if offline:
-                self.status.showMessage(msg + tr(' Sources injoignables ; base locale conservée.'), 12000)
+            # Being offline at launch is a normal situation: the catalogue state says so, no window.
             return
         if n_ko or getattr(self, "_sync_manual", False):
             self._show_sync_report(results, before, after)
 
     def _on_update_failed(self, tb):
+        self._update_outcome = "error"
         self._finish_update_ui()
         if self.current_sku:
             self._show_detail(self.current_sku)
@@ -2089,31 +2244,43 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         interface_layout.addStretch(1);tabs.addTab(interface,tr('Interface'))
 
         # ── Données et sauvegardes ──
+        # Files leave this computer only as the person decides: each creating action
+        # carries a visible « Non chiffré » badge and its exact scope.
         data_page,data_layout=page()
-        data_layout.addWidget(WrapLabel(tr('Deux opérations distinctes. Elles ferment cette fenêtre sans enregistrer ses modifications : enregistrez-les d’abord si besoin.')))
-        prefs_title=QLabel(tr('Préférences'));prefs_title.setObjectName('sectionTitle');data_layout.addWidget(prefs_title)
-        data_layout.addWidget(WrapLabel(tr('Fichier JSON en clair contenant vos préférences et réglages d’étiquette. Le catalogue, les copies personnelles et le registre couleur ne sont pas inclus.')))
-        prefs_row=QHBoxLayout()
-        for text,name,action in ((tr('Exporter les préférences…'),'exportPreferences',self._export_settings),
-                                 (tr('Importer les préférences…'),'importPreferences',self._import_settings)):
+        intro=WrapLabel(tr('Ces actions utilisent vos réglages déjà enregistrés : les modifications non enregistrées de cette fenêtre ne sont pas incluses. La fenêtre se ferme d’abord sans les enregistrer ; chaque action demande ensuite confirmation et Annuler n’écrit rien.'))
+        intro.setObjectName('dataIntro');data_layout.addWidget(intro)
+        def data_button(text,name,action):
             button=QPushButton(text);button.setObjectName(name);button.setFixedHeight(CONTROL_HEIGHT)
             button.clicked.connect(lambda _=False,action=action:(after.__setitem__('action',action),dlg.reject()))
-            prefs_row.addWidget(button)
+            return button
+        def unencrypted(name):
+            badge=QLabel(tr('Non chiffré'));badge.setObjectName('unencryptedBadge');badge.setProperty('badgeFor',name)
+            badge.setAccessibleName(tr('Fichier non chiffré'));return badge
+        def section(title,text):
+            heading=QLabel(title);heading.setObjectName('sectionTitle');data_layout.addWidget(heading)
+            note=WrapLabel(text);data_layout.addWidget(note);return note
+        prefs_note=section(tr('Préférences · fichier JSON'),
+            tr('JSON en clair, partiel : langue, actualisation et sources, bobine préférée, favoris, imprimante et étiquette NFC, réglages OpenTag3D par référence, format papier QR, limite de couleur. Non inclus : catalogue, copies personnelles, registre couleur, autorisation réseau, dates et état des actualisations. En option : disposition et filtres, chemin du dossier d’export (chemin local).'))
+        prefs_note.setObjectName('preferencesScope')
+        prefs_row=QHBoxLayout();prefs_row.setSpacing(8)
+        prefs_row.addWidget(data_button(tr('Exporter les préférences…'),'exportPreferences',self._export_settings))
+        prefs_row.addWidget(unencrypted('exportPreferences'))
+        prefs_row.addSpacing(8)
+        prefs_row.addWidget(data_button(tr('Importer les préférences…'),'importPreferences',self._import_settings))
         prefs_row.addStretch(1);data_layout.addLayout(prefs_row)
-        backup_title=QLabel(tr('Mes données'));backup_title.setObjectName('sectionTitle');data_layout.addWidget(backup_title)
-        data_layout.addWidget(WrapLabel(tr('Archive ZIP non chiffrée : catalogue complet avec vos copies personnelles et corrections, références couleur, réglages d’appareil et profils Orca locaux ; vos préférences si vous le choisissez. Un aperçu précède toute restauration.')))
-        backup_row=QHBoxLayout()
-        for text,name,action in ((tr('Sauvegarder mes données…'),'createBackup',self._create_backup),
-                                 (tr('Restaurer mes données…'),'restoreBackup',self._restore_backup)):
-            button=QPushButton(text);button.setObjectName(name);button.setFixedHeight(CONTROL_HEIGHT)
-            button.clicked.connect(lambda _=False,action=action:(after.__setitem__('action',action),dlg.reject()))
-            backup_row.addWidget(button)
+        backup_note=section(tr('Mes données · archive ZIP'),
+            tr('ZIP en clair, plus complet : catalogue avec vos copies personnelles et corrections, références couleur, réglages d’appareil de mesure, profils Orca locaux et liste d’imprimantes téléchargée s’ils existent. En option : préférences, disposition, chemin du dossier d’export, exports générés. Il peut contenir des données personnelles et des chemins locaux. La liste exacte s’affiche avant la création ; un aperçu précède toute restauration.'))
+        backup_note.setObjectName('backupScope')
+        backup_row=QHBoxLayout();backup_row.setSpacing(8)
+        backup_row.addWidget(data_button(tr('Sauvegarder mes données…'),'createBackup',self._create_backup))
+        backup_row.addWidget(unencrypted('createBackup'))
+        backup_row.addSpacing(8)
+        backup_row.addWidget(data_button(tr('Restaurer mes données…'),'restoreBackup',self._restore_backup))
         backup_row.addStretch(1);data_layout.addLayout(backup_row)
         from . import ui_backup
-        revert=QPushButton(tr('Annuler la dernière restauration…'));revert.setObjectName('revertRestore');revert.setFixedHeight(CONTROL_HEIGHT)
+        revert=data_button(tr('Annuler la dernière restauration…'),'revertRestore',self._revert_restore)
         revert.setEnabled(ui_backup.last_restore() is not None)
         revert.setToolTip(tr('Rétablit vos fichiers dans leur état d’avant la dernière restauration, à partir de la copie exacte conservée sur cet ordinateur.'))
-        revert.clicked.connect(lambda _=False:(after.__setitem__('action',self._revert_restore),dlg.reject()))
         revert_row=QHBoxLayout();revert_row.addWidget(revert);revert_row.addStretch(1);data_layout.addLayout(revert_row)
         encryption=WrapLabel(tr('Sauvegarde chiffrée : non disponible dans cette version. Conservez l’archive dans un emplacement protégé.'))
         encryption.setObjectName('backupEncryptionUnavailable');data_layout.addWidget(encryption)
@@ -2239,25 +2406,51 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         lay.addWidget(credits_toggle, 0, Qt.AlignLeft)
         lay.addWidget(credits)
 
-        links = QGridLayout()
-        links.setHorizontalSpacing(8)
-        links.setVerticalSpacing(8)
-        for index, (object_name, label, url) in enumerate(presentation.LINKS):
+        # Resources and assistance: comparable buttons in one grid that reflows to
+        # one column in a narrow window; an odd last button spans the row.
+        from .ui_reading import CardGrid
+        resources_title = QLabel(tr('Ressources et assistance'))
+        resources_title.setObjectName('sectionTitle')
+        lay.addWidget(resources_title)
+        resource_buttons = []
+        for object_name, label, url in presentation.LINKS:
             button = QPushButton(tr(label))
             button.setObjectName(object_name)
-            button.setFixedHeight(CONTROL_HEIGHT)
             button.setToolTip(url)
             button.clicked.connect(lambda _=False, url=url: QDesktopServices.openUrl(QUrl(url)))
-            links.addWidget(button, index // 2, index % 2)
-        lay.addLayout(links)
+            resource_buttons.append(button)
+        # Version-related, so it sits with the version and resources (no network until clicked).
+        update = QPushButton(tr('Mise à jour de l’application…'))
+        update.setObjectName('checkAppUpdate')
+        update.setToolTip(tr('Comparer cette version avec la dernière version publiée sur GitHub'))
+        update.clicked.connect(self._check_app_update)
+        resource_buttons.append(update)
+        for button in resource_buttons:
+            button.setFixedHeight(CONTROL_HEIGHT)
+            button.setMinimumWidth(0)
+            button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        resources = CardGrid(resource_buttons, 440)
+        resources.setObjectName('aboutResources')
+        lay.addWidget(resources)
 
+        # Optional support: its own readable block, full width, no obligation.
         donation_name, donation_label, donation_url = presentation.DONATION
+        support_box = QFrame()
+        support_box.setObjectName('supportCard')
+        support_layout = QVBoxLayout(support_box)
+        support_layout.setContentsMargins(12, 10, 12, 10)
+        support_layout.setSpacing(8)
+        support_note = WrapLabel(tr('SpoolScribe est gratuit et le reste. Si l’application vous est utile, vous pouvez soutenir son développement.'))
+        support_note.setObjectName('supportNote')
+        support_layout.addWidget(support_note)
         support = QPushButton(tr(donation_label))
         support.setObjectName(donation_name)
-        support.setFlat(True)
         support.setFixedHeight(CONTROL_HEIGHT)
+        support.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         support.setToolTip(tr('Ouvrir buymeacoffee.com/arn_lab dans votre navigateur'))
         support.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(donation_url)))
+        support_layout.addWidget(support)
+        lay.addWidget(support_box)
 
         bb = QDialogButtonBox(QDialogButtonBox.Close)
         bb.button(QDialogButtonBox.Close).setText(tr('Fermer'))
@@ -2265,11 +2458,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         bb.rejected.connect(dlg.reject)
         bb.accepted.connect(dlg.accept)
         bb.button(QDialogButtonBox.Close).clicked.connect(dlg.accept)
-        footer = QHBoxLayout()
-        footer.addWidget(support)
-        footer.addStretch(1)
-        footer.addWidget(bb)
-        lay.addLayout(footer)
+        lay.addWidget(bb)
         fit_dialog(dlg, preferred_width=640)
         dlg.exec()
 

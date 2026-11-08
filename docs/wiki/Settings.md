@@ -7,7 +7,7 @@ Open the main settings menu, then **Settings…**. Six tabs: **Catalogue**,
 backups**. Make the change and **Save**; **Cancel** discards the fields of this
 window. Two catalogue buttons act immediately and are labelled as such:
 **Catalogue sources…** and **Withdraw network permission**. Cancelling the
-window does not undo them. This six-tab layout is available in Desktop v0.8.1. The screenshots below
+window does not undo them. The six-tab layout was introduced in Desktop v0.8.1 and refined in v0.8.2. The screenshots below
 are generated from that version using public demonstration data.
 
 ## Catalogue: refresh at your pace
@@ -86,5 +86,5 @@ colours** removes the distance limit. It does not guarantee a matching printed c
 **Export the filament’s OpenSpool JSON…** in the main menu writes one readable
 OpenSpool file for the selected filament; it is not a backup.
 
-<p align="center"><a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/settings-backups.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/settings-backups.png" alt="Preferences and data backups in v0.8.1" width="820"></a></p>
+<p align="center"><a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/settings-backups.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/settings-backups.png" alt="Preferences and data backups in v0.8.2" width="820"></a></p>
 <p align="center"><strong>Keep preferences and backups distinct</strong><br><sub>Both exports are local and unencrypted. AES-256-GCM is not implemented.</sub></p>

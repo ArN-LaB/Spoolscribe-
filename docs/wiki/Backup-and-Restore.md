@@ -2,7 +2,7 @@
 
 [Help home](Home.md) · [Application settings](Settings.md) · [Catalogue updates](Updating-the-Database.md)
 
-> Available in Desktop v0.8.1. Earlier v0.8.0 downloads keep the automatic
+> Available in Desktop v0.8.2. Earlier v0.8.0 downloads keep the automatic
 > `.bak` copies described in the [FAQ](FAQ.md), but do not contain these commands.
 
 **Settings › Data and backups** (or the main menu) offers two operations that do

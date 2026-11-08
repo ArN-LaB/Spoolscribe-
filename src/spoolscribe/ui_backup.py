@@ -124,10 +124,15 @@ def _ask_backup_options(window):
     folder = QCheckBox(tr("Inclure le chemin du dossier d’export"))
     folder.setObjectName("includeExportPath")
     folder.setToolTip(tr("Chemin absolu de cet ordinateur ; il peut révéler un nom de dossier personnel."))
+    # Shown in the dialog itself, not only as a tooltip, whenever the path would be included.
+    path_warning = WrapLabel(tr("Chemin absolu de cet ordinateur ; il peut révéler un nom de dossier personnel."))
+    path_warning.setObjectName("exportPathWarning")
     exports = QCheckBox(tr("Inclure les exports générés (dossier output du dossier de données)"))
     exports.setObjectName("includeExports")
-    for box in (config, layout, folder, exports):
+    for box in (config, layout, folder):
         lay.addWidget(box)
+    lay.addWidget(path_warning)
+    lay.addWidget(exports)
     preview = WrapLabel("")
     preview.setObjectName("backupInventory")
     preview.setTextFormat(Qt.PlainText)
@@ -141,6 +146,7 @@ def _ask_backup_options(window):
     def options():
         layout.setEnabled(config.isChecked())
         folder.setEnabled(config.isChecked())
+        path_warning.setVisible(config.isChecked() and folder.isChecked())
         return backup.Options(include_config=config.isChecked(),
                               include_layout=config.isChecked() and layout.isChecked(),
                               include_export_path=config.isChecked() and folder.isChecked(),

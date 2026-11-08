@@ -356,3 +356,147 @@ class ProvenanceTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@unittest.skipUnless(fixture.HAS_QT, "Qt unavailable")
+class NavigationAndDataTests(unittest.TestCase):
+    """B14 B/E/F: one navigation menu, data actions in Settings, explicit unencrypted files, balanced About."""
+    @classmethod
+    def setUpClass(cls): fixture.GuiTests.setUpClass()
+    def setUp(self): fixture.GuiTests.setUp(self)
+
+    def test_menu_lists_navigation_only_and_every_function_keeps_one_place(self):
+        w = self.window
+        texts = [a.text() for a in w.main_menu.actions() if not a.isSeparator()]
+        self.assertEqual(texts, ["Mon matériel…", "Paramètres…", "À propos de SpoolScribe"])
+        self.assertIsNone(w.menu_btn.menu())   # anchored by the window, not a free tool-button popup
+        # The single-filament OpenSpool JSON is in that filament's export details.
+        w.current_sku = "PB05001"; w._show_detail("PB05001"); w._refresh_export_journey()
+        self.assertTrue(w.export_details.archive_button.isEnabled())
+        self.assertIn("OpenSpool", w.export_details.archive_button.text())
+        with patch.object(w, "_generate") as generate:
+            w.export_details.archive_button.click()
+        generate.assert_called_once_with(mode="archive")
+
+    def test_menu_opens_inside_the_window_and_closes_with_escape(self):
+        from PySide6.QtTest import QTest
+        from PySide6.QtCore import Qt
+        w = self.window; screen = w.screen().availableGeometry()
+        w.setGeometry(screen.left() + 10, screen.top() + 30, min(860, screen.width() - 20), min(560, screen.height() - 40)); w.show(); w.app.processEvents()
+        w.menu_btn.setFocus(); QTest.keyClick(w.menu_btn, Qt.Key_Space); w.app.processEvents()
+        menu = w.main_menu
+        self.assertTrue(menu.isVisible())
+        frame, geometry = w.frameGeometry(), menu.geometry()
+        self.assertGreaterEqual(geometry.left(), max(frame.left(), screen.left()))
+        self.assertLessEqual(geometry.right(), min(frame.right(), screen.right()))
+        # Right-aligned under the button (or against the screen edge when the window overflows it).
+        button_right = w.menu_btn.mapToGlobal(w.menu_btn.rect().bottomRight()).x()
+        self.assertLessEqual(abs(geometry.right() - min(button_right, screen.right())), 2)
+        self.assertGreater(geometry.top(), w.menu_btn.mapToGlobal(w.menu_btn.rect().topLeft()).y())
+        QTest.keyClick(menu, Qt.Key_Escape); w.app.processEvents()
+        self.assertFalse(menu.isVisible())
+
+    def test_data_tab_shows_unencrypted_beside_each_creating_action(self):
+        from PySide6.QtWidgets import QLabel, QPushButton
+        seen = {}
+        def inspect(dialog):
+            dialog.show(); dialog.app = None
+            from PySide6.QtWidgets import QTabWidget
+            tabs = dialog.findChild(QTabWidget); tabs.setCurrentIndex(tabs.count() - 1); self.window.app.processEvents()
+            badges = {b.property("badgeFor"): b for b in dialog.findChildren(QLabel, "unencryptedBadge")}
+            seen["badges"] = sorted(badges)
+            for name, badge in badges.items():
+                button = dialog.findChild(QPushButton, name)
+                seen[name] = (badge.isVisible(), badge.text(), abs(badge.geometry().center().y() - button.geometry().center().y()) <= 4,
+                              badge.geometry().left() > button.geometry().right())
+            seen["intro"] = dialog.findChild(QLabel, "dataIntro").text()
+            seen["prefs"] = dialog.findChild(QLabel, "preferencesScope").text()
+            seen["backup"] = dialog.findChild(QLabel, "backupScope").text()
+            dialog.hide(); return 0
+        with patch("spoolscribe.app_gui.QDialog.exec", inspect):
+            self.window._open_settings()
+        self.assertEqual(seen["badges"], ["createBackup", "exportPreferences"])
+        for name in ("createBackup", "exportPreferences"):
+            self.assertEqual(seen[name], (True, "Non chiffré", True, True))
+        self.assertIn("non enregistrées", seen["intro"]); self.assertIn("Annuler n’écrit rien", seen["intro"])
+        self.assertIn("JSON en clair, partiel", seen["prefs"]); self.assertIn("ZIP en clair, plus complet", seen["backup"])
+        self.assertIn("chemins locaux", seen["backup"])
+        for text in seen["prefs"], seen["backup"], seen["intro"]:
+            self.assertNotIn("Excel", text)
+
+    def test_unsaved_settings_are_not_exported_and_cancel_writes_nothing(self):
+        from PySide6.QtWidgets import QComboBox, QPushButton
+        target = Path(self.tmp.name) / "prefs.json"
+        before = Path(core.CONFIG_PATH).read_bytes()
+        def change_then_export(dialog):
+            language = dialog.findChild(QComboBox, "interface_language")
+            language.setCurrentIndex(language.findData("es"))       # unsaved change
+            dialog.findChild(QPushButton, "exportPreferences").click(); return dialog.result()
+        # Options cancelled, then picker cancelled: nothing is written anywhere.
+        for options, picked in ((None, ("", "")), (dict(include_layout=False, include_export_path=False), ("", ""))):
+            with self.subTest(options=options), patch.object(self.window, "_ask_settings_export_options", return_value=options), \
+                    patch("spoolscribe.ui_catalogue.QFileDialog.getSaveFileName", return_value=picked) as picker, \
+                    patch("spoolscribe.app_gui.QDialog.exec", change_then_export):
+                self.window._open_settings()
+            self.assertEqual(picker.called, options is not None)
+            self.assertFalse(target.exists()); self.assertEqual(Path(core.CONFIG_PATH).read_bytes(), before)
+        with patch.object(self.window, "_ask_settings_export_options", return_value=dict(include_layout=False, include_export_path=False)), \
+                patch("spoolscribe.ui_catalogue.QFileDialog.getSaveFileName", return_value=(str(target), "JSON")), \
+                patch("spoolscribe.app_gui.QDialog.exec", change_then_export):
+            self.window._open_settings()
+        self.assertEqual(json.loads(target.read_text())["settings"]["language"], "fr")   # saved value, not the unsaved one
+        self.assertEqual(core.load_config()["language"], "fr")
+
+    def test_export_options_warn_visibly_before_the_file_is_created(self):
+        from PySide6.QtWidgets import QCheckBox, QLabel
+        seen = {}
+        def inspect(dialog):
+            dialog.show(); self.window.app.processEvents()
+            warning, path = dialog.findChild(QLabel, "unencryptedWarning"), dialog.findChild(QLabel, "exportPathWarning")
+            seen["warning"] = (warning.isVisible(), warning.text())
+            seen["path_before"] = path.isVisible()
+            dialog.findChild(QCheckBox, "includeExportPath").setChecked(True); self.window.app.processEvents()
+            seen["path_after"] = path.isVisible()
+            seen["checked"] = [b.isChecked() for b in (dialog.findChild(QCheckBox, "includeLayout"),)]
+            dialog.hide(); return 0
+        with patch("spoolscribe.ui_catalogue.QDialog.exec", inspect):
+            self.assertIsNone(self.window._ask_settings_export_options())
+        self.assertTrue(seen["warning"][0]); self.assertIn("Non chiffré", seen["warning"][1])
+        self.assertFalse(seen["path_before"]); self.assertTrue(seen["path_after"]); self.assertEqual(seen["checked"], [False])
+
+    def test_about_order_balanced_resources_and_visible_optional_support(self):
+        from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QDialogButtonBox
+        from spoolscribe.ui_widgets import CONTROL_HEIGHT
+        seen = {}
+        def inspect(dialog):
+            dialog.show(); self.window.app.processEvents()
+            order = [dialog.layout().itemAt(i).widget() or dialog.layout().itemAt(i).layout() for i in range(dialog.layout().count())]
+            seen["order"] = [item.objectName() for item in order if item.objectName()]
+            seen["last"] = isinstance(order[-1], QDialogButtonBox)
+            buttons = [b for b in dialog.findChildren(QPushButton) if b.objectName() in
+                       {n for n, _, _ in presentation.LINKS} | {"checkAppUpdate"}]
+            seen["count"] = len(buttons)
+            seen["heights"] = {b.height() for b in buttons}
+            for width, key in ((640, "wide"), (420, "narrow")):
+                dialog.resize(width, dialog.height()); self.window.app.processEvents()
+                seen[key] = (len({b.width() for b in buttons}), len({b.x() for b in buttons}))
+            support = dialog.findChild(QPushButton, "supportProject")
+            seen["support"] = (support.isVisible(), support.width() >= dialog.findChild(QFrame, "supportCard").width() - 30)
+            seen["data"] = [n for n in ("exportPreferences", "createBackup", "restoreBackup", "importPreferences")
+                            if dialog.findChild(QPushButton, n)]
+            dialog.hide(); return 0
+        with patch("spoolscribe.app_gui.QDialog.exec", inspect), patch("spoolscribe.app_gui.QDesktopServices.openUrl") as opened:
+            self.window._open_about()
+        opened.assert_not_called()
+        # Identity, description, credits, resources, optional support, then Close.
+        self.assertEqual(seen["order"], ["aboutSummary", "aboutLicence", "aboutCreditsToggle", "aboutCredits", "sectionTitle",
+                                         "aboutResources", "supportCard"])
+        self.assertTrue(seen["last"])
+        self.assertEqual(seen["count"], 6); self.assertEqual(seen["heights"], {CONTROL_HEIGHT})
+        self.assertEqual(seen["wide"], (1, 2))     # one width, two columns
+        self.assertEqual(seen["narrow"][1], 1)     # one column in a narrow window
+        self.assertEqual(seen["support"], (True, True)); self.assertEqual(seen["data"], [])
+        with patch.object(self.window, "_check_app_update") as check, patch("spoolscribe.app_gui.QDialog.exec",
+                lambda dialog: dialog.findChild(QPushButton, "checkAppUpdate").click() or 0):
+            self.window._open_about()
+        check.assert_called_once()

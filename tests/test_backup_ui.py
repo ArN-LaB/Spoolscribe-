@@ -73,6 +73,24 @@ class BackupUiTests(unittest.TestCase):
         self.assertIn("Registre des mesures de couleur : absent", seen["inventory"])
         self.assertNotIn("{", seen["inventory"])
 
+    def test_export_path_risk_is_shown_in_the_dialog_not_only_as_a_tooltip(self):
+        from PySide6.QtWidgets import QCheckBox, QDialog, QLabel
+        seen = {}
+
+        def inspect(dialog):
+            dialog.show(); self.window.app.processEvents()
+            warning = dialog.findChild(QLabel, "exportPathWarning")
+            seen["before"] = warning.isVisible()
+            dialog.findChild(QCheckBox, "includeExportPath").setChecked(True); self.window.app.processEvents()
+            seen["after"] = (warning.isVisible(), warning.text())
+            dialog.findChild(QCheckBox, "includeConfig").setChecked(False); self.window.app.processEvents()
+            seen["without_preferences"] = warning.isVisible()
+            dialog.hide(); return QDialog.Rejected
+        with patch("spoolscribe.ui_backup.QDialog.exec", inspect):
+            self.assertIsNone(self.ui._ask_backup_options(self.window))
+        self.assertFalse(seen["before"]); self.assertTrue(seen["after"][0]); self.assertIn("dossier personnel", seen["after"][1])
+        self.assertFalse(seen["without_preferences"])   # the path cannot be included without the preferences
+
     def test_backup_restore_and_explicit_revert_through_the_interface(self):
         original = Path(core.DB_PATH).read_bytes()
         self.make_backup()

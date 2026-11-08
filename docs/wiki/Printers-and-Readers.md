@@ -5,8 +5,8 @@
 **Choose the printer, then its actual reader/software setup.** A USB socket,
 a reader powered by USB and a reader supported by the printer are different things.
 
-**[v0.8.1 · stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1):** OpenSpool and OpenTag3D are offered only for
-identified setups. The older v0.3.5 remains available as a historical version; current Desktop stable is v0.8.1.
+**[v0.8.2 · stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.2):** OpenSpool and OpenTag3D are offered only for
+identified setups. The older v0.3.5 remains available as a historical version; current Desktop stable is v0.8.2.
 
 <table>
 <tr>
@@ -15,8 +15,8 @@ identified setups. The older v0.3.5 remains available as a historical version; c
 </tr>
 </table>
 
-<p align="center"><a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/printers.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/printers.png" alt="v0.8.1 visual printer selector with real photographs and compatibility categories" width="900"></a></p>
-<p align="center"><strong>Choose your real setup</strong><br><sub>Actual v0.8.1 interface.</sub></p>
+<p align="center"><a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/printers.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/printers.png" alt="v0.8.2 visual printer selector with real photographs and compatibility categories" width="900"></a></p>
+<p align="center"><strong>Choose your real setup</strong><br><sub>Actual v0.8.2 interface.</sub></p>
 
 [See the actual reader/software/tag choices](Writing-RFID-Tags.md#1-select-the-real-reference-and-destination).
 
@@ -94,7 +94,7 @@ all external integrations for that printer are impossible.
 
 The [configuration guide](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/PRINTER-CONFIGURATIONS.md) records the scope,
 prerequisites, version limits, legacy settings and primary sources. The
-[validation report](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.8.1.md) separates software checks from hardware
+[validation report](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/validation/v0.8.2.md) separates software checks from hardware
 acceptance. The [hardware catalogue](https://github.com/ArN-LaB/Spoolscribe-/blob/main/data/printers.json) remains at its
 public path; older lists keep their historical fields.
 

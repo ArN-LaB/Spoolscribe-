@@ -4,13 +4,13 @@
 
 ## 1. Download and open
 
-Download [v0.8.1 stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1), then unzip the file for your
+Download [v0.8.2 stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.2), then unzip the file for your
 system. Windows contains `SpoolScribe.exe`, macOS contains `SpoolScribe.app`,
 Linux contains `SpoolScribe`. Use the whole macOS bundle.
 
 | System | First-launch notes |
 | --- | --- |
-| macOS Apple Silicon | Verify the SHA-256 and origin. The v0.8.1 Apple Silicon app is Developer ID signed and Apple-notarised. Open the extracted app normally and keep Gatekeeper enabled. Intel/universal2 is not provided. See the release notes for the measured minimum macOS version. |
+| macOS Apple Silicon | Verify the SHA-256 and origin. The v0.8.2 Apple Silicon app is Developer ID signed and Apple-notarised. Open the extracted app normally and keep Gatekeeper enabled. Intel/universal2 is not provided. See the release notes for the measured minimum macOS version. |
 | Windows x64 | Verify origin and SHA-256. SmartScreen may warn because there is no commercial signing certificate. |
 | Linux x64 | A recent glibc plus Qt EGL/XKB/DBus libraries are required. See the [runtime dependencies](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DEVELOPMENT.md#linux-desktop-runtime). |
 

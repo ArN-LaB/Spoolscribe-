@@ -60,6 +60,7 @@ class QrWindowTests(unittest.TestCase):
     def select_opentag(self):
         w = self.window
         w.printer.setCurrentIndex(w.printer.findData("opentag3d"))
+        w.format_buttons.buttons["opentag3d"].click()  # explicit format choice (B14 A: no substitute)
         product = core.get_sku_view(w.db, "PB05001").product_data
         core.save_opentag_settings("PB05001", dict(print_temp=product["min_temp"], bed_temp=product["bed_min_temp"], chamber_temp=0, weight=1000))
         w._refresh_nfc_capacity(); w.app.processEvents()
@@ -114,6 +115,8 @@ class QrWindowTests(unittest.TestCase):
     def test_opentag_settings_missing_block_the_qr(self):
         w = self.window
         w.printer.setCurrentIndex(w.printer.findData("opentag3d")); w.app.processEvents()
+        self.assertFalse(w.btn_qr.isEnabled())  # no format chosen yet: export and QR wait
+        w.format_buttons.buttons["opentag3d"].click(); w.app.processEvents()
         self.assertEqual(w._primary_kind, "opentag_settings")
         self.assertFalse(w.btn_qr.isEnabled())
 

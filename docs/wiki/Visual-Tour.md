@@ -2,7 +2,7 @@
 
 [Help home](Home.md)
 
-Every illustration is a genuine v0.8.1 widget capture. Click an image for the full
+Every illustration is a genuine v0.8.2 widget capture. Click an image for the full
 file; its title and short caption explain what to look at. Interface examples
 use English. Available languages: **English · Français · Español · 简体中文**.
 
@@ -19,7 +19,7 @@ use English. Available languages: **English · Français · Español · 简体�
 | OpenTag3D targets, export readiness, memory | [Label preparation](Writing-RFID-Tags.md) |
 | Offline QR, M/Q protection, details, paper references | [Companion and QR](Companion-and-QR.md) |
 | Refresh results, data status and source selection | [Catalogue updates](Updating-the-Database.md) |
-| Cadence, spool size, export folder, language, ΔE limit | [Five settings tabs](Settings.md) |
+| Cadence, spool size, export folder, language, ΔE limit | [Six settings tabs](Settings.md) |
 
 No personal catalogue appears in these screenshots. Synthetic colour values and
 update statuses are explicitly identified. Native OS file/print dialogs vary by

@@ -13,6 +13,52 @@ from .ui_surfaces import fit_dialog
 from .ui_reading import PrinterCategoryDialog, PrinterCategoryPicker
 
 CONTROL_HEIGHT = 32
+# Shared surface tokens (px). Cards group one subject; tiles sit inside a card;
+# controls are buttons and fields. Accent meanings are documented in app_gui._apply_theme.
+CARD_RADIUS = 12
+TILE_RADIUS = 8
+CONTROL_RADIUS = 7
+CARD_MARGINS = (12, 10, 12, 10)
+
+
+class ReflowRow(QWidget):
+    """One row of widgets that stacks vertically when its width cannot show them whole.
+
+    Text is never elided: below the widths the widgets need side by side, each
+    gets the full width on its own line (narrow windows, long translations).
+    Its minimum is that of its widest item, never the sum: a parent panel can
+    therefore be as narrow as one stacked item. ``needed`` may replace the
+    side-by-side width rule (for example equal-width actions).
+    """
+    def __init__(self, parent=None, spacing=8, needed=None):
+        super().__init__(parent)
+        self.box = QHBoxLayout(self); self.box.setContentsMargins(0, 0, 0, 0); self.box.setSpacing(spacing)
+        self._items = []; self._needed_rule = needed
+
+    def addWidget(self, widget, stretch=0):
+        self._items.append(widget); self.box.addWidget(widget, stretch)
+
+    def addStretch(self, stretch=1):
+        self.box.addStretch(stretch)
+
+    def _needed(self):
+        if self._needed_rule is not None:
+            return self._needed_rule()
+        shown = [w for w in self._items if not w.isHidden()]
+        # An explicit minimum (equal-width actions) counts as much as the content hint.
+        return sum(max(w.sizeHint().width(), w.minimumWidth()) for w in shown) + self.box.spacing() * max(0, len(shown) - 1)
+
+    def minimumSizeHint(self):
+        shown = [w for w in self._items if not w.isHidden()]
+        return QSize(max([w.minimumSizeHint().width() for w in shown] or [0]), super().minimumSizeHint().height())
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event); self.reflow()
+
+    def reflow(self):
+        direction = QHBoxLayout.LeftToRight if self.width() >= self._needed() else QHBoxLayout.TopToBottom
+        if self.box.direction() != direction:
+            self.box.setDirection(direction); self.updateGeometry()
 
 
 def printer_visual(info, size=80, dark=False):
@@ -331,6 +377,34 @@ class WrapLabel(QLabel):
         self.fit_height()
 
 
+class ActionLabel(WrapLabel):
+    """Wrapping text that acts as a button (mouse, Space, Enter): never elided in a narrow window."""
+    clicked = Signal()
+    def __init__(self, text='', parent=None):
+        super().__init__(text, parent)
+        self.setFocusPolicy(Qt.StrongFocus); self.setCursor(Qt.PointingHandCursor)
+        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Minimum)
+
+    def sizeHint(self):
+        return QSize(self.fontMetrics().horizontalAdvance(self.text()) + 12, super().sizeHint().height())
+
+    def minimumSizeHint(self):
+        return QSize(80, self.fontMetrics().height())
+
+    def click(self):
+        self.clicked.emit()
+
+    def mouseReleaseEvent(self, event):
+        super().mouseReleaseEvent(event)
+        if event.button() == Qt.LeftButton and self.rect().contains(event.position().toPoint()):
+            self.clicked.emit()
+
+    def keyPressEvent(self, event):
+        if event.key() in (Qt.Key_Space, Qt.Key_Return, Qt.Key_Enter):
+            self.clicked.emit(); return
+        super().keyPressEvent(event)
+
+
 def paint_spool(painter, bounds, hex_color=None, dark=False):
     """Project every reel part from the same circular sections and physical axis."""
     import math
@@ -520,11 +594,14 @@ class PrinterCard(QFrame):
         self.name=WrapLabel();font=QFont();font.setPointSize(15);font.setBold(True);self.name.setFont(font)
         self.description=WrapLabel();self.status=WrapLabel();self.reader=WrapLabel();self.reader.hide()
         body.addWidget(self.name);body.addWidget(self.description);body.addWidget(self.status);body.addStretch(1);layout.addLayout(body,1)
-    def update_profile(self,profile,status,can_export,dark=False):
+    def update_profile(self,profile,status,can_export,dark=False,tokens=None):
         from .printer_presentations import presentation
         info=presentation(profile)
-        accent='#31cadd' if dark else '#007f91';border='#434c55' if dark else '#d1d9df';background='#252d34' if dark else '#ffffff'
-        self.setStyleSheet(f'QFrame#printerCard {{ background:{background}; border:1px solid {border}; border-radius:12px; }}')
+        # Same card surface and accent as the rest of the window when theme tokens are given.
+        tokens=tokens or {}
+        accent=tokens.get('accent','#31cadd' if dark else '#007f91');border=tokens.get('border','#434c55' if dark else '#d1d9df')
+        background=tokens.get('card','#252d34' if dark else '#ffffff')
+        self.setStyleSheet(f'QFrame#printerCard {{ background:{background}; border:1px solid {border}; border-radius:{CARD_RADIUS}px; }}')
         self.name.setText(info['title']);self.description.setText(info['description'])
         self.status.setText(status);self.status.setStyleSheet(f'color:{accent};font-weight:600;')
         self.reader.setText(profile.get('reader',''))

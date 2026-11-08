@@ -10,6 +10,7 @@ These retained English notes preserve original changes, validation outcomes, ski
 
 | Version | Record |
 | --- | --- |
+| v0.8.2 | [Publication record](releases/v0.8.2.md) |
 | v0.8.1 | [Publication record](releases/v0.8.1.md) |
 | v0.8.0 | [Publication record](releases/v0.8.0.md) |
 | v0.7.0 | [Publication record](releases/v0.7.0.md) |

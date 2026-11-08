@@ -20,7 +20,7 @@ from . import core
 from . import printer_profiles
 from .i18n import tr
 from .printer_profiles import PROFILES
-from .ui_widgets import WrapLabel, CONTROL_HEIGHT, printer_visual
+from .ui_widgets import WrapLabel, CONTROL_HEIGHT, CARD_MARGINS, ReflowRow, printer_visual
 from .ui_guidance import ColourGuidance, ExportGuidance, FlowLabel
 from .ui_reading import CardGrid, ParameterCard
 
@@ -92,7 +92,8 @@ class DetailUx:
         box.addLayout(form)
         self.draft_error = WrapLabel(); self.draft_error.setObjectName("draftError"); self.draft_error.hide()
         box.addWidget(self.draft_error)
-        actions = QHBoxLayout(); actions.setSpacing(8)
+        # Side by side, or stacked in a narrow detail panel (never wider than one action).
+        actions = self.draft_actions = ReflowRow()
         self.draft_save = QPushButton(tr("Enregistrer une copie")); self.draft_save.setObjectName("primary")
         self.draft_cancel = QPushButton(tr("Annuler")); self.draft_cancel.setObjectName("secondary")
         for button in (self.draft_save, self.draft_cancel):
@@ -100,7 +101,7 @@ class DetailUx:
             actions.addWidget(button, 1)
         self.draft_save.clicked.connect(self._save_draft)
         self.draft_cancel.clicked.connect(self._cancel_draft)
-        box.addLayout(actions)
+        box.addWidget(actions)
         self.draft_editor.hide()
         layout.addWidget(self.draft_editor)
 
@@ -584,21 +585,28 @@ class DetailUx:
     # ── Export state and primary action ─────────────────────────────────
     def _build_export_explanation(self, layout):
         self.export_journey = QFrame(); self.export_journey.setObjectName("exportJourney")
-        card = QVBoxLayout(self.export_journey); card.setContentsMargins(10, 10, 10, 10); card.setSpacing(8)
-        first = QGridLayout(); first.setSpacing(8);first.setColumnStretch(1,1)
-        self.hardware_photo = QLabel(); self.hardware_photo.setFixedSize(40, 44); self.hardware_photo.setAlignment(Qt.AlignCenter); first.addWidget(self.hardware_photo,0,0)
+        card = QVBoxLayout(self.export_journey); card.setContentsMargins(*CARD_MARGINS); card.setSpacing(8)
+        # Identity row (photo, name, fold) above the effect and « Configurer »: the
+        # button no longer narrows the name's column; the effect row stacks when narrow.
+        first = QHBoxLayout(); first.setSpacing(8)
+        self.hardware_photo = QLabel(); self.hardware_photo.setFixedSize(40, 44); self.hardware_photo.setAlignment(Qt.AlignCenter); first.addWidget(self.hardware_photo,0,Qt.AlignTop)
         identity = QVBoxLayout(); identity.setSpacing(2)
         self.hardware_name = FlowLabel(); self.hardware_name.setObjectName("guidanceTitle")
-        identity.addWidget(self.hardware_name); first.addLayout(identity,0,1)
+        identity.addWidget(self.hardware_name); first.addLayout(identity,1)
         self.hardware_change = QToolButton(); self.hardware_change.setText(tr("Configurer")); self.hardware_change.setFixedHeight(CONTROL_HEIGHT)
         self.hardware_change.setAccessibleName(tr("Configurer l’imprimante et son lecteur"))
-        self.hardware_change.clicked.connect(self._open_hardware); first.addWidget(self.hardware_change,1,2)
-        first.addWidget(self.hardware_summary,1,0,1,2)
+        self.hardware_change.clicked.connect(self._open_hardware)
         self._hardware_expanded=True
         self.hardware_fold=QToolButton();self.hardware_fold.setCheckable(True)
         self.hardware_fold.setFixedSize(CONTROL_HEIGHT,CONTROL_HEIGHT)
-        self.hardware_fold.toggled.connect(self._choose_hardware_presentation);first.addWidget(self.hardware_fold,0,2,Qt.AlignRight)
+        self.hardware_fold.toggled.connect(self._choose_hardware_presentation);first.addWidget(self.hardware_fold,0,Qt.AlignTop|Qt.AlignRight)
         card.addLayout(first)
+        def effect_row_width():
+            words = self.hardware_summary.text().split() or ['']
+            return max(self.hardware_summary.fontMetrics().horizontalAdvance(word) for word in words) + 8 + self.hardware_change.width()
+        self.hardware_effect_row = ReflowRow(needed=effect_row_width)
+        self.hardware_effect_row.addWidget(self.hardware_summary, 1); self.hardware_effect_row.addWidget(self.hardware_change)
+        card.addWidget(self.hardware_effect_row)
         self.hardware_body=QWidget()
         body=QVBoxLayout(self.hardware_body);body.setContentsMargins(0,0,0,0);body.setSpacing(8)
         second = QHBoxLayout(); second.setSpacing(8)
@@ -620,6 +628,7 @@ class DetailUx:
         self.capacity_meter.hide(); body.addWidget(self.capacity_meter); layout.addWidget(self.export_journey)
         self.export_details = ExportGuidance(self)
         self.export_details.readiness.layout().addWidget(self.btn_opentag_settings)
+        self.export_details.archive_button.clicked.connect(self.act_archive.trigger)
         self._export_context = {}; self._hardware_photo_key = None
         self._sync_hardware_presentation()
 
@@ -691,6 +700,10 @@ class DetailUx:
         printer_id = self.printer.currentData() or printer_profiles.DEFAULT
         profile = PROFILES[printer_id]
         self.hardware_name.setText(tr(profile["label"]))
+        # Wraps between words in a narrow panel, never inside one (« Snapmaker » stays whole).
+        self.hardware_name.ensurePolished()
+        metrics = self.hardware_name.fontMetrics()
+        self.hardware_name.setMinimumWidth(max((metrics.horizontalAdvance(word) for word in tr(profile["label"]).split()), default=0) + 2)
         self.hardware_summary.setText(self._configuration_effect())
         dark = getattr(self, '_tok', {}).get('dark', False)
         if self._hardware_photo_key != (printer_id, dark):
@@ -704,13 +717,16 @@ class DetailUx:
         tag = self.tag_type.currentData()
         format_name = "OpenTag3D" if self._opentag_selected() else "OpenSpool"
         can = self._can_export_for_printer()
-        self.tag_summary.setText(f"{tag} · {format_name}" if can else tr("Étiquette non utilisable avec cette configuration"))
+        self.tag_summary.setText(f"{tag} · {format_name}" if can else tr("Format d’étiquette à choisir") if self.nfc_format.count()
+                                 else tr("Étiquette non utilisable avec cette configuration"))
         ready = bool(self.current_sku and self._primary_kind == "export" and self.btn_generate.isEnabled())
         tone = "ready" if ready else "attention" if can and self.current_sku else "neutral"
         if self.export_journey.property("tone") != tone:
             self.export_journey.setProperty("tone", tone)
             self.export_journey.style().unpolish(self.export_journey); self.export_journey.style().polish(self.export_journey)
         self.export_details_button.setEnabled(bool(self.current_sku))
+        if self.export_details is not None:
+            self.export_details.archive_button.setEnabled(bool(self.current_sku) and not self._draft_dirty())
         self._export_context.update(printer=tr(profile["label"]), effect=self._configuration_effect(),
             tag=tag, format=format_name if can else tr("Non disponible"),
             configuration=self.hardware_summary.toolTip(),
