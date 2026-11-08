@@ -127,11 +127,38 @@ def _dialog_height(dialog, width):
     return height
 
 
+# Fitters filter events of their dialog's widgets from Python. Their Python object must
+# outlive its C++ object: a fitter collected first (it used to sit in a reference cycle
+# with its dialog) left Qt calling eventFilter on a stateless object while the dialog was
+# destroyed, then on freed memory (SIGSEGV seen in Paramètres > Exporter les préférences).
+# The registry keeps each fitter until its own C++ object is destroyed (after its dialog's
+# widgets); the fitter finds the dialog through its Qt parent, so no Python cycle remains.
+# At interpreter exit the filters are removed before PySide tears its objects down.
+_FITTERS = {}
+
+
+def _release_fitters():
+    for fitter in list(_FITTERS.values()):
+        for widget in list(fitter.watched):
+            try:widget.removeEventFilter(fitter)
+            except RuntimeError:pass   # C++ widget already deleted
+        fitter.watched.clear()
+
+
+import atexit
+atexit.register(_release_fitters)
+
+
 class _DialogFitter(QObject):
     """Reflow on content changes in either direction; ignore unchanged user resizing."""
     def __init__(self,dialog):
-        super().__init__(dialog);self.dialog=dialog;self.pending=False;self.usable=QRect();self.last_natural=None;self.last_width=None;self.fitting=False
+        super().__init__(dialog);self.pending=False;self.usable=QRect();self.last_natural=None;self.last_width=None;self.fitting=False
         self.watched=set();self.hints={}
+        key=id(self);_FITTERS[key]=self
+        self.destroyed.connect(lambda *_,key=key:_FITTERS.pop(key,None))
+    @property
+    def dialog(self):
+        return self.parent()
     def watch(self):
         for widget in [self.dialog]+[w for w in self.dialog.findChildren(QWidget) if w.layout()]+[s.widget() for s in self.dialog.findChildren(QScrollArea) if s.widget()]:
             if widget not in self.watched:widget.installEventFilter(self);self.watched.add(widget)

@@ -3,8 +3,8 @@ name: Build multiplatform
 on:
   push:
     branches: ["**"]
-    # v0.8.1 is validated once with workflow_dispatch and released with a local notarised macOS build.
-    tags: ["v*", "!v0.8.1"]
+    # Releases requiring Developer ID notarisation are built by workflow_dispatch and published locally.
+    tags: ["v*", "!v0.8.1", "!v0.8.2"]
   pull_request:
   workflow_dispatch:        # build manuel depuis l'onglet Actions
 
@@ -221,9 +221,9 @@ jobs:
   release:
     name: Publish release
     needs: build
-    # v0.8.1 is published locally after its mandatory Developer ID notarisation.
+    # v0.8.1 and v0.8.2 are published locally after mandatory Developer ID notarisation.
     # The ordinary CI macOS artifact is ad hoc and must not replace that archive.
-    if: startsWith(github.ref, 'refs/tags/v') && github.ref_name != 'v0.8.1'
+    if: startsWith(github.ref, 'refs/tags/v') && github.ref_name != 'v0.8.1' && github.ref_name != 'v0.8.2'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:

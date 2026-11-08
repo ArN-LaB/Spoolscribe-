@@ -121,3 +121,97 @@ class ErgonomicsTests(unittest.TestCase):
         text=' '.join(label.text() for label in dialog.findChildren(QLabel))
         self.assertIn('Certaines sources restent',text);self.assertIn('Connexion sécurisée impossible',text);self.assertIn('1 / 2',text)
         self.assertFalse(next(label for label in dialog.findChildren(QLabel,'sourceStatus') if 'Connexion' in label.text()).property('success'))
+
+
+@unittest.skipUnless(fixture.HAS_QT, 'Qt unavailable')
+class CatalogueStateTests(unittest.TestCase):
+    """B14 C: refresh action, state and progress together with the catalogue; simulated workers, no network."""
+    @classmethod
+    def setUpClass(cls):fixture.GuiTests.setUpClass()
+    def setUp(self):fixture.GuiTests.setUp(self)
+
+    def fake_worker(self):
+        from PySide6.QtCore import QObject, Signal
+        import threading
+        class FakeWorker(QObject):
+            progress=Signal(str,int,int);finished_ok=Signal(list);failed=Signal(str)
+            def __init__(self,parent=None):
+                super().__init__(parent);self.cancel=threading.Event();self.running=False
+            def start(self):self.running=True
+            def isRunning(self):return self.running
+            def wait(self,*_):return True
+        return FakeWorker
+
+    def start(self):
+        w=self.window
+        with patch('spoolscribe.app_gui.UpdateWorker',self.fake_worker()),patch.object(w,'_ask_network_consent',return_value=True):
+            w._start_update(manual=True)
+        worker=w.worker;self.addCleanup(setattr,worker,'running',False)   # never leave a « running » refresh at close
+        return worker
+
+    def test_refresh_lives_with_the_catalogue_apart_from_the_search(self):
+        w=self.window;w.show();w.app.processEvents()
+        self.assertTrue(w.catalogue_state.isAncestorOf(w.update_btn));self.assertTrue(w.catalogue_state.isAncestorOf(w.database_btn))
+        self.assertFalse(w.catalogue_state.isAncestorOf(w.search))
+        self.assertIs(w.update_progress_card.parentWidget(),w.catalogue_state.parentWidget())
+        self.assertEqual(w.update_btn.height(),w.search.height())
+        with patch.object(w,'_start_update') as update,patch.object(w,'_choose_sources') as sources:
+            w.search.setText('PLA');w._apply_filter()
+        update.assert_not_called();sources.assert_not_called()   # local search never synchronises
+        # Narrow catalogue panel: the state and the action stack instead of being cut.
+        w.catalogue_state.resize(260,w.catalogue_state.height());w.catalogue_state.reflow()
+        from PySide6.QtWidgets import QBoxLayout
+        self.assertEqual(w.catalogue_state.box.direction(),QBoxLayout.Direction.TopToBottom)
+
+    def test_state_text_never_presents_a_partial_or_failed_refresh_as_complete(self):
+        w=self.window
+        cases=[(dict(_update_status='complete',_last_updated='2026-11-07T10:00:00'),'actualisée le 07/11/2026',None),
+               (dict(_update_status='partial',_last_updated='2026-11-01T09:00:00'),'actualisation partielle · complète le 01/11/2026','actualisée le'),
+               (dict(_update_status='failed'),'actualisation échouée','actualisée le'),
+               (dict(_update_status=None),'à synchroniser','actualisée')]
+        for metadata,expected,absent in cases:
+            with self.subTest(metadata=metadata):
+                w.db.pop('_last_updated',None);w.db.update(metadata);w._refresh_database_summary()
+                self.assertIn(expected,w.database_btn.text())
+                if absent:self.assertNotIn(absent,w.database_btn.text())
+
+    def test_running_cancelled_failed_and_complete_states_stay_in_one_place(self):
+        w=self.window;w.show();w.app.processEvents()
+        worker=self.start();w.app.processEvents()
+        self.assertTrue(w.update_progress_card.isVisible());self.assertFalse(w.update_btn.isEnabled())
+        self.assertIn('actualisation en cours',w.database_btn.text())
+        self.assertNotIn('Mise à jour',w.status.currentMessage())   # no floating « Mise à jour en cours… »
+        w._on_update_progress('Catalogue multi-fabricants OFD',2,5)
+        self.assertEqual(w.progress_step.text(),'Étape 2 sur 5');self.assertEqual(w.progress.value(),1)
+        w._cancel_update();self.assertIn('Annulation demandée',w.progress_label.text());self.assertTrue(worker.cancel.is_set())
+        worker.running=False
+        from spoolscribe import core
+        before=w.db.get('_last_updated')
+        with patch.object(w,'_show_sync_report') as report:
+            w._on_update_done([core.StepResult('Catalogue multi-fabricants OFD',False,-3,'',"cancelled")])
+        report.assert_not_called()
+        self.assertFalse(w.update_progress_card.isVisible());self.assertTrue(w.update_btn.isEnabled())
+        self.assertIn('actualisation annulée · base conservée',w.database_btn.text());self.assertEqual(w.db.get('_last_updated'),before)
+        # A crashed worker: failed state, never « actualisée ».
+        self.start();w.worker.running=False
+        with patch('spoolscribe.app_gui.QMessageBox.critical'):w._on_update_failed('Traceback')
+        self.assertIn('actualisation échouée',w.database_btn.text());self.assertFalse(w.update_progress_card.isVisible())
+        # A complete manual refresh: dated state and the report, card hidden.
+        self.start();w.worker.running=False
+        def complete(*_a,**_k):
+            db=core.load_db();db.update(_update_status='complete',_last_updated='2026-11-08T08:00:00');core.save_db(db)
+            return db
+        complete()
+        with patch.object(w,'_show_sync_report') as report:
+            w._on_update_done([core.StepResult('Catalogue multi-fabricants OFD',True,0,'','changed')])
+        report.assert_called_once()
+        self.assertIn('actualisée le 08/11/2026',w.database_btn.text());self.assertFalse(w.update_progress_card.isVisible())
+
+    def test_reopening_after_a_cancelled_run_shows_the_stored_state_only(self):
+        from spoolscribe import app_gui, core
+        w=self.window;self.start();w.worker.running=False
+        w._on_update_done([core.StepResult('Catalogue multi-fabricants OFD',False,-3,'',"cancelled")])
+        self.assertIn('annulée',w.database_btn.text())
+        w.close();other=app_gui.MainWindow();self.addCleanup(other.close)
+        self.assertNotIn('annulée',other.database_btn.text());self.assertNotIn('en cours',other.database_btn.text())
+        self.assertFalse(other.update_progress_card.isVisible())

@@ -2784,10 +2784,15 @@
     "es": "El accesorio oficial Prusa lee OpenPrintTag; SpoolScribe aún no exporta este formato.",
     "zh_CN": "Prusa 官方附件读取 OpenPrintTag；SpoolScribe 尚不能导出该格式。"
   },
-  "L’autorisation réseau a été retirée. Réactivez-la dans « Sources de la base » pour contacter GitHub.": {
-    "en": "Network permission was revoked. Enable it in Catalogue sources to contact GitHub.",
-    "es": "Se retiró el permiso de red. Actívelo en Fuentes del catálogo para contactar con GitHub.",
-    "zh_CN": "网络权限已撤销。请在“目录来源”中重新启用后再访问 GitHub。"
+  "L’autorisation réseau est retirée.": {
+    "en": "Network permission is withdrawn.",
+    "es": "El permiso de red está retirado.",
+    "zh_CN": "网络权限已撤销。"
+  },
+  "Pour vérifier la version publiée sur GitHub, réactivez-la avec le bouton « {v0} », ou dans {v1} › {v2} › « {v3} ».": {
+    "en": "To check the published version on GitHub, turn it back on with the “{v0}” button, or in {v1} › {v2} › “{v3}”.",
+    "es": "Para comprobar la versión publicada en GitHub, vuelva a activarlo con el botón «{v0}» o en {v1} › {v2} › «{v3}».",
+    "zh_CN": "如需在 GitHub 上检查发布版本，请通过“{v0}”按钮，或在 {v1} › {v2} › “{v3}”中重新启用。"
   },
   "L’installation que vous utilisez": {
     "en": "The setup you use",
@@ -4289,10 +4294,20 @@
     "es": "Una sola muestra no representa este filamento.",
     "zh_CN": "单一色块无法代表此耗材。"
   },
-  "Une synchronisation est en cours. Quitter quand même ?\nL’étape en cours est interrompue ; la base locale reste celle d’avant.": {
-    "en": "A catalogue refresh is running. Quit anyway?\nThe current step will stop; the previous catalogue will be kept.",
-    "es": "Hay una actualización en curso. ¿Salir de todas formas?\nSe detendrá el paso actual y se conservará el catálogo anterior.",
-    "zh_CN": "目录正在更新，仍要退出吗？\n当前步骤将中断，并保留原有本地目录。"
+  "Quitter pendant la synchronisation ?": {
+    "en": "Quit during the catalogue refresh?",
+    "es": "¿Salir durante la actualización?",
+    "zh_CN": "在目录更新期间退出？"
+  },
+  "La synchronisation sera interrompue. Les étapes déjà terminées peuvent avoir modifié les données locales.": {
+    "en": "The refresh will stop. Steps already completed may have changed the local data.",
+    "es": "La actualización se interrumpirá. Los pasos ya terminados pueden haber modificado los datos locales.",
+    "zh_CN": "更新将被中断。已完成的步骤可能已修改本地数据。"
+  },
+  "Continuer la synchronisation": {
+    "en": "Continue refreshing",
+    "es": "Continuar la actualización",
+    "zh_CN": "继续更新"
   },
   "Utilisez ces informations dans votre logiciel de préparation d’impression.": {
     "en": "Use this information in your slicer.",
@@ -8763,5 +8778,135 @@
     "en": "Orca profile: JSON object required.",
     "es": "Perfil Orca: se requiere un objeto JSON.",
     "zh_CN": "Orca 配置文件：需要 JSON 对象。"
+  },
+  "Menu : matériel, paramètres, à propos": {
+    "en": "Menu: hardware, settings, about",
+    "es": "Menú: equipo, ajustes, acerca de",
+    "zh_CN": "菜单：设备、设置、关于"
+  },
+  "Menu": {
+    "en": "Menu",
+    "es": "Menú",
+    "zh_CN": "菜单"
+  },
+  "Ces actions utilisent vos réglages déjà enregistrés : les modifications non enregistrées de cette fenêtre ne sont pas incluses. La fenêtre se ferme d’abord sans les enregistrer ; chaque action demande ensuite confirmation et Annuler n’écrit rien.": {
+    "en": "These actions use your saved settings: unsaved changes in this window are not included. The window closes first without saving them; each action then asks for confirmation and Cancel writes nothing.",
+    "es": "Estas acciones usan sus ajustes ya guardados: los cambios no guardados de esta ventana no se incluyen. La ventana se cierra primero sin guardarlos; después cada acción pide confirmación y Cancelar no escribe nada.",
+    "zh_CN": "这些操作使用您已保存的设置：此窗口中未保存的修改不会包含在内。窗口会先关闭且不保存这些修改；随后每个操作都会请求确认，取消不会写入任何内容。"
+  },
+  "Préférences · fichier JSON": {
+    "en": "Preferences · JSON file",
+    "es": "Preferencias · archivo JSON",
+    "zh_CN": "偏好设置 · JSON 文件"
+  },
+  "JSON en clair, partiel : langue, actualisation et sources, bobine préférée, favoris, imprimante et étiquette NFC, réglages OpenTag3D par référence, format papier QR, limite de couleur. Non inclus : catalogue, copies personnelles, registre couleur, autorisation réseau, dates et état des actualisations. En option : disposition et filtres, chemin du dossier d’export (chemin local).": {
+    "en": "Plain-text, partial JSON: language, update schedule and sources, preferred spool, favourites, printer and NFC tag, OpenTag3D settings per reference, QR paper format, colour limit. Not included: catalogue, personal copies, colour registry, network permission, update dates and status. Optional: layout and filters, export folder path (local path).",
+    "es": "JSON en texto claro, parcial: idioma, actualización y fuentes, bobina preferida, favoritos, impresora y etiqueta NFC, ajustes OpenTag3D por referencia, formato de papel QR, límite de color. No incluido: catálogo, copias personales, registro de color, autorización de red, fechas y estado de las actualizaciones. Opcional: disposición y filtros, ruta de la carpeta de exportación (ruta local).",
+    "zh_CN": "明文、部分内容的 JSON：语言、更新频率与来源、首选线盘、收藏、打印机和 NFC 标签、按参考的 OpenTag3D 设置、二维码纸张格式、颜色范围。不包括：目录、个人副本、颜色登记、网络授权、更新日期和状态。可选：布局和筛选、导出文件夹路径（本地路径）。"
+  },
+  "Mes données · archive ZIP": {
+    "en": "My data · ZIP archive",
+    "es": "Mis datos · archivo ZIP",
+    "zh_CN": "我的数据 · ZIP 归档"
+  },
+  "ZIP en clair, plus complet : catalogue avec vos copies personnelles et corrections, références couleur, réglages d’appareil de mesure, profils Orca locaux et liste d’imprimantes téléchargée s’ils existent. En option : préférences, disposition, chemin du dossier d’export, exports générés. Il peut contenir des données personnelles et des chemins locaux. La liste exacte s’affiche avant la création ; un aperçu précède toute restauration.": {
+    "en": "Plain, more complete ZIP: catalogue with your personal copies and corrections, colour references, measuring device settings, local Orca profiles and the downloaded printer list when they exist. Optional: preferences, layout, export folder path, generated exports. It may contain personal data and local paths. The exact list is shown before creation; a preview comes before any restore.",
+    "es": "ZIP en texto claro, más completo: catálogo con sus copias personales y correcciones, referencias de color, ajustes del dispositivo de medición, perfiles Orca locales y lista de impresoras descargada si existen. Opcional: preferencias, disposición, ruta de la carpeta de exportación, exportaciones generadas. Puede contener datos personales y rutas locales. La lista exacta se muestra antes de crearlo; se muestra una vista previa antes de cualquier restauración.",
+    "zh_CN": "明文、内容更完整的 ZIP：目录（含您的个人副本和更正）、颜色参考、测量设备设置、本地 Orca 配置文件和已下载的打印机列表（如存在）。可选：偏好设置、布局、导出文件夹路径、已生成的导出文件。其中可能包含个人数据和本地路径。创建前会显示确切清单；任何恢复前都会先显示预览。"
+  },
+  "Ressources et assistance": {
+    "en": "Resources and support",
+    "es": "Recursos y asistencia",
+    "zh_CN": "资源与支持"
+  },
+  "Comparer cette version avec la dernière version publiée sur GitHub": {
+    "en": "Compare this version with the latest version published on GitHub",
+    "es": "Comparar esta versión con la última versión publicada en GitHub",
+    "zh_CN": "将此版本与 GitHub 上发布的最新版本进行比较"
+  },
+  "SpoolScribe est gratuit et le reste. Si l’application vous est utile, vous pouvez soutenir son développement.": {
+    "en": "SpoolScribe is free and will stay free. If the app is useful to you, you can support its development.",
+    "es": "SpoolScribe es gratuito y lo seguirá siendo. Si la aplicación le resulta útil, puede apoyar su desarrollo.",
+    "zh_CN": "SpoolScribe 免费且将一直免费。如果此应用对您有用，您可以支持它的开发。"
+  },
+  "Non chiffré": {
+    "en": "Not encrypted",
+    "es": "Sin cifrar",
+    "zh_CN": "未加密"
+  },
+  "Fichier non chiffré": {
+    "en": "Unencrypted file",
+    "es": "Archivo sin cifrar",
+    "zh_CN": "未加密的文件"
+  },
+  "Non chiffré : toute personne qui reçoit ce fichier peut le lire.": {
+    "en": "Not encrypted: anyone who receives this file can read it.",
+    "es": "Sin cifrar: cualquier persona que reciba este archivo puede leerlo.",
+    "zh_CN": "未加密：任何收到此文件的人都可以读取。"
+  },
+  "actualisation en cours": {
+    "en": "refresh in progress",
+    "es": "actualización en curso",
+    "zh_CN": "正在更新"
+  },
+  "Choisissez le format de votre étiquette.": {
+    "en": "Choose your tag format.",
+    "es": "Elija el formato de su etiqueta.",
+    "zh_CN": "请选择标签格式。"
+  },
+  "Seuls les réglages déjà enregistrés sont exportés.": {
+    "en": "Only settings that are already saved are exported.",
+    "es": "Solo se exportan los ajustes ya guardados.",
+    "zh_CN": "仅导出已保存的设置。"
+  },
+  "actualisation annulée · base conservée": {
+    "en": "refresh cancelled · catalogue kept",
+    "es": "actualización cancelada · base conservada",
+    "zh_CN": "更新已取消 · 目录已保留"
+  },
+  "{v0} n’est pas lu par cette configuration. Choisissez un format ci-dessus avant d’exporter.": {
+    "en": "{v0} is not read by this setup. Choose a format above before exporting.",
+    "es": "{v0} no lo lee esta configuración. Elija un formato arriba antes de exportar.",
+    "zh_CN": "此配置无法读取 {v0}。请在导出前于上方选择一种格式。"
+  },
+  "Précisez votre installation dans « Configurer ».": {
+    "en": "Specify your setup in “Configure”.",
+    "es": "Indique su instalación en «Configurar».",
+    "zh_CN": "请在“配置”中指定您的设备组合。"
+  },
+  "actualisée le {v0}": {
+    "en": "updated on {v0}",
+    "es": "actualizada el {v0}",
+    "zh_CN": "已于 {v0} 更新"
+  },
+  "Choisissez le format de l’étiquette dans « Configurer ».": {
+    "en": "Choose the tag format in “Configure”.",
+    "es": "Elija el formato de la etiqueta en «Configurar».",
+    "zh_CN": "请在“配置”中选择标签格式。"
+  },
+  "Choisir un format lu par cette configuration": {
+    "en": "Choose a format this setup reads",
+    "es": "Elegir un formato que lea esta configuración",
+    "zh_CN": "选择此配置可读取的格式"
+  },
+  "complète le {v0}": {
+    "en": "last complete on {v0}",
+    "es": "completa el {v0}",
+    "zh_CN": "上次完整更新于 {v0}"
+  },
+  "Format d’étiquette à choisir": {
+    "en": "Tag format to choose",
+    "es": "Formato de etiqueta por elegir",
+    "zh_CN": "待选择标签格式"
+  },
+  "Fichier OpenSpool lisible": {
+    "en": "Readable OpenSpool file",
+    "es": "Archivo OpenSpool legible",
+    "zh_CN": "可读的 OpenSpool 文件"
+  },
+  "JSON complet de ce filament, à consulter ou archiver. Ce n’est pas une sauvegarde de vos données.": {
+    "en": "Complete JSON of this filament, to read or keep. It is not a backup of your data.",
+    "es": "JSON completo de este filamento, para consultar o archivar. No es una copia de seguridad de sus datos.",
+    "zh_CN": "此耗材的完整 JSON，可供查看或存档。这不是您的数据备份。"
   }
 }

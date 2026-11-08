@@ -58,7 +58,7 @@ class QrReviewTests(unittest.TestCase):
     def test_temperature_review_requires_confirmation_and_resets_after_edits(self):
         from PySide6.QtWidgets import QToolButton,QDialogButtonBox,QLineEdit
         from pathlib import Path
-        w=self.window;w.printer.setCurrentIndex(w.printer.findData('opentag3d'))
+        w=self.window;w.printer.setCurrentIndex(w.printer.findData('opentag3d'));w.format_buttons.buttons['opentag3d'].click()
         before=Path(core.DB_PATH).read_bytes()
         def review(dialog):
             check=dialog.findChild(QToolButton,'opentag_confirmed')

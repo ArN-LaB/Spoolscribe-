@@ -1,4 +1,4 @@
-# Develop and build SpoolScribe v0.8.1
+# Develop and build SpoolScribe v0.8.2
 
 [Documentation](README.md) · [Contributing](../.github/CONTRIBUTING.md) · [Repository layout](REPOSITORY.md)
 
@@ -69,7 +69,7 @@ python .github/scripts/check_frozen_measurements.py
 
 Output stays `dist/SpoolScribe.exe` (Windows), `dist/SpoolScribe` (Linux) and
 `dist/SpoolScribe.app` (macOS). Each ZIP contains one native executable or one
-`.app`, with a companion SHA-256 file. CI macOS builds are ad hoc intermediates. The v0.8.1 release uses the separately
+`.app`, with a companion SHA-256 file. CI macOS builds are ad hoc intermediates. The v0.8.2 release uses the separately
 Developer ID signed, notarised and stapled build. `python packaging/macos_notarize.py --help` describes the signing tool; supplying valid signing credentials remains a maintainer responsibility.
 
 The [workflow](../.github/workflows/build.yml) tests four Python/OS configurations and checks frozen application behaviour and resource integrity. Historical archives retain their own tagged sources and checksums; a new source build uses a new version rather than replacing an old download.

@@ -1,4 +1,5 @@
 """Readable surfaces, restrained colour score and content-aware windows, offline."""
+import json
 import unittest
 from unittest.mock import patch
 from pathlib import Path
@@ -93,3 +94,83 @@ class SurfaceTests(unittest.TestCase):
 
         with patch('spoolscribe.app_gui.is_dark_theme',return_value=False):w._apply_theme();w._refresh_logo('Snapmaker')
         self.assertFalse(halo.isEnabled());self.assertEqual(Path(core.DB_PATH).read_bytes(),before)
+
+
+@unittest.skipUnless(fixture.HAS_QT,'Qt unavailable')
+class SemanticAccentTests(unittest.TestCase):
+    """B14 D: same meaning, same style; « ready » is never drawn as a hardware qualification."""
+    @classmethod
+    def setUpClass(cls):fixture.GuiTests.setUpClass()
+    def setUp(self):fixture.GuiTests.setUp(self)
+
+    def test_accents_follow_documented_meanings_in_both_themes(self):
+        from spoolscribe.ui_widgets import CARD_RADIUS,TILE_RADIUS
+        w=self.window
+        for dark in (False,True):
+            with self.subTest(dark=dark):
+                with patch('spoolscribe.app_gui.is_dark_theme',return_value=dark):w._apply_theme()
+                qss=w.styleSheet()
+                self.assertNotIn('tone=ready',qss)                      # no green rule on the printer card
+                self.assertIn('QFrame#exportJourney[tone=attention]',qss) # something to do before exporting
+                self.assertNotIn('dashed',qss.split('QFrame#draftEditor {')[1].split('}')[0])
+                self.assertIn(f"border:1px solid {w._tok['accent']}",qss.split('QFrame#draftEditor {')[1].split('}')[0])
+                for name in ('QFrame#exportJourney {','QFrame#draftEditor, QFrame#comparisonCard {'):
+                    self.assertIn(f'border-radius:{CARD_RADIUS}px',qss.split(name)[1].split('}')[0])
+                self.assertIn(f'border-radius:{TILE_RADIUS}px',qss.split('QFrame#guidanceTile {')[1].split('}')[0])
+
+    def test_ready_export_card_has_no_coloured_rule_and_blocked_one_keeps_attention(self):
+        w=self.window;w.show();w.current_sku='PB05001';w._show_detail('PB05001');w.app.processEvents()
+        self.assertEqual(w.export_journey.property('tone'),'ready')
+        image=w.export_journey.grab().toImage();left=image.pixelColor(1,image.height()//2)
+        right=image.pixelColor(image.width()-2,image.height()//2)
+        self.assertEqual(left.name(),right.name())   # left edge drawn like the right one: plain border
+        w.firmware.setCurrentIndex(w.firmware.findData('unknown'));w.app.processEvents()
+        self.assertNotEqual(w.export_journey.property('tone'),'ready')
+
+
+@unittest.skipUnless(fixture.HAS_QT,'Qt unavailable')
+class DialogFitterLifetimeTests(unittest.TestCase):
+    """B14 G: the reproduced SIGSEGV path. Real modal dialogs (Paramètres, export options) are opened,
+    cancelled and reopened; Qt must never call a dialog fitter whose Python state is gone."""
+    @classmethod
+    def setUpClass(cls):fixture.GuiTests.setUpClass()
+    def setUp(self):fixture.GuiTests.setUp(self)
+
+    def test_export_preferences_journey_never_reaches_a_stateless_fitter(self):
+        import collections, gc, sys
+        from PySide6.QtCore import QTimer
+        from PySide6.QtWidgets import QApplication, QComboBox, QDialogButtonBox, QPushButton, QTabWidget
+        from spoolscribe import ui_surfaces
+        w=self.window;w.show();target=Path(self.tmp.name)/'prefs.json'
+        # Before the fix this journey called eventFilter on collected fitters (AttributeError
+        # 'fitting', then calls into freed memory) and crashed with SIGSEGV. Overrides are not
+        # patched here: PySide keeps the override it resolved, so a restored patch would itself
+        # leave a dangling callable behind.
+        errors=[]
+        hook=sys.excepthook;sys.excepthook=lambda *a:errors.append(a[1]);self.addCleanup(setattr,sys,'excepthook',hook)
+        steps=collections.deque();done=[]
+        def modal():return QApplication.activeModalWidget()
+        def export_click():
+            d=modal();tabs=d.findChild(QTabWidget);tabs.setCurrentIndex(tabs.count()-1)
+            language=d.findChild(QComboBox,'interface_language');language.setCurrentIndex(language.findData('es'))
+            d.findChild(QPushButton,'exportPreferences').click()
+        def options(button):return lambda:modal().findChild(QDialogButtonBox).button(button).click()
+        for _ in range(2):
+            steps.extend([lambda:QTimer.singleShot(0,w._open_settings),export_click,options(QDialogButtonBox.Cancel),
+                          lambda:QTimer.singleShot(0,w._open_settings),export_click,options(QDialogButtonBox.Ok),gc.collect,
+                          lambda:QTimer.singleShot(0,w._open_settings),lambda:modal().reject(),gc.collect])
+        steps.append(lambda:done.append(True))
+        def tick():
+            action=steps.popleft()
+            if steps:QTimer.singleShot(60,tick)
+            action()
+        with patch('spoolscribe.ui_catalogue.QFileDialog.getSaveFileName',return_value=(str(target),'JSON')):
+            QTimer.singleShot(0,tick)
+            deadline=__import__('time').monotonic()+20
+            while not done and __import__('time').monotonic()<deadline:w.app.processEvents()
+        self.assertTrue(done,'journey did not finish')
+        self.assertEqual(errors,[])
+        gc.collect()
+        for fitter in list(ui_surfaces._FITTERS.values()):   # every live fitter keeps its state
+            self.assertIn('fitting',fitter.__dict__);self.assertIsNotNone(fitter.dialog)
+        self.assertEqual(json.loads(target.read_text(encoding='utf-8'))['settings']['language'],'fr')

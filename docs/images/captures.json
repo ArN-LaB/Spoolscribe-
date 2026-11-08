@@ -1,6 +1,6 @@
 {
-  "version": "0.8.1",
-  "source_commit": "c748fdf92ff785cf01b96e76e0a9e3e4c68c43e0",
+  "version": "0.8.2",
+  "source_commit": "b3e2178370154a08028437a8a17d68d732d88070",
   "language": "en",
   "theme": "application light palette",
   "network": "blocked by Python audit hook",
@@ -9,20 +9,20 @@
     {
       "file": "catalogue.png",
       "description": "list catalogue with selected Polymaker filament",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 1480,
       "height": 920,
-      "sha256": "5648a94ca012a9d5c7d105ffd5c6a66320100ae477b69afe969ba8e16732345e",
+      "sha256": "d558cc1f86e8a28564dcb8b041acc60912487b44e6fd34161e858f4cc5fc8d7b",
       "sku": "OFD-044E3262-B9E7-4461-9059-C94331295643",
       "view": "list"
     },
     {
       "file": "qr-transfer.png",
       "description": "Complete SSQR1 QR and digital PNG/SVG save actions",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 660,
       "height": 514,
-      "sha256": "6845d9d8bfde1e9b8cb12793c6a0c92272b924892c99f0390ec3b6911418c1d3",
+      "sha256": "5e10579a92bcaf73e89d9b7a264dcac268f569b1bb3a67c3799c709684a58915",
       "crop": "Top of the real QR window through digital save actions; printing band omitted",
       "sku": "OFD-044E3262-B9E7-4461-9059-C94331295643",
       "protocol": "OpenSpool 1.0",
@@ -31,20 +31,20 @@
     {
       "file": "collection.png",
       "description": "grid catalogue with selected Bambu Lab filament",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 1480,
       "height": 920,
-      "sha256": "99cec4e345a238a2f9471514b83bb968688568e67596af444b38fb187c563de6",
+      "sha256": "4d4389b52752f1afac131181d1296bfde88e81cfd4d20dc39033091f04eb8071",
       "sku": "OFD-CC958C7B-967B-4FC2-A034-6C8B40B213B8",
       "view": "grid"
     },
     {
       "file": "colour-search.png",
       "description": "PLA colour proximity with declared HEX and actual Delta E scores",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 1480,
       "height": 920,
-      "sha256": "57bd8f71ed2884f4d314cad8fc3039265b8a63ddc8456a0d5dc4aae6feaa213e",
+      "sha256": "f39f9a2101812929054494fdc9589d504822b61512613913e87dc96a4e95097c",
       "target_hex": "C8E6A0",
       "maximum_delta_e": 10.0,
       "results": 85
@@ -52,15 +52,15 @@
     {
       "file": "hardware.png",
       "description": "Compose a real printer, reader and tag setup",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 780,
       "height": 740,
-      "sha256": "d01e6d9f2ff7d7bfd3f0f996ddce2b31d87b799f0e6e5727b3518f7a5a415b53"
+      "sha256": "22f0580299f8e7af21354c11d847f0730a4151d4ba9ee8566a54a6c36b292f62"
     },
     {
       "file": "printers.png",
       "description": "Visual printer browser with photographs, search and compatibility categories",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 840,
       "height": 800,
       "sha256": "dcdae93f59a4edcac48eff918d464d7d53471ec606973f3a9bb539c8af9a25f2"
@@ -68,7 +68,7 @@
     {
       "file": "catalogue-status.png",
       "description": "Local fixture catalogue status; no update performed",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 820,
       "height": 399,
       "sha256": "7955ab6e9a8b7bb725149c527114685067f644505b1abfe6a6a9cfe9895a8f3d"
@@ -76,41 +76,41 @@
     {
       "file": "update-report.png",
       "description": "Example partial-update report using synthetic statuses, no live requests",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 752,
       "height": 341,
-      "sha256": "f3133eb71234926b96527cbf535efb40594d1f2c07a818cf5dd50c2e03d5e7e9",
+      "sha256": "818241f7f395f0bca57c2b7f928dfb0051ce4efe3ab9ed9d56ffc670f5db5593",
       "source_results": "synthetic demonstration, not an executed network update"
     },
     {
       "file": "export-details.png",
       "description": "Current NFC export readiness, capacity and next steps",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 700,
       "height": 517,
-      "sha256": "d16a51f8a04f7527cc38a753c7fd1062f9b867ed0ae0d728c4287365ef0f3fde"
+      "sha256": "9a25ae6547ceba0847b954acab754761c1251bc02743ae0d29dbeb7fee119ffd"
     },
     {
       "file": "sources.png",
       "description": "Choose catalogue sources before any download",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 820,
       "height": 602,
-      "sha256": "bfe1a2599d0ca6f6767e503a80327198d06f324a3429ae26f94c7d7fa4b2d13f",
+      "sha256": "8001109e5accc9fd6bc1607bbc2dc223678a61e9fd85108aa2a1136ee8225380",
       "network_action": "none"
     },
     {
       "file": "settings-catalogue.png",
       "description": "Settings: catalogue",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 860,
-      "height": 458,
-      "sha256": "fb7ab9c64c149da67ee987851cea1013a2b808f82a46de84cb4309814c3a2cab"
+      "height": 442,
+      "sha256": "a03222193cd26e381bd67963c4abf8f05e5e7f7b3278e4f0dee29449419a4c94"
     },
     {
       "file": "settings-spools.png",
       "description": "Settings: spools",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 860,
       "height": 258,
       "sha256": "8bd8a93cd90631ce89042fe31ffeab33de61488f78839f194f7c7622a92e878e"
@@ -118,7 +118,7 @@
     {
       "file": "settings-export.png",
       "description": "Settings: export",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 860,
       "height": 353,
       "sha256": "3d7b8c5b7708323a9e70b6df3a101935e942dd858488941b8e09efceee4b788c"
@@ -126,7 +126,7 @@
     {
       "file": "settings-colours.png",
       "description": "Settings: colours",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 860,
       "height": 326,
       "sha256": "f752dcbd62a60b6baf658dbd22a4a3c8138c3dba1549f9d63d6cbf512b8ea781"
@@ -134,7 +134,7 @@
     {
       "file": "settings-interface.png",
       "description": "Settings: interface",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 860,
       "height": 216,
       "sha256": "6b4d90296116c2c5a9168ca059a7f3a9c4fb2b0219e63f673835c9c53869e85d"
@@ -142,23 +142,23 @@
     {
       "file": "settings-backups.png",
       "description": "Settings: backups",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 860,
-      "height": 468,
-      "sha256": "8e68dd1d2729e97754e082201420879f0a4aced53f33257be1a1967ced30d64a"
+      "height": 516,
+      "sha256": "f463b52e47436451020a4317a3b685a7cbce9df0e04fc2c701739fb0a9fb97c2"
     },
     {
       "file": "favourites.png",
       "description": "Saved filament favourites filter; clearing filters keeps the favourites",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 1480,
       "height": 920,
-      "sha256": "649f983efc012777401c9f34998c4ee901ece01f033fca386f52b029a5f4fd2f"
+      "sha256": "3f8e621a5d422a7f963a8dbf3b0681f06cda1c213d30ab7d4ebdac0c0b29fb47"
     },
     {
       "file": "filament-details.png",
       "description": "Selected filament values and their provenance",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 726,
       "height": 321,
       "sha256": "d0f3802291741e5fd1b6292d3c3be9d2fbb788a794a851fa7140422f19c8f6e4"
@@ -166,24 +166,24 @@
     {
       "file": "personal-copy.png",
       "description": "Personal copy editor; source reference stays unchanged",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 726,
       "height": 442,
-      "sha256": "0fc55b3e0e05f486f9f350f9713430f59bbede0052eb1ca63110db42a958acca",
+      "sha256": "0d2e63acb4f8c440169e155a89f847100ad13bff83e834167e8ee4f1897eb4ef",
       "write_action": "none"
     },
     {
       "file": "colour-list.png",
       "description": "Contextual Delta E column, visible only during colour comparison",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 1480,
       "height": 920,
-      "sha256": "4916263a59f4f9a76e61841c66dd6b55b232c5937b19648db94c92cf605f71c6"
+      "sha256": "4b256f24905475b5687208319901f25f2451b4aa49670ec81f403870bfdb2966"
     },
     {
       "file": "columns-menu.png",
       "description": "Column visibility choices rendered from the real menu without opening the native menu loop",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 178,
       "height": 282,
       "sha256": "9b2167c2d6ca4daecca1f49903bc70ebf9f7b31692fdd7a062f1eb2a2d95880c"
@@ -191,42 +191,42 @@
     {
       "file": "colour-lab.png",
       "description": "Enter documented Lab D65/2 degree example values",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 860,
       "height": 754,
-      "sha256": "bb7cabb74904f7f84e6fb9a336a2d4bc5e39a49401d52b0d18339eea94f4f4c1",
+      "sha256": "5c73c3b75244f49331a10ba794367933e02d404cf84b031d6002ceb95a3b624b",
       "measurement": "synthetic example, not an instrument reading"
     },
     {
       "file": "colour-saved.png",
       "description": "Saved reference values, associations and backup actions",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 752,
       "height": 693,
-      "sha256": "803de7ead2f348a0b9b9ed669cb101435826a7e262b3cd68a3c459c99e902fdc",
+      "sha256": "c17e62365614ca7ebcbb7d04f3a1eaaae8ec2c152b798ceca9d2c220627b810c",
       "measurement": "synthetic local entry"
     },
     {
       "file": "device-preset.png",
       "description": "User-declared device entry preset, explicitly applied",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 752,
       "height": 720,
-      "sha256": "ac6c7fc9fc54ed72bc9f2bfa1089d76a947a9710aa0e4c796160e12c3794ebbb",
+      "sha256": "cb6cfbbde49de9bd9becdf411e7a6c1c9513bbc7148266083e909db4792b4e49",
       "device": "synthetic example, not a supported hardware claim"
     },
     {
       "file": "colour-paste.png",
       "description": "Interpret labelled colour values copied from an application",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 752,
       "height": 720,
-      "sha256": "bd75b36f58a13a7336e5843eeea9628aa821d2d367e34d6b799e472b1c728c61"
+      "sha256": "7336ae6c6de3bbb49f58d58d6317a2d701b9edde7c8927e97c876ed857c7f347"
     },
     {
       "file": "colour-import.png",
       "description": "Review file settings, columns and parsed rows before importing",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 752,
       "height": 720,
       "sha256": "e30ef9da385e58e1dede16d172b7393b165acf4b425c1fdd9ca03ec139010741",
@@ -235,7 +235,7 @@
     {
       "file": "opentag-temperatures.png",
       "description": "Review OpenTag3D temperature proposals before explicit confirmation",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 820,
       "height": 596,
       "sha256": "d3fdfafc35903377a1919b389501cf6d512bb942cdd178a5dea62099fe02f844",
@@ -244,37 +244,37 @@
     {
       "file": "qr-companion.png",
       "description": "Offline QR transfer, Companion availability and optional paper choices",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 720,
       "height": 795,
-      "sha256": "f0cda102bfb7c4d75bea350408345dde15689475b667e1cfc8d9e1870e574855",
+      "sha256": "1eead8327576df6b27a72f2193ae7d48bf99b1bf5bd18353e40b405fe1685749",
       "ndef_sha256": "8bf834bb7b3ec5fa787bc048a4c74d47e8fe13361d25737518c142aaa2e7c8ef"
     },
     {
       "file": "qr-details.png",
       "description": "QR technical cards, protection level and integrity digest",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 820,
       "height": 1017,
-      "sha256": "a322f50b211f84cd4461b1883b5ad70002cd143fd40a34a6fdc54b90f33e501f",
+      "sha256": "0977eaf1fceb28a957e48eec298424a18c687ab777d506e483f62c9d83c6b9f4",
       "ndef_sha256": "8bf834bb7b3ec5fa787bc048a4c74d47e8fe13361d25737518c142aaa2e7c8ef"
     },
     {
       "file": "qr-paper.png",
       "description": "Optional print geometry and product reference; not a physical print test",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 720,
       "height": 962,
-      "sha256": "2da561ad3f3c396faf08075ce55b005c368ac6811b995dbaa515a5fd78645759",
+      "sha256": "937ba2aae2f1d8c31ec96ca01af1eeda4275ef90ad2ce7c32a079ad7789c85fd",
       "ndef_sha256": "8bf834bb7b3ec5fa787bc048a4c74d47e8fe13361d25737518c142aaa2e7c8ef"
     },
     {
       "file": "paper-references.png",
       "description": "A4 sheets and label rolls: commercial references and external templates",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "width": 700,
       "height": 524,
-      "sha256": "476be9b57f3a78d30a3553355708508b22c96c2dd4467773ccbbb880185819d3"
+      "sha256": "89540480615c066ab9f81395c7a0fe06e153a9cec39b703b4b793eb4a18ac086"
     }
   ]
 }

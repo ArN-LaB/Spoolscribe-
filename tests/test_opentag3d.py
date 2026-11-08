@@ -140,6 +140,11 @@ class OpenTagGuiTests(unittest.TestCase):
 
     def select_reader(self):
         w=self.window;w.printer.setCurrentIndex(w.printer.findData('opentag3d'))
+        # The saved OpenSpool choice is not read by this reader: no silent substitute,
+        # the export waits for an explicit format choice (B14 A).
+        self.assertIsNone(w.nfc_format.currentData());self.assertFalse(w.btn_generate.isEnabled())
+        self.assertFalse(w.format_notice.isHidden());self.assertEqual(core.load_config()['nfc_format'],'openspool')
+        w.format_buttons.buttons['opentag3d'].click()
         self.assertEqual(w.nfc_format.currentData(),'opentag3d')
         return w
 
@@ -195,6 +200,10 @@ class OpenTagGuiTests(unittest.TestCase):
         self.assertIn('"format": "OpenTag3D"',w.inspector.toPlainText())
         w.printer.setCurrentIndex(w.printer.findData('u1'))
         w.firmware.setCurrentIndex(w.firmware.findData('paxx12'))
+        # OpenTag3D is not read here: the saved choice is kept, nothing is substituted or previewed.
+        self.assertEqual(core.load_config()['nfc_format'],'opentag3d');self.assertIsNone(w.nfc_format.currentData())
+        self.assertNotIn('"format": "OpenTag3D"',w.inspector.toPlainText());self.assertFalse(w.btn_generate.isEnabled())
+        w.format_buttons.buttons['openspool'].click()
         self.assertEqual(core.load_config()['nfc_format'],'openspool')
         self.assertNotIn('nfc-tools-profiles',w.inspector.toPlainText())
 

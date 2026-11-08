@@ -1,6 +1,6 @@
 # Software stability and hardware compatibility
 
-[Download v0.8.1](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.1) · [Printer and reader help](wiki/Printers-and-Readers.md) · [Validation](validation/v0.8.1.md)
+[Download v0.8.2](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.2) · [Printer and reader help](wiki/Printers-and-Readers.md) · [Validation](validation/v0.8.2.md)
 
 The current stable desktop release supports the documented software workflow. It does not imply physical testing of every printer, reader or tag listed in the catalogue.
 
@@ -19,9 +19,9 @@ An untested setup is not automatically incompatible. Verify the result on the re
 
 ## Desktop downloads
 
-v0.8.1 provides Windows and Linux x86_64 builds and a macOS Apple Silicon arm64 build. macOS requires version 15.0 or later; its archive is Developer ID signed, Apple-notarised and stapled. Intel/universal2 is not supplied. Older operating systems and every Linux distribution are not qualified by the release's software checks.
+v0.8.2 provides Windows and Linux x86_64 builds and a macOS Apple Silicon arm64 build. macOS requires version 15.0 or later; its archive is Developer ID signed, Apple-notarised and stapled. Intel/universal2 is not supplied. Older operating systems and every Linux distribution are not qualified by the release's software checks.
 
-The [dated validation](validation/v0.8.1.md) and [publication record](archive/releases/v0.8.1.md) identify actual tests, skips, source references and known limits. Historical downloads remain available with their own requirements and validation; availability does not confer current support or today's notarisation on an older build.
+The [dated validation](validation/v0.8.2.md) and [publication record](archive/releases/v0.8.2.md) identify actual tests, skips, source references and known limits. Historical downloads remain available with their own requirements and validation; availability does not confer current support or today's notarisation on an older build.
 
 ## Companion and physical results
 

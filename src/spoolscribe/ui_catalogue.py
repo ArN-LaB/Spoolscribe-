@@ -130,14 +130,9 @@ class CatalogueUx:
         self.search.setToolTip(tr('Ctrl+F : rechercher'))
         self.btn_generate.setToolTip(tr('Ctrl+E : exporter pour NFC'))
         self.update_btn.setToolTip(tr('Ctrl+U : choisir les sources et mettre à jour'))
-        menu = self.menu_btn.menu()
-        menu.addSeparator()
-        menu.addAction(tr('Exporter les préférences…'), self._export_settings)
-        menu.addAction(tr('Importer les préférences…'), self._import_settings)
-        menu.addAction(tr('Sauvegarder mes données…'), self._create_backup)
-        menu.addAction(tr('Restaurer mes données…'), self._restore_backup)
-        menu.addAction(tr('Mise à jour de l’application…'), self._check_app_update)
-        menu.addSeparator();menu.addAction(self._about_action)
+        # Data management stays in Paramètres > Données et sauvegardes and the
+        # application update check in « À propos » (version and resources): the
+        # menu does not repeat them.
 
     def _brand_typed(self, text):
         # The completion popup proposes partial names; the field is never rewritten
@@ -213,14 +208,22 @@ class CatalogueUx:
         self.state_scope=QLabel(tr('Compteurs : tout le catalogue'));self.state_scope.setObjectName('stats');self._muted_labels.append(self.state_scope)
         for listing,rows in ((self.brand_list,8),(self.family_list,7)):
             listing.setMaximumHeight(rows*(listing.fontMetrics().height()+8)+6)
-        self._sections={};self._section_layout=lay
+        # Filter sections scroll vertically inside the sidebar when the window is low
+        # (600 px and less); the actions above them stay in place. They never overlap.
+        self.sidebar_scroll=QScrollArea();self.sidebar_scroll.setObjectName('sidebarSections')
+        self.sidebar_scroll.setWidgetResizable(True);self.sidebar_scroll.setFrameShape(QFrame.NoFrame)
+        self.sidebar_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        sections=QWidget();sections.setObjectName('sidebarSectionsContent')
+        sections_layout=QVBoxLayout(sections);sections_layout.setContentsMargins(0,0,0,0);sections_layout.setSpacing(6)
+        self.sidebar_scroll.setWidget(sections);lay.addWidget(self.sidebar_scroll,1)
+        self._sections={};self._section_layout=sections_layout
         for key,title,widgets,stretch in (('brands',tr('FABRICANTS'),(self.brand_search,self.brand_list),3),
                                           ('materials',tr('MATIÈRES'),(self.material_search,self.family_list),2),
                                           ('colours',tr('TEINTES'),(self._build_colour_filter(),),0),
                                           ('states',tr('ÉTAT DES DONNÉES'),(self.state_list,self.state_scope),0)):
             self._add_filter_section(key,title,widgets,stretch)
         # Keeps the open sections at the top when every list section is closed.
-        lay.addStretch(1);self._section_spacer_index=lay.count()-1
+        sections_layout.addStretch(1);self._section_spacer_index=sections_layout.count()-1
         self._set_section_expanded('colours',False,save=False)
         return side
 
@@ -561,10 +564,11 @@ class CatalogueUx:
         if not self._confirm_draft_transition():
             event.ignore(); return
         if self.worker and self.worker.isRunning():
-            answer = QMessageBox.question(self, tr('Synchronisation en cours'),
-                tr('Une synchronisation est en cours. Quitter quand même ?\nL’étape en cours est interrompue ; la base locale reste celle d’avant.'),
-                QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-            if answer != QMessageBox.Yes:
+            box, quit_button = self._quit_during_sync_box()
+            box.exec()
+            confirmed = box.clickedButton() is quit_button   # not on continue, Escape or window closed
+            box.deleteLater()
+            if not confirmed:
                 event.ignore(); return
             self.worker.cancel.set()
             self.worker.wait(10000)
@@ -574,14 +578,64 @@ class CatalogueUx:
         from . import diagnostics; diagnostics.record_window('main_close_accepted', self)
         super().closeEvent(event)
 
+    def _message_box(self, title, text, informative):
+        """Short statement in the main text, explanation at normal weight in the informative text.
+
+        The information icon stays legible in light and dark themes (the Cocoa question icon
+        is an almost black glyph); the text is plain and wraps, never truncated.
+        """
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Information)
+        box.setWindowTitle(title)
+        box.setTextFormat(Qt.PlainText)
+        box.setText(text)
+        box.setInformativeText(informative)
+        # macOS makes the whole box bold; under the window style sheet its labels would
+        # inherit it. Keep a semibold statement and a normal-weight explanation, set apart
+        # from the buttons.
+        box.setStyleSheet("QLabel#qt_msgbox_label { font-weight:600; }"
+                          "QLabel#qt_msgbox_informativelabel { font-weight:400; font-size:12px; margin-bottom:8px; }")
+        explanation = box.findChild(QLabel, 'qt_msgbox_informativelabel')
+        if explanation is not None:
+            # A readable line length (about 46 characters of this font), not a fixed size.
+            metrics = explanation.fontMetrics()
+            explanation.setMinimumWidth(min(metrics.horizontalAdvance(informative), 46 * metrics.averageCharWidth()))
+        return box
+
+    @staticmethod
+    def _mark_primary(button):
+        # The button was polished when added under the style sheet: repolish for #primary.
+        button.setObjectName('primary'); button.style().unpolish(button); button.style().polish(button)
+
+    def _quit_during_sync_box(self):
+        box = self._message_box(tr('Synchronisation en cours'), tr('Quitter pendant la synchronisation ?'),
+                                tr('La synchronisation sera interrompue. Les étapes déjà terminées peuvent avoir modifié les données locales.'))
+        keep = box.addButton(tr('Continuer la synchronisation'), QMessageBox.RejectRole)
+        quit_button = box.addButton(tr('Quitter'), QMessageBox.DestructiveRole)
+        self._mark_primary(keep)
+        box.setDefaultButton(keep); box.setEscapeButton(keep)   # the careful choice stays the default
+        return box, quit_button
+
+    def _network_refused_box(self):
+        box = self._message_box(tr('Mise à jour application'), tr('L’autorisation réseau est retirée.'),
+                                tr('Pour vérifier la version publiée sur GitHub, réactivez-la avec le bouton «\u00a0{v0}\u00a0», ou dans {v1}\u00a0› {v2}\u00a0› «\u00a0{v3}\u00a0».',
+                                   v0=tr('Actualiser le catalogue'), v1=tr('Paramètres'), v2=tr('Catalogue'), v3=tr('Sources du catalogue…')))
+        box.setStandardButtons(QMessageBox.Ok)
+        self._mark_primary(box.button(QMessageBox.Ok))
+        return box
+
     def _export_settings(self):
-        """Plain JSON of the portable preferences; layout and export folder only when ticked."""
-        self._save_ui_preferences()
+        """Plain JSON of the portable preferences; layout and export folder only when ticked.
+
+        Cancelling the options or the file picker writes nothing; the current layout
+        is saved only once a destination has been chosen, just before the export.
+        """
         options = self._ask_settings_export_options()
         if options is None:
             return
         path, _ = QFileDialog.getSaveFileName(self, tr('Exporter les préférences'), 'SpoolScribe-preferences.json', 'JSON (*.json)')
         if path:
+            self._save_ui_preferences()
             try: core.export_settings(path, **options)
             except (OSError,ValueError) as exc: QMessageBox.warning(self,tr('Préférences'),tr(str(exc)))
             else: self.status.showMessage(tr('Préférences exportées en JSON clair (non chiffré).'),6000)
@@ -589,12 +643,16 @@ class CatalogueUx:
     def _ask_settings_export_options(self):
         """Ask what the file contains; both optional parts are unchecked. Returns options or None."""
         dlg=QDialog(self);dlg.setWindowTitle(tr('Exporter les préférences'));lay=QVBoxLayout(dlg);lay.setSpacing(10)
+        warning=WrapLabel(tr('Non chiffré : toute personne qui reçoit ce fichier peut le lire.'));warning.setObjectName('unencryptedWarning');lay.addWidget(warning)
         lay.addWidget(WrapLabel(tr('Fichier JSON en clair contenant vos préférences et réglages d’étiquette. Le catalogue, les copies personnelles et le registre couleur ne sont pas inclus.')))
         lay.addWidget(WrapLabel(tr('Inclus : langue, actualisation et sources, bobine préférée, favoris, imprimante et étiquette NFC, réglages OpenTag3D par référence, format papier QR, limite de couleur. Jamais : autorisation réseau, dates et état des actualisations.')))
+        lay.addWidget(WrapLabel(tr('Seuls les réglages déjà enregistrés sont exportés.')))
         layout=QCheckBox(tr('Inclure la disposition et les filtres'));layout.setObjectName('includeLayout')
         folder=QCheckBox(tr('Inclure le chemin du dossier d’export'));folder.setObjectName('includeExportPath')
         folder.setToolTip(tr('Chemin absolu de cet ordinateur ; il peut révéler un nom de dossier personnel.'))
-        lay.addWidget(layout);lay.addWidget(folder)
+        path_warning=WrapLabel(tr('Chemin absolu de cet ordinateur ; il peut révéler un nom de dossier personnel.'));path_warning.setObjectName('exportPathWarning')
+        path_warning.setVisible(False);folder.toggled.connect(path_warning.setVisible)
+        lay.addWidget(layout);lay.addWidget(folder);lay.addWidget(path_warning)
         bb=QDialogButtonBox(QDialogButtonBox.Ok|QDialogButtonBox.Cancel);bb.button(QDialogButtonBox.Ok).setText(tr('Exporter…'));bb.button(QDialogButtonBox.Cancel).setText(tr('Annuler'))
         bb.accepted.connect(dlg.accept);bb.rejected.connect(dlg.reject);lay.addWidget(bb);fit_dialog(dlg,preferred_width=560)
         if dlg.exec()!=QDialog.Accepted:
@@ -665,12 +723,25 @@ class CatalogueUx:
             except (OSError,ValueError) as exc: QMessageBox.warning(self,tr('Préférences'),tr(str(exc)))
 
     def _refresh_database_summary(self):
+        """Catalogue state beside its refresh action: only a complete refresh is dated as such."""
         if not hasattr(self,'database_btn'):return
-        status = self.db.get('_update_status')
-        suffix = {'complete':tr('actualisée'),'partial':tr('actualisation partielle'),'failed':tr('actualisation échouée')}.get(status,tr('à synchroniser'))
+        status = self.db.get('_update_status');updated=self.db.get('_last_updated')
+        running=bool(getattr(self,'worker',None) and self.worker.isRunning())
+        outcome=getattr(self,'_update_outcome',None)
+        if running:suffix=tr('actualisation en cours')
+        elif outcome=='cancelled':suffix=tr('actualisation annulée · base conservée')
+        elif outcome=='error':suffix=tr('actualisation échouée')
+        elif status=='complete' and updated:suffix=tr('actualisée le {v0}',v0=self._report_date(updated))
+        else:
+            suffix={'complete':tr('actualisée'),'partial':tr('actualisation partielle'),'failed':tr('actualisation échouée')}.get(status,tr('à synchroniser'))
+            if status in ('partial','failed') and updated:suffix+=' · '+tr('complète le {v0}',v0=self._report_date(updated))
         groups=len(getattr(self,'_all_rows',[]) or [])
         self.database_btn.setText(tr('Base : {v0} filaments · {v1} ⓘ',v0=core.fmt_int(groups),v1=suffix))
-        self.database_btn.setToolTip(tr('État des sources, dernière synchronisation et corrections conservées'))
+        attempt=core.load_config().get('last_update_attempt') or self.db.get('_last_attempt')
+        tip=tr('État des sources, dernière synchronisation et corrections conservées')
+        if attempt and attempt!=updated:tip+='\n'+tr('Dernière tentative : ')+self._report_date(attempt)
+        self.database_btn.setToolTip(tip)
+        if hasattr(self,'catalogue_state'):self.catalogue_state.reflow()
 
     @staticmethod
     def _report_date(value):
@@ -878,7 +949,10 @@ class CatalogueUx:
         self.format_label=QLabel(tr('3. Votre étiquette'));layout.addWidget(self.format_label)
         self.nfc_format=QComboBox(self.hardware_page);self.nfc_format.hide()
         self.format_buttons=ChoiceButtons();layout.addWidget(self.format_buttons)
-        self.writer_label=QLabel(tr('Fichier pour le logiciel d’écriture'));layout.addWidget(self.writer_label)
+        self.format_notice=WrapLabel();self.format_notice.setObjectName('formatNotice');self.format_notice.hide();layout.addWidget(self.format_notice)
+        # Writer choice is kept for imported settings and the OpenTag3D output mode,
+        # but is never shown: hidden from creation so no stale control can appear.
+        self.writer_label=QLabel(tr('Fichier pour le logiciel d’écriture'));self.writer_label.hide();layout.addWidget(self.writer_label)
         self.opentag_output=QComboBox(self.hardware_page)
         for label,key in [(tr('NFC Tools mobile (.json)'),'nfctools-mobile'),(tr('NFC Tools Desktop (.json)'),'nfctools-desktop'),(tr('Message NDEF brut (.ndef)'),'ndef')]:
             self.opentag_output.addItem(label,key)
@@ -887,6 +961,7 @@ class CatalogueUx:
         self.writer_buttons=ChoiceButtons();self.writer_buttons.setChoices([(tr('Téléphone · NFC Tools'),'nfctools-mobile'),(tr('Ordinateur · NFC Tools'),'nfctools-desktop'),(tr('Autre logiciel (expert)'),'ndef')]);layout.addWidget(self.writer_buttons)
         self.writer_expert=self.writer_buttons.buttons['ndef'];self.writer_expert.setText(tr('NDEF brut (expert)'))
         self.writer_buttons.grid.removeWidget(self.writer_expert);details_layout.addWidget(self.writer_expert)
+        self.writer_buttons.hide();self.writer_expert.hide()
         self._guide_printer=None;self._guided_reader=None;self._guided_kind=None
         self.reader_buttons.choiceChanged.connect(lambda key:self._choose_setup_part('reader',key))
         self.software_buttons.choiceChanged.connect(lambda key:self._choose_setup_part('software',key))
@@ -962,7 +1037,9 @@ class CatalogueUx:
             self.setup_result.setText(tr('Composez votre installation avec les boutons ci-dessus.'));return
         cfg=printer_profiles.configuration(pid,self.firmware.currentData())
         title=tr(PROFILES[pid]['label'])+' · '+tr(cfg.get('choice_label',cfg['label']))
-        if not self._can_export_for_printer():
+        if not self._can_export_for_printer() and self.nfc_format.count():
+            effect=tr('Choisissez le format de votre étiquette.')
+        elif not self._can_export_for_printer():
             effect=tr('Aucun format d’étiquette exportable ici. Les fiches restent consultables.')
         else:
             effect={'printer':tr('La bobine pourra être identifiée dans l’imprimante.'),
@@ -1123,12 +1200,17 @@ class CatalogueUx:
         self.status.showMessage(tr('Choix NFC par défaut : {v0}.', v0=self._describe_nfc(saved)),6000)
         self._refresh_nfc_default_btn()
 
+    def _refresh_hardware_state(self):
+        """Every dependent control of the open hardware page, at any time (also before the export area exists)."""
+        if hasattr(self,'btn_generate'):self._refresh_nfc_capacity()
+        else:self._refresh_export_state()
+
     def _printer_changed(self,*_):
         if self.printer.currentData() not in PROFILES:
             self.nfc_format.blockSignals(True);self.nfc_format.clear();self.nfc_format.blockSignals(False)
             self.configuration_source.hide()
             if hasattr(self,'btn_generate'):self.btn_generate.setEnabled(False)
-            self._sync_setup_buttons();self._refresh_setup_result()
+            self._sync_setup_buttons();self._refresh_hardware_state()
             return
         printer_id=self.printer.currentData() or printer_profiles.DEFAULT
         if self.sender() is self.printer or self.firmware.count()==0 or self._firmware_printer!=printer_id:
@@ -1160,15 +1242,14 @@ class CatalogueUx:
         self.configuration_source.setVisible(self.firmware.currentData()!='unknown' and bool(fw.get('url','').startswith('https://')))
         self.configuration_source.setToolTip(tr('Source documentaire ; aucun essai matériel SpoolScribe revendiqué.'))
         supported=() if self.firmware.currentData()=='unknown' else printer_profiles.formats(printer_id,self.firmware.currentData())
+        # The format stays the person's explicit choice: kept while this setup reads it,
+        # otherwise left unselected (export blocked) without substitute nor saved change.
         previous=self.nfc_format.currentData() or cfg.get('nfc_format','openspool')
         self.nfc_format.blockSignals(True);self.nfc_format.clear()
         for value,label in [('openspool','OpenSpool 1.0'),('opentag3d','OpenTag3D 2.004')]:
             if value in supported:self.nfc_format.addItem(label,value)
-        self.nfc_format.setCurrentIndex(max(0,self.nfc_format.findData(previous)));self.nfc_format.blockSignals(False)
-        selected=self.nfc_format.currentData()
-        if selected and cfg.get('nfc_format')!=selected:
-            cfg['nfc_format']=selected
-            if hasattr(self,'status'):self._store_config(cfg)
+        self.nfc_format.setCurrentIndex(self.nfc_format.findData(previous));self.nfc_format.blockSignals(False)
+        self._unavailable_format=previous if supported and self.nfc_format.currentIndex()<0 else None
         self._refresh_printer_card()
         self.tag_label.setVisible(fw['openspool']);self.tag_choice.setVisible(fw['openspool'])
         self.nfc_default_btn.setVisible(fw['openspool']);self.advanced_toggle.setVisible(fw['openspool'])
@@ -1176,7 +1257,7 @@ class CatalogueUx:
         elif hasattr(self,'nfc_advanced'):self.nfc_advanced.setVisible(self.advanced_toggle.isChecked())
         self._printer_field_help()
         self._sync_setup_buttons()
-        if hasattr(self,'btn_generate'):self._refresh_nfc_capacity()
+        self._refresh_hardware_state()
         if hasattr(self,'inspector') and self.inspector.isVisible():self._refresh_inspector()
 
     def _refresh_printer_card(self):
@@ -1192,7 +1273,7 @@ class CatalogueUx:
                    'standalone':tr('Lecture par le lecteur choisi')}[cfg['effect']]
         elif cfg['reader_formats']:badge=tr('Format non exporté par SpoolScribe')
         else:badge=tr('Consultation des fiches uniquement')
-        self.printer_card.update_profile(profile,badge,can,getattr(self,'_tok',{}).get('dark',False))
+        self.printer_card.update_profile(profile,badge,can,getattr(self,'_tok',{}).get('dark',False),getattr(self,'_tok',None))
         self.printer_card.status.hide()  # The composed result is shown once, below the choices.
 
     def _open_configuration_source(self):
@@ -1236,12 +1317,19 @@ class CatalogueUx:
         if not hasattr(self,'printer'):return
         can=self._can_export_for_printer()
         printer_id=self.printer.currentData() or printer_profiles.DEFAULT
-        # Without an OpenSpool export, the tag controls are hidden, not merely greyed.
-        for widget in (self.tag_label,self.tag_choice,self.nfc_default_btn,self.advanced_toggle):widget.setVisible(can)
+        # The label section follows the formats this setup reads; without any, its
+        # controls are hidden, not merely greyed. A format to choose blocks the export.
+        formats=self.nfc_format.count()>0 and self.printer.currentData() in PROFILES and self.firmware.currentData()!='unknown'
+        for widget in (self.tag_label,self.tag_choice,self.nfc_default_btn,self.advanced_toggle):widget.setVisible(formats)
         is_opentag=self._opentag_selected()
-        self.format_label.setVisible(can);self.nfc_format.hide();self.format_buttons.setVisible(can)
+        self.format_label.setVisible(formats);self.nfc_format.hide();self.format_buttons.setVisible(formats)
         self.format_buttons.setChoices((self.nfc_format.itemText(i),self.nfc_format.itemData(i)) for i in range(self.nfc_format.count()))
         self.format_buttons.setChoice(self.nfc_format.currentData())
+        missing=getattr(self,'_unavailable_format',None) if formats and self.nfc_format.currentIndex()<0 else None
+        if missing:
+            name={'openspool':'OpenSpool 1.0','opentag3d':'OpenTag3D 2.004'}.get(missing,missing)
+            self.format_notice.setText(tr('{v0} n’est pas lu par cette configuration. Choisissez un format ci-dessus avant d’exporter.',v0=name))
+        self.format_notice.setVisible(bool(missing))
         self.writer_label.hide();self.opentag_output.hide();self.writer_buttons.hide()
         self.writer_buttons.setChoice(self.opentag_output.currentData())
         self.writer_expert.hide()
@@ -1250,7 +1338,7 @@ class CatalogueUx:
         if hasattr(self,'btn_opentag_settings'):self.btn_opentag_settings.setVisible(can and is_opentag and bool(self.current_sku))
         if hasattr(self,'btn_inspect'):
             self.btn_inspect.setText(tr('Masquer l’export') if self.inspector.isVisible() else tr('Voir l’export')) if is_opentag else self.btn_inspect.setText(tr('Masquer le JSON') if self.inspector.isVisible() else tr('Voir le JSON'))
-        self.nfc_advanced.setVisible(can and self.advanced_toggle.isChecked())
+        self.nfc_advanced.setVisible(formats and self.advanced_toggle.isChecked())
         if not hasattr(self,'btn_generate'):return
         # Hardware, configuration and its real effect, then format/profile/tag.
         configuration=self.firmware.currentText() if self.firmware.currentData() not in (None,'unknown') else tr('configuration à préciser')
@@ -1272,8 +1360,12 @@ class CatalogueUx:
             if self.firmware.currentData()=='unknown':
                 # Hardware is chosen in « Mon matériel » ; the export stays disabled
                 # until a supported configuration is selected (existing contract).
-                self.nfc_capacity.setText(tr('Précisez votre installation dans « Modifier… ».'))
+                self.nfc_capacity.setText(tr('Précisez votre installation dans « Configurer ».'))
                 self._set_primary('export',tr('Exporter pour NFC'),False,tr('Choisir le lecteur, le logiciel et le format pris en charge'))
+            elif self.nfc_format.count():
+                # Formats are read by this setup, but none is chosen: never substituted.
+                self.nfc_capacity.setText(tr('Choisissez le format de l’étiquette dans « Configurer ».'))
+                self._set_primary('export',tr('Exporter pour NFC'),False,tr('Choisir un format lu par cette configuration'))
             else:
                 self.nfc_capacity.setText(tr('Aucun format exportable pour cette configuration.'))
                 self._set_primary('export',tr('Exporter pour NFC'),False,tr('Ce lecteur ou ce logiciel ne lit aucun format exporté par SpoolScribe.'))
@@ -1390,7 +1482,7 @@ class CatalogueUx:
     def _check_app_update(self):
         if self._release_worker and self._release_worker.isRunning():return
         if core.load_config().get('network_consent') is False:
-            QMessageBox.information(self,tr('Mise à jour application'),tr('L’autorisation réseau a été retirée. Réactivez-la dans « Sources de la base » pour contacter GitHub.'));return
+            box=self._network_refused_box();box.exec();box.deleteLater();return
         self.status.showMessage(tr('Vérification de la version publiée sur GitHub…'),15000)
         self._release_worker=ReleaseWorker(self);self._release_worker.ready.connect(self._release_result);self._release_worker.start()
 

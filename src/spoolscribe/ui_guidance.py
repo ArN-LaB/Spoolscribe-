@@ -4,7 +4,7 @@ Presentation only: no catalogue edits, compatibility decisions or encoders here.
 """
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QProgressBar, QScrollArea, QSizePolicy, QTabWidget, QVBoxLayout, QWidget)
+    QHBoxLayout, QLabel, QProgressBar, QPushButton, QScrollArea, QSizePolicy, QTabWidget, QVBoxLayout, QWidget)
 
 from .i18n import tr
 from .ui_surfaces import ReadingTabs, fit_dialog
@@ -144,7 +144,15 @@ class ExportGuidance(GuidanceDialog):
         grid.setColumnStretch(0, 1); grid.setColumnStretch(1, 1); technical.addLayout(grid)
         technical.addWidget(FlowLabel(tr("Diagnostic du calcul")))
         self.diagnostic = FlowLabel(); self.diagnostic.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        technical.addWidget(self.diagnostic); technical.addStretch(1)
+        technical.addWidget(self.diagnostic)
+        # The readable OpenSpool file of this filament (all fields), distinct from a data backup.
+        archive = InfoTile(tr("Fichier OpenSpool lisible"),
+                           tr("JSON complet de ce filament, à consulter ou archiver. Ce n’est pas une sauvegarde de vos données."))
+        archive.value.hide()
+        self.archive_button = QPushButton(tr("Exporter le JSON OpenSpool du filament…"))
+        self.archive_button.setObjectName("exportOpenSpoolArchive"); self.archive_button.setFixedHeight(CONTROL_HEIGHT)
+        archive.layout().addWidget(self.archive_button, 0, Qt.AlignLeft)
+        technical.addWidget(archive); technical.addStretch(1)
 
     def update_context(self, context):
         self.destination.value.setText(context.get("printer", ""))
