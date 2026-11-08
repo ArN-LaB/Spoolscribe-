@@ -1,8 +1,28 @@
-# Historique des validations
+# Historical records
 
-[Documentation actuelle](../README.md) · [Validation de la release v0.3.5](../validation/v0.3.5.md)
+[Current documentation](../README.md) · [v0.3.5 validation](../validation/v0.3.5.md)
 
 Earlier intermediate reports were removed from active navigation. The immutable Git links below retain their original content and dated results. Those campaigns do not validate the current code.
+
+## Release publication records
+
+These retained English notes preserve original changes, validation outcomes, skips, limitations and source/hash references. They describe the version at publication, not current platform qualification.
+
+| Version | Record |
+| --- | --- |
+| v0.8.1 | [Publication record](releases/v0.8.1.md) |
+| v0.8.0 | [Publication record](releases/v0.8.0.md) |
+| v0.7.0 | [Publication record](releases/v0.7.0.md) |
+| v0.6.0 | [Publication record](releases/v0.6.0.md) |
+| v0.5.0 | [Publication record](releases/v0.5.0.md) |
+| v0.4.0 | [Publication record](releases/v0.4.0.md) |
+| v0.3.5 | [Publication record](releases/v0.3.5.md) |
+| v0.3.0 | [Publication record](releases/v0.3.0.md) |
+| v0.2.2 | [Publication record](releases/v0.2.2.md) |
+| v0.2.1 | [Publication record](releases/v0.2.1.md) |
+| v0.2.0 | [Publication record](releases/v0.2.0.md) |
+
+## Earlier immutable validation history
 
 ## v0.2.2
 

@@ -4,7 +4,7 @@
 
 :root {
   color-scheme: light dark;
-  --bg: #f4f5f7;
+  --bg: #ffffff;
   --card: #ffffff;
   --text: #1c1e21;
   --muted: #41454a;
@@ -12,8 +12,8 @@
   --accent-hover: #0e6b78;
   --accent-text: #ffffff;
   --link: #0e6b78;
-  --border: #d2d6db;
-  --secondary: #eceef1;
+  --border: #e4e7eb;
+  --secondary: #f5f7f9;
   --secondary-hover: #e1e4e8;
   --attention: #6e4a0e;
   --attention-surface: #fff4dc;
@@ -23,8 +23,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1f2226;
-    --card: #262b31;
+    --bg: #181c20;
+    --card: #181c20;
     --text: #f1f3f5;
     --muted: #c3cad2;
     --accent: #2fd0e4;
@@ -39,8 +39,7 @@
   }
 }
 
-/* Language display. Without the script both languages stay visible,
-   English first. The script sets data-active-lang on <html>. */
+/* English-only pages; retained selectors are harmless to legacy fragments. */
 [data-active-lang="en"] [data-l="fr"],
 [data-active-lang="fr"] [data-l="en"],
 [data-active-lang] .lang-sep {
@@ -65,7 +64,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto,
     "Helvetica Neue", Arial, sans-serif;
   font-size: 1rem;
-  line-height: 1.55;
+  line-height: 1.65;
   overflow-wrap: break-word;
 }
 
@@ -112,7 +111,7 @@ code {
 
 .wrap {
   width: 100%;
-  max-width: 50rem;
+  max-width: 58rem;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -120,7 +119,7 @@ code {
 /* Header */
 .site-header {
   border-bottom: 1px solid var(--border);
-  padding: 0.75rem 0;
+  padding: 1rem 0;
 }
 
 .site-header .wrap {
@@ -135,7 +134,7 @@ code {
   align-items: center;
   gap: 0.6rem;
   color: var(--text);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.05rem;
   text-decoration: none;
   margin-right: auto;
@@ -206,17 +205,17 @@ code {
 
 /* Main content */
 main {
-  padding: 1.5rem 0 2.5rem;
+  padding: 2.5rem 0 3.5rem;
 }
 
 h1 {
-  font-size: 1.85rem;
+  font-size: clamp(1.85rem, 3vw, 2.35rem);
   line-height: 1.2;
-  margin: 0.25rem 0 1rem;
+  margin: 0.25rem 0 1.4rem;
 }
 
 h2 {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   line-height: 1.3;
   margin: 0 0 0.6rem;
 }
@@ -256,11 +255,12 @@ li + li {
 }
 
 .card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: 1.1rem 1.25rem;
-  margin: 0 0 1rem;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  padding: 1.8rem 0;
+  margin: 0;
 }
 
 .card > :last-child {
@@ -278,16 +278,23 @@ li + li {
 }
 
 .notice {
-  background: var(--attention-surface);
-  color: var(--attention);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: 0.8rem 1rem;
-  margin: 0 0 1rem;
+  background: transparent;
+  color: var(--muted);
+  border-left: 2px solid var(--accent);
+  padding: 0.3rem 0 0.3rem 1.1rem;
+  margin: 0 0 2rem;
 }
 
 .notice strong {
   color: inherit;
+}
+
+.toc {
+  background: var(--secondary);
+  border: 0;
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
+  margin: 0 0 0.5rem;
 }
 
 .toc ul {
@@ -378,9 +385,8 @@ li + li {
     font-size: 1.55rem;
   }
 
-  .card {
-    padding: 0.9rem 1rem;
-  }
+  .card { padding: 1.4rem 0; }
+  .toc { padding: 1rem; }
 }
 
 @media print {
@@ -394,3 +400,23 @@ li + li {
     border-color: #999;
   }
 }
+
+/* The reading column stays quiet; headings orient rather than frame every block. */
+@media (min-width: 58rem) {
+  .lang-block > section.card {
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    column-gap: 2rem;
+  }
+  .lang-block > section.card > * { grid-column: 2; }
+  .lang-block > section.card > h2 { grid-column: 1; grid-row: 1; }
+}
+
+.lead { color: var(--muted); max-width: 65ch; font-size: 1.1rem; }
+.entry-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; margin: 2.5rem 0; }
+.entry-links a { display: block; border-top: 1px solid var(--border); padding: 1.25rem 0; text-decoration: none; }
+.entry-links strong { display: block; font-size: 1.2rem; margin-bottom: 0.4rem; }
+.entry-links span { color: var(--muted); }
+.site-nav a { text-decoration: none; }
+.button { border-radius: 999px; }
+@media (max-width: 40rem) { .entry-links { grid-template-columns: 1fr; gap: 0.5rem; } }

@@ -29,7 +29,7 @@ setup has been physically tested. [Release policy](RELEASE_POLICY.md) ·
 
 ## Develop and maintain
 
-[Development](DEVELOPMENT.md) · [Repository structure](REPOSITORY.md) · [Historical v0.8.0 maintenance audit](validation/repository-v0.8.0.md) · [Roadmap](ROADMAP.md) · [Capture provenance](images/README.md) · [Trademarks](TRADEMARKS.md) · [Contributing](../.github/CONTRIBUTING.md).
+[Development](DEVELOPMENT.md) · [Repository structure](REPOSITORY.md) · [Historical v0.8.0 maintenance audit](validation/repository-v0.8.0.md) · [Publication records](archive/README.md) · [Roadmap](ROADMAP.md) · [Capture provenance](images/README.md) · [Trademarks](TRADEMARKS.md) · [Contributing](../.github/CONTRIBUTING.md).
 
 For permanent agent instructions and development-trace organisation, start at
 [UNIVERSAL](UNIVERSAL.md), then the local `docs/agent-runs/INDEX.md` chronology
