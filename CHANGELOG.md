@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update the Companion Support and Privacy pages for internal iPhone TestFlight build 1.0.0 (6): camera scanning, NFC writing/read-back, read-only inspection, on-device preferences and masked tag identifiers. Clarify optional OpenTag3D measurements and improve mobile reading layout; no public download or new application feature is announced.
+
 ## [0.8.2] - 2026-11-09
 
 ### A calmer and more responsive workspace

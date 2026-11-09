@@ -203,9 +203,11 @@ code {
   border-color: var(--accent-hover);
 }
 
-/* Main content */
+/* Main content. B06 (9 November 2026): the side margin of .wrap is kept
+   (it was cancelled here, so text touched the screen edges on phones). */
 main.wrap {
-  padding: 2.5rem 0 3.5rem;
+  padding-top: 2.5rem;
+  padding-bottom: 3.5rem;
 }
 
 h1 {
@@ -420,3 +422,96 @@ li + li {
 .site-nav a { text-decoration: none; }
 .button { border-radius: 999px; }
 @media (max-width: 40rem) { .entry-links { grid-template-columns: 1fr; gap: 0.5rem; } }
+
+/* ---------------------------------------------------------------------------
+   B06 (9 November 2026): reading comfort.
+   - Side margins that grow with the screen; a reading column of about 70
+     characters.
+   - Explanatory prose is justified, with automatic hyphenation (the pages
+     declare lang="en"); the last line of a paragraph stays aligned to the
+     start. Headings, buttons, status labels, contents, contact lists, codes,
+     addresses and short meta lines are never stretched.
+   - "Back to contents" after each section; anchors stay below the top edge.
+   No remote resource, no font, no script added.
+   ------------------------------------------------------------------------- */
+@media (min-width: 40rem) {
+  .wrap { padding: 0 1.5rem; }
+}
+
+main p,
+main li {
+  max-width: 44rem;
+}
+
+main .card > p,
+main .notice > p,
+main .prose > li,
+main .steps .step-body {
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+main .meta,
+main .back,
+main .actions,
+main .toc,
+main .contacts,
+main h1,
+main h2,
+main h3,
+.status,
+.button {
+  text-align: start;
+  -webkit-hyphens: manual;
+  hyphens: manual;
+}
+
+code,
+a[href^="mailto:"] {
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+
+.steps .step-body {
+  display: block;
+  margin-top: 0.3rem;
+}
+
+.steps > li {
+  padding-bottom: 0.6rem;
+}
+
+.button {
+  white-space: normal;
+  text-align: center;
+}
+
+.back {
+  margin: 1.2rem 0 0;
+  font-size: 0.95rem;
+}
+
+.back a {
+  text-decoration: none;
+}
+
+.back a:hover {
+  text-decoration: underline;
+}
+
+.card h3 + p {
+  margin-top: 0.2rem;
+}
+
+[id] {
+  scroll-margin-top: 1.25rem;
+}
+
+@media (max-width: 30rem) {
+  .site-header .wrap { gap: 0.5rem 1rem; }
+  .brand { margin-right: 0; flex: 1 0 100%; }
+  main.wrap { padding-top: 1.75rem; }
+  .actions .button { flex: 1 1 100%; }
+}

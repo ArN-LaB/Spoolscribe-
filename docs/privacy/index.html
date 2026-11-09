@@ -6,9 +6,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="color-scheme" content="light dark">
 <title>Privacy policy — SpoolScribe Companion</title>
-<meta name="description" content="Privacy policy of the SpoolScribe Companion mobile prototype and of this website, in English.">
+<meta name="description" content="Privacy policy of SpoolScribe Companion for iPhone (internal beta) and of this website, in English.">
 <link rel="icon" href="../assets/spoolscribe.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../assets/companion-public.css?v=editorial-20261108">
+<link rel="stylesheet" href="../assets/companion-public.css?v=reading-20261109">
 <script src="../assets/companion-public.js?v=english-20261108" defer></script>
 </head>
 <body>
@@ -33,15 +33,16 @@
   <!-- English content; legacy French section links are redirected by the local script. -->
   <article id="en" class="lang-block" lang="en" data-l="en">
     <div class="notice">
-      <p><strong>Revision 3 — <time datetime="2026-11-05">5 November 2026</time>.</strong>
-      This policy applies to the SpoolScribe Companion development prototype as found in its source code on that date (internal project version 1.0.0+1, not distributed through an app store). It will be revised before any build that adds camera scanning, physical NFC writing or another feature is distributed.</p>
+      <p><strong>Revision 4 — <time datetime="2026-11-09">9 November 2026</time>.</strong>
+      This policy applies to SpoolScribe Companion 1.0.0 (build 6) for iPhone, the build distributed only as an internal TestFlight beta. There is no public download and no Android release. It will be revised before a build with a new kind of data processing is distributed.</p>
     </div>
 
-    <nav class="card toc" aria-label="On this page">
+    <nav id="en-toc" class="card toc" aria-label="On this page">
       <h2>On this page</h2>
       <ul>
         <li><a href="#en-who">Who we are and what this covers</a></li>
         <li><a href="#en-app">What the app processes</a></li>
+        <li><a href="#en-permissions">Camera and NFC</a></li>
         <li><a href="#en-not">What the app does not do</a></li>
         <li><a href="#en-storage">Storage and retention</a></li>
         <li><a href="#en-integrity">Integrity is not authentication</a></li>
@@ -54,79 +55,93 @@
 
     <section id="en-who" class="card">
       <h2>Who we are and what this covers</h2>
-      <p>SpoolScribe Companion (“Companion”) is a mobile companion to SpoolScribe Desktop, an open-source filament label tool published under the public project name ArN-LaB on <a href="https://github.com/ArN-LaB/Spoolscribe-">GitHub</a>.</p>
+      <p>SpoolScribe Companion (“Companion”) is the iPhone companion of SpoolScribe Desktop, an open-source filament label tool published under the public project name ArN-LaB on <a href="https://github.com/ArN-LaB/Spoolscribe-">GitHub</a>.</p>
       <p>ArN-LaB is the public name of the project. Its developer and publisher is established in France. General contact: ArN-LaB Support, <a href="mailto:support@arnlab.simplelogin.com">support@<wbr>arnlab.simplelogin.com</a>. Technical help: SpoolScribe Support, <a href="mailto:spoolscribe@arnlab.simplelogin.com">spoolscribe@<wbr>arnlab.simplelogin.com</a>. Privacy questions: ArN-LaB Privacy, <a href="mailto:privacy@arnlab.simplelogin.com">privacy@<wbr>arnlab.simplelogin.com</a> (see <a href="#en-contact">Contacting the project</a>).</p>
       <p>This policy covers the Companion app. A separate section covers <a href="#en-website">this website</a>. SpoolScribe Desktop uses the network and stores files differently and has <a href="https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/PRIVACY.md">its own privacy policy</a>, which does not cover Companion.</p>
-      <p>Companion is not a filament catalogue: it only shows what is contained in a transfer created by SpoolScribe Desktop.</p>
+      <p>Companion is not a filament catalogue: it shows what a transfer created by SpoolScribe Desktop contains, or what a tag you inspect contains.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-app" class="card">
       <h2>What the app processes</h2>
-      <p>Companion reads an SSQR1 transfer text — shown as a QR code by SpoolScribe Desktop — decodes it, checks it (length, bounded decompression, SHA-256 integrity, OpenSpool 1.0 or OpenTag3D 2.004 format) and shows a preview of the label. This processing happens on the device.</p>
-      <p>In this prototype:</p>
-      <ul>
-        <li>the camera scanner is not connected: the scan button explains that it is unavailable;</li>
-        <li>transfer texts can only be entered through demonstration tools that exist in development (debug) builds;</li>
-        <li>writing an NFC tag is simulated in memory: no tag is programmed or read.</li>
-      </ul>
-      <p>Permissions: the inspected iOS and Android project files declare no camera or NFC permission, and the app does not ask for one. The Android development and profiling configurations include the Internet permission used by Flutter’s development tools; the main Android configuration does not.</p>
+      <p>Companion reads an SSQR1 transfer text — shown as a QR code by SpoolScribe Desktop — decodes it, checks it (length, bounded decompression, SHA-256 integrity, OpenSpool 1.0 or OpenTag3D 2.004 format) and shows a preview of the label. This processing happens on the device, without a network connection.</p>
+      <p>When you confirm a write, Companion writes the NFC message of that transfer to one tag and reads the tag back to compare it with the expected bytes. When you inspect a tag, Companion reads its NFC message, and optionally its technical profile (tag type, capacity and identifier), without writing anything.</p>
+      <p><strong>Tag identifier.</strong> During a technical profile reading, iOS gives the full identifier of the tag to the app’s native NFC code. That code does not pass the full identifier to the rest of the app. It passes on the identifier’s length and, for an identifier of 7 to 32 bytes, its first two and last two bytes. The inspection details can then show this partially masked identifier and its length; for a shorter identifier they show only the length, and for one longer than 32 bytes only that it was not collected. Like other inspection results, these details are held in memory for the current session. Companion does not save them and does not keep them as a persistent identifier.</p>
+      <p>Optional printer hardware: you can choose a printer and configuration in a catalogue built into the app. The catalogue is read from the app itself, never downloaded.</p>
       <p>The content of a QR is chosen by the person who created it. It usually describes a filament (brand, material, colour, temperatures, references), but it can contain any text, including links or information its author considers confidential. Treat a transfer QR like any document you share.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
+    </section>
+
+    <section id="en-permissions" class="card">
+      <h2>Camera and NFC</h2>
+      <p>The camera is used only while you scan, after you tap the scan button. iOS asks for your permission the first time; you can change it at any time in the iOS Settings app. Camera images are analysed on the device to find the QR code and are not saved or sent.</p>
+      <p>NFC is used only during a write or an inspection that you start. iOS shows its own NFC sheet for each session; Companion cannot read or write a tag outside such a session.</p>
+      <p>The app does not request location, contacts, photos, microphone, Bluetooth or tracking permission. On devices without a camera or NFC, such as the iOS Simulator, writes are simulated and labelled as such.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-not" class="card">
       <h2>What the app does not do</h2>
-      <p>In the code and dependencies inspected, Companion has no user account and no server of its own, does not upload transfers, and includes no analytics, advertising or crash-reporting service.</p>
-      <p>Links and file paths that appear in a transfer are shown as plain text: the app never opens or downloads them. The manufacturer logos the app can show are bundled with it; none is loaded from the network.</p>
-      <p>Limits of this statement: it is based on an inspection of the source code and declared dependencies, not on a network capture of a distributed build. Some packages in the project’s dependency tree can provide network or logging functions; the inspected app code does not use them. The operating system, the app store and development tools may process their own diagnostics or traffic, which this policy does not control.</p>
+      <p>In the code and dependencies inspected, Companion has no user account and no server of its own, does not upload transfers or tag contents, and includes no analytics, advertising or crash-reporting service of its own.</p>
+      <p>Links and file paths that appear in a transfer are shown as plain text: the app never opens or downloads them. The only pages the app opens are this privacy policy and the support page, in your web browser, after you tap their links. The manufacturer logos the app can show are bundled with it; none is loaded from the network.</p>
+      <p>Limits of this statement: it is based on an inspection of the source code and declared dependencies, not on a network capture of the distributed build. The operating system, Apple’s TestFlight service and your browser may process their own diagnostics, crash reports or traffic under their own terms; for example, TestFlight can share with the developer the crash reports and feedback that testers choose to send. This policy does not control those services.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-storage" class="card">
       <h2>Storage and retention</h2>
-      <p>The transfer, its preview, any error and the result of a simulated write are kept in memory for the current session only. The app lets go of them when you load another QR, return to the home screen or start over: use one of these to clear the current transfer. Cancelling a write keeps the preview of the same QR on screen.</p>
-      <p>Letting go means the app keeps no reference to the data; it is not a guaranteed secure erasure of the device’s memory. When the operating system actually ends the app’s process, the session ends with it. Leaving the app or moving it to the background does not clear the session by itself.</p>
-      <p>The language chosen in the app is kept in memory and is not saved.</p>
-      <p>The inspected code does not implement a scan history, an export or a backup of transfers. Files that the operating system or runtime may create on their own (caches, system backups) have not been measured for this prototype.</p>
+      <p><strong>Session data.</strong> The transfer, its preview, any error, inspection results (including a partially masked tag identifier) and write results are kept in memory for the current session only. The app lets go of them when you load another QR, return to the home screen or start over. Letting go means the app keeps no reference to the data; it is not a guaranteed secure erasure of the device’s memory. When iOS ends the app’s process, the session ends with it.</p>
+      <p><strong>Preferences.</strong> Companion keeps one small file of preferences on the iPhone, in its own app container: the language, the appearance (light, dark or system) and, if you chose one, the printer and configuration. It contains no transfer, tag content or personal data. Changing a preference updates the file; choosing “System” or removing the hardware records those defaults. If the file cannot be read, it is set aside under another name in the same folder instead of being overwritten. Deleting the app deletes its container, including this file.</p>
+      <p>The app does not implement a scan history, an export or a backup of transfers. Like other app data, the preferences file may be included in your iPhone backups according to your iOS settings. Files that the operating system may create on its own (caches, system logs) have not been measured.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-integrity" class="card">
       <h2>Integrity is not authentication</h2>
       <p>The SHA-256 digest in an SSQR1 transfer lets Companion detect that the content was damaged or changed. It does not prove who created the QR and does not encrypt anything: anyone who can see a QR can read what it contains.</p>
       <p>A transfer that is damaged, altered or in an unsupported format is refused, and no label data from it is shown.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-contact" class="card">
       <h2>Contacting the project</h2>
       <p>Contacting the project is voluntary and separate from using the app. Choose the address that fits your request:</p>
-      <ul>
+      <ul class="contacts">
         <li>questions about this policy, privacy requests and anything that should stay private: ArN-LaB Privacy, <a href="mailto:privacy@arnlab.simplelogin.com">privacy@<wbr>arnlab.simplelogin.com</a>;</li>
         <li>technical help with SpoolScribe Desktop or Companion: SpoolScribe Support, <a href="mailto:spoolscribe@arnlab.simplelogin.com">spoolscribe@<wbr>arnlab.simplelogin.com</a> (see <a href="../support/#en-report">Support</a>);</li>
         <li>other questions about the project: ArN-LaB Support, <a href="mailto:support@arnlab.simplelogin.com">support@<wbr>arnlab.simplelogin.com</a>.</li>
       </ul>
-      <p>When you write by e-mail, the project receives your e-mail address and the content and attachments you choose to send. These messages are used to answer and follow up on support or privacy requests, with no marketing. These addresses are aliases: messages pass through the SimpleLogin forwarding service and the e-mail providers involved. These exchanges are separate from the processing done by the app on your device and from the technical data of this website. Retention is limited to handling the request and any necessary follow-up. Any longer retention must have a justified purpose, such as establishing or defending a legal claim. We do not promise an automatic purge or a uniform deletion deadline. To ask about retention or request erasure, contact <a href="mailto:privacy@arnlab.simplelogin.com">privacy@<wbr>arnlab.simplelogin.com</a>. No guaranteed response time, encryption or anonymity is promised for e-mail.</p>
+      <p>When you write by e-mail, the project receives your e-mail address and the content and attachments you choose to send. These messages are used to answer and follow up on support or privacy requests, with no marketing. These addresses are aliases: messages pass through the SimpleLogin forwarding service and the e-mail providers involved. These exchanges are separate from the processing done by the app on your device and from the technical data of this website.</p>
+      <p>Retention is limited to handling the request and any necessary follow-up. Any longer retention must have a justified purpose, such as establishing or defending a legal claim. We do not promise an automatic purge or a uniform deletion deadline. To ask about retention or request erasure, contact <a href="mailto:privacy@arnlab.simplelogin.com">privacy@<wbr>arnlab.simplelogin.com</a>. No guaranteed response time, encryption or anonymity is promised for e-mail.</p>
       <p>For a public technical problem that contains nothing sensitive, you may also open an issue on <a href="https://github.com/ArN-LaB/Spoolscribe-/issues">GitHub Issues</a> (optional). Issues and their comments are public: anyone can read them, and GitHub processes them under its own privacy statement. A GitHub account is needed to open an issue. Never post a confidential QR, a personal catalogue, credentials or other private information in an issue. No specific retention period is promised for issues: they remain visible according to GitHub’s features and the repository’s moderation.</p>
       <p>Security vulnerabilities can be reported privately through <a href="https://github.com/ArN-LaB/Spoolscribe-/security/advisories/new">GitHub vulnerability reporting</a>. That channel is for security issues, not for general privacy requests.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-website" class="card">
       <h2>This website</h2>
-      <p>These pages are static files hosted on GitHub Pages. They contain no tracker, analytics, advertising, form or cookie of our own, and load no font or script from another site. These pages are published in English. Legacy language fragments are redirected locally to their English section; nothing is stored in your browser.</p>
+      <p>These pages are static files hosted on GitHub Pages. They contain no tracker, analytics, advertising, form or cookie of our own, and load no font or script from another site. These pages are published in English. Legacy language fragments, such as the French link used by the app in French, are redirected locally to their English section; nothing is stored in your browser.</p>
       <p>GitHub, like any web host, may process technical connection data, including your IP address, to deliver and secure it. See the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub General Privacy Statement</a>. This policy does not describe the GitHub platform as a whole.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-requests" class="card">
       <h2>Your choices and requests</h2>
-      <p>The app has no account and sends no transfer to a server run by the project: the app itself leaves no account to delete and no stored transfer to retrieve. This does not cover information you choose to send to the project yourself, for example by e-mail or in an issue. To clear what the app holds, return to the home screen or start over; you can also uninstall it.</p>
+      <p>The app has no account and sends no transfer to a server run by the project: the app itself leaves no account to delete and no stored transfer to retrieve. To clear the current session, return to the home screen or start over. To reset your preferences, choose the defaults in Preferences; to remove them entirely, delete the app. This does not cover information you choose to send to the project yourself, for example by e-mail or in an issue.</p>
       <p>Depending on where you live, you may have rights over your personal data. For questions about this policy, or about personal data you have shared with the project (for example by e-mail or in an issue), write to ArN-LaB Privacy, <a href="mailto:privacy@arnlab.simplelogin.com">privacy@<wbr>arnlab.simplelogin.com</a>. Requests about a GitHub account or about content on GitHub follow GitHub’s own channels and the features of the platform.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-changes" class="card">
       <h2>Changes and revision history</h2>
-      <p>This policy describes the prototype state stated at the top of the page. It will be revised before a build that adds camera scanning, physical NFC writing or a network feature is distributed. The history of these pages is available in the public <a href="https://github.com/ArN-LaB/Spoolscribe-">project repository</a>.</p>
-      <ul>
+      <p>This policy describes the build and date stated at the top of the page. It will be revised before a build with a new kind of data processing is distributed. The history of these pages is available in the public <a href="https://github.com/ArN-LaB/Spoolscribe-">project repository</a>.</p>
+      <ul class="contacts">
+        <li><time datetime="2026-11-09">9 November 2026</time> — Revision 4: internal TestFlight beta 1.0.0 (build 6); camera scanning, NFC writing with read-back and read-only inspection described; partially masked tag identifier described; preferences kept on the device; TestFlight and browser diagnostics distinguished.</li>
         <li><time datetime="2026-11-05">5 November 2026</time> — Revision 3: Web publication; France-based publisher and e-mail retention criteria clarified.</li>
         <li><time datetime="2026-11-05">5 November 2026</time> — Revision 2: public project name and contact addresses added; e-mail contact described.</li>
         <li><time datetime="2026-11-05">5 November 2026</time> — Revision 1: initial preparation of the policy for the Companion development prototype.</li>
       </ul>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
   </article>
 </main>
