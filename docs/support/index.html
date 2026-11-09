@@ -6,9 +6,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="color-scheme" content="light dark">
 <title>Support — SpoolScribe Companion</title>
-<meta name="description" content="Help for the SpoolScribe Companion mobile prototype: what it does today, FAQ and how to report a problem, in English.">
+<meta name="description" content="Help for SpoolScribe Companion on iPhone: what it does, the internal beta, frequently asked questions and how to report a problem, in English.">
 <link rel="icon" href="../assets/spoolscribe.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../assets/companion-public.css?v=editorial-20261108">
+<link rel="stylesheet" href="../assets/companion-public.css?v=reading-20261109">
 <script src="../assets/companion-public.js?v=english-20261108" defer></script>
 </head>
 <body>
@@ -33,16 +33,17 @@
   <!-- English content; legacy French section links are redirected by the local script. -->
   <article id="en" class="lang-block" lang="en" data-l="en">
     <div class="notice">
-      <p><strong>Updated <time datetime="2026-11-05">5 November 2026</time>.</strong>
-      Companion is in development and has no official download yet. This page describes the development prototype; SpoolScribe Desktop has its own documentation.</p>
+      <p><strong>Updated <time datetime="2026-11-09">9 November 2026</time>.</strong>
+      This page describes SpoolScribe Companion 1.0.0 (build 6) for iPhone, distributed only as an internal TestFlight beta. There is no public download, no open invitation and no Android release.</p>
     </div>
 
-    <nav class="card toc" aria-label="On this page">
+    <nav id="en-toc" class="card toc" aria-label="On this page">
       <h2>On this page</h2>
       <ul>
         <li><a href="#en-about">What Companion is</a></li>
         <li><a href="#en-flow">From Desktop to the tag</a></li>
-        <li><a href="#en-devices">Phones and tags</a></li>
+        <li><a href="#en-simulation">Simulation and demonstration</a></li>
+        <li><a href="#en-devices">Phones, tags and printers</a></li>
         <li><a href="#en-faq">Frequently asked questions</a></li>
         <li><a href="#en-report">Report a problem</a></li>
         <li><a href="#en-contact">Contact</a></li>
@@ -51,61 +52,73 @@
 
     <section id="en-about" class="card">
       <h2>What Companion is</h2>
-      <p>SpoolScribe Companion is the mobile companion of SpoolScribe Desktop. Desktop prepares the NFC label of a filament spool and can show it as an SSQR1 QR code. Companion is meant to scan that QR, check it, write the same NFC message to a tag and read it back.</p>
-      <p>Companion is not a catalogue: it only shows what the QR contains. Filaments are chosen and edited in SpoolScribe Desktop.</p>
+      <p>SpoolScribe Companion is the iPhone companion of SpoolScribe Desktop. Desktop prepares the NFC label of a filament spool and shows it as an SSQR1 QR code. Companion scans that QR, checks it, writes the same NFC message to a tag and reads it back.</p>
+      <p>Companion is not a catalogue: it shows only what the QR contains. Filaments are chosen and edited in SpoolScribe Desktop.</p>
       <div class="actions">
         <a class="button button-primary" href="https://github.com/ArN-LaB/Spoolscribe-/releases/latest">SpoolScribe Desktop — latest release</a>
         <a class="button" href="https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COMPANION.md">Companion availability</a>
       </div>
-      <p class="meta">Desktop and Companion have separate version numbers. The latest-release link above identifies the current Desktop download.</p>
+      <p class="meta">Desktop and Companion have separate version numbers. To find the version and build of the Companion beta installed on your iPhone, open SpoolScribe Companion in the TestFlight app.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-flow" class="card">
       <h2>From Desktop to the tag</h2>
-      <p>The planned path, and what the current prototype actually does at each step:</p>
+      <p>On an iPhone with a camera and NFC tag writing:</p>
       <ol class="steps">
-        <li><span class="step-title">In SpoolScribe Desktop, select a filament, then the “Show QR Code…” command.</span><br>
-          <span class="status">Available in Desktop</span></li>
-        <li><span class="step-title">Scan the QR with Companion.</span><br>
-          <span class="status">Not available yet</span> The camera scanner is not connected in this prototype.</li>
-        <li><span class="step-title">Check the transfer and preview the label.</span><br>
-          <span class="status">Implemented</span> Decoding, integrity check, format validation and preview work in the app. Without a scanner, they can only be tried with demonstration texts in development builds.</li>
-        <li><span class="step-title">Write the NFC tag and read it back.</span><br>
-          <span class="status status-sim">Simulation only</span> No tag is programmed. Every result is marked “SIMULATION”.</li>
+        <li><span class="step-title">Show the QR in SpoolScribe Desktop.</span>
+          <span class="step-body">Select a filament, then the “Show QR Code — SpoolScribe Companion” command.</span></li>
+        <li><span class="step-title">Scan it with Companion.</span>
+          <span class="step-body">The camera starts only when you tap the scan button. iOS asks for camera access the first time.</span></li>
+        <li><span class="step-title">Check the transfer.</span>
+          <span class="step-body">Companion decodes the QR, verifies its length and SHA-256 digest and the OpenSpool 1.0 or OpenTag3D 2.004 format, then shows the label. All of this happens offline on the phone.</span></li>
+        <li><span class="step-title">Write the tag, then read it back.</span>
+          <span class="step-body">After your confirmation, Companion writes the NDEF message to one tag and reads it back to compare it with the expected bytes. It never locks, formats or erases a tag.</span></li>
       </ol>
-      <p>A generic QR scanner app can show the transfer text, but it does not program a tag and does not necessarily open Companion.</p>
+      <p><strong>Inspecting a tag</strong> is a separate, read-only action: Companion reads the NFC message of a tag you choose and explains what it contains. It writes nothing. A technical profile reading can also report the tag type, its capacity and a partially masked identifier (see the <a href="../privacy/#en-app" data-keep-lang>privacy policy</a>).</p>
+      <p>A generic QR scanner can show the transfer text, but it does not program a tag and does not necessarily open Companion.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
+    </section>
+
+    <section id="en-simulation" class="card">
+      <h2>Simulation and demonstration</h2>
+      <p>On a device without a camera or NFC tag writing, such as the iOS Simulator, Companion still decodes and checks transfers, but the write is simulated. Every simulated result is labelled “SIMULATION — no chip programmed”.</p>
+      <p>Development builds also offer demonstration texts and simulated outcomes (success, no tag, read-only tag, insufficient capacity, interrupted write, read-back mismatch). These are not measurements of a real phone or tag. Demonstration texts always stay simulated, even on an iPhone.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-devices" class="card">
-      <h2>Phones and tags</h2>
-      <p>No phone model, operating-system version or NFC tag has been confirmed as compatible with Companion yet, and no minimum version is published. Tag types named in the OpenSpool and OpenTag3D documentation (such as NTAG215/216) are examples from those formats, not guarantees for Companion.</p>
-      <p>The prototype does not ask for camera or NFC access.</p>
+      <h2>Phones, tags and printers</h2>
+      <p>Companion requires iOS 15 or later. Scanning needs a camera; writing and inspecting need an iPhone that supports NFC tag reading and writing. Testing so far is internal: no phone model, tag type or capacity is certified, and no general hardware validation is claimed. Tag types named in the OpenSpool and OpenTag3D documentation, such as NTAG215/216, are examples from those formats, not guarantees for Companion.</p>
+      <p><strong>Printer hardware is optional.</strong> In Preferences you can choose your printer and its configuration from a catalogue built into the app, which works offline. Companion then shows the conditions documented for that configuration (firmware, accessory, scope) and compares them with the formats of a tag you inspect. These are documentary indications from public sources, not a compatibility guarantee: recognising a format does not prove that a given printer, firmware or reader will use the tag.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-faq" class="card">
       <h2>Frequently asked questions</h2>
 
       <h3 id="en-faq-ssqr1">What is an SSQR1 QR, and why can’t a regular scanner program my tag?</h3>
-      <p>SSQR1 is the SpoolScribe transfer format: the text <code>SSQR1:</code> followed by Base45 data containing the complete NFC message (OpenSpool 1.0 or OpenTag3D 2.004), its length and a SHA-256 digest — no server and no link. A generic QR scanner only displays that text. Writing a tag needs an app that decodes and validates the message and then uses the phone’s NFC, which is the role planned for Companion. Details: <a href="https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/QR_FORMAT.md">SSQR1 contract</a>.</p>
+      <p>SSQR1 is the SpoolScribe transfer format: the text <code>SSQR1:</code> followed by Base45 data containing the complete NFC message (OpenSpool 1.0 or OpenTag3D 2.004), its length and a SHA-256 digest — no server and no link. A generic QR scanner only displays that text. Writing a tag needs an app that decodes and validates the message and then uses the phone’s NFC, which is Companion’s role. Details: <a href="https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/QR_FORMAT.md">SSQR1 contract</a>.</p>
 
-      <h3 id="en-faq-camera">Why is the camera button unavailable?</h3>
-      <p>This prototype does not use the camera yet; the button says so. Real scanning is planned for a later phase. No date is announced.</p>
+      <h3 id="en-faq-camera">The camera does not start. What can I do?</h3>
+      <p>Companion uses the camera only while you scan. If camera access was refused, allow it again in the iOS Settings app, under SpoolScribe Companion. On a device without a camera, scanning is not offered.</p>
 
       <h3 id="en-faq-refused">What does the SHA-256 check do, and why is my QR refused?</h3>
       <p>Companion recomputes the SHA-256 digest of the decoded NFC message and compares it with the one in the QR. A damaged or edited text, a wrong prefix, invalid characters, a text that is too long, or content that is not valid OpenSpool 1.0 or OpenTag3D 2.004 is refused, and no label data from it is shown. Display the QR again in SpoolScribe Desktop. SHA-256 detects changes; it does not prove who created the QR and does not encrypt it.</p>
 
-      <h3 id="en-faq-fields">Why is a field or reference missing, or different between OpenSpool and OpenTag3D?</h3>
-      <p>The two formats carry different fields. Companion shows the values received in the QR, as they are, for that format: it does not merge them with another source, rebuild a missing name or fill an empty field. A missing value is shown as not provided.</p>
-      <p>References are an example. In SpoolScribe Desktop v0.8.0, the OpenSpool <code>sku</code> is the catalogue reference used when the label is prepared, while the OpenTag3D <code>sku</code> comes from the manufacturer reference. The two are not interchangeable.</p>
+      <h3 id="en-faq-fields">Why is a field missing, or different between OpenSpool and OpenTag3D?</h3>
+      <p>The two formats carry different fields. Companion shows the values received in the QR, as they are: it does not merge them with another source, rebuild a missing name or fill an empty field. A missing value is shown as not provided.</p>
+      <p>OpenTag3D also defines two optional measurements: the measured tolerance of the filament diameter, and the minimum nozzle diameter advised for the filament (not the nozzle installed on your printer). Neither is needed to write a label. They can be useful when a reliable source provides them; Companion shows them as received and never estimates them. SpoolScribe Desktop v0.8.1 did not offer them as editable settings.</p>
 
-      <h3 id="en-faq-simulation">What do the simulated results mean?</h3>
-      <p>In the prototype every write is a simulation, labelled “SIMULATION — no chip programmed”. Development builds can choose an outcome — success, no tag, unsupported format, read-only tag, insufficient capacity, interrupted write, read-back mismatch, NFC unavailable — to show how the app reacts. A simulated success only means that the simulated read-back matched the expected bytes in memory. These results are not measurements of a real phone or tag.</p>
+      <h3 id="en-faq-write">The write failed or the read-back does not match. What now?</h3>
+      <p>Hold the tag still against the top of the iPhone until the end of the session, and use a tag with enough free capacity that is not locked. A read-back mismatch means the tag does not contain the expected message: write it again or use another tag. Companion never reports a write as successful without a matching read-back.</p>
 
-      <h3 id="en-faq-hardware">Which phones and tags are confirmed?</h3>
-      <p>None yet. See <a href="#en-devices">Phones and tags</a>.</p>
+      <h3 id="en-faq-preferences">What does Companion remember?</h3>
+      <p>Only your preferences: language, appearance and the optional printer hardware, kept on the iPhone. Transfers, previews, inspections (including a partially masked tag identifier) and write results stay in memory for the current session. See the <a href="../privacy/#en-storage" data-keep-lang>privacy policy</a>.</p>
 
       <h3 id="en-faq-report">How do I report a problem?</h3>
       <p>See <a href="#en-report">Report a problem</a>.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-report" class="card">
@@ -120,29 +133,30 @@
         <a class="button" href="https://github.com/ArN-LaB/Spoolscribe-/issues">Read existing issues</a>
       </div>
       <p>Please include:</p>
-      <ul>
-        <li>the Companion version or build you used (or the source revision if you built it yourself);</li>
-        <li>the operating system and its version;</li>
-        <li>the phone model, or the simulator;</li>
+      <ul class="prose">
+        <li>the Companion version and build, shown in the TestFlight app;</li>
+        <li>the iOS version and the iPhone model, or the simulator;</li>
         <li>the protocol: OpenSpool 1.0 or OpenTag3D 2.004;</li>
-        <li>for a future test with a real tag: the tag type and its announced capacity;</li>
+        <li>for a write or an inspection: the tag type and its announced capacity;</li>
         <li>the steps, what you expected and what happened.</li>
       </ul>
       <p><strong>Issues are public.</strong> Use a synthetic example. Never post a confidential QR, a personal catalogue, credentials or personal data in an issue; if a report needs private details, send it by e-mail instead.</p>
       <p>This is a hobby project: there is no guaranteed response time.</p>
       <p>Security vulnerabilities: report them privately through <a href="https://github.com/ArN-LaB/Spoolscribe-/security/advisories/new">GitHub vulnerability reporting</a>, not in a public issue.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
 
     <section id="en-contact" class="card">
       <h2>Contact</h2>
       <p>ArN-LaB is the public name of the project. Its developer and publisher is established in France.</p>
-      <ul>
+      <ul class="contacts">
         <li>Technical help (preferred): SpoolScribe Support, <a href="mailto:spoolscribe@arnlab.simplelogin.com">spoolscribe@<wbr>arnlab.simplelogin.com</a>.</li>
         <li>Privacy questions and private requests: ArN-LaB Privacy, <a href="mailto:privacy@arnlab.simplelogin.com">privacy@<wbr>arnlab.simplelogin.com</a>.</li>
         <li>General contact: ArN-LaB Support, <a href="mailto:support@arnlab.simplelogin.com">support@<wbr>arnlab.simplelogin.com</a>.</li>
         <li>Public problems with nothing sensitive (optional): <a href="https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose">GitHub Issues</a>.</li>
       </ul>
       <p>Writing by e-mail is voluntary; how those messages and this app’s data are handled: <a href="../privacy/#en" data-keep-lang>Companion privacy policy</a>.</p>
+      <p class="back"><a href="#en-toc">↑ Back to contents</a></p>
     </section>
   </article>
 </main>
