@@ -19,6 +19,14 @@ def wait_for(predicate,timeout_ms):
     return True
 
 
+def system_languages(test,*languages):
+    """The OS UI languages the product reads for ``test`` (its 'auto' route), whatever the runner's
+    session: a French Mac and English CI runners otherwise build different menus and messages.
+    The global UI language is restored afterwards."""
+    test.addCleanup(i18n.set_language,i18n.language())
+    p=patch('spoolscribe.i18n.system_ui_languages',return_value=list(languages));p.start();test.addCleanup(p.stop)
+
+
 class NewProfileDetectionTests(unittest.TestCase):
     def setUp(self):
         tmp=tempfile.TemporaryDirectory();self.addCleanup(tmp.cleanup);self.root=Path(tmp.name)
@@ -81,14 +89,30 @@ class WelcomeWindowTests(unittest.TestCase):
         paths.start();self.addCleanup(paths.stop)
         errors=patch('spoolscribe.app_gui.QMessageBox.critical',side_effect=lambda *a,**k:self.fail(f'unexpected error: {a[-1]}'))
         errors.start();self.addCleanup(errors.stop)
-        w=app_gui.MainWindow();self.addCleanup(w.close);i18n.set_language('fr')
+        # French chosen by the product itself, from a French OS session, before any menu is built.
+        system_languages(self,'fr-FR')
+        # The real 400 ms start-up callback armed by MainWindow() is the only start-up run: it is
+        # observed, never doubled by a manual call (a slow runner would otherwise run both).
+        if not hasattr(self,'startup_runs'):                           # once per test, however many windows
+            self.startup_runs=[];real=app_gui.MainWindow._maybe_auto_update
+            def observed(win,*a,**k):
+                self.startup_runs.append(win);return real(win,*a,**k)
+            timer=patch.object(app_gui.MainWindow,'_maybe_auto_update',observed);timer.start();self.addCleanup(timer.stop)
+        w=app_gui.MainWindow()
+        def settle():
+            # Closed while this test's paths are patched, then its single start-up callback is let
+            # run out (a closed window does nothing): none is left for a later test or the exit.
+            w.close();wait_for(lambda:w in self.startup_runs,3000)
+        self.addCleanup(settle);self.assertEqual(i18n.language(),'fr')
         self.calls=[]
         for name in ('_choose_sources','_start_update','_ask_network_consent','_open_hardware','_open_settings'):
             spy=patch.object(w,name,side_effect=lambda *a,_n=name,**k:self.calls.append((_n,a,k)));spy.start();self.addCleanup(spy.stop)
         return w
 
     def start(self,w):
-        w.show();w.app.processEvents();w._maybe_auto_update();w.app.processEvents()
+        """Show ``w`` and let the real event loop run its own start-up callback, once."""
+        w.show();self.assertTrue(wait_for(lambda:w in self.startup_runs,3000),'start-up callback never ran')
+        w.app.processEvents();self.assertEqual(self.startup_runs.count(w),1)
         return getattr(w,'_welcome_dialog',None)
 
     def buttons(self,dlg):
@@ -178,12 +202,18 @@ class WelcomeWindowTests(unittest.TestCase):
         import os
         from PySide6.QtCore import QPoint
         from spoolscribe import ui_opening
-        w=self.window();w.show();w.app.processEvents();self.addCleanup(i18n.set_language,'fr');widths={}
+        w=self.window();self.addCleanup(i18n.set_language,'fr');widths={}
+        # The new profile's own start-up welcome first, closed: nothing else may open one during the
+        # measures, so each language below is measured on the dialog it has just built.
+        first=self.start(w);self.assertIsNotNone(first);first.reject();w.app.processEvents()
+        measured=[first]
         for code in ('fr','en','es','zh_CN'):
             with self.subTest(language=code):
                 i18n.set_language(code)
                 with patch.dict(os.environ,{ui_opening.REDUCE_MOTION_ENV:'1'}):dlg=w._open_welcome()
                 try:
+                    self.assertNotIn(dlg,measured);measured.append(dlg)   # built now, not an earlier one raised
+                    self.assertEqual(dlg.windowTitle(),i18n.tr('Accueil rapide'))
                     w.app.processEvents();found=self.buttons(dlg)
                     topics=[found[name] for name in ('hardware','filaments','catalogue')]
                     # By role, not isDefault(): on Cocoa the focused button is the temporary default.
@@ -201,7 +231,8 @@ class WelcomeWindowTests(unittest.TestCase):
                             self.assertTrue(dlg.rect().contains(at) and dlg.rect().contains(at+QPoint(b.width()-1,b.height()-1)),b.text())
                     widths[code]=group[0].width()
                 finally:
-                    dlg.reject();w.app.processEvents()
+                    for opened in {dlg,w._welcome_dialog}-{None}:opened.reject()   # also on failure
+                    w.app.processEvents()
         self.assertGreater(len(set(widths.values())),1,widths)   # measured per language, not one fixed number
 
 
@@ -213,8 +244,10 @@ class WelcomeOpeningTests(unittest.TestCase):
     start=WelcomeWindowTests.start
 
     def setUp(self):
+        # Each test chooses its branch: motion allowed here, whatever the runner's accessibility
+        # setting (a macOS runner may reduce motion); the reduced branch is chosen explicitly below.
         env=patch.dict('os.environ');env.start();self.addCleanup(env.stop)
-        import os;os.environ.pop('SPOOLSCRIBE_REDUCE_MOTION',None)
+        import os;os.environ['SPOOLSCRIBE_REDUCE_MOTION']='0'
 
     def parts(self,dlg):
         from PySide6.QtWidgets import QLabel
@@ -278,6 +311,12 @@ class WelcomeOpeningTests(unittest.TestCase):
         dlg.reject();w.close()
         os.environ.pop('SPOOLSCRIBE_REDUCE_MOTION')
         self.assertIsInstance(ui_opening.reduced_motion(),bool)                                     # real system read, never written
+        for platform,reader in (('darwin','_macos_reduce_motion'),('win32','_windows_reduce_motion')):
+            with self.subTest(platform=platform),patch.object(ui_opening.sys,'platform',platform):
+                with patch.object(ui_opening,reader,return_value=True):self.assertTrue(ui_opening.reduced_motion())
+                with patch.object(ui_opening,reader,return_value=False):self.assertFalse(ui_opening.reduced_motion())
+                with patch.object(ui_opening,reader,side_effect=OSError('unreadable')):self.assertFalse(ui_opening.reduced_motion())   # unknown: animate
+        os.environ['SPOOLSCRIBE_REDUCE_MOTION']='0'                                                  # motion allowed: the missing logo alone
         with patch('spoolscribe.core.app_logo_abs_path',return_value=None):
             w=self.window();dlg=self.start(w);op=w._welcome_opening
         self.assertTrue(op.done);self.assertFalse(op.played)
@@ -346,8 +385,9 @@ class FirstLaunchThroughMainTests(unittest.TestCase):
         env=patch.dict(os.environ);env.start();self.addCleanup(env.stop)   # --diagnostics exports its flag
         os.environ.pop('SPOOLSCRIBE_DIAGNOSTICS',None)
 
-    def launch(self,*argv,status=None):
-        """Run main() once; facts are read inside its event loop, after the 400 ms start-up callback."""
+    def launch(self,*argv,status=None,languages=('fr-FR',)):
+        """Run main() once; facts are read inside its event loop, after the 400 ms start-up callback.
+        ``languages``: the OS session main() reads for its 'auto' language, whatever the runner's."""
         from PySide6.QtCore import QEventLoop,QLockFile,QTimer
         from spoolscribe import app_gui,diagnostics,recovery
         facts={'sources':[],'workers':[]}
@@ -368,6 +408,7 @@ class FirstLaunchThroughMainTests(unittest.TestCase):
         with patch.multiple(core,DB_PATH=str(db),DATA_HOME=str(self.home),DATA_DIR=str(db.parent),CONFIG_PATH=str(self.cfg),
                             OUTPUT_DIR=str(self.home/'output'),ORCA_DIR=str(self.home/'orca_profiles')), \
              patch.object(recovery,'STARTUP_STATUS',status), \
+             patch('spoolscribe.i18n.system_ui_languages',return_value=list(languages)), \
              patch('spoolscribe.app_gui.QApplication',return_value=self.app) as application, \
              patch.object(self.app,'exec',side_effect=event_loop), \
              patch('spoolscribe.app_gui.QMessageBox.information',side_effect=lambda *a,**k:facts.setdefault('information',a[-1])), \
@@ -422,8 +463,13 @@ class FirstLaunchThroughMainTests(unittest.TestCase):
 
     def test_a_second_instance_is_refused_without_a_window(self):
         from PySide6.QtCore import QLockFile
-        self.home.mkdir();held=QLockFile(str(self.home/'spoolscribe.instance.lock'));held.setStaleLockTime(0)
-        self.assertTrue(held.tryLock(0));self.addCleanup(held.unlock)
-        f=self.launch()
-        self.assertEqual(f['code'],0);self.assertNotIn('window',f);self.assertIn('déjà ouvert',f['information'])
-        self.assertFalse(f['released']);self.assertFalse(self.cfg.exists())
+        source='SpoolScribe est déjà ouvert pour ce dossier de données.\nUtilisez la fenêtre existante.'
+        # Said in the language main() resolves from the OS session, in a French and an English one.
+        for system,expected,words in (('fr-FR',source,'déjà ouvert'),('en-US',i18n.catalogue()[source]['en'],'already open')):
+            with self.subTest(system=system):
+                self.setUp();self.home.mkdir();held=QLockFile(str(self.home/'spoolscribe.instance.lock'));held.setStaleLockTime(0)
+                self.assertTrue(held.tryLock(0));self.addCleanup(held.unlock)
+                f=self.launch(languages=(system,))
+                self.assertEqual(f['code'],0);self.assertNotIn('window',f)
+                self.assertEqual(f['information'],expected);self.assertIn(words,f['information'])
+                self.assertFalse(f['released']);self.assertFalse(self.cfg.exists())
