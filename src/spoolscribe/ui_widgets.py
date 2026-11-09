@@ -18,7 +18,39 @@ CONTROL_HEIGHT = 32
 CARD_RADIUS = 12
 TILE_RADIUS = 8
 CONTROL_RADIUS = 7
+# Action buttons (primary, secondary, green solution): same visual proportion as the Companion
+# (radius 7 on 48–54 px buttons) at the desktop height of CONTROL_HEIGHT. Fields, tabs, chips and
+# tool buttons keep CONTROL_RADIUS.
+BUTTON_RADIUS = 5
 CARD_MARGINS = (12, 10, 12, 10)
+
+
+def match_widths(buttons, variants=None):
+    """Give one group of comparable action buttons the width of its widest real need.
+
+    Only for actions laid out freely in a row or a footer: buttons already sized by a
+    cell or a column keep that structure. Each width is the button's own polished size
+    hint (current font, translation and style-sheet padding), measured for every text it
+    may show (``variants``: {button: texts}), so a later toggle or validation keeps the
+    equality without relayout. Idempotent: a width is set only when it changes. Returns
+    the common width (0 for an empty group).
+    """
+    group = [button for button in buttons if button is not None]
+    variants = variants or {}
+    width = 0
+    for button in group:
+        button.ensurePolished()
+        current = button.text()
+        for text in dict.fromkeys((current, *variants.get(button, ()))):
+            if button.text() != text:
+                button.setText(text)
+            width = max(width, button.sizeHint().width())
+        if button.text() != current:
+            button.setText(current)
+    for button in group:
+        if button.minimumWidth() != width or button.maximumWidth() != width:
+            button.setFixedWidth(width)
+    return width
 
 
 class ReflowRow(QWidget):

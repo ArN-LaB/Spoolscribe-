@@ -19,6 +19,8 @@ OpenSpool needs the selected record’s required identification fields. OpenTag3
 also needs explicit temperature targets. Open **Prepare the label…**, review each
 proposal for your spool/printer and confirm next to **Save**.
 
+Review messages appear directly beside the field, with a red outline. For recognised combined names, a green action explicitly offers the split, for example **PET-GF → material PET + reinforcement GF**. Short alternatives such as **CF** for **Carbon Fiber** also need your confirmation. No catalogue value is silently shortened or overwritten. Your usual spool mass is proposed only when the record has no mass, and remains editable. Cancelling or being refused by the full editor preserves the pending label values when you return.
+
 An Orca U1 target is proposed only for a matching U1 profile; otherwise a known
 range can produce a clearly labelled midpoint estimate. Missing chamber heating
 is never guessed. **No heating** is an explicit choice. Valid saved settings are

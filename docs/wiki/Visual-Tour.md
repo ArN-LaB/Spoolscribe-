@@ -2,7 +2,7 @@
 
 [Help home](Home.md)
 
-Every illustration is a genuine v0.8.2 widget capture. Click an image for the full
+Every illustration is a genuine v0.8.3 widget capture. Click an image for the full
 file; its title and short caption explain what to look at. Interface examples
 use English. Available languages: **English · Français · Español · 简体中文**.
 

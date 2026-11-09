@@ -16,6 +16,84 @@ def values():
                 max_print_temp=230, bed_temp=60, chamber_temp=0, weight=1000)
 
 
+class OpenTagMaterialSplitTests(unittest.TestCase):
+    """B18: a composite material name is split only when recognised, explicit and fitting."""
+    def test_recognised_composites_keep_both_parts(self):
+        for value,expected in [('PET-GF',('PET','GF')),('PETG-CF',('PETG','CF')),('PA6-CF',('PA6','CF')),
+                               ('PLA-CF',('PLA','CF')),(' PET-GF ',('PET','GF'))]:
+            with self.subTest(value=value):
+                self.assertEqual(core.opentag_material_split(value,''),expected)
+                self.assertEqual(core.opentag_material_split(value,None),expected)
+                fields=dict(values(),material=expected[0],material_mod=expected[1])
+                self.assertEqual(core.opentag_problems(fields),[])   # both parts fit their fields
+                decoded=opentag3d.decode(opentag3d.encode(fields))
+                self.assertEqual((decoded['material'],decoded['material_mod']),expected)   # nothing lost, GF kept
+
+    def test_nothing_is_guessed_otherwise(self):
+        for value,mod in [('PET-GF','Recycled'),('PET-GF','GF'),('PC-ABS',''),('PETG',''),('PET-GF-X',''),('PET GF',''),
+                          ('pet-gf',''),('PETG12-CF',''),('PÉT-GF',''),('PA-6-CF',''),('-GF',''),('PET-',''),('',''),(None,''),(42,'')]:
+            with self.subTest(value=value,mod=mod):
+                self.assertIsNone(core.opentag_material_split(value,mod))
+
+
+class OpenTagA2HelperTests(unittest.TestCase):
+    """B18/A2: certain abbreviations only, and a mass proposal that never pretends to be a choice."""
+    def test_only_exact_reinforcement_names_get_an_abbreviation(self):
+        for value,expected in [('Carbon Fiber','CF'),('carbon fibre','CF'),('  Carbon   Fiber ','CF'),('Glass Fiber','GF'),('Glass Fibre','GF')]:
+            with self.subTest(value=value):
+                self.assertEqual(core.opentag_variant_abbreviation(value),expected)
+        for value in ('Recycled CF','Carbon','Carbon Fiber 20%','CF','Fibre de carbone','Kevlar',' ','',None,12):
+            with self.subTest(value=value):
+                self.assertIsNone(core.opentag_variant_abbreviation(value))
+
+    def test_mass_proposal_comes_from_the_usual_spool_or_says_it_is_a_default(self):
+        with tempfile.TemporaryDirectory() as root:
+            path=Path(root)/'config.json'
+            self.assertEqual(core.opentag_weight_proposal(path),(1000,'default'))   # no file: default, said so
+            for raw,expected in [({},(1000,'default')),({'preferred_weight_g':750},(750,'preference')),
+                                 ({'preferred_weight_g':2000},(2000,'preference')),({'preferred_weight_g':0},None),
+                                 ({'preferred_weight_g':'750'},(1000,'default')),({'preferred_weight_g':True},(1000,'default')),
+                                 ({'preferred_weight_g':-5},(1000,'default')),({'preferred_weight_g':30000},(1000,'default')),
+                                 ([],(1000,'default'))]:
+                with self.subTest(raw=raw):
+                    path.write_text(json.dumps(raw),encoding='utf-8');before=path.read_bytes()
+                    self.assertEqual(core.opentag_weight_proposal(path),expected);self.assertEqual(path.read_bytes(),before)   # read only
+            path.write_bytes(b'{not json');self.assertEqual(core.opentag_weight_proposal(path),(1000,'default'))
+            self.assertEqual(path.read_bytes(),b'{not json')
+
+
+class OpenTagProblemsTests(unittest.TestCase):
+    """B15: the pre-check lists every reason the encoder would refuse, never more, never fewer."""
+    def test_problems_are_empty_exactly_when_the_encoder_accepts(self):
+        full=dict(values(),min_bed_temp=45,max_bed_temp=80,chamber_temp=50)
+        cases=[full]+[dict(full,**{key:bad}) for key,bad in [
+            ('sku','A'*16),('sku','A'*17),('sku','é'*8),('sku','é'*9),('sku',''),('min_bed_temp',46),('min_bed_temp',44.99999999999999),
+            ('min_bed_temp',45.0),('chamber_temp',None),('chamber_temp',52.5),('bed_temp',85),('weight',True),('weight',65536),
+            ('density',float('nan')),('diameter',1.7505),('material','PLA-CF'),('color_1','FF0000'),('manufacturer','A\0B'),
+            ('min_print_temp',240),('unknown_field',1),('print_temp','210')]]
+        for case in cases:
+            with self.subTest(case=case):
+                try:opentag3d.encode(case);accepted=True
+                except ValueError:accepted=False
+                self.assertEqual(accepted,not core.opentag_problems(case))
+
+    def test_all_problems_together_with_exact_constraints_and_indicative_neighbours(self):
+        problems=core.opentag_problems(dict(values(),sku='REFERENCE-1234567',min_bed_temp=46,max_bed_temp=80))
+        self.assertEqual([(p['key'],p['code']) for p in problems],[('sku','bytes'),('min_bed_temp','step')])
+        self.assertEqual((problems[0]['used'],problems[0]['limit']),(17,16))
+        self.assertEqual((problems[1]['value'],problems[1]['neighbours']),(46,[45.0,50.0]))   # nothing rounded
+        self.assertEqual(core.opentag_problems(dict(values(),sku='é'*9))[0]['used'],18)
+        self.assertEqual(core.opentag_problems(dict(values(),min_bed_temp=45,max_bed_temp=80,chamber_temp=50)),[])
+
+    def test_trace_names_the_layer_of_each_value(self):
+        e=dict(entry(),manufacturer_sku='REF-1');p=product();trace={}
+        fields=core.opentag_fields(e,p,dict(min_bed_temp=45),trace=trace)
+        self.assertEqual((trace['sku'],trace['min_bed_temp'],trace['manufacturer']),('catalogue','label','catalogue'))
+        self.assertEqual(fields,core.opentag_fields(e,p,dict(min_bed_temp=45)))   # tracing never changes values
+        personal={};core.opentag_fields(dict(e,_personal=True),p,None,trace=personal)
+        self.assertEqual(personal['sku'],'personal')
+
+
 class OpenTagCodecTests(unittest.TestCase):
     def test_independent_memory_map_and_units(self):
         b=opentag3d.encode(values())

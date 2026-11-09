@@ -6,7 +6,7 @@
 
 Start with the catalogue, choose a reference, then prepare the export for your actual reader and printer setup. Keep personal values, preferences and backups under your control.
 
-[Download v0.8.2](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.2) · [First launch](Getting-Started.md) · [Screen examples](Visual-Tour.md)
+[Download v0.8.3](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.3) · [First launch](Getting-Started.md) · [Screen examples](Visual-Tour.md)
 
 <sub>Interface languages: English · Français · Español · 简体中文</sub>
 
@@ -38,6 +38,6 @@ For the mobile application: [availability](https://github.com/ArN-LaB/Spoolscrib
 
 <a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/catalogue.png" alt="The catalogue, with a selected filament and its properties and export actions" width="1100"></a>
 
-<sub>Actual v0.8.2 interface, public demonstration data. Counts are not live source coverage. [Capture provenance](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/images/README.md).</sub>
+<sub>Actual v0.8.3 interface, public demonstration data. Counts are not live source coverage. [Capture provenance](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/images/README.md).</sub>
 
 **Before writing a tag:** check the exact reader and firmware setup. A stable application does not qualify every hardware combination, and a generic QR scanner cannot program a tag just by displaying its text. [Compatibility](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/COMPATIBILITY.md).

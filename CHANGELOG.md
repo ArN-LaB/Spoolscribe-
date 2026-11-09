@@ -17,6 +17,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update the Companion Support and Privacy pages for internal iPhone TestFlight build 1.0.0 (6): camera scanning, NFC writing/read-back, read-only inspection, on-device preferences and masked tag identifiers. Clarify optional OpenTag3D measurements and improve mobile reading layout; no public download or new application feature is announced.
 
+## [0.8.3] - 2026-11-10
+
+### Clearer labels and a gentler first launch
+
+- OpenTag3D preparation reports invalid or missing values beside their fields, with explicit chamber-heating confirmation and unchanged wire-format limits. Correct the label without silently rewriting the synchronised catalogue.
+- Pending label values survive correction, a refused editor opening, personal-copy creation and reopening. A saved personal copy remains distinct from its source.
+- Explicit green actions offer recognised material/reinforcement splits, such as PET-GF → PET + GF, and common short reinforcement labels. Both destination fields are marked until the suggested split is applied; optional valid variants remain optional.
+- Propose the user's usual spool mass when a record has no mass. Optional quick setup covers hardware, the usual spool and catalogue sources, with direct access to the Filaments settings tab and no silent network download.
+- A short logo opening respects reduced-motion preferences. Comparable free action buttons have matching widths, with consistent corners and stable confirmation labels; existing column constraints are preserved.
+- Use the system's fixed-width font for the diagnostic inspector instead of requesting a missing generic font family on macOS.
+- Windows/Linux builds and a freshly Developer ID signed, notarised macOS build use this version's sources. Hardware printing, NFC devices and public Companion distribution remain outside these software changes.
+
 ## [0.8.2] - 2026-11-09
 
 ### A calmer and more responsive workspace
@@ -796,7 +808,7 @@ These were same-day iterations, kept here for traceability:
 - Cleaned repository: removed one-off bootstrap scripts, raw scrape caches,
   bundled PDF, and generated output; minimized root directory.
 
-[Unreleased]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.8.3...HEAD
 [0.7.0]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.6.0...v0.7.0
 [0.4.0]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.3.5...v0.4.0
 [0.3.5]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.3.0...v0.3.5
@@ -804,3 +816,5 @@ These were same-day iterations, kept here for traceability:
 [0.2.2]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.2.0
+
+[0.8.3]: https://github.com/ArN-LaB/Spoolscribe-/compare/v0.8.2...v0.8.3

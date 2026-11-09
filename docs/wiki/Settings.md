@@ -86,5 +86,5 @@ colours** removes the distance limit. It does not guarantee a matching printed c
 **Export the filament’s OpenSpool JSON…** in the main menu writes one readable
 OpenSpool file for the selected filament; it is not a backup.
 
-<p align="center"><a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/settings-backups.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/settings-backups.png" alt="Preferences and data backups in v0.8.2" width="820"></a></p>
+<p align="center"><a href="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/settings-backups.png"><img src="https://raw.githubusercontent.com/ArN-LaB/Spoolscribe-/main/docs/images/settings-backups.png" alt="Preferences and data backups in v0.8.3" width="820"></a></p>
 <p align="center"><strong>Keep preferences and backups distinct</strong><br><sub>Both exports are local and unencrypted. AES-256-GCM is not implemented.</sub></p>

@@ -1,6 +1,6 @@
 [project]
 name = "spoolscribe"
-version = "0.8.2"
+version = "0.8.3"
 description = "Desktop filament catalogue with multilingual UI, OpenSpool and OpenTag3D NFC exports."
 readme = "README.md"
 requires-python = ">=3.10"

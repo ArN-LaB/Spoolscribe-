@@ -1,6 +1,6 @@
-# SpoolScribe v0.8.2 documentation
+# SpoolScribe v0.8.3 documentation
 
-[Overview](../README.md) · [Download v0.8.2 stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.2) · [Illustrated help](wiki/Home.md)
+[Overview](../README.md) · [Download v0.8.3 stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.3) · [Illustrated help](wiki/Home.md)
 
 ## Use the application
 
@@ -25,7 +25,7 @@ The [user guide](USER_GUIDE.md) complements the illustrated workflows.
 
 **Software stability and hardware compatibility are separate.** Not every listed
 setup has been physically tested. [Compatibility](COMPATIBILITY.md) ·
-[v0.8.2 validation](validation/v0.8.2.md) · [Companion availability](COMPANION.md).
+[v0.8.3 validation](validation/v0.8.3.md) · [Companion availability](COMPANION.md).
 
 ## Develop and maintain
 

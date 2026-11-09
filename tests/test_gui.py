@@ -12,7 +12,8 @@ from tests.support import catalogue
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 HAS_QT = importlib.util.find_spec("PySide6") is not None
 if HAS_QT:
-    from PySide6.QtCore import Qt
+    from PySide6.QtCore import Qt, qInstallMessageHandler
+    from PySide6.QtGui import QFontDatabase, QFontInfo
     from PySide6.QtWidgets import QApplication, QDialog, QLineEdit
     from spoolscribe import app_gui
 
@@ -60,6 +61,38 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(len(files), 2)
         self.assertTrue(all(json.loads(p.read_text())["color_hex"] == "070908" for p in files))
         self.assertFalse(core.has_network_consent())
+
+    def test_inspector_uses_the_platform_fixed_font_at_nine_points(self):
+        messages = []
+        previous = qInstallMessageHandler(lambda _mode, _context, message: messages.append(message))
+        try:
+            window = app_gui.MainWindow()
+            self.addCleanup(window.close)
+            window.resize(1000, 720)
+            window.show()
+            window._show_detail("PB05001")
+            self.app.processEvents()
+            window.btn_inspect.click()
+            self.app.processEvents()
+            window.inspector.grab()
+            font = window.inspector.font()
+            info = QFontInfo(font)
+            resolved_family, fixed_pitch = info.family(), info.fixedPitch()
+        finally:
+            qInstallMessageHandler(previous)
+        self.assertTrue(window.inspector.isVisible())
+        self.assertEqual(font.pointSize(), 9)
+        if os.name == "nt":
+            self.assertEqual(font.family(), "Consolas")
+        else:
+            self.assertEqual(font.family(), QFontDatabase.systemFont(QFontDatabase.FixedFont).family())
+        if QApplication.platformName() == "offscreen":
+            # The offscreen theme itself answers FixedFont with a generic name;
+            # the effective font is only meaningful on a real platform.
+            return
+        self.assertTrue(fixed_pitch, resolved_family)
+        self.assertEqual(resolved_family, font.family())
+        self.assertFalse([m for m in messages if "missing font family" in m], messages)
 
     def test_missing_color_is_an_error_in_preview_without_a_black_export(self):
         self.window.current_sku = "FB04001"

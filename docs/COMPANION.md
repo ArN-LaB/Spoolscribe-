@@ -1,6 +1,6 @@
 # SpoolScribe Companion
 
-[Desktop v0.8.2 stable](../README.md) · [QR help](wiki/Companion-and-QR.md) · [SSQR1 contract](QR_FORMAT.md)
+[Desktop v0.8.3 stable](../README.md) · [QR help](wiki/Companion-and-QR.md) · [SSQR1 contract](QR_FORMAT.md)
 
 **The mobile application is in development. Official downloads are not available yet.**
 This is the common availability page for iOS and Android. Desktop opens this page

@@ -20,7 +20,8 @@ import traceback
 
 from PySide6.QtCore import Qt, QThread, Signal, QSize, QTimer, QRectF, QLockFile, QUrl, QPoint, QEvent
 from PySide6.QtGui import (
-    QColor, QFont, QPixmap, QPainter, QIcon, QPalette, QPainterPath, QAction, QPen, QDesktopServices,
+    QColor, QFont, QFontDatabase, QPixmap, QPainter, QIcon, QPalette, QPainterPath, QAction, QPen,
+    QDesktopServices,
 )
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
@@ -43,7 +44,7 @@ from .i18n import tr, configure_language, LANGUAGES, display_quality
 from .app_lifecycle import RESTART_EXIT_CODE, launch_replacement
 from .ui_catalogue import CatalogueUx, ClearableTable, ClearableList
 from .ui_detail import DetailUx
-from .ui_widgets import SearchField, SpoolPreview, MetricGrid, WrapLabel, FilamentDelegate, spool_icon, product_label, display_delta, DetailScrollArea, CONTROL_HEIGHT, CARD_RADIUS, TILE_RADIUS, CONTROL_RADIUS, ReflowRow, ActionLabel
+from .ui_widgets import SearchField, SpoolPreview, MetricGrid, WrapLabel, FilamentDelegate, spool_icon, product_label, display_delta, DetailScrollArea, CONTROL_HEIGHT, CARD_RADIUS, TILE_RADIUS, CONTROL_RADIUS, BUTTON_RADIUS, ReflowRow, ActionLabel, match_widths
 
 # The inspector lives inside the scroll area; toggling never changes the window.
 _INSPECTOR_H = 210
@@ -470,8 +471,12 @@ MIN_WINDOW_HEIGHT = 560
 
 
 class MainWindow(DetailUx, CatalogueUx, QMainWindow):
-    def __init__(self):
+    def __init__(self, new_profile: bool | None = None):
         super().__init__()
+        # A profile with nothing yet. main() decides it before its own start-up writes (diagnostics,
+        # data folder, instance lock) and passes it here; a direct construction decides it now,
+        # before the base and configuration are touched.
+        self._new_profile = core.is_new_profile() if new_profile is None else bool(new_profile)
         self.app = QApplication.instance()
         configure_language(self.app, core.load_config().get("language", "auto"))
         self.setWindowTitle(f"SpoolScribe {core.APP_VERSION} — OpenSpool / NFC")
@@ -600,6 +605,9 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         act_settings = QAction(tr('Paramètres…'), self)
         act_settings.triggered.connect(self._open_settings)
         menu.addAction(act_settings)
+        act_welcome = QAction(tr('Accueil rapide…'), self)
+        act_welcome.triggered.connect(self._open_welcome)
+        menu.addAction(act_welcome)
         menu.addSeparator()
         # The single-filament OpenSpool file belongs to that filament's export
         # details (« Détails »), not to this menu nor to data management.
@@ -1088,7 +1096,14 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         self.inspector.setReadOnly(True)
         self.inspector.setVisible(False)
         self.inspector.setFixedHeight(_INSPECTOR_H)
-        self.inspector.setFont(QFont("Consolas" if os.name == "nt" else "monospace", 9))
+        # Fixed-pitch system font: a generic family name such as "monospace"
+        # does not exist on macOS and makes Qt populate every font alias.
+        if os.name == "nt":
+            inspector_font = QFont("Consolas", 9)
+        else:
+            inspector_font = QFontDatabase.systemFont(QFontDatabase.FixedFont)
+            inspector_font.setPointSize(9)
+        self.inspector.setFont(inspector_font)
         dl.addWidget(self.inspector)
         return page
 
@@ -1132,17 +1147,17 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
 
         primary_qss = (
             f"QPushButton#primary {{ background:{accent}; color:{t['accent_text']};"
-            f" border:none; border-radius:7px; padding:7px 16px; font-weight:600; }}"
+            f" border:none; border-radius:{BUTTON_RADIUS}px; padding:7px 16px; font-weight:600; }}"
             f"QPushButton#primary:hover {{ background:{t['accent_hover']}; }}"
             f"QPushButton#primary:disabled {{ background:{t['sec_bg']}; color:{faint}; }}"
             f"QPushButton#primary[large=true] {{ min-height:34px; max-height:34px; }}"
         )
         secondary_qss = (
-            f"QPushButton {{ background:{t['sec_bg']}; color:{t['text']}; border:1px solid {t['border']}; border-radius:7px; min-height:18px; padding:6px 12px; }}"
+            f"QPushButton {{ background:{t['sec_bg']}; color:{t['text']}; border:1px solid {t['border']}; border-radius:{BUTTON_RADIUS}px; min-height:18px; padding:6px 12px; }}"
             f"QPushButton:hover {{ background:{t['sec_hover']}; }}"
             f"QPushButton:disabled {{ color:{faint}; }}"
             f"QPushButton#secondary {{ background:{t['sec_bg']}; border:1px solid {t['border']};"
-            f" border-radius:7px; padding:6px 12px; }}"
+            f" border-radius:{BUTTON_RADIUS}px; padding:6px 12px; }}"
             f"QPushButton#secondary:hover {{ background:{t['sec_hover']}; }}"
         )
         qr_ink = "#cfb9ef" if t["dark"] else "#684494"
@@ -1175,6 +1190,8 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
             f" border-radius:7px; min-height:18px; padding:6px 8px; font-size:13px; }}"
             f"QToolButton:hover {{ background:{t['sec_hover']}; border-color:{accent}; }}"
             f"QToolButton:checked {{ background:{t['sec_bg']}; border-color:{accent}; color:{accent}; }}"
+            # The OpenTag temperature confirmation is an action of its footer, beside Annuler/Enregistrer.
+            f"QToolButton#opentag_confirmed {{ border-radius:{BUTTON_RADIUS}px; }}"
             f"QToolButton#shadeOption {{ background:{t['card']}; padding:7px; border-radius:9px; }}"
             f"QToolButton#shadeOption:checked {{ border:2px solid {accent}; background:{t['sec_bg']}; }}"
             f"QToolButton#ghost {{ background:transparent; border:1px solid {t['border']};"
@@ -2126,7 +2143,7 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
 
     # ── Mise à jour automatique ──────────────────────────────────────────
     # ── Paramètres ───────────────────────────────────────────────────────
-    def _open_settings(self, *, colour_tab=False):
+    def _open_settings(self, *, colour_tab=False, filaments_tab=False):
         """Six tabs. Fields are written only on Enregistrer; Annuler discards them.
 
         Sources/actualisation and « Retirer l’autorisation réseau » act immediately
@@ -2184,7 +2201,9 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         form_grid=QGridLayout();form_grid.setContentsMargins(0,0,0,0);form_grid.setHorizontalSpacing(16);form_grid.setVerticalSpacing(10)
         mass_label=QLabel(tr('Masse'));mass_label.setBuddy(weight);format_label=QLabel(tr('Format'));format_label.setBuddy(form)
         form_grid.addWidget(mass_label,0,0);form_grid.addWidget(weight,0,1);form_grid.addWidget(format_label,1,0);form_grid.addWidget(form,1,1);form_grid.setColumnStretch(1,1);filament_layout.addLayout(form_grid)
-        filament_layout.addStretch(1);tabs.addTab(filaments,tr('Filaments'))
+        filament_layout.addStretch(1)
+        # ReadingTabs wraps each page in a QScrollArea: keep the returned index, indexOf(page) is −1.
+        filaments_index=tabs.addTab(filaments,tr('Filaments'))
 
         # ── Étiquettes et export ──
         labels_page,labels_layout=page()
@@ -2287,8 +2306,12 @@ class MainWindow(DetailUx, CatalogueUx, QMainWindow):
         data_layout.addStretch(1);tabs.addTab(data_page,tr('Données et sauvegardes'))
 
         if colour_tab:tabs.setCurrentIndex(colour_index)
+        elif filaments_tab:tabs.setCurrentIndex(filaments_index)
         bb=QDialogButtonBox(QDialogButtonBox.Save|QDialogButtonBox.Cancel);bb.button(QDialogButtonBox.Save).setText(tr('Enregistrer'));bb.button(QDialogButtonBox.Cancel).setText(tr('Annuler'));bb.button(QDialogButtonBox.Save).setFixedHeight(32);bb.button(QDialogButtonBox.Cancel).setFixedHeight(32)
         bb.accepted.connect(dlg.accept);bb.rejected.connect(dlg.reject);lay.addWidget(bb)
+        # B18/C21: one width per free group — the footer pair, and the data actions whose rows line up.
+        match_widths([bb.button(QDialogButtonBox.Save),bb.button(QDialogButtonBox.Cancel)])
+        match_widths([dlg.findChild(QPushButton,name) for name in ('exportPreferences','importPreferences','createBackup','restoreBackup','revertRestore')])
         fit_dialog(dlg,preferred_width=640)
         if dlg.exec()==QDialog.Accepted:
             cfg=core.load_config();previous_language=cfg.get('language','auto')
@@ -2497,7 +2520,12 @@ def main():
     # Mode worker (exécutable gelé relançant un scraper) : agir puis sortir.
     if core.maybe_run_as_script_worker(sys.argv):
         return
-    from . import diagnostics
+    from . import diagnostics, recovery
+    # Profil neuf décidé avant toute écriture du démarrage (diagnostics, dossier de données,
+    # verrou d'instance, base, configuration), puis transmis tel quel à la fenêtre. Une reprise
+    # de restauration ou une vérification en erreur au lancement n'est jamais un profil neuf.
+    startup = recovery.STARTUP_STATUS
+    new_profile = core.is_new_profile() and (startup is None or startup.get("state") == "clean")
     # Opt-in --diagnostics : faulthandler ouvert avant QApplication, drapeau retiré d'argv.
     app, _ = diagnostics.create_application(sys.argv, QApplication, core.DATA_HOME)
     configure_application(app)
@@ -2511,7 +2539,7 @@ def main():
         QMessageBox.information(None, "SpoolScribe", tr('SpoolScribe est déjà ouvert pour ce dossier de données.\nUtilisez la fenêtre existante.'))
         return 0
     try:
-        win = MainWindow()
+        win = MainWindow(new_profile=new_profile)
     except (core.DatabaseError, OSError) as exc:
         backup = core.DB_PATH + ".bak"
         if not os.path.isfile(backup) or QMessageBox.question(
@@ -2522,7 +2550,7 @@ def main():
             return 1
         try:
             core.restore_db()
-            win = MainWindow()
+            win = MainWindow(new_profile=False)  # a restored base is never a new profile
         except (core.DatabaseError, OSError) as recovery_error:
             QMessageBox.critical(None, tr('Restauration impossible'), str(recovery_error))
             return 1

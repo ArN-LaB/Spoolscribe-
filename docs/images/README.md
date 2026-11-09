@@ -1,6 +1,6 @@
-# Real interface captures — SpoolScribe v0.8.2
+# Real interface captures — SpoolScribe v0.8.3
 
-Generated on 9 November 2026 from the actual v0.8.2 release-candidate source. Python 3.12, PySide6/Qt 6.11.3, English, application light palette, offscreen Qt rendering. No AI or composited controls. The manifest records the checkout base at capture time; the new version metadata and B14 changes were present in the captured working tree before integration.
+Generated on 10 November 2026 from the actual v0.8.3 release-candidate source. Python 3.12, PySide6/Qt 6.11.3, English, application light palette, offscreen Qt rendering. No AI or composited controls. The manifest records the checkout base at capture time; the label-preparation, welcome and button refinements were present in the captured working tree before integration.
 
 The [manifest](captures.json) records version, checkout base, dimensions, SHA-256
 and scenario metadata. Images with QR data carry their expected NDEF digest.

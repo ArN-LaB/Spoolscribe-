@@ -137,6 +137,38 @@ Already confirmed values are not replaced. Editing withdraws confirmation;
 **Save** remains blocked until the adjacent **Validate temperatures** control is
 used. Cancelling saves no proposal and changes neither catalogue nor encoder.
 
+The form checks every value OpenTag3D would refuse when it opens and after each
+change. A short count next to **Save** gives the number of points to check. Each
+problem is described once, in everyday words, right above its field, which gets
+a discreet border: value to enter, name too long for the label, 5 °C step with
+nearby values shown for guidance only, bounds. The exact label limit in UTF-8
+bytes and the origin of each value are in the field's tooltip. The chamber field
+and **No heating** sit side by side; an empty chamber never becomes 0 °C by
+itself. When a label has no filament mass anywhere, the mass of **My usual spool**
+(filament only, without the empty spool) is proposed and marked as such, or 1 kg
+by default when no preference is set; **Use record default** proposes nothing.
+A known, saved or resumed mass is never replaced, and the proposal is saved only
+with the label. Values that
+belong to the filament record (diameter, density, colour) are grouped under
+**Record data**, where **Edit the record…** opens its editor. The label entries are
+kept in memory meanwhile: after **Save a copy** the form reopens on that personal
+copy, after **Cancel** on the original record, with every entry as typed and
+temperatures to validate again. Nothing is exported until you act. A record
+cannot be edited while a refresh runs: the form then stays open with your
+entries and says why. The manufacturer
+reference may be shortened or explicitly left out of the label; the exported
+value is shown and the catalogue is not changed. **Save** stays unavailable
+while a field needs correcting.
+
+OpenTag3D stores the material on 5 bytes and its reinforcement or modifier on
+another 5 bytes. For a recognised composite name such as `PET-GF` or `PETG-CF`
+with no modifier yet, both fields are marked and a green **Apply PET + GF** button
+shows `Material: PET · Modifier: GF`. For the exact modifier names Carbon
+Fiber/Fibre and Glass Fiber/Fibre, **Use CF** or **Use GF** is offered. Nothing
+changes until you press the button, and only this label is affected: the
+catalogue keeps `PET-GF` or `Carbon Fiber`. Other names are never shortened or
+guessed; edit them yourself.
+
 Once saved values produce a valid complete label, NFC export and preview reuse
 them without reopening the form. The complete message is validated at each action.
 Missing or incompatible values return you to preparation. **Edit label values…**

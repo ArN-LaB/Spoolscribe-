@@ -4,13 +4,13 @@
 
 ## 1. Download and open
 
-Download [v0.8.2 stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.2), then unzip the file for your
+Download [v0.8.3 stable](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.3), then unzip the file for your
 system. Windows contains `SpoolScribe.exe`, macOS contains `SpoolScribe.app`,
 Linux contains `SpoolScribe`. Use the whole macOS bundle.
 
 | System | First-launch notes |
 | --- | --- |
-| macOS Apple Silicon | Verify the SHA-256 and origin. The v0.8.2 Apple Silicon app is Developer ID signed and Apple-notarised. Open the extracted app normally and keep Gatekeeper enabled. Intel/universal2 is not provided. See the release notes for the measured minimum macOS version. |
+| macOS Apple Silicon | Verify the SHA-256 and origin. The v0.8.3 Apple Silicon app is Developer ID signed and Apple-notarised. Open the extracted app normally and keep Gatekeeper enabled. Intel/universal2 is not provided. See the release notes for the measured minimum macOS version. |
 | Windows x64 | Verify origin and SHA-256. SmartScreen may warn because there is no commercial signing certificate. |
 | Linux x64 | A recent glibc plus Qt EGL/XKB/DBus libraries are required. See the [runtime dependencies](https://github.com/ArN-LaB/Spoolscribe-/blob/main/docs/DEVELOPMENT.md#linux-desktop-runtime). |
 
@@ -18,6 +18,12 @@ Compare the ZIP with its `.sha256` file: `shasum -a 256` on macOS,
 `sha256sum` on Linux, `Get-FileHash -Algorithm SHA256` in PowerShell.
 
 ## 2. Build the catalogue
+
+On a brand-new profile, a small optional **Quick welcome** window first offers
+three settings: your hardware, your usual spool and your catalogue sources. Each
+button opens the usual window; nothing is downloaded until you choose sources
+and confirm. **Skip for now** closes it; reopen it any time from the ⚙ menu
+(**Quick welcome…**). Existing profiles are not asked again.
 
 The installer contains **no filament database**. Choose sources and click
 **Refresh now**. This downloads public data after your permission. Do not expect
