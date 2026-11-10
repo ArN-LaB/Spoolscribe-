@@ -7279,7 +7279,7 @@
     "es": "SSQR1 · {v0} caracteres · {v1}",
     "zh_CN": "SSQR1 · {v0} 个字符 · {v1}"
   },
-  "Sans chauffage": {
+  "sans chauffage": {
     "en": "No heating",
     "es": "Sin calefacción",
     "zh_CN": "不加热"
@@ -8908,5 +8908,455 @@
     "en": "Complete JSON of this filament, to read or keep. It is not a backup of your data.",
     "es": "JSON completo de este filamento, para consultar o archivar. No es una copia de seguridad de sus datos.",
     "zh_CN": "此耗材的完整 JSON，可供查看或存档。这不是您的数据备份。"
+  },
+  "« {v0} »": {
+    "en": "“{v0}”",
+    "es": "«{v0}»",
+    "zh_CN": "“{v0}”"
+  },
+  " ou ": {
+    "en": " or ",
+    "es": " o ",
+    "zh_CN": "或"
+  },
+  "Buse cible (°C)": {
+    "en": "Nozzle target (°C)",
+    "es": "Boquilla objetivo (°C)",
+    "zh_CN": "喷嘴目标（°C）"
+  },
+  "Buse maximum (°C)": {
+    "en": "Nozzle maximum (°C)",
+    "es": "Boquilla máxima (°C)",
+    "zh_CN": "喷嘴最高（°C）"
+  },
+  "Buse minimum (°C)": {
+    "en": "Nozzle minimum (°C)",
+    "es": "Boquilla mínima (°C)",
+    "zh_CN": "喷嘴最低（°C）"
+  },
+  "Cette couleur se corrige dans la fiche du filament, pas dans l’étiquette.": {
+    "en": "This colour is corrected in the filament record, not in the label.",
+    "es": "Este color se corrige en la ficha del filamento, no en la etiqueta.",
+    "zh_CN": "此颜色需在耗材资料中更正，而不是在标签中。"
+  },
+  "Contrôle final : {v0}": {
+    "en": "Final check: {v0}",
+    "es": "Control final: {v0}",
+    "zh_CN": "最终检查：{v0}"
+  },
+  "Accueil rapide": {
+    "en": "Quick welcome",
+    "es": "Bienvenida rápida",
+    "zh_CN": "快速入门"
+  },
+  "Accueil rapide…": {
+    "en": "Quick welcome…",
+    "es": "Bienvenida rápida…",
+    "zh_CN": "快速入门…"
+  },
+  "Bienvenue dans SpoolScribe": {
+    "en": "Welcome to SpoolScribe",
+    "es": "Bienvenido a SpoolScribe",
+    "zh_CN": "欢迎使用 SpoolScribe"
+  },
+  "Trois réglages rapides, tous facultatifs. Vous pourrez revenir ici depuis le menu ⚙ (Accueil rapide…).": {
+    "en": "Three quick settings, all optional. You can come back here from the ⚙ menu (Quick welcome…).",
+    "es": "Tres ajustes rápidos, todos opcionales. Puede volver aquí desde el menú ⚙ (Bienvenida rápida…).",
+    "zh_CN": "三项快速设置，均为可选。之后可从 ⚙ 菜单（快速入门…）回到这里。"
+  },
+  "Votre matériel": {
+    "en": "Your hardware",
+    "es": "Su equipo",
+    "zh_CN": "您的设备"
+  },
+  "Imprimante, lecteur NFC et configuration de lecture : vous choisissez, rien n’est supposé.": {
+    "en": "Printer, NFC reader and reading setup: you choose, nothing is assumed.",
+    "es": "Impresora, lector NFC y configuración de lectura: usted elige, nada se supone.",
+    "zh_CN": "打印机、NFC 读卡器和读取配置：由您选择，不做任何假设。"
+  },
+  "Choisir mon matériel…": {
+    "en": "Choose my hardware…",
+    "es": "Elegir mi equipo…",
+    "zh_CN": "选择我的设备…"
+  },
+  "Vos filaments": {
+    "en": "Your filaments",
+    "es": "Sus filamentos",
+    "zh_CN": "您的耗材"
+  },
+  "Masse et format de votre bobine habituelle, proposés quand une fiche ne les précise pas.": {
+    "en": "Mass and format of your usual spool, proposed when a record does not give them.",
+    "es": "Masa y formato de su bobina habitual, propuestos cuando una ficha no los indica.",
+    "zh_CN": "常用线盘的质量和包装，在资料未注明时作为建议。"
+  },
+  "Régler ma bobine habituelle…": {
+    "en": "Set my usual spool…",
+    "es": "Ajustar mi bobina habitual…",
+    "zh_CN": "设置常用线盘…"
+  },
+  "Choisissez les sources, puis actualisez quand vous le souhaitez.": {
+    "en": "Choose the sources, then refresh whenever you like.",
+    "es": "Elija las fuentes y actualice cuando quiera.",
+    "zh_CN": "选择来源，然后在需要时更新。"
+  },
+  "Passer pour le moment": {
+    "en": "Skip for now",
+    "es": "Omitir por ahora",
+    "zh_CN": "暂时跳过"
+  },
+  "Terminer": {
+    "en": "Done",
+    "es": "Terminar",
+    "zh_CN": "完成"
+  },
+  "Actuellement : {v0}": {
+    "en": "Currently: {v0}",
+    "es": "Actualmente: {v0}",
+    "zh_CN": "当前：{v0}"
+  },
+  "Actuellement : {v0} · {v1}": {
+    "en": "Currently: {v0} · {v1}",
+    "es": "Actualmente: {v0} · {v1}",
+    "zh_CN": "当前：{v0} · {v1}"
+  },
+  "non choisi": {
+    "en": "not chosen",
+    "es": "sin elegir",
+    "zh_CN": "未选择"
+  },
+  "Sources choisies : {v0}": {
+    "en": "Sources chosen: {v0}",
+    "es": "Fuentes elegidas: {v0}",
+    "zh_CN": "已选来源：{v0}"
+  },
+  "Rien n’est téléchargé sans votre accord.": {
+    "en": "Nothing is downloaded without your consent.",
+    "es": "No se descarga nada sin su consentimiento.",
+    "zh_CN": "未经您同意，不会下载任何内容。"
+  },
+  "Choix d’accueil non mémorisé : {v0}": {
+    "en": "Welcome choice not remembered: {v0}",
+    "es": "Elección de bienvenida no guardada: {v0}",
+    "zh_CN": "未保存入门选择：{v0}"
+  },
+  "Configuration illisible : choix d’accueil non mémorisé.": {
+    "en": "Unreadable configuration: welcome choice not remembered.",
+    "es": "Configuración ilegible: elección de bienvenida no guardada.",
+    "zh_CN": "配置无法读取：未保存入门选择。"
+  },
+  "État d’accueil inconnu": {
+    "en": "Unknown welcome state",
+    "es": "Estado de bienvenida desconocido",
+    "zh_CN": "未知的入门状态"
+  },
+  "Nom trop long pour l’étiquette. Utilisez une abréviation.": {
+    "en": "Name too long for the label. Use an abbreviation.",
+    "es": "Nombre demasiado largo para la etiqueta. Use una abreviatura.",
+    "zh_CN": "名称太长，标签放不下。请使用缩写。"
+  },
+  "Référence trop longue pour l’étiquette. Raccourcissez-la ou omettez-la.": {
+    "en": "Reference too long for the label. Shorten it or leave it out.",
+    "es": "Referencia demasiado larga para la etiqueta. Acórtela u omítala.",
+    "zh_CN": "型号太长，标签放不下。请缩短或省略。"
+  },
+  "Aucun point à vérifier": {
+    "en": "Nothing to check",
+    "es": "Nada por revisar",
+    "zh_CN": "无待检查项"
+  },
+  "Valeur proposée · bobine habituelle": {
+    "en": "Proposed value · usual spool",
+    "es": "Valor propuesto · bobina habitual",
+    "zh_CN": "建议值 · 常用线盘"
+  },
+  "Valeur proposée · 1 kg par défaut": {
+    "en": "Proposed value · 1 kg by default",
+    "es": "Valor propuesto · 1 kg por defecto",
+    "zh_CN": "建议值 · 默认 1 kg"
+  },
+  "Matière : {v0} · Variante : {v1}": {
+    "en": "Material: {v0} · Modifier: {v1}",
+    "es": "Material: {v0} · Variante: {v1}",
+    "zh_CN": "材料：{v0} · 变体：{v1}"
+  },
+  "Appliquer {v0} + {v1}": {
+    "en": "Apply {v0} + {v1}",
+    "es": "Aplicar {v0} + {v1}",
+    "zh_CN": "应用 {v0} + {v1}"
+  },
+  "{v0} → {v1}": {
+    "en": "{v0} → {v1}",
+    "es": "{v0} → {v1}",
+    "zh_CN": "{v0} → {v1}"
+  },
+  "Utiliser {v0}": {
+    "en": "Use {v0}",
+    "es": "Usar {v0}",
+    "zh_CN": "使用 {v0}"
+  },
+  "Masse du filament à préciser, hors bobine vide.": {
+    "en": "Enter the filament mass, without the empty spool.",
+    "es": "Indique la masa del filamento, sin la bobina vacía.",
+    "zh_CN": "请填写耗材质量（不含空线盘）。"
+  },
+  "Température de l’enceinte à préciser, ou sans chauffage.": {
+    "en": "Enter the chamber temperature, or no heating.",
+    "es": "Indique la temperatura de la cámara, o sin calefacción.",
+    "zh_CN": "请填写腔体温度，或选择不加热。"
+  },
+  "Limite de l’étiquette : {v0} octets UTF-8 ({v1} utilisés).": {
+    "en": "Label limit: {v0} UTF-8 bytes ({v1} used).",
+    "es": "Límite de la etiqueta: {v0} bytes UTF-8 ({v1} usados).",
+    "zh_CN": "标签上限：{v0} 个 UTF-8 字节（已用 {v1}）。"
+  },
+  "{v0} doit rester entre le minimum ({v1}) et le maximum ({v2}).": {
+    "en": "{v0} must stay between the minimum ({v1}) and the maximum ({v2}).",
+    "es": "{v0} debe quedar entre el mínimo ({v1}) y el máximo ({v2}).",
+    "zh_CN": "{v0} 必须介于最低值（{v1}）与最高值（{v2}）之间。"
+  },
+  "{v0} hors des valeurs représentables ({v1} à {v2}).": {
+    "en": "{v0} is outside the values the format can store ({v1} to {v2}).",
+    "es": "{v0} está fuera de los valores representables ({v1} a {v2}).",
+    "zh_CN": "{v0} 超出可表示范围（{v1} 至 {v2}）。"
+  },
+  "Valeur refusée par OpenTag3D.": {
+    "en": "Value refused by OpenTag3D.",
+    "es": "Valor rechazado por OpenTag3D.",
+    "zh_CN": "OpenTag3D 拒绝此值。"
+  },
+  "Renfort / variante (facultatif)": {
+    "en": "Reinforcement / modifier (optional)",
+    "es": "Refuerzo / variante (opcional)",
+    "zh_CN": "增强材料／变体（可选）"
+  },
+  "Données de la fiche": {
+    "en": "Record data",
+    "es": "Datos de la ficha",
+    "zh_CN": "耗材资料数据"
+  },
+  "Valeur requise par OpenTag3D.": {
+    "en": "Value required by OpenTag3D.",
+    "es": "Valor obligatorio en OpenTag3D.",
+    "zh_CN": "OpenTag3D 要求此值。"
+  },
+  "{v0} n’est pas un multiple de {v1}.": {
+    "en": "{v0} is not a multiple of {v1}.",
+    "es": "{v0} no es múltiplo de {v1}.",
+    "zh_CN": "{v0} 不是 {v1} 的倍数。"
+  },
+  "{v0} n’est pas un nombre.": {
+    "en": "{v0} is not a number.",
+    "es": "{v0} no es un número.",
+    "zh_CN": "{v0} 不是数字。"
+  },
+  "Nombre fini attendu.": {
+    "en": "A finite number is expected.",
+    "es": "Se espera un número finito.",
+    "zh_CN": "需要有限数值。"
+  },
+  "Valeur strictement positive requise.": {
+    "en": "A value above zero is required.",
+    "es": "Se requiere un valor mayor que cero.",
+    "zh_CN": "需要大于零的值。"
+  },
+  "Caractères de contrôle interdits.": {
+    "en": "Control characters are not allowed.",
+    "es": "No se permiten caracteres de control.",
+    "zh_CN": "不允许控制字符。"
+  },
+  "1 point à vérifier": {
+    "en": "1 item to check",
+    "es": "1 punto por revisar",
+    "zh_CN": "1 项待检查"
+  },
+  "{v0} points à vérifier": {
+    "en": "{v0} items to check",
+    "es": "{v0} puntos por revisar",
+    "zh_CN": "{v0} 项待检查"
+  },
+  "La fiche n’a pas pu être ouverte : {v0}": {
+    "en": "The record could not be opened: {v0}",
+    "es": "No se pudo abrir la ficha: {v0}",
+    "zh_CN": "无法打开耗材资料：{v0}"
+  },
+  "Vos saisies restent dans ce formulaire.": {
+    "en": "Your entries stay in this form.",
+    "es": "Sus datos permanecen en este formulario.",
+    "zh_CN": "您的输入保留在此表单中。"
+  },
+  "Vos saisies d’étiquette ont été reprises. Vérifiez-les, puis validez de nouveau les températures avant d’enregistrer.": {
+    "en": "Your label entries have been restored. Check them, then check the temperatures again before saving.",
+    "es": "Se han recuperado sus datos de la etiqueta. Revíselos y vuelva a validar las temperaturas antes de guardar.",
+    "zh_CN": "已恢复您的标签输入。请检查后再次确认温度，然后保存。"
+  },
+  "Corriger": {
+    "en": "Correct",
+    "es": "Corregir",
+    "zh_CN": "更正"
+  },
+  "Couleur {v0}": {
+    "en": "Colour {v0}",
+    "es": "Color {v0}",
+    "zh_CN": "颜色 {v0}"
+  },
+  "Densité (g/cm³)": {
+    "en": "Density (g/cm³)",
+    "es": "Densidad (g/cm³)",
+    "zh_CN": "密度（g/cm³）"
+  },
+  "Diamètre (mm)": {
+    "en": "Diameter (mm)",
+    "es": "Diámetro (mm)",
+    "zh_CN": "直径（mm）"
+  },
+  "Modifier la fiche…": {
+    "en": "Edit the record…",
+    "es": "Editar la ficha…",
+    "zh_CN": "编辑资料…"
+  },
+  "Ne pas inclure la référence dans l’étiquette": {
+    "en": "Leave the reference out of the label",
+    "es": "No incluir la referencia en la etiqueta",
+    "zh_CN": "标签中不包含型号"
+  },
+  "Plateau cible (°C)": {
+    "en": "Bed target (°C)",
+    "es": "Cama objetivo (°C)",
+    "zh_CN": "热床目标（°C）"
+  },
+  "Plateau maximum (°C)": {
+    "en": "Bed maximum (°C)",
+    "es": "Cama máxima (°C)",
+    "zh_CN": "热床最高（°C）"
+  },
+  "Plateau minimum (°C)": {
+    "en": "Bed minimum (°C)",
+    "es": "Cama mínima (°C)",
+    "zh_CN": "热床最低（°C）"
+  },
+  "Provenance : {v0}": {
+    "en": "Origin: {v0}",
+    "es": "Procedencia: {v0}",
+    "zh_CN": "来源：{v0}"
+  },
+  "Raccourcissez-la ou omettez-la ; le catalogue reste intact.": {
+    "en": "Shorten it or leave it out; the catalogue stays unchanged.",
+    "es": "Acórtela u omítala; el catálogo no se modifica.",
+    "zh_CN": "请缩短或省略；目录保持不变。"
+  },
+  "Valeur exportée : aucune référence": {
+    "en": "Exported value: no reference",
+    "es": "Valor exportado: sin referencia",
+    "zh_CN": "导出值：无型号"
+  },
+  "Valeur exportée : {v0}": {
+    "en": "Exported value: {v0}",
+    "es": "Valor exportado: {v0}",
+    "zh_CN": "导出值：{v0}"
+  },
+  "Valeurs voisines, à titre indicatif : {v0}.": {
+    "en": "Nearby values, for guidance only: {v0}.",
+    "es": "Valores cercanos, solo como referencia: {v0}.",
+    "zh_CN": "相邻值（仅供参考）：{v0}。"
+  },
+  "catalogue synchronisé": {
+    "en": "synchronised catalogue",
+    "es": "catálogo sincronizado",
+    "zh_CN": "已同步目录"
+  },
+  "copie personnelle": {
+    "en": "personal copy",
+    "es": "copia personal",
+    "zh_CN": "个人副本"
+  },
+  "profil Orca (adaptation d’export)": {
+    "en": "Orca profile (export adaptation)",
+    "es": "perfil Orca (adaptación de exportación)",
+    "zh_CN": "Orca 配置（导出调整）"
+  },
+  "réglage d’étiquette enregistré": {
+    "en": "saved label setting",
+    "es": "ajuste de etiqueta guardado",
+    "zh_CN": "已保存的标签设置"
+  },
+  "saisie dans ce formulaire": {
+    "en": "entered in this form",
+    "es": "introducido en este formulario",
+    "zh_CN": "在此表单中输入"
+  },
+  "suggestion non confirmée": {
+    "en": "unconfirmed suggestion",
+    "es": "sugerencia no confirmada",
+    "zh_CN": "未确认的建议"
+  },
+  "valeur d’origine : {v0}": {
+    "en": "original value: {v0}",
+    "es": "valor de origen: {v0}",
+    "zh_CN": "原始值：{v0}"
+  },
+  "vide": {
+    "en": "empty",
+    "es": "vacío",
+    "zh_CN": "空"
+  },
+  "{v0} : caractères de contrôle interdits.": {
+    "en": "{v0}: control characters are not allowed.",
+    "es": "{v0}: no se permiten caracteres de control.",
+    "zh_CN": "{v0}：不允许控制字符。"
+  },
+  "{v0} : couleur RGBA sur huit caractères hexadécimaux attendue.": {
+    "en": "{v0}: an RGBA colour of eight hexadecimal characters is expected.",
+    "es": "{v0}: se espera un color RGBA de ocho caracteres hexadecimales.",
+    "zh_CN": "{v0}：需要八位十六进制的 RGBA 颜色。"
+  },
+  "{v0} : nombre fini attendu.": {
+    "en": "{v0}: a finite number is expected.",
+    "es": "{v0}: se espera un número finito.",
+    "zh_CN": "{v0}：需要有限数值。"
+  },
+  "{v0} : valeur refusée par OpenTag3D.": {
+    "en": "{v0}: value refused by OpenTag3D.",
+    "es": "{v0}: valor rechazado por OpenTag3D.",
+    "zh_CN": "{v0}：OpenTag3D 拒绝此值。"
+  },
+  "{v0} : valeur requise par OpenTag3D.": {
+    "en": "{v0}: value required by OpenTag3D.",
+    "es": "{v0}: valor obligatorio en OpenTag3D.",
+    "zh_CN": "{v0}：OpenTag3D 要求此值。"
+  },
+  "{v0} : valeur strictement positive requise.": {
+    "en": "{v0}: a value above zero is required.",
+    "es": "{v0}: se requiere un valor mayor que cero.",
+    "zh_CN": "{v0}：需要大于零的值。"
+  },
+  "{v0} : {v1} doit rester entre le minimum ({v2}) et le maximum ({v3}).": {
+    "en": "{v0}: {v1} must stay between the minimum ({v2}) and the maximum ({v3}).",
+    "es": "{v0}: {v1} debe quedar entre el mínimo ({v2}) y el máximo ({v3}).",
+    "zh_CN": "{v0}：{v1} 必须介于最低值（{v2}）与最高值（{v3}）之间。"
+  },
+  "{v0} : {v1} hors des valeurs représentables ({v2} à {v3}).": {
+    "en": "{v0}: {v1} is outside the values the format can store ({v2} to {v3}).",
+    "es": "{v0}: {v1} está fuera de los valores representables ({v2} a {v3}).",
+    "zh_CN": "{v0}：{v1} 超出可表示范围（{v2} 至 {v3}）。"
+  },
+  "{v0} : {v1} n’est pas un multiple de {v2}.": {
+    "en": "{v0}: {v1} is not a multiple of {v2}.",
+    "es": "{v0}: {v1} no es múltiplo de {v2}.",
+    "zh_CN": "{v0}：{v1} 不是 {v2} 的倍数。"
+  },
+  "{v0} : {v1} n’est pas un nombre.": {
+    "en": "{v0}: {v1} is not a number.",
+    "es": "{v0}: {v1} no es un número.",
+    "zh_CN": "{v0}：{v1} 不是数字。"
+  },
+  "{v0} : {v1} occupe {v2} octets UTF-8 sur {v3} ({v4} de trop).": {
+    "en": "{v0}: {v1} takes {v2} UTF-8 bytes of {v3} ({v4} too many).",
+    "es": "{v0}: {v1} ocupa {v2} bytes UTF-8 de {v3} ({v4} de más).",
+    "zh_CN": "{v0}：{v1} 占用 {v2} 个 UTF-8 字节，上限 {v3}（超出 {v4}）。"
+  },
+  "Étiquette non enregistrée": {
+    "en": "Label not saved",
+    "es": "Etiqueta no guardada",
+    "zh_CN": "标签未保存"
   }
 }

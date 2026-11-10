@@ -7,11 +7,12 @@ from PySide6.QtWidgets import (QTableWidget, QListWidget, QListWidgetItem, QComp
     QHBoxLayout, QLabel, QPushButton, QToolButton, QCheckBox, QDialogButtonBox, QComboBox,
     QFileDialog, QMessageBox, QPlainTextEdit, QLineEdit, QWidget, QScrollArea, QFrame, QTableWidgetItem, QHeaderView, QSizePolicy, QStackedWidget, QGridLayout)
 from .ui_surfaces import fit_dialog
+from . import ui_opening
 from . import core
 from .i18n import tr
 from . import printer_profiles
 from .printer_profiles import PROFILES
-from .ui_widgets import WrapLabel, PrinterCard, FavoriteBrandList, PrinterPicker, ChoiceButtons, report_metrics, CONTROL_HEIGHT
+from .ui_widgets import WrapLabel, PrinterCard, FavoriteBrandList, PrinterPicker, ChoiceButtons, report_metrics, match_widths, CONTROL_HEIGHT, BUTTON_RADIUS
 
 
 def _may_clear(view):
@@ -24,6 +25,16 @@ def _may_navigate(view, event):
     """One decision for a keyboard move, taken before Qt changes the selection."""
     guard = getattr(view, 'before_navigate', None)
     return guard(view, event) if guard else True
+
+
+
+def _blend(base, colour, amount):
+    """Opaque mix of two #rrggbb colours (theme tokens), ``amount`` of ``colour``."""
+    try:
+        a=[int(base.lstrip('#')[i:i+2],16) for i in (0,2,4)];b=[int(colour.lstrip('#')[i:i+2],16) for i in (0,2,4)]
+    except ValueError:
+        return base
+    return '#'+''.join(f'{round(x+(y-x)*amount):02x}' for x,y in zip(a,b))
 
 
 class ClearableTable(QTableWidget):
@@ -905,6 +916,11 @@ class CatalogueUx:
 
     def _maybe_auto_update(self):
         if not self.isVisible() or core.db_restored_this_session() or getattr(self,'_draft',None):return
+        if getattr(self,'_new_profile',False):
+            # A brand-new profile gets the optional welcome instead of the sources window. Nothing is
+            # requested from the network in this session unless the user asks for it there.
+            self._new_profile=False
+            self._open_welcome();return
         if core.has_network_consent():
             if not self.db.get('_skus') or core.update_due():
                 self._start_update()
@@ -914,6 +930,80 @@ class CatalogueUx:
             self._choose_sources(startup=True)
         else:
             self.status.showMessage(tr('Synchronisation au démarrage désactivée par le refus réseau. Ouvrez « Sources » pour la réactiver.'),12000)
+
+    def _open_welcome(self,*_):
+        """« Accueil rapide »: three optional topics, each opening the existing window only on request.
+
+        Not modal and never chained: hardware, usual spool and catalogue sources open on their own
+        button. Closing, « Passer pour le moment » or « Terminer » only remembers, on this computer,
+        that the welcome was seen; no network, no refresh, no other setting is written here.
+        """
+        existing=getattr(self,'_welcome_dialog',None)
+        if existing is not None and existing.isVisible():
+            existing.raise_();existing.activateWindow();return existing
+        dlg=QDialog(self);dlg.setObjectName('welcomeDialog');dlg.setWindowTitle(tr('Accueil rapide'));dlg.setModal(False)
+        lay=QVBoxLayout(dlg);lay.setContentsMargins(18,18,18,14);lay.setSpacing(12)
+        title=QLabel(tr('Bienvenue dans SpoolScribe'));title.setObjectName('welcomeTitle');font=title.font();font.setPointSizeF(font.pointSizeF()+3);font.setBold(True);title.setFont(font)
+        # B18/A4: the app logo settles here, top left, after the opening (see ui_opening).
+        renderer=ui_opening.logo_renderer(core.app_logo_abs_path());logo=ui_opening.StaticLogo(renderer) if renderer else None
+        header=QHBoxLayout();header.setSpacing(10)
+        if logo is not None:header.addWidget(logo,0,Qt.AlignVCenter)
+        header.addWidget(title,1,Qt.AlignVCenter);lay.addLayout(header)
+        intro=WrapLabel(tr('Trois réglages rapides, tous facultatifs. Vous pourrez revenir ici depuis le menu ⚙ (Accueil rapide…).'));lay.addWidget(intro)
+        reveal=[title,intro]
+        states={};actions=[]
+        def topic(name,heading,text,action,callback):
+            frame=QFrame();frame.setObjectName('sourceCard');box=QVBoxLayout(frame);box.setContentsMargins(12,10,12,10);box.setSpacing(6)
+            head=QLabel(heading);head.setObjectName('sectionTitle');box.addWidget(head);box.addWidget(WrapLabel(text))
+            row=QHBoxLayout();row.setSpacing(8);current=WrapLabel();current.setObjectName('welcome_'+name+'_state');row.addWidget(current,1)
+            button=QPushButton(action);button.setObjectName('secondary');button.setProperty('welcome_topic',name);button.setFixedHeight(CONTROL_HEIGHT)
+            button.clicked.connect(callback);row.addWidget(button,0,Qt.AlignVCenter);box.addLayout(row);lay.addWidget(frame);states[name]=current;reveal.append(frame);actions.append(button)
+        def refresh(*_):
+            if not hasattr(self,'printer'):return
+            states['hardware'].setText(tr('Actuellement : {v0}',v0=self.printer.currentText() or tr('non choisi')))
+            cfg=core.load_config();grams=cfg.get('preferred_weight_g',1000)
+            weight=tr('Selon la fiche') if grams==0 else (f'{grams/1000:g} kg' if type(grams) is int and grams>=1000 else f'{grams} g').replace('.',',')
+            packaging={'any':tr('Indifférent'),'spool':tr('Avec bobine'),'refill':tr('Recharge')}.get(cfg.get('preferred_packaging'),tr('Indifférent'))
+            states['filaments'].setText(tr('Actuellement : {v0} · {v1}',v0=weight,v1=packaging))
+            states['catalogue'].setText(tr('Sources choisies : {v0}',v0=len(cfg.get('selected_sources') or [])) if core.has_network_consent()
+                                        else tr('Rien n’est téléchargé sans votre accord.'))
+        def filaments():
+            self._open_settings(filaments_tab=True);refresh()
+        def catalogue():
+            self._choose_sources();refresh()
+        topic('hardware',tr('Votre matériel'),tr('Imprimante, lecteur NFC et configuration de lecture : vous choisissez, rien n’est supposé.'),
+              tr('Choisir mon matériel…'),self._open_hardware)
+        topic('filaments',tr('Vos filaments'),tr('Masse et format de votre bobine habituelle, proposés quand une fiche ne les précise pas.'),
+              tr('Régler ma bobine habituelle…'),filaments)
+        topic('catalogue',tr('Votre catalogue'),tr('Choisissez les sources, puis actualisez quand vous le souhaitez.'),
+              tr('Sources du catalogue…'),catalogue)
+        if hasattr(self,'hardware_dialog'):self.hardware_dialog.finished.connect(refresh)
+        lay.addStretch(1)
+        skip=QPushButton(tr('Passer pour le moment'));skip.setObjectName('secondary');skip.setFixedHeight(CONTROL_HEIGHT)
+        done=QPushButton(tr('Terminer'));done.setObjectName('primary');done.setFixedHeight(CONTROL_HEIGHT);done.setDefault(True)
+        skip.clicked.connect(dlg.reject);done.clicked.connect(dlg.accept)
+        footer=QHBoxLayout();footer.addWidget(skip);footer.addStretch(1);footer.addWidget(done);lay.addLayout(footer);reveal+=[skip,done]
+        # B18/C21: the five actions share the width of the longest label in this language and font;
+        # the three topics stay right-aligned in their cards, the footer pair at both ends.
+        match_widths(actions+[skip,done])
+        def finished(result):
+            if hasattr(self,'hardware_dialog'):
+                try:self.hardware_dialog.finished.disconnect(refresh)
+                except (RuntimeError,TypeError):pass
+            self._welcome_dialog=None
+            try:core.record_welcome('done' if result==QDialog.Accepted else 'skipped')
+            except (OSError,ValueError) as exc:
+                # Never blocking and never asked again in this session: said once, soberly.
+                self.status.showMessage(tr('Choix d’accueil non mémorisé : {v0}',v0=tr(str(exc))),10000)
+        dlg.finished.connect(finished)
+        refresh();fit_dialog(dlg,preferred_width=560)
+        # Once per main window: reopening the welcome, or a theme change, shows the final state.
+        animate=not getattr(self,'_welcome_opening_played',False) and not ui_opening.reduced_motion()
+        opening=ui_opening.WelcomeOpening(dlg,logo,reveal,animate=animate)
+        if animate and logo is not None:self._welcome_opening_played=True
+        self._welcome_opening=opening
+        self._welcome_dialog=dlg;dlg.show();dlg.raise_();dlg.activateWindow();opening.start()
+        return dlg
 
     def _build_export_assistant(self, layout):
         """Page « Mon matériel » : imprimante/lecteur, firmware, étiquette."""
@@ -1688,75 +1778,347 @@ class CatalogueUx:
             return self._complete_opentag_settings()
         return True
 
-    def _complete_opentag_settings(self,*_):
+    @staticmethod
+    def _opentag_value_text(value):
+        if value is None or value=='':return tr('vide')
+        if isinstance(value,float) and value.is_integer():value=int(value)
+        return tr('« {v0} »',v0=value) if isinstance(value,str) else str(value)
+
+    def _opentag_problem_text(self,problem,label):
+        """One readable line per problem: field, current value, exact constraint; nothing chosen for the user."""
+        code=problem['code'];value=self._opentag_value_text(problem.get('value'))
+        number=lambda v:self._opentag_value_text(v) if v is not None else '—'
+        if code=='required':return tr('{v0} : valeur requise par OpenTag3D.',v0=label)
+        if code=='bytes':
+            text=tr('{v0} : {v1} occupe {v2} octets UTF-8 sur {v3} ({v4} de trop).',v0=label,v1=value,v2=problem['used'],v3=problem['limit'],v4=problem['used']-problem['limit'])
+            if problem['key']=='sku':text+=' '+tr('Raccourcissez-la ou omettez-la ; le catalogue reste intact.')
+            return text
+        if code=='step':
+            near=' '+tr('Valeurs voisines, à titre indicatif : {v0}.',v0=tr(' ou ').join(number(v) for v in problem['neighbours'])) if problem['neighbours'] else ''
+            return tr('{v0} : {v1} n’est pas un multiple de {v2}.',v0=label,v1=value,v2=number(problem['step']))+near
+        if code=='order':return tr('{v0} : {v1} doit rester entre le minimum ({v2}) et le maximum ({v3}).',v0=label,v1=value,v2=number(problem.get('minimum')),v3=number(problem.get('maximum')))
+        if code=='range':return tr('{v0} : {v1} hors des valeurs représentables ({v2} à {v3}).',v0=label,v1=value,v2=number(problem['minimum']),v3=number(problem['maximum']))
+        return {'number':tr('{v0} : {v1} n’est pas un nombre.',v0=label,v1=value),
+                'finite':tr('{v0} : nombre fini attendu.',v0=label),
+                'positive':tr('{v0} : valeur strictement positive requise.',v0=label),
+                'control':tr('{v0} : caractères de contrôle interdits.',v0=label),
+                'rgba':tr('{v0} : couleur RGBA sur huit caractères hexadécimaux attendue.',v0=label)}.get(code,tr('{v0} : valeur refusée par OpenTag3D.',v0=label))
+
+    def _opentag_hint_text(self,problem):
+        """Short, everyday local message shown right above the control; the field label stays beside it.
+
+        Byte counts stay out of the main reading (the field's tooltip gives the label limit).
+        """
+        code=problem['code'];key=problem['key'];value=self._opentag_value_text(problem.get('value'))
+        number=lambda v:self._opentag_value_text(v) if v is not None else '—'
+        if code=='required':
+            return {'weight':tr('Masse du filament à préciser, hors bobine vide.'),
+                    'chamber_temp':tr('Température de l’enceinte à préciser, ou sans chauffage.')}.get(key,tr('Valeur requise par OpenTag3D.'))
+        if code=='bytes':
+            if key=='sku':return tr('Référence trop longue pour l’étiquette. Raccourcissez-la ou omettez-la.')
+            return tr('Nom trop long pour l’étiquette. Utilisez une abréviation.')
+        if code=='step':
+            near=' '+tr('Valeurs voisines, à titre indicatif : {v0}.',v0=tr(' ou ').join(number(v) for v in problem['neighbours'])) if problem['neighbours'] else ''
+            return tr('{v0} n’est pas un multiple de {v1}.',v0=value,v1=number(problem['step']))+near
+        if code=='order':return tr('{v0} doit rester entre le minimum ({v1}) et le maximum ({v2}).',v0=value,v1=number(problem.get('minimum')),v2=number(problem.get('maximum')))
+        if code=='range':return tr('{v0} hors des valeurs représentables ({v1} à {v2}).',v0=value,v1=number(problem['minimum']),v2=number(problem['maximum']))
+        return {'number':tr('{v0} n’est pas un nombre.',v0=value),
+                'finite':tr('Nombre fini attendu.'),
+                'positive':tr('Valeur strictement positive requise.'),
+                'control':tr('Caractères de contrôle interdits.')}.get(code,tr('Valeur refusée par OpenTag3D.'))
+
+    def _complete_opentag_settings(self,*_,resume=None):
+        """Label form. ``resume`` carries the inputs typed before « Modifier la fiche… » (memory only):
+        they are put back over suggestions and saved settings, never confirmed for the user."""
         if not self.current_sku or self._variant_needs_choice():return False
         view=core.get_sku_view(self.db,self.current_sku)
         if view is None:return False
+        from . import opentag3d
+        entry=self.db['_skus'][self.current_sku];saved=core.opentag_settings(self.current_sku)
+        use_orca=core.load_config().get('orca_overrides') is True;trace={}
         try:
-            values=core.opentag_fields(self.db['_skus'][self.current_sku],view.product_data,
-                core.opentag_settings(self.current_sku),use_orca_overrides=core.load_config().get('orca_overrides') is True)
+            values=core.opentag_fields(entry,view.product_data,saved,use_orca_overrides=use_orca,trace=trace)
+            source=core.opentag_fields(entry,view.product_data,None,use_orca_overrides=use_orca)
         except ValueError as exc:
             QMessageBox.warning(self,tr('OpenTag3D'),str(exc));return False
         profile=None
         if self.printer.currentData()=='u1':
-            path=core.find_orca_profile(self.db['_skus'][self.current_sku].get('product',''))
+            path=core.find_orca_profile(entry.get('product',''))
             if path:
                 try: profile=core.db_io.parse_json(Path(path).read_bytes())
                 except (ValueError,OSError): pass
         suggestions=core.opentag_temperature_suggestions(values,profile)
+        labels={'manufacturer':tr('Fabricant (nom court)'),'material':tr('Matière (nom court)'),'material_mod':tr('Renfort / variante (facultatif)'),
+                'color_name':tr('Nom de couleur (facultatif)'),'sku':tr('Référence fabricant (facultatif)'),'weight':tr('Masse du filament (g)'),
+                'min_print_temp':tr('Buse minimum (°C)'),'print_temp':tr('Buse cible (°C)'),'max_print_temp':tr('Buse maximum (°C)'),
+                'min_bed_temp':tr('Plateau minimum (°C)'),'bed_temp':tr('Plateau cible (°C)'),'max_bed_temp':tr('Plateau maximum (°C)'),
+                'chamber_temp':tr('Enceinte (°C)'),'diameter':tr('Diamètre (mm)'),'density':tr('Densité (g/cm³)'),
+                **{f'color_{i}':tr('Couleur {v0}',v0=i) for i in range(1,5)}}
         dialog=QDialog(self);dialog.setWindowTitle(tr('Préparer l’étiquette OpenTag3D'));dialog.resize(720,700)
-        lay=QVBoxLayout(dialog);lay.setContentsMargins(16,16,16,16);lay.setSpacing(12)
+        outer=QVBoxLayout(dialog);outer.setContentsMargins(16,16,16,16);outer.setSpacing(12)
+        # The form scrolls on a low screen; its actions stay visible below it.
+        body=QWidget();lay=QVBoxLayout(body);lay.setContentsMargins(0,0,0,0);lay.setSpacing(12)
+        scroll=QScrollArea();scroll.setWidget(body);scroll.setWidgetResizable(True);scroll.setFrameShape(QFrame.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff);outer.addWidget(scroll,1)
         lay.addWidget(WrapLabel(tr('Vérifiez les températures proposées pour votre bobine et votre imprimante. Elles ne sont enregistrées qu’après votre confirmation ; le catalogue reste intact.')))
-        fields={};form=QGridLayout();form.setHorizontalSpacing(12);form.setVerticalSpacing(8);form.setColumnStretch(1,1)
-        for key,label in [('manufacturer',tr('Fabricant (nom court)')),('material',tr('Matière (nom court)')),
-                          ('material_mod',tr('Variante (facultatif)')),('color_name',tr('Nom de couleur (facultatif)')),
-                          ('sku',tr('Référence fabricant (facultatif)')),('weight',tr('Masse du filament (g)'))]:
-            edit=QLineEdit(str(values.get(key,'')));edit.setObjectName('opentag_'+key);edit.setFixedHeight(CONTROL_HEIGHT)
-            row=form.rowCount();form.addWidget(QLabel(label),row,0);form.addWidget(edit,row,1);fields[key]=edit
+        residual=WrapLabel();residual.setObjectName('opentag_residual');residual.hide();lay.addWidget(residual)
+        # Values of the filament record (no control in this form): a small group with their editor.
+        record_box=QFrame();record_box.setObjectName('sourceCard');record_lay=QVBoxLayout(record_box)
+        record_lay.setContentsMargins(12,10,12,10);record_lay.setSpacing(6)
+        record_title=QLabel(tr('Données de la fiche'));record_title.setObjectName('sectionTitle');record_lay.addWidget(record_title)
+        rows_widget=QWidget();rows_widget.setObjectName('opentagProblems');rows_lay=QVBoxLayout(rows_widget);rows_lay.setContentsMargins(0,0,0,0);rows_lay.setSpacing(6)
+        record_lay.addWidget(rows_widget)
+        # Why « Modifier la fiche… » could not open the record editor; the inputs stay here.
+        refused=WrapLabel();refused.setObjectName('opentag_refusal');refused.hide();record_lay.addWidget(refused)
+        lay.addWidget(record_box)
+        def refuse(reason):
+            refused.setText(reason+('' if reason.endswith(('。','！','？')) else ' ')+tr('Vos saisies restent dans ce formulaire.'));refused.show()
+            record_box.show()
+        def hint_label(key):
+            """Local message above a control; hidden while its field is fine."""
+            hint=WrapLabel();hint.setObjectName('opentagHint');hint.setProperty('opentag_key',key);hint.hide();hints[key]=hint;return hint
+        def solution_row(name,role):
+            """A ready fix, offered only: short context and a green button; nothing changes until it is pressed."""
+            row=QWidget();row.setObjectName(name);row_lay=QHBoxLayout(row);row_lay.setContentsMargins(0,0,0,0);row_lay.setSpacing(8)
+            text=WrapLabel();text.setObjectName(name+'_text');row_lay.addWidget(text,1)
+            button=QPushButton();button.setObjectName('opentagSolution');button.setProperty('opentag_role',role)
+            button.setFixedHeight(CONTROL_HEIGHT);row_lay.addWidget(button,0,Qt.AlignVCenter);row.hide()
+            return row,text,button
+        fields={};hints={};form=QGridLayout();form.setHorizontalSpacing(12);form.setVerticalSpacing(8);form.setColumnStretch(1,1)
+        omit=QCheckBox(tr('Ne pas inclure la référence dans l’étiquette'));omit.setObjectName('opentag_sku_omit')
+        omit.setAttribute(Qt.WA_LayoutUsesWidgetRect)   # macOS check box margins otherwise narrow the reference field
+        sku_preview=WrapLabel();sku_preview.setObjectName('opentag_sku_preview')
+        # Recognised composite (PET-GF) and certain abbreviation (Carbon Fiber): explicit, voluntary solutions.
+        split_row,split_text,split_apply=solution_row('opentag_material_split','split')
+        short_row,short_text,short_apply=solution_row('opentag_variant_short','abbreviate')
+        # A mass missing everywhere may be proposed from « Ma bobine habituelle » (filament only, no spool tare);
+        # never over a resumed, saved or known value, and never saved without the user's own Save.
+        proposed=None
+        if not resume and values.get('weight') in (None,''):
+            proposed=core.opentag_weight_proposal()
+        weight_note=WrapLabel();weight_note.setObjectName('opentag_weight_note');weight_note.setStyleSheet('font-size:10px; font-weight:400;');weight_note.hide()
+        omitted=saved.get('sku')=='' and bool(source.get('sku'))
+        for key,label in [(k,labels[k]) for k in ('manufacturer','material','material_mod','color_name','sku','weight')]:
+            text=source.get('sku') if key=='sku' and omitted else values.get(key,'')
+            if key=='weight' and proposed:text=proposed[0]
+            edit=QLineEdit('' if text is None else str(text));edit.setObjectName('opentag_'+key);edit.setFixedHeight(CONTROL_HEIGHT)
+            # Message (and a proposal) on their own rows above, so label and control stay aligned.
+            form.addWidget(hint_label(key),form.rowCount(),1)
+            if key=='material':form.addWidget(split_row,form.rowCount(),1)
+            if key=='material_mod':form.addWidget(short_row,form.rowCount(),1)
+            cell=QWidget();cell_lay=QVBoxLayout(cell);cell_lay.setContentsMargins(0,0,0,0);cell_lay.setSpacing(4)
+            cell_lay.addWidget(edit)
+            if key=='sku':cell_lay.addWidget(omit);cell_lay.addWidget(sku_preview)
+            if key=='weight':cell_lay.addWidget(weight_note)
+            row=form.rowCount();name=QLabel(label);name.setBuddy(edit);name.setMinimumHeight(CONTROL_HEIGHT)
+            form.addWidget(name,row,0,Qt.AlignTop);form.addWidget(cell,row,1);fields[key]=edit
+        omit.setChecked(omitted);fields['sku'].setEnabled(not omitted)
         lay.addLayout(form)
         lay.addWidget(WrapLabel(tr('Températures pour l’étiquette : multiples de 5 °C. Une enceinte non chauffée vaut 0 °C seulement si vous le confirmez.')))
         grid=QGridLayout();grid.setHorizontalSpacing(8);grid.setVerticalSpacing(8)
         for col,label in enumerate([tr('Température'),tr('Minimum'),tr('Cible'),tr('Maximum')]):grid.addWidget(QLabel(label),0,col)
-        for row,label,keys in [(1,tr('Buse (°C)'),('min_print_temp','print_temp','max_print_temp')),
-                               (2,tr('Plateau (°C)'),('min_bed_temp','bed_temp','max_bed_temp')),
-                               (3,tr('Enceinte (°C)'),(None,'chamber_temp',None))]:
+        # Each temperature row has its own message row above it, so the controls stay aligned. The chamber
+        # message uses the whole row; its field and « sans chauffage » sit side by side.
+        for row,label,keys in [(2,tr('Buse (°C)'),('min_print_temp','print_temp','max_print_temp')),
+                               (4,tr('Plateau (°C)'),('min_bed_temp','bed_temp','max_bed_temp')),
+                               (6,tr('Enceinte (°C)'),(None,'chamber_temp',None))]:
             row_label=QLabel(label);row_label.setFixedHeight(CONTROL_HEIGHT);grid.addWidget(row_label,row,0,Qt.AlignTop)
             for col,key in enumerate(keys,1):
                 if key:
-                    edit=QLineEdit(str(values.get(key,'')));edit.setObjectName('opentag_'+key)
-                    edit.setFixedHeight(CONTROL_HEIGHT);edit.setMinimumWidth(0);fields[key]=edit
+                    edit=QLineEdit('' if values.get(key) is None else str(values.get(key)));edit.setObjectName('opentag_'+key)
+                    edit.setFixedHeight(CONTROL_HEIGHT);edit.setMinimumWidth(0);edit.setAccessibleName(labels[key]);fields[key]=edit
+                    if key=='chamber_temp':grid.addWidget(hint_label(key),row-1,1,1,3,Qt.AlignBottom)
+                    else:grid.addWidget(hint_label(key),row-1,col,Qt.AlignBottom)
                     cell=QWidget();cell_lay=QVBoxLayout(cell);cell_lay.setContentsMargins(0,0,0,0);cell_lay.setSpacing(4);cell_lay.addWidget(edit)
                     if key in suggestions:
                         edit.setText(str(suggestions[key]['value']))
                         note=WrapLabel(tr('Suggestion · profil Orca U1') if suggestions[key]['source']=='orca' else tr('Estimation · milieu de plage'))
                         note.setObjectName('guidanceNote');note.setStyleSheet('font-size:10px; font-weight:400;');note.setToolTip(tr('Profil Orca U1 — à confirmer') if suggestions[key]['source']=='orca' else tr('Milieu de la plage — estimation à confirmer'));cell_lay.addWidget(note)
-                    if key=='chamber_temp':
-                        unheated=QPushButton(tr('Sans chauffage'));unheated.setObjectName('secondary');unheated.setFixedHeight(CONTROL_HEIGHT)
-                        unheated.clicked.connect(lambda:fields['chamber_temp'].setText('0'));cell_lay.addWidget(unheated)
                     grid.addWidget(cell,row,col,Qt.AlignTop)
+                    if key=='chamber_temp':
+                        # A deliberate click sets 0; an empty field never becomes 0 by itself.
+                        unheated=QPushButton(tr('sans chauffage'));unheated.setObjectName('secondary');unheated.setFixedHeight(CONTROL_HEIGHT)
+                        unheated.clicked.connect(lambda:fields['chamber_temp'].setText('0'));grid.addWidget(unheated,row,3,Qt.AlignTop)
                 grid.setColumnStretch(col,1)
         lay.addLayout(grid)
+        # Problem fields: a static, discreet border from the theme's danger colour; focus keeps the accent.
+        # Ready solutions: a green button with its text. Set on the scrolled body only: a dialog-wide
+        # sheet would reset the footer's standard button texts.
+        tok=getattr(self,'_tok',None) or {}
+        danger=tok.get('danger','#c5221f');accent=tok.get('accent','#127f8e')
+        green,green_text,green_hover=('#3fb950','#0b2e13','#56d364') if tok.get('dark') else ('#1f7a35','#ffffff','#1a6a2e')
+        body.setStyleSheet(f'QLineEdit[opentagProblem="true"], QLineEdit[opentagSplit="true"] {{ border:1px solid {danger}; background:{_blend(tok.get("field_bg","#ffffff"),danger,0.07)}; }}'
+                             f'QLineEdit[opentagProblem="true"]:focus, QLineEdit[opentagSplit="true"]:focus {{ border:2px solid {accent}; padding:5px 7px; }}'
+                             f'QLabel#opentagHint {{ color:{danger}; }}'
+                             f'QPushButton#opentagSolution {{ background:{green}; color:{green_text}; border:1px solid {green}; border-radius:{BUTTON_RADIUS}px; padding:0 12px; font-weight:600; min-height:{CONTROL_HEIGHT-2}px; max-height:{CONTROL_HEIGHT-2}px; }}'
+                             f'QPushButton#opentagSolution:hover {{ background:{green_hover}; border-color:{green_hover}; }}'
+                             f'QPushButton#opentagSolution:focus {{ border:2px solid {accent}; }}')
+        initial={key:edit.text() for key,edit in fields.items()}
+        if resume:
+            # Typed text as it was (empty or invalid included) and the omission choice; diameter,
+            # density and colour come from the record just reread, never from the blocked values.
+            for key,text in resume['fields'].items():
+                if key in fields:fields[key].setText(text)
+            omit.setChecked(resume['omit'])
+            resumed=WrapLabel(tr('Vos saisies d’étiquette ont été reprises. Vérifiez-les, puis validez de nouveau les températures avant d’enregistrer.'))
+            resumed.setObjectName('opentag_resumed');lay.insertWidget(1,resumed)
+            if resume.get('refusal'):refuse(resume['refusal'])
         confirmed=QToolButton();confirmed.setText(tr('Valider les températures'));confirmed.setCheckable(True);confirmed.setObjectName('opentag_confirmed');confirmed.setFixedHeight(CONTROL_HEIGHT);confirmed.setToolTip(tr('J’ai vérifié les températures pour cette bobine.'))
         buttons=QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
         save=buttons.button(QDialogButtonBox.Save);save.setText(tr('Enregistrer'));save.setEnabled(False)
-        confirmed.toggled.connect(save.setEnabled)
+        # A calm count next to Enregistrer: real problems only, never the list again.
+        summary=QLabel();summary.setObjectName('opentag_summary')
+        ready=QLabel(tr('Aucun point à vérifier'));ready.setObjectName('opentag_ready');ready.setStyleSheet(f'color:{tok.get("muted","#41454a")};')
+        numbers={'weight','print_temp','min_print_temp','max_print_temp','bed_temp','min_bed_temp','max_bed_temp','chamber_temp'}
+        state={'problems':[],'signature':None}
+
+        def collect():
+            """Form values as the label settings to save; unparsable numbers stay visible as typed."""
+            settings={}
+            for key,edit in fields.items():
+                text=edit.text().strip()
+                if key=='sku' and omit.isChecked():settings[key]=''
+                elif key in numbers:
+                    try:settings[key]=float(text.replace(',','.')) if text else None
+                    except ValueError:settings[key]=text
+                else:settings[key]=text
+            return settings
+
+        def origin(key):
+            if key in fields and fields[key].text()!=initial[key] or key=='sku' and omit.isChecked()!=omitted:return 'edited'
+            if key=='weight' and proposed:return 'proposal'
+            if key in suggestions:return 'suggestion'
+            return trace.get(key)
+
+        def origin_text(key,value):
+            where=origin(key)
+            if where is None and value in (None,''):return tr('Provenance : {v0}',v0=tr('non renseigné'))
+            text={'catalogue':tr('catalogue synchronisé'),'personal':tr('copie personnelle'),'orca':tr('profil Orca (adaptation d’export)'),
+                  'label':tr('réglage d’étiquette enregistré'),'suggestion':tr('suggestion non confirmée'),
+                  'proposal':proposal_text(),'edited':tr('saisie dans ce formulaire')}.get(where,tr('provenance inconnue'))
+            if where in ('label','edited','suggestion') and source.get(key) not in (None,'') and source.get(key)!=value:
+                text+=' · '+tr('valeur d’origine : {v0}',v0=self._opentag_value_text(source[key]))
+            return tr('Provenance : {v0}',v0=text)
+
+        def proposal_text():
+            if not proposed:return ''
+            return tr('Valeur proposée · bobine habituelle') if proposed[1]=='preference' else tr('Valeur proposée · 1 kg par défaut')
+
+        def correct(key):
+            # Physical values belong to the reference: open its editor (a personal copy only if saved there).
+            # The label inputs travel with that editor only, to be put back when it closes.
+            # No record editing during a refresh: the form stays open, as typed, with the reason.
+            target={'diameter':'diameter','density':'density','color_1':'hex'}[key]
+            reason=self._physical_edit_refusal()
+            if reason:
+                refuse(reason);scroll.ensureWidgetVisible(refused);return
+            resume={'sku':self.current_sku,'fields':{k:e.text() for k,e in fields.items()},'omit':omit.isChecked()}
+            dialog.reject();QTimer.singleShot(0,self,lambda:self._edit_physical_for_label(target,resume))
+
+        def apply_split():
+            split=core.opentag_material_split(fields['material'].text(),fields['material_mod'].text())
+            if split:
+                fields['material'].setText(split[0]);fields['material_mod'].setText(split[1])
+                fields['material'].setFocus(Qt.OtherFocusReason)
+        split_apply.clicked.connect(apply_split)
+
+        def apply_short():
+            short=core.opentag_variant_abbreviation(fields['material_mod'].text())
+            if short:
+                fields['material_mod'].setText(short);fields['material_mod'].setFocus(Qt.OtherFocusReason)
+        short_apply.clicked.connect(apply_short)
+
+        def validate(*_):
+            residual.hide()
+            settings=collect();current=dict(values);current.update(settings)
+            problems=core.opentag_problems(current);state['problems']=problems
+            dialog.setProperty('opentag_problem_keys',[p['key'] for p in problems])
+            first_problem={}
+            for problem in problems:first_problem.setdefault(problem['key'],problem)
+            split=core.opentag_material_split(fields['material'].text(),fields['material_mod'].text())
+            split_row.setVisible(bool(split))
+            if split:
+                # Each part named once with its field, from the generic helper's result.
+                split_text.setText(tr('Matière : {v0} · Variante : {v1}',v0=split[0],v1=split[1]))
+                split_apply.setText(tr('Appliquer {v0} + {v1}',v0=split[0],v1=split[1]))
+            mod=fields['material_mod'].text().strip()
+            short=core.opentag_variant_abbreviation(mod) if first_problem.get('material_mod',{}).get('code')=='bytes' else None
+            short_row.setVisible(bool(short))
+            if short:
+                short_text.setText(tr('{v0} → {v1}',v0=mod,v1=short));short_apply.setText(tr('Utiliser {v0}',v0=short))
+            weight_note.setText(proposal_text());weight_note.setVisible(bool(proposed) and origin('weight')=='proposal')
+            for key,edit in fields.items():
+                problem=first_problem.get(key)
+                # A proposed split marks both destinations. Not a protocol error: an empty variant stays
+                # valid, nothing is counted or blocked, and a real error keeps its own message.
+                joined=bool(split) and key in ('material','material_mod')
+                text=self._opentag_hint_text(problem) if problem and not (joined and key=='material') else ''
+                hint=hints[key]
+                if hint.text()!=text:hint.setText(text)
+                hint.setVisible(bool(text))
+                if edit.property('opentagProblem')!=bool(problem) or edit.property('opentagSplit')!=joined:
+                    edit.setProperty('opentagProblem',bool(problem));edit.setProperty('opentagSplit',joined)
+                    edit.style().unpolish(edit);edit.style().polish(edit)
+                # Provenance and, for text, the label's byte limit: on demand, not in the main reading.
+                tip=origin_text(key,current.get(key))
+                if opentag3d.FIELDS[key][2]=='text':
+                    tip+='\n'+tr('Limite de l’étiquette : {v0} octets UTF-8 ({v1} utilisés).',v0=opentag3d.FIELDS[key][1],v1=len(edit.text().strip().encode('utf-8')))
+                if edit.toolTip()!=tip:edit.setToolTip(tip)
+                edit.setAccessibleDescription(text or (split_text.text() if joined else ''))
+            exported=settings['sku']
+            sku_preview.setText(tr('Valeur exportée : aucune référence') if not exported else tr('Valeur exportée : {v0}',v0=self._opentag_value_text(exported)))
+            fields['sku'].setEnabled(not omit.isChecked())
+            record=[p for p in problems if p['key'] not in fields]
+            signature=[(p['key'],p['code'],repr(p.get('value'))) for p in record]
+            if signature!=state['signature']:
+                state['signature']=signature
+                while rows_lay.count():
+                    old=rows_lay.takeAt(0).widget()
+                    if old:old.setParent(None);old.deleteLater()
+                for problem in record:
+                    key=problem['key'];row=QWidget();row.setObjectName('opentagProblem');row.setProperty('opentag_key',key)
+                    row_lay=QHBoxLayout(row);row_lay.setContentsMargins(0,0,0,0);row_lay.setSpacing(8)
+                    text=WrapLabel(self._opentag_problem_text(problem,labels.get(key,key)));text.setToolTip(origin_text(key,problem.get('value')))
+                    row_lay.addWidget(text,1)
+                    if key in ('diameter','density','color_1'):
+                        fix=QPushButton(tr('Modifier la fiche…'));fix.setObjectName('secondary')
+                        fix.setFixedHeight(CONTROL_HEIGHT);fix.setProperty('opentag_key',key);fix.clicked.connect(lambda _=False,k=key:correct(k))
+                        row_lay.addWidget(fix,0,Qt.AlignTop)
+                    else:text.setText(text.text()+'\n'+tr('Cette couleur se corrige dans la fiche du filament, pas dans l’étiquette.'))
+                    rows_lay.addWidget(row)
+            record_box.setVisible(bool(record) or not refused.isHidden())
+            summary.setText(tr('1 point à vérifier') if len(problems)==1 else tr('{v0} points à vérifier',v0=len(problems)))
+            summary.setVisible(bool(problems));ready.setVisible(not problems)
+            save.setEnabled(confirmed.isChecked() and not problems)
+
+        def changed(*_):
+            confirmed.setChecked(False);validate()
         confirmed.toggled.connect(lambda checked:confirmed.setText(tr('Températures vérifiées') if checked else tr('Valider les températures')))
-        for field in fields.values():field.textChanged.connect(lambda *_:confirmed.setChecked(False))
+        confirmed.toggled.connect(validate)
+        for field in fields.values():field.textChanged.connect(changed)
+        omit.toggled.connect(changed)
         cancel=buttons.button(QDialogButtonBox.Cancel);cancel.setText(tr('Annuler'))
         for button in [save,cancel]:button.setFixedHeight(CONTROL_HEIGHT)
         def accept():
-            if not confirmed.isChecked():return
+            validate()
+            if not confirmed.isChecked() or state['problems']:return
+            settings=collect()
             try:
-                numbers={'weight','print_temp','min_print_temp','max_print_temp','bed_temp','min_bed_temp','max_bed_temp','chamber_temp'}
-                settings={key:(float(edit.text().strip().replace(',','.')) if edit.text().strip() else None) if key in numbers else edit.text().strip() for key,edit in fields.items()}
                 self._prepare_opentag(settings)
                 core.save_opentag_settings(self.current_sku,settings)
-            except (ValueError,OSError) as exc:
-                QMessageBox.warning(dialog,tr('Étiquette incomplète'),str(exc));return
+            except OSError as exc:
+                QMessageBox.warning(dialog,tr('Étiquette non enregistrée'),str(exc));return
+            except ValueError as exc:
+                # The encoder stays the final guard: shown here, nothing saved or exported.
+                residual.setText(tr('Contrôle final : {v0}',v0=tr(str(exc))));residual.show();save.setEnabled(False);return
             dialog.accept()
         save.clicked.connect(accept);cancel.clicked.connect(dialog.reject)
         buttons.removeButton(cancel)
-        footer=QHBoxLayout();footer.setSpacing(8);footer.addWidget(cancel);footer.addStretch(1);footer.addWidget(confirmed);footer.addWidget(buttons);lay.addLayout(footer)
+        footer=QHBoxLayout();footer.setSpacing(8);footer.addWidget(cancel);footer.addStretch(1);footer.addWidget(summary);footer.addWidget(ready)
+        footer.addWidget(confirmed);footer.addWidget(buttons);outer.addLayout(footer)
+        # B18/C21: Annuler, the temperature confirmation (both of its texts) and Enregistrer share one width.
+        match_widths([cancel,confirmed,save],{confirmed:(tr('Valider les températures'),tr('Températures vérifiées'))})
+        validate()
         fit_dialog(dialog,preferred_width=700)
         result=dialog.exec()==QDialog.Accepted
         if result:self._refresh_nfc_capacity()

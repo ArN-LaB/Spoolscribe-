@@ -36,7 +36,7 @@ DatabaseError = db_io.DatabaseError
 # APP_VERSION est la référence de version. spoolscribe.spec la lit ici ;
 # la CI vérifie que la version déclarée dans pyproject.toml reste alignée.
 APP_NAME = "SpoolScribe"
-APP_VERSION = "0.8.2"
+APP_VERSION = "0.8.3"
 APP_AUTHOR = "ArN-LaB"
 APP_URL = "https://github.com/ArN-LaB/Spoolscribe-"
 
@@ -224,7 +224,7 @@ def update_interval_state(cfg: Optional[dict] = None) -> tuple:
 # Machine-local state: never exported, never imported (authorisation, revision,
 # refresh dates/statuses). Old files carrying them stay readable.
 MACHINE_STATE_KEYS = ("network_consent", "network_sources_revision", "last_update",
-                      "last_update_attempt", "last_update_status")
+                      "last_update_attempt", "last_update_status", "welcome")
 # Explicit allow-list: a future key (secret, token…) is never serialised blindly.
 PORTABLE_SETTINGS_KEYS = (
     "language", "update_interval_days", "auto_update", "selected_sources",
@@ -1749,17 +1749,29 @@ class OpenTagExport:
     size: dict
 
 
-def opentag_fields(entry, product_data, settings=None, *, use_orca_overrides=False):
+# Product key -> OpenTag3D field, to attribute a value to the layer it came from.
+_OPENTAG_PRODUCT_FIELDS = {'type':'material','brand':'manufacturer','subtype':'material_mod','diameter':'diameter',
+                           'density':'density','min_temp':'min_print_temp','max_temp':'max_print_temp',
+                           'bed_min_temp':'min_bed_temp','bed_max_temp':'max_bed_temp'}
+
+
+def opentag_fields(entry, product_data, settings=None, *, use_orca_overrides=False, trace=None):
+    """OpenTag3D fields of a reference; ``trace`` (a dict), when given, receives each field's origin.
+
+    Origins: ``catalogue`` or ``personal`` (the reference itself, a personal copy when the
+    entry is one), ``orca`` (the Orca profile completed or replaced the value) and
+    ``label`` (a saved label setting for this reference). Values are not changed by tracing.
+    """
     from . import opentag3d
     if not isinstance(entry,dict) or not isinstance(product_data,dict):raise ExportValidationError('Référence ou produit absent.')
     hx=validate_hex(entry.get('hex'))
     if not hx or db_io.implausible_color(entry):raise MissingColorError('Couleur représentative à confirmer avant l’export.')
     suspect=db_io.implausible_physical(product_data)
     if suspect:raise ExportValidationError('Caractéristiques à vérifier : '+' ; '.join(suspect))
-    src=dict(product_data)
+    src=dict(product_data);applied=set()
     orca_path=find_orca_profile(entry.get('product',''))
     if orca_path:
-        try:_apply_orca(src,orca_path,use_orca_overrides)
+        try:_,applied=_apply_orca(src,orca_path,use_orca_overrides)
         except (ValueError,TypeError,OSError) as exc:raise ExportValidationError('Profil Orca inutilisable : '+str(exc)) from exc
     fields=dict(material=src.get('type'),manufacturer=src.get('brand'),
                 diameter=src.get('diameter'),density=src.get('density'))
@@ -1782,11 +1794,161 @@ def opentag_fields(entry, product_data, settings=None, *, use_orca_overrides=Fal
     for dest,value in [('material_mod',src.get('subtype')),('color_name',entry.get('color_name')),
                        ('weight',entry.get('weight')),('sku',entry.get('manufacturer_sku'))]:
         if value is not None:fields[dest]=value
+    if trace is not None:
+        own='personal' if entry.get('_personal') else 'catalogue'
+        trace.update({key:own for key in fields})
+        trace.update({_OPENTAG_PRODUCT_FIELDS[key]:'orca' for key in applied if _OPENTAG_PRODUCT_FIELDS.get(key) in fields})
     if settings is not None:
         if not isinstance(settings,dict) or set(settings)-set(opentag3d.EDITABLE):
             raise ExportValidationError('Réglages OpenTag3D invalides.')
         fields.update(settings)
+        if trace is not None:trace.update({key:'label' for key in settings})
     return fields
+
+
+# Reinforcements written as a suffix of the material name (PET-GF, PETG-CF): a bounded list,
+# never a rule cutting at the first dash, since bases and blends may contain one (PC-ABS).
+_OPENTAG_REINFORCEMENTS = ('CF', 'GF')
+
+
+def opentag_material_split(material, material_mod=''):
+    """Base and reinforcement proposed for a recognised composite name, or None.
+
+    ``PET-GF`` → ``('PET', 'GF')``; ``PETG-CF`` → ``('PETG', 'CF')``. Proposed only when the
+    variant is empty, the base is a plain ASCII name and both parts fit their OpenTag3D fields;
+    otherwise nothing is guessed. A proposal only: applying it is the user's choice.
+    """
+    from . import opentag3d
+    if not isinstance(material,str) or not isinstance(material_mod or '',str) or (material_mod or '').strip():
+        return None
+    match=re.fullmatch(r'([A-Za-z0-9]+)-('+'|'.join(_OPENTAG_REINFORCEMENTS)+r')',material.strip(),re.ASCII)
+    if not match:
+        return None
+    base,mod=match.groups()
+    if len(base.encode('utf-8'))>opentag3d.FIELDS['material'][1] or len(mod.encode('utf-8'))>opentag3d.FIELDS['material_mod'][1]:
+        return None
+    return base,mod
+
+
+# Exact reinforcement names whose label abbreviation is certain; anything else is never guessed.
+_OPENTAG_VARIANT_ABBREVIATIONS = {'carbon fiber': 'CF', 'carbon fibre': 'CF', 'glass fiber': 'GF', 'glass fibre': 'GF'}
+
+
+def opentag_variant_abbreviation(value):
+    """``'Carbon Fiber'`` → ``'CF'``: a proposal for the label's variant, or None.
+
+    Only these exact names (case and surrounding spaces ignored); blends, other
+    words or already short values are left to the user. Nothing is applied here.
+    """
+    if not isinstance(value, str):
+        return None
+    return _OPENTAG_VARIANT_ABBREVIATIONS.get(' '.join(value.split()).lower())
+
+
+def opentag_weight_proposal(cfg_path=None):
+    """Filament mass to propose when a label has none: ``(grams, origin)`` or None.
+
+    ``origin`` is ``'preference'`` for « Ma bobine habituelle » or ``'default'`` for
+    the 1 kg default (key absent, unreadable or invalid file: never presented as the
+    user's choice). An explicit 0 (« Selon la fiche ») proposes nothing. Read only.
+    Filament mass only: no spool tare is added.
+    """
+    path = Path(cfg_path or CONFIG_PATH)
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    except (OSError, ValueError):
+        raw = None
+    if not isinstance(raw, dict) or "preferred_weight_g" not in raw:
+        return DEFAULT_CONFIG["preferred_weight_g"], "default"
+    value = raw["preferred_weight_g"]
+    if type(value) is not int or not 0 <= value <= 20000:
+        return DEFAULT_CONFIG["preferred_weight_g"], "default"
+    return (value, "preference") if value else None
+
+
+def is_new_profile(cfg_path=None, data_home=None) -> bool:
+    """True only before anything exists: no configuration file and an empty data folder.
+
+    To be called before the start-up writes. A configuration present but unreadable
+    or inaccessible, or any existing user data, means an existing profile.
+    """
+    cfg_path = cfg_path or CONFIG_PATH
+    home = Path(data_home or DATA_HOME)
+    if os.path.lexists(cfg_path):
+        return False
+    try:
+        return not home.exists() or not any(p.name != ".DS_Store" for p in home.iterdir())
+    except OSError:
+        return False
+
+
+def record_welcome(state: str) -> None:
+    """Remember on this computer that the quick welcome was finished or skipped.
+
+    Machine-local (never exported or imported). Never written over an unreadable
+    configuration: that raises OSError and the file stays as it is.
+    """
+    if state not in ("done", "skipped"):
+        raise ValueError("État d’accueil inconnu")
+    if os.path.lexists(CONFIG_PATH):
+        try:
+            raw = json.loads(Path(CONFIG_PATH).read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise OSError("Configuration illisible : choix d’accueil non mémorisé.") from exc
+        if not isinstance(raw, dict):
+            raise OSError("Configuration illisible : choix d’accueil non mémorisé.")
+    cfg = load_config()
+    cfg["welcome"] = state
+    save_config(cfg)
+
+
+def opentag_problems(fields):
+    """Every reason the OpenTag3D encoder would refuse ``fields``, all at once and in its order.
+
+    Pure mirror of ``opentag3d.encode``: an empty list means the encoder accepts the fields.
+    Each problem is a dict with ``key``, ``code`` and the values needed to explain it;
+    nothing is rounded, shortened or chosen here.
+    """
+    from . import opentag3d
+    from decimal import Decimal, InvalidOperation
+    problems=[]
+    if not isinstance(fields,dict):return [dict(key=None,code='object')]
+    for name in sorted(set(fields)-set(opentag3d.FIELDS)):problems.append(dict(key=name,code='unknown',value=fields[name]))
+    for name in opentag3d.REQUIRED:
+        if fields.get(name) is None or fields.get(name)=='':problems.append(dict(key=name,code='required',value=fields.get(name)))
+    numbers={}
+    for name,(offset,length,kind) in opentag3d.FIELDS.items():
+        value=fields.get(name)
+        if value is None or value=='':continue
+        if kind=='text':
+            if not isinstance(value,str):problems.append(dict(key=name,code='text',value=value))
+            elif any(ord(c)<32 or ord(c)==127 for c in value):problems.append(dict(key=name,code='control',value=value))
+            elif len(value.encode('utf-8'))>length:
+                problems.append(dict(key=name,code='bytes',value=value,used=len(value.encode('utf-8')),limit=length))
+        elif kind=='rgba':
+            if not isinstance(value,str) or not re.fullmatch('[0-9A-Fa-f]{8}',value):problems.append(dict(key=name,code='rgba',value=value))
+        else:
+            if type(value) not in (int,float,Decimal):problems.append(dict(key=name,code='number',value=value));continue
+            try:number=Decimal(str(value))
+            except InvalidOperation:problems.append(dict(key=name,code='number',value=value));continue
+            if not number.is_finite():problems.append(dict(key=name,code='finite',value=value));continue
+            step=Decimal(kind);units=number/step;highest=(256**length-1)*step
+            if units!=units.to_integral_value():
+                lower=(units//1)*step;upper=lower+step
+                problems.append(dict(key=name,code='step',value=value,step=float(step),
+                                     neighbours=[float(v) for v in (lower,upper) if 0<=v<=highest]))
+                continue
+            if not 0<=units<256**length:problems.append(dict(key=name,code='range',value=value,minimum=0.0,maximum=float(highest)));continue
+            if name in ('diameter','density','weight','print_temp') and number<=0:
+                problems.append(dict(key=name,code='positive',value=value));continue
+            numbers[name]=number
+    for target,lo,hi in [('print_temp','min_print_temp','max_print_temp'),('bed_temp','min_bed_temp','max_bed_temp')]:
+        t=numbers.get(target)
+        if t is None:continue
+        low=numbers.get(lo);high=numbers.get(hi)
+        if (low is not None and t<low) or (high is not None and t>high):
+            problems.append(dict(key=target,code='order',value=fields[target],minimum=fields.get(lo),maximum=fields.get(hi)))
+    return problems
 
 
 def prepare_opentag3d(sku,entry,product_data,*,settings=None,tag_type='NTAG216',reserved_bytes=0,

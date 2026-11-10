@@ -193,8 +193,8 @@ class RelaunchCommandTests(unittest.TestCase):
                     core.save_config(dict(core.DEFAULT_CONFIG,language='fr',network_consent=False,favorite_brands=['Alpha']))
                 original=app_gui.MainWindow
                 class Window(original):
-                    def __init__(self):
-                        super().__init__()
+                    def __init__(self,*args,**kwargs):   # main() passes the start-up profile state
+                        super().__init__(*args,**kwargs)
                         QTimer.singleShot(40,self.drive)
                         QTimer.singleShot(10000,lambda:self.app.exit(2))
                     def _maybe_auto_update(self):

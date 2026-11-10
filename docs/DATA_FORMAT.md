@@ -244,6 +244,14 @@ saving an imported file. They never modify catalogue records. An unavailable
 weight keeps the actual reference and is indicated in the GUI; unknown refill
 metadata is not synthesized. Explicit choices are remembered per group during
 the session, and are invalidated if the group's source HEX set changes.
+The OpenTag3D label form may propose `preferred_weight_g` as the filament mass
+when a label has none (1000 if the key is absent or invalid, labelled as a
+default; nothing for 0). It is saved only in that label's settings, on Save.
+
+`welcome` records on this computer that the quick welcome was finished (`done`)
+or skipped (`skipped`). It is machine state: never exported or imported, never
+written over an unreadable configuration. The welcome is offered automatically
+only to a brand-new profile (no configuration file and an empty data folder).
 
 The UI persists both favorite filters and the manufacturer-search text. Spool
 artwork is computed from the selected HEX and is display-only. For ambiguous
@@ -260,7 +268,7 @@ A personal copy adds its own `USER-<uuid>` SKU and private product key, leaving 
 
 Source reconciliation excludes personal SKUs from identity/article/family matching. Copied fields carry high-priority `Copie personnelle` provenance; explicit physical edits use `Utilisateur`. An explicit HEX edit of a copy is stored on the copy's own SKU with `Utilisateur` provenance; only edited fields become `Utilisateur`, never the whole copied record. Copying a colour does not silently confirm an implausible source HEX. Existing explicit corrections and null values remain protected. Standard reference exports are unchanged. The display name is used in personal export filenames and full payloads; the suffix is an application label, not a new printer material type or NFC standard.
 
-## OpenTag3D 2.004 (current stable version: v0.8.2)
+## OpenTag3D 2.004 (current stable version: v0.8.3)
 
 This independent binary format does not change the historical OpenSpool JSON
 contract. It uses MIME `application/opentag3d`, not `application/json`, with NFC

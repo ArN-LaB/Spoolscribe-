@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/images/spoolscribe-animated.gif" alt="SpoolScribe animated logo" width="72" height="72"></p>
 
-<h1 align="center">SpoolScribe <sub>v0.8.2</sub></h1>
+<h1 align="center">SpoolScribe <sub>v0.8.3</sub></h1>
 <p align="center"><strong>Find your filament. Prepare its NFC label.</strong></p>
 <p align="center">Windows · macOS · Linux<br>English · Français · Español · 简体中文</p>
 <p align="center"><a href="#download">Download</a> · <a href="https://github.com/ArN-LaB/Spoolscribe-/wiki/Getting-Started">Get started</a> · <a href="https://github.com/ArN-LaB/Spoolscribe-/wiki">Help centre</a> · <a href="docs/COMPANION.md">Companion</a></p>
@@ -12,40 +12,40 @@ No account. Your catalogue stays local after its first download.
 <p align="center">
   <a href="docs/images/catalogue.png"><img src="docs/images/catalogue.png" alt="Find and select a filament" width="980"></a>
 </p>
-<p align="center"><strong>Find and select a filament</strong><br><sub>Actual v0.8.2 interface · public demonstration data.</sub></p>
+<p align="center"><strong>Find and select a filament</strong><br><sub>Actual v0.8.3 interface · public demonstration data.</sub></p>
 
 ## Download
 
-**v0.8.2 is the current stable Desktop release.** Software stability and hardware
+**v0.8.3 is the current stable Desktop release.** Software stability and hardware
 compatibility are separate: printer/reader setups are documented individually and
-are not all physically tested. [Validation](docs/validation/v0.8.2.md) · [Compatibility](docs/COMPATIBILITY.md).
+are not all physically tested. [Validation](docs/validation/v0.8.3.md) · [Compatibility](docs/COMPATIBILITY.md).
 
 <div align="center">
 <table>
 <thead><tr><th align="left">System</th><th align="left">Build</th><th align="left">Download</th><th align="left">Verify</th></tr></thead>
 <tbody>
-<tr><td>Windows</td><td>x86_64</td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.2/SpoolScribe-windows.zip">ZIP</a></td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.2/SpoolScribe-windows.zip.sha256">SHA-256</a></td></tr>
-<tr><td>macOS</td><td>Apple Silicon · arm64</td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.2/SpoolScribe-macos.zip">ZIP</a></td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.2/SpoolScribe-macos.zip.sha256">SHA-256</a></td></tr>
-<tr><td>Linux</td><td>x86_64</td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.2/SpoolScribe-linux.zip">ZIP</a></td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.2/SpoolScribe-linux.zip.sha256">SHA-256</a></td></tr>
+<tr><td>Windows</td><td>x86_64</td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.3/SpoolScribe-windows.zip">ZIP</a></td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.3/SpoolScribe-windows.zip.sha256">SHA-256</a></td></tr>
+<tr><td>macOS</td><td>Apple Silicon · arm64</td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.3/SpoolScribe-macos.zip">ZIP</a></td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.3/SpoolScribe-macos.zip.sha256">SHA-256</a></td></tr>
+<tr><td>Linux</td><td>x86_64</td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.3/SpoolScribe-linux.zip">ZIP</a></td><td><a href="https://github.com/ArN-LaB/Spoolscribe-/releases/download/v0.8.3/SpoolScribe-linux.zip.sha256">SHA-256</a></td></tr>
 </tbody>
 </table>
 </div>
 
 Unzip and open the application. No Python installation is needed.
-The v0.8.2 macOS Apple Silicon archive is signed with Developer ID and notarised
+The v0.8.3 macOS Apple Silicon archive is signed with Developer ID and notarised
 by Apple and requires macOS 15.0 or later. Keep Gatekeeper enabled. Windows is not commercially signed. Linux
 needs a recent glibc and Qt system libraries. Intel/universal2 is not provided.
 [First-launch instructions](https://github.com/ArN-LaB/Spoolscribe-/wiki/Getting-Started) · [Build from source](docs/DEVELOPMENT.md).
 
-## New in v0.8.2
+## New in v0.8.3
 
-**A calmer workspace.** Hardware changes update the tag card immediately. One menu leads to My hardware, Settings and About; catalogue refresh and its progress stay beside the catalogue, apart from local search.
+**Clearer label preparation.** OpenTag3D checks appear beside the field to review. Suggested material splits such as PET-GF → PET + GF and short reinforcement names are applied only when you choose them. Draft values survive a detour to edit or save a personal copy.
 
-**Comfortable at smaller sizes.** Panels and action rows adapt to narrow windows and stop recalculating when idle. Dialogues separate their question from the explanation, keep the safe choice on Escape, and leave room around the status text.
+**A useful first launch.** Optional quick setup lets you choose hardware, your usual spool and catalogue sources. The spool action opens the right settings tab. Your usual mass is proposed when the selected record has none; chamber heating is always your choice.
 
-**Clear exports.** Preference JSON and backup ZIP actions visibly state **Not encrypted** and explain what they include. The preference-dialog lifecycle crash reproduced during this work is fixed; the separate historical macOS crash remains unqualified. AES-256-GCM and mobile Companion downloads remain future work.
+**A more balanced interface.** A brief logo opening respects reduced-motion preferences. Action buttons use consistent proportions and widths within each free layout, while columns keep control of their own geometry.
 
-[Settings](docs/wiki/Settings.md) · [Backup & restore](docs/wiki/Backup-and-Restore.md) · [Release notes](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.2).
+[Settings](docs/wiki/Settings.md) · [Backup & restore](docs/wiki/Backup-and-Restore.md) · [Release notes](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.3).
 
 ## Find the right reference
 
@@ -124,13 +124,13 @@ explains the distinction and the future app-link path.
 | Select labels or paper | [Product codes and manufacturer templates](docs/PRINTING_GUIDE.md) |
 | Understand stored data | [Desktop privacy](docs/PRIVACY.md) · [Data sources](docs/DATA_SOURCES.md) |
 | Find mobile support and policy information | [Companion availability](docs/COMPANION.md) · [Companion support](https://arn-lab.github.io/Spoolscribe-/support/) · [Companion privacy](https://arn-lab.github.io/Spoolscribe-/privacy/) |
-| Check software validation | [v0.8.2 evidence](docs/validation/v0.8.2.md) |
+| Check software validation | [v0.8.3 evidence](docs/validation/v0.8.3.md) |
 | Report a problem or a working setup | [Issues](https://github.com/ArN-LaB/Spoolscribe-/issues/new/choose) |
 | Contribute or support development | [Contributing](.github/CONTRIBUTING.md) · [Buy Me a Coffee](https://buymeacoffee.com/arn_lab) |
 
 Report the model, reader, firmware/plugin, tag type and format when sharing a
 hardware result. Software CI is not a certification of every listed printer.
-The [v0.8.2 validation record](docs/validation/v0.8.2.md) links the exact source and CI results. Native builds exercise catalogue/NFC, colour entry and independent digital QR decoding; these software checks do not certify physical hardware.
+The [v0.8.3 validation record](docs/validation/v0.8.3.md) links the exact source and CI results. Native builds exercise catalogue/NFC, colour entry and independent digital QR decoding; these software checks do not certify physical hardware.
 
 SpoolScribe is independent of printer and filament manufacturers. Code: MIT.
 Data licences and artwork credits: [NOTICE](NOTICE) · [Trademarks](docs/TRADEMARKS.md).

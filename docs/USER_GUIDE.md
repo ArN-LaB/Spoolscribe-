@@ -1,6 +1,6 @@
-# Use SpoolScribe v0.8.2
+# Use SpoolScribe v0.8.3
 
-[Overview](../README.md) · [Documentation](README.md) · [Stable release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.2) · [Compatibility](COMPATIBILITY.md)
+[Overview](../README.md) · [Documentation](README.md) · [Stable release](https://github.com/ArN-LaB/Spoolscribe-/releases/tag/v0.8.3) · [Compatibility](COMPATIBILITY.md)
 
 The [visual tour](wiki/Visual-Tour.md) shows actual English-interface screenshots.
 The same workflows are available in all four application languages.
@@ -258,7 +258,7 @@ favourites, sorts, columns, layout and export preferences are saved/exported.
 Network consent is not imported. Application-update checks offer the official
 download; replacement remains manual.
 
-v0.8.2 adds preference-preview import/export, local ZIP backup, restoration
+v0.8.3 includes preference-preview import/export, local ZIP backup, restoration
 preview and explicit undo. Conflicts remain recoverable until resolved; unknown
 third-party objects are retained rather than claimed restored. JSON/ZIP files
 are **not encrypted**. See [settings](wiki/Settings.md) and

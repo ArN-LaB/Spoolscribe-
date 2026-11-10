@@ -137,38 +137,71 @@ class DialogFitterLifetimeTests(unittest.TestCase):
     def setUp(self):fixture.GuiTests.setUp(self)
 
     def test_export_preferences_journey_never_reaches_a_stateless_fitter(self):
-        import collections, gc, sys
+        import collections, gc, sys, time
         from PySide6.QtCore import QTimer
-        from PySide6.QtWidgets import QApplication, QComboBox, QDialogButtonBox, QPushButton, QTabWidget
+        from PySide6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialogButtonBox, QPushButton, QTabWidget
         from spoolscribe import ui_surfaces
         w=self.window;w.show();target=Path(self.tmp.name)/'prefs.json'
         # Before the fix this journey called eventFilter on collected fitters (AttributeError
         # 'fitting', then calls into freed memory) and crashed with SIGSEGV. Overrides are not
         # patched here: PySide keeps the override it resolved, so a restored patch would itself
         # leave a dangling callable behind.
+        # B18/33: the full collections below examine only what this journey creates (its dialogs and
+        # fitters, all built after the freeze). Unfrozen, they walked the whole heap left by the
+        # preceding tests (~3 M objects), seconds per pass on a slow CI Mac, and ran out the bound.
+        gc.freeze();self.addCleanup(gc.unfreeze)
         errors=[]
         hook=sys.excepthook;sys.excepthook=lambda *a:errors.append(a[1]);self.addCleanup(setattr,sys,'excepthook',hook)
-        steps=collections.deque();done=[]
-        def modal():return QApplication.activeModalWidget()
+        # Each action runs once, only when the dialog it expects is shown and its fitter has settled:
+        # no fixed pace, and never on another modal window an earlier test may have left visible.
+        def shown(child_type,name):
+            d=QApplication.activeModalWidget()
+            return d if d is not None and d.isVisible() and d.findChild(child_type,name) is not None else None
+        def ready(child_type,name):
+            d=shown(child_type,name);fitter=getattr(d,'_content_fitter',None)
+            return d if fitter is not None and not fitter.pending else None
+        settings=lambda:ready(QPushButton,'exportPreferences');options=lambda:ready(QCheckBox,'includeLayout')
+        depth=[0]   # Paramètres requested and not yet returned (export options and the file write happen inside)
+        def idle():return depth[0]==0 and shown(QPushButton,'exportPreferences') is None and shown(QCheckBox,'includeLayout') is None
+        def open_settings():
+            def run():
+                try:w._open_settings()
+                finally:depth[0]-=1
+            depth[0]+=1;QTimer.singleShot(0,run)
         def export_click():
-            d=modal();tabs=d.findChild(QTabWidget);tabs.setCurrentIndex(tabs.count()-1)
+            d=settings();tabs=d.findChild(QTabWidget);tabs.setCurrentIndex(tabs.count()-1)
             language=d.findChild(QComboBox,'interface_language');language.setCurrentIndex(language.findData('es'))
             d.findChild(QPushButton,'exportPreferences').click()
-        def options(button):return lambda:modal().findChild(QDialogButtonBox).button(button).click()
+        def press(button):return lambda:options().findChild(QDialogButtonBox).button(button).click()
+        steps=collections.deque();done=[]
         for _ in range(2):
-            steps.extend([lambda:QTimer.singleShot(0,w._open_settings),export_click,options(QDialogButtonBox.Cancel),
-                          lambda:QTimer.singleShot(0,w._open_settings),export_click,options(QDialogButtonBox.Ok),gc.collect,
-                          lambda:QTimer.singleShot(0,w._open_settings),lambda:modal().reject(),gc.collect])
-        steps.append(lambda:done.append(True))
-        def tick():
-            action=steps.popleft()
-            if steps:QTimer.singleShot(60,tick)
-            action()
+            steps.extend([('open',idle,open_settings),('export',settings,export_click),('cancel',options,press(QDialogButtonBox.Cancel)),
+                          ('open',idle,open_settings),('export',settings,export_click),('ok',options,press(QDialogButtonBox.Ok)),('gc',idle,gc.collect),
+                          ('open',idle,open_settings),('reject',settings,lambda:settings().reject()),('gc',idle,gc.collect)])
+        steps.append(('done',idle,lambda:done.append(True)))
+        deadline=time.monotonic()+20;stop={}
+        def advance():
+            if done:return
+            if errors or time.monotonic()>deadline:
+                # First failure is reported as is; open journey dialogs are closed so the test returns.
+                stop.setdefault('at',(steps[0][0],len(steps),'error' if errors else 'deadline'))
+                d=shown(QCheckBox,'includeLayout') or shown(QPushButton,'exportPreferences')
+                if d is not None:d.reject()
+                if d is not None or depth[0]:QTimer.singleShot(0,advance)
+                return
+            name,expected,action=steps[0]
+            if expected():
+                steps.popleft()
+                try:action()
+                except Exception as exc:errors.append(exc)
+            QTimer.singleShot(0,advance)
         with patch('spoolscribe.ui_catalogue.QFileDialog.getSaveFileName',return_value=(str(target),'JSON')):
-            QTimer.singleShot(0,tick)
-            deadline=__import__('time').monotonic()+20
-            while not done and __import__('time').monotonic()<deadline:w.app.processEvents()
-        self.assertTrue(done,'journey did not finish')
+            QTimer.singleShot(0,advance)
+            while not done and not stop and time.monotonic()<deadline:w.app.processEvents()
+        if not done:
+            step,left,why=stop.get('at',(steps[0][0],len(steps),'deadline'))
+            self.fail(f'journey did not finish: stopped before {step!r} ({left} steps left, {why}), '
+                      f'active modal {QApplication.activeModalWidget()!r}, errors {errors!r}')
         self.assertEqual(errors,[])
         gc.collect()
         for fitter in list(ui_surfaces._FITTERS.values()):   # every live fitter keeps its state

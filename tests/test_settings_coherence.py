@@ -140,6 +140,38 @@ class SettingsDialogTests(unittest.TestCase):
         with patch("spoolscribe.app_gui.QDialog.exec", inspect):
             self.window._open_settings(**kwargs)
 
+    def test_free_action_groups_share_one_width_and_column_actions_keep_their_column(self):
+        """B18/C21: Enregistrer/Annuler, and the data actions whose rows line up; the catalogue
+        actions stretched by their column are left to it. Four languages, natural and 860×600."""
+        from PySide6.QtCore import QPoint
+        from PySide6.QtWidgets import QDialog, QDialogButtonBox, QPushButton, QTabWidget
+        self.addCleanup(i18n.set_language, "fr")
+        for code in ("fr", "en", "es", "zh_CN"):
+            with self.subTest(language=code):
+                i18n.set_language(code); seen = {}
+                def inspect(dialog):
+                    dialog.show(); self.window.app.processEvents()
+                    at = lambda b: b.mapTo(dialog, QPoint(0, 0))
+                    column = [dialog.findChild(QPushButton, "revokeNetworkConsent")] + [b for b in dialog.findChildren(QPushButton) if b.text() == i18n.tr("Sources du catalogue…")]
+                    seen["column"] = (len({b.width() for b in column}), len({at(b).x() for b in column}), column[0].width() > 2 * column[0].sizeHint().width())
+                    dialog.findChild(QTabWidget).setCurrentIndex(dialog.findChild(QTabWidget).count() - 1)
+                    for size in (None, (860, 600)):
+                        if size: dialog.resize(*size)
+                        self.window.app.processEvents()
+                        bb = dialog.findChild(QDialogButtonBox)
+                        pair = [bb.button(QDialogButtonBox.Save), bb.button(QDialogButtonBox.Cancel)]
+                        data = [dialog.findChild(QPushButton, n) for n in ("exportPreferences", "importPreferences", "createBackup", "restoreBackup", "revertRestore")]
+                        for group in (pair, data):
+                            self.assertEqual(len({b.width() for b in group}), 1, [(b.text(), b.width()) for b in group])
+                            self.assertGreaterEqual(group[0].width(), max(b.sizeHint().width() for b in group))
+                            for b in group:
+                                self.assertTrue(dialog.rect().contains(at(b) + QPoint(b.width() - 1, b.height() - 1)), b.text())
+                        self.assertEqual({at(data[0]).x(), at(data[2]).x(), at(data[4]).x()}.__len__(), 1)   # rows line up
+                        self.assertEqual(at(data[1]).x(), at(data[3]).x())
+                    return QDialog.Rejected
+                self.dialog(inspect)
+                self.assertEqual(seen["column"], (1, 1, True))   # stretched by its column, not forced into a group
+
     def test_six_tabs_keep_every_option_and_save_cancel_semantics(self):
         from PySide6.QtWidgets import QDialog, QTabWidget, QComboBox, QCheckBox, QLineEdit, QDoubleSpinBox, QPushButton, QDialogButtonBox
         seen = {}
@@ -368,7 +400,8 @@ class NavigationAndDataTests(unittest.TestCase):
     def test_menu_lists_navigation_only_and_every_function_keeps_one_place(self):
         w = self.window
         texts = [a.text() for a in w.main_menu.actions() if not a.isSeparator()]
-        self.assertEqual(texts, ["Mon matériel…", "Paramètres…", "À propos de SpoolScribe"])
+        # B18/A2: the optional quick welcome can be reopened from the same navigation menu.
+        self.assertEqual(texts, ["Mon matériel…", "Paramètres…", "Accueil rapide…", "À propos de SpoolScribe"])
         self.assertIsNone(w.menu_btn.menu())   # anchored by the window, not a free tool-button popup
         # The single-filament OpenSpool JSON is in that filament's export details.
         w.current_sku = "PB05001"; w._show_detail("PB05001"); w._refresh_export_journey()

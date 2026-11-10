@@ -317,13 +317,22 @@ class DetailUx:
         return bool(draft) and (any(self.draft_fields[k].text().strip() != draft["initial"][k] for k in self.draft_fields)
                                 or self._hex_confirmation())
 
+    def _physical_edit_refusal(self):
+        """Why the record editor cannot open now (the guard of ``_edit_physical``), or None."""
+        if self.worker and self.worker.isRunning():
+            return tr("Attendez la fin de la mise à jour avant de modifier ou exporter la fiche.")
+        if not self.current_sku or self._persisted_values(self.current_sku) is None:
+            return tr("Produit introuvable pour cette référence.")
+        return None
+
     def _edit_physical(self, focus_key=None):
-        """Open the in-card draft for the current reference (former modal dialog)."""
-        if not self.current_sku or self.worker and self.worker.isRunning():
-            return
+        """Open the in-card draft for the current reference (former modal dialog).
+
+        Returns whether it opened: never while a refresh runs, never without a record.
+        """
+        if self._physical_edit_refusal():
+            return False
         values = self._persisted_values(self.current_sku)
-        if values is None:
-            return
         if not self._draft or self._draft["sku"] != self.current_sku:
             entry = self.db["_skus"][self.current_sku]
             view = core.get_sku_view(self.db, self.current_sku)
@@ -352,6 +361,7 @@ class DetailUx:
                   else self.draft_fields.get(focus_key) or self.draft_fields["min_temp"])
         target.setFocus(Qt.OtherFocusReason)
         QTimer.singleShot(0, lambda: self.detail_scroll.ensureWidgetVisible(self.draft_editor) if self.draft_editor.isVisible() else None)
+        return True
 
     def _draft_edited(self, *_):
         if not self._draft:
@@ -425,6 +435,51 @@ class DetailUx:
                 raise core.ExportValidationError(tr(message))
         return values
 
+    def _edit_physical_for_label(self, focus_key, resume):
+        """« Modifier la fiche… » from the label form: its inputs travel with this draft only.
+
+        Kept in memory inside ``self._draft`` only: the editor's own save or cancel puts them
+        back; leaving the draft any other way (another selection, a refresh, a restore, a
+        window close, even with « Enregistrer une copie » chosen there) drops them.
+
+        The real opening decides, not the check made when the form was closed: if it is
+        refused (a refresh started meanwhile) or fails, the form comes back on the same
+        reference with every input as typed and the reason; no draft, nothing written.
+        """
+        if self.current_sku != resume["sku"]:
+            return  # selection changed meanwhile: nothing applies to another label
+        had_draft = getattr(self, "_draft", None)
+        try:
+            opened = self._edit_physical(focus_key)
+            refusal = None if opened else self._physical_edit_refusal()
+        except Exception as exc:  # an editor that cannot open must not take the label inputs with it
+            if not had_draft and getattr(self, "_draft", None):
+                self._close_draft()
+            opened, refusal = False, tr("La fiche n’a pas pu être ouverte : {v0}", v0=str(exc))
+        if opened:
+            if self._draft and self._draft["sku"] == resume["sku"]:
+                self._draft["opentag_resume"] = resume
+        else:
+            self._resume_opentag(resume["sku"], dict(resume, refusal=refusal or tr("Produit introuvable pour cette référence.")))
+
+    def _resume_opentag(self, sku, resume):
+        """Reopen the label form once on ``sku``, after the editor has closed (or could not open), never elsewhere."""
+        def reopen():
+            if (self.current_sku == sku and (resume.get("refusal") or not getattr(self, "_draft", None)) and self.isVisible()
+                    and self._opentag_selected() and core.get_sku_view(self.db, sku) is not None):
+                self._complete_opentag_settings(resume=resume)
+        QTimer.singleShot(0, self, reopen)
+
+    def _save_draft_leaving(self):
+        """« Enregistrer une copie » chosen while leaving the draft for something else: its label
+        inputs apply nowhere, unless the save fails and the editor stays open for a retry."""
+        resume = self._draft.pop("opentag_resume", None)
+        if self._save_draft():
+            return True
+        if resume and self._draft:
+            self._draft["opentag_resume"] = resume
+        return False
+
     def _save_draft(self):
         if not self._draft:
             return False
@@ -437,6 +492,7 @@ class DetailUx:
             # Nothing was written (the storage layer is atomic); the draft stays editable.
             self.draft_error.setText(tr(str(exc))); self.draft_error.show()
             return False
+        resume = self._draft.get("opentag_resume")
         self._close_draft()
         self.current_sku = created
         self._reload_table()
@@ -444,6 +500,8 @@ class DetailUx:
         self._show_detail(created)
         self.status.showMessage(tr("Copie personnelle enregistrée ; la référence source est conservée."), 8000)
         self._update_stats()
+        if resume:
+            self._resume_opentag(created, resume)  # the identifier actually written, new or updated copy
         return True
 
     def _close_draft(self):
@@ -456,10 +514,13 @@ class DetailUx:
 
     def _cancel_draft(self):
         """Discard without writing anything; persisted values are shown again."""
+        resume = (self._draft or {}).get("opentag_resume")
         self._close_draft()
         if self.current_sku:
             self._show_detail(self.current_sku)
         self.btn_edit_physical.setFocus(Qt.OtherFocusReason)
+        if resume:
+            self._resume_opentag(resume["sku"], resume)  # the origin, if still the one shown
 
     def _ask_draft_decision(self):
         box = QMessageBox(self)
@@ -482,7 +543,7 @@ class DetailUx:
             return True
         decision = self._ask_draft_decision()
         if decision == "save":
-            return self._save_draft()
+            return self._save_draft_leaving()
         if decision == "discard":
             self._close_draft()
             return True
@@ -523,7 +584,7 @@ class DetailUx:
         if decision == "discard":
             self._close_draft()
             return True
-        if decision == "save" and self._save_draft():
+        if decision == "save" and self._save_draft_leaving():
             if deselects:
                 self._clear_filament()
                 self._place_cursor(view, sku, target.column())
